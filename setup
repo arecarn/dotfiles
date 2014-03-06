@@ -1,0 +1,4 @@
+ ln -s vimfiles   ~ /vimfiles/
+ ln -s .gitconfig ~ /.gitconfig
+ ln -s .zshrc     ~ /.zshrc
+ 

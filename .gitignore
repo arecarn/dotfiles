@@ -1,15 +1,8 @@
-vim/local_utils/backup/**
-vim/local_utils/neocomplcache/**
-vim/local_utils/swap/**
-vim/local_utils/undo/**
-vim/local_utils/unite/directory_mru
+.netrwhist
+*.swp
 vim/local_utils/unite/directory_mru
 vim/local_utils/unite/file_mru
 vim/local_utils/unite/file_mru_long
 vim/local_utils/unite/history_yank
 vim/local_utils/unite/outline/**
 vim/local_utils/unite/rec/file/**
-
-vim/bundle/**/*
-
-

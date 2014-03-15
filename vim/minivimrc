@@ -1,46 +1,6 @@
 "RYAN CARNEY VIMRC                                                         {{{ 
 "=============================================================================
-"Makes Vim not compatible with vi and vi is old so that's a good thing
-"This must be first, because it changes other options as a side effect.
-"it may not even be necessary because just having a vimrc defaults it to on as 
-"far as I know.
-set nocompatible 
 cd $HOME "start in home directory, this is just here for convince 
-"==========================================================================}}}
-"OPERATING SYSTEM VARIABLES                                                {{{
-"=============================================================================
-let s:running_windows = has("win16") || has("win32") || has("win64")
-
-"==========================================================================}}}
-"PLUGINS MANAGMENT                                                         {{{
-"=============================================================================
-"Nebundle================================================================={{{2
-if has('vim_starting')
-    if s:running_windows
-        set runtimepath+=$HOME/vimfiles/bundle/neobundle.vim/
-    else
-        set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
-    endif
-endif
-if s:running_windows
-    call neobundle#rc(expand("$HOME/vimfiles/bundle/"))
-else
-    call neobundle#rc(expand('$HOME/.vim/bundle/'))
-endif 
-" Let NeoBundle manage NeoBundle
-NeoBundleFetch 'Shougo/neobundle.vim'
-"=========================================================================}}}2
-"Vimproc=================================================================={{{2
-NeoBundle 'Shougo/vimproc', {
-            \ 'build' : {
-            \     'windows' : 'make -f make_mingw32.mak',
-            \     'cygwin' : 'make -f make_cygwin.mak',
-            \     'mac' : 'make -f make_mac.mak',
-            \     'unix' : 'make -f make_unix.mak',
-            \    },
-            \ }
-"=========================================================================}}}2
-NeoBundleCheck
 
 "==========================================================================}}}
 "FILE TYPE SETTINGS                                                        {{{
@@ -89,23 +49,8 @@ set spelllang=en_us
 ""=========================================================================}}}
 "CUSTOM MAPPINGS                                                           {{{1
 "=============================================================================
-noremap <C-l> :set hlsearch!<CR><C-l>
-"Goto vimrc================================================================{{{
-if s:running_windows
-    command! EditVimrcTab tabe $HOME/Dropbox/vim/vimrc.vim
-    command! EditVimrc e $HOME/Dropbox/vim/vimrc.vim
-else
-    command! EditVimrcTab tabe $HOME/Dropbox/vim/vimrc.vim
-    command! EditVimrc e $HOME/Dropbox/vim/vimrc.vim
-endif
-cabbrev evt EditVimrcTab 
-cabbrev ev EditVimrc
-"==========================================================================}}}
-"Goto Dropbox=============================================================={{{
-command! EditDropBox e $HOME/Dropbox
-cabbrev ed EditDropBox
-command! EditDropBoxTab tabe $HOME/Dropbox
-cabbrev edt EditDropBoxTab
+noremap <space>-l :set hlsearch!<CR><C-l>
+
 "==========================================================================}}}
 "typing <leader>cd normal mode will change your current directory to match the
 "file you are editing for the window only

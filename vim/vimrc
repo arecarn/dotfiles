@@ -1,0 +1,1386 @@
+"RYAN CARNEY VIMRC                                                           {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set cpo&vim
+set fileformats=unix,dos
+
+set cinoptions=
+set cinoptions+=(s
+set cinoptions+=m1
+set cinoptions+=C1
+set cinoptions+=:0
+set cinoptions+=c4
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"OPERATING SYSTEM VARIABLES                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:hasWindows = has("win16") || has("win32") || has("win64")
+if s:hasWindows
+    let s:vimpath = $HOME."/vimfiles"
+    cd $HOME "start in home directory, this is just here for convince 
+else
+    let s:vimpath = $HOME."/.vim"
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"PLUGINS MANAGEMENT                                                          {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Nebundle"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+if has('vim_starting')
+    let s:runtimepath = s:vimpath.'/bundle/neobundle.vim/'
+    execute 'set runtimepath+='.s:runtimepath
+endif
+
+call neobundle#rc(expand(s:vimpath.'/bundle'))
+" Let NeoBundle manage NeoBundle
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Vimproc""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/vimproc', {
+            \ 'build' : {
+            \     'windows' : 'make -f make_mingw32.mak',
+            \     'cygwin' : 'make -f make_cygwin.mak',
+            \     'mac' : 'make -f make_mac.mak',
+            \     'unix' : 'make -f make_unix.mak',
+            \    },
+            \ }
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"neocomplchache"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/neocomplcache'
+if !isdirectory(s:vimpath.'/local_utils/neocomplcache')
+    call mkdir(s:vimpath.'/local_utils/neocomplcache', "p", 0700)
+endif
+let g:neocomplcache_temporary_dir = s:vimpath.'/local_utils/neocomplcache'
+let g:pymode_folding = 0  
+let g:neocomplcache_enable_at_startup = 1
+let g:neocomplcache_enable_smart_case = 1
+let g:neocomplcache_enable_camel_case_completion = 1
+let g:neocomplcache_enable_underbar_completion = 1
+" Sets minimum char length of syntax keyword.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+let g:neocomplcache_enable_auto_delimiter = 1
+let g:neocomplcache_max_list = 5
+let g:neocomplcache_force_overwrite_completefunc = 1
+" Define file-type dependent dictionaries.
+let g:neocomplcache_dictionary_filetype_lists = {
+            \ 'default' : '',
+            \ 'vimshell' : s:vimpath.'/.vimshell_hist',
+            \ 'scheme' : s:vimpath.'/.gosh_completions'
+            \ }
+" Define keyword, for minor languages
+if !exists('g:neocomplcache_keyword_patterns')
+    let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+" <CR>: close popup
+inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+" Enable heavy omni completion.
+if !exists('g:neocomplcache_omni_patterns')
+    let g:neocomplcache_omni_patterns = {}
+endif
+let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+"when you press \neo neocomplchache is enabled and either locked or unlocked
+nnoremap <leader>neo :NeoComplCacheToggle<CR>
+
+"neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/neosnippet-snippets'
+" Tell Neosnippet about the other snippets
+let g:neosnippet#snippets_directory=s:vimpath.'/utils/snippets'
+
+NeoBundle 't9md/vim-choosewin'
+nmap <leader>cw <Plug>(choosewin)
+let g:choosewin_overlay_enable = 1
+let g:choosewin_overlay_clear_multibyte = 1
+
+NeoBundle 't9md/vim-textmanip'
+xmap <Space>d <Plug>(textmanip-duplicate-down)
+nmap <Space>d <Plug>(textmanip-duplicate-down)
+xmap <Space>D <Plug>(textmanip-duplicate-up)
+nmap <Space>D <Plug>(textmanip-duplicate-up)
+
+xmap <C-j> <Plug>(textmanip-move-down)
+xmap <C-k> <Plug>(textmanip-move-up)
+xmap <C-h> <Plug>(textmanip-move-left)
+xmap <C-l> <Plug>(textmanip-move-right)
+
+" toggle insert/replace with <F10>
+nmap <leader>mt <Plug>(textmanip-toggle-mode)
+xmap <leader>mt <Plug>(textmanip-toggle-mode)
+NeoBundle 't9md/vim-quickhl'
+nmap <Space>h <Plug>(quickhl-manual-this)
+xmap <Space>h <Plug>(quickhl-manual-this)
+nmap <Space>H <Plug>(quickhl-manual-reset)
+xmap <Space>H <Plug>(quickhl-manual-reset)
+
+NeoBundle 'airblade/vim-gitgutter'
+highlight link GitGutterAdd          DiffAdd 
+highlight link GitGutterChange       DiffChange
+highlight link GitGutterDelete       DiffDelete
+highlight link GitGutterChangeDelete DiffDelete
+
+"CommentLine""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
+function! CommentLine(char, width)
+    let b:multiline_str_start = matchstr(&commentstring, '.\+\ze%s.*')
+    let b:multiline_str_end = matchstr(&commentstring, '.\+%s\zs.*')
+    " echom '[' . b:multiline_str_end . '] = the end'
+    " echom '[' . b:multiline_str_start . '] = the start'
+    if  b:multiline_str_end == '' || b:multiline_str_end == ' '
+        let b:multilinecomment = 0
+    else 
+        let b:multilinecomment = 1
+    endif
+    let b:comment_length = strlen(&commentstring)-2
+    let b:commentLine = ""
+
+    while strlen(b:commentLine) + b:comment_length + col('.') - 1 <= a:width
+        let b:commentLine = b:commentLine.a:char 
+    endwhile
+    return substitute(&commentstring,'%s', b:commentLine, '')
+endfunction
+"fun2
+function! Comment_line()
+    let b:comment_length = strlen(&commentstring)-2
+    let b:commentLine = ""
+    while strlen(b:commentLine) + b:comment_length + col('.') != 80
+        let b:commentLine = b:commentLine . '=' 
+    endwhile
+    let b:line = printf(&commentstring,b:commentLine)
+    call setline('.', b:line)
+endfunction                                                               
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
+"CommentStr"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
+function! CommnetStr(str)
+    let b:multiline_str = substitute(&commentstring, '%s\ze', '')
+    echo b:multiline_str
+    let b:comment_length = strlen(&commentstring)-2
+    let b:commentLine = ""
+    while strlen(b:commentLine) + b:comment_length != a:width
+        let b:commentLine = b:commentLine . a:char 
+    endwhile
+    return substitute(&commentstring,'%s', b:commentLine, '')
+endfunction
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
+"CommentBox()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
+function! CommentBox(char, width)
+    let b:multiline_str_start = matchstr(&commentstring, '.\+\ze%s.*')
+    let b:multiline_str_end = matchstr(&commentstring, '.\+%s\zs.*')
+    "echom '[' . b:multiline_str_end . '] = the end'
+    "echom '[' . b:multiline_str_start . '] = the start'
+    if  b:multiline_str_end == '' || b:multiline_str_end == ' '
+        let b:multilinecomment = 0
+    else 
+        let b:multilinecomment = 1
+    endif
+    if b:multilinecomment == 1
+        let b:line1 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start)) . "\n"
+        let b:line2 = '*' . repeat(' ', a:width) . "\n"
+        let b:line3 = repeat(a:char, a:width-strlen(b:multiline_str_end)) . b:multiline_str_end
+    else
+        let b:line1 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start)) . "\n"
+        let b:line2 = b:multiline_str_start . repeat(' ', a:width) . "\n"
+        let b:line3 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start))
+    endif 
+    return b:line1 . b:line2 . b:line3 
+endfunction
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
+"Ctest()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
+function! Ctest()
+    let commentFormat = split(&comments, ',')
+    echo &comments
+    echo string(commentFormat)
+    let start_str = matchstr(&comments, 's.*:\zs.*,\{0,1}')
+    let start_fmt = matchstr(&comments, 's\zs.*\ze:.*,\{0,1}')
+    echo '[' . start_str . '] is the start_str'
+    echo '[' . start_fmt . '] is the start_fmt'
+
+    let middle_str = matchstr(&comments, 'm.*:\zs.*,\{0,1}')
+    let middle_fmt = matchstr(&comments, 'm\zs.*\ze:s.*,\{0,1}')
+    echo '[' . middle_str . '] is the middle_str'
+    echo '[' . middle_fmt . '] is the middle_fmt'
+
+    let end_str = matchstr(&comments, 'e.*:\zs.*,\{0,1}')
+    let end_fmt = matchstr(&comments, 'e\zs.*\ze:s.*,\{0,1}')
+    echo '[' . end_str . '] is the end_str'
+    echo '[' . end_fmt . '] is the end_fmt'
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
+"function! CommnetLinePlus(char, before, after, col, lines)
+" Plugin key-mappings.
+"imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+"smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+"xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \ "\<Plug>(neosnippet_expand_or_jump)"
+            \: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \ "\<Plug>(neosnippet_expand_or_jump)"
+            \: "\<TAB>"
+
+" For snippet_complete marker.
+if has('conceal')
+    set conceallevel=2 concealcursor=i
+endif
+
+"neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"unite""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/unite.vim'
+" let g:unite_winheight = 10				
+let g:unite_data_directory = s:vimpath.'/local_utils/unite/'
+let g:unite_matcher_fuzzy_max_input_length = 1000
+let g:unite_source_history_yank_enable = 1
+let g:unite_split_rule = 'botright'
+let g:unite_source_file_rec_max_cache_files = 0
+let g:unite_source_mru_do_validate = 0
+call unite#custom#source('file_rec,file_rec/async',
+            \ 'max_candidates', 0)
+
+
+call unite#custom#profile('files', 'filters', 'sorter_rank')
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+call unite#filters#sorter_default#use(['sorter_rank'])
+
+
+call unite#custom_source('file_rec,file_rec/async,file_mru,file,grep',
+            \ 'ignore_pattern', join([
+            \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$' 
+            \ ], '\|'))
+
+nnoremap <leader>f :Unite -start-insert file file_rec<CR>
+nnoremap <leader>y :Unite history/yank<CR>
+nnoremap <leader>m :Unite output:message<CR>
+nnoremap <leader>r :Unite -start-insert file_mru directory_mru bookmark <CR>
+nnoremap <leader>b :Unite -start-insert buffer<CR>
+nnoremap g/ :Unite -start-insert outline line<CR>
+nnoremap <leader>g :Unite -start-insert -auto-preview grep<CR>
+
+autocmd FileType unite call s:unite_settings()
+
+function! s:unite_settings()
+    imap <silent><buffer><expr> <C-s> unite#do_action('split')
+    imap <silent><buffer><expr> <C-v> unite#do_action('vsplit')
+    imap <silent><buffer><expr> <C-t> unite#do_action('tabopen')
+    imap <silent><buffer><expr> <C-g>  unite#do_action('goto')
+endfunction
+
+NeoBundle 'Shougo/unite-ssh'
+NeoBundle 'Shougo/unite-outline'
+NeoBundle 'Shougo/unite-session'
+let g:unite_source_session_enable_auto_save = 1
+nnoremap <leader>ss :UniteSessionSave<space>
+nnoremap <leader>sl :Unite session<CR>
+
+" " Load session automatically.
+" autocmd VimEnter * UniteSessionLoad
+
+NeoBundle 'tsukkee/unite-help' " help source for unite.vim
+NeoBundle 'ujihisa/unite-colorscheme' " A unite.vim plugin
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"VimFiler"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/vimfiler.vim'
+" Replace netrw commands with vimfiler
+let g:loaded_netrw        = 1 " Disable netrw
+let g:loaded_netrwPlugin  = 1 " Disable netrw
+let g:vimfiler_as_default_explorer = 1	"make vimfiler the default explorer	
+
+command! -nargs=* Explore :VimFilerBufferDir <args>
+command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <args>
+command! -nargs=* Vexplore :VimFilerBufferDir -split  <args>
+command! -nargs=* Texplore :VimFilerBufferDir -tab <args>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/vimshell.vim'
+nnoremap <leader>vs :VimShellBufferDir -popup -toggle<CR>
+let g:vimshell_vimshrc_path = s:vimpath.'/local_utils/vimshell/'
+
+"Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Frisk""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+" NeoBundle  'frisk', {'type' : 'nosync',  'base' : '~/Dropbox/data/code/VimScript/myplugins' }
+NeoBundle 'arecarn/frisk'
+call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/data/code/VimScript/myplugins'} 
+NeoBundle 'arecarn/crunch', 'Dev'
+nmap <Leader>ce <plug>CrunchCrunchBlockExc
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'godlygeek/tabular'
+"following filetype commands align linewise comments 
+autocmd FileType vim noremap <buffer> <leader>ac :Tabularize/"<CR>
+autocmd FileType tex noremap <buffer> <leader>ac :Tabularize/%<CR>
+autocmd FileType c,js noremap <buffer> <leader>ac :Tabularize/\/\/<CR>
+"map <leader>t to open tabularize
+nnoremap <leader>tz :Tabularize/
+xnoremap <leader>tz :Tabularize/
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"ctrlp""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'kien/ctrlp.vim'
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlPLastMode'
+let g:ctrlp_extensions = ['buffertag', 'tag', 'line', 'dir']  
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"indent guides""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'nathanaelkane/vim-indent-guides'
+"to toggle indent guides type \ig
+let g:indent_guides_enable_on_vim_startup=0 "start indent guides on startup
+let g:indent_guides_guide_size = 1 "don't make the guides too big
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"syntastic""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2 
+NeoBundle 'scrooloose/syntastic'
+let g:syntastic_check_on_open=1
+
+let g:syntastic_python_checkers = ['python']
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2 
+"fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'thinca/vim-fontzoom'
+let g:fontzoom_no_default_key_mappings = 1
+nmap <F11> <Plug>(fontzoom-larger)
+nmap  <F12> <Plug>(fontzoom-smaller)
+
+"fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"netrw""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"aka the File Explorer. set up line numebring and other good stuff
+let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
+"hide .swp .o12 .dbg .lst files in explorer
+let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'kana/vim-textobj-user' " Vim plugin: Create your own text objects
+NeoBundle 'kana/vim-textobj-indent' " inent text object ii ai
+NeoBundle 'kana/vim-textobj-entire' " entire text object ie ae
+NeoBundle 'thinca/vim-textobj-between' " if<CHAR> af<CHAR> eg between '*' vif*
+NeoBundle 'saihoooooooo/vim-textobj-space' "text object for space iS aS
+NeoBundle 'mattn/vim-textobj-url' " text object for ul iu au
+
+call textobj#user#plugin('num', 
+            \{
+            \'-': 
+            \{
+            \     'pattern': '[+-]\?\d\+\%([.]\d\+\)\?\([eE][+-]\?\d\+\)\?',
+            \     'select': ['an', 'in'], 
+            \},
+            \})
+
+NeoBundle 'coderifous/textobj-word-column.vim' "not textobj Dependant
+"text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+NeoBundle 'TeTrIs.vim' " 0.1   A tetris game in pure vim
+NeoBundle 'altercation/vim-colors-solarized'
+let g:solarized_termcolors=256 "make solarized work in terminal with 256 colors
+NeoBundle 'morhetz/gruvbox'
+NeoBundle 'junegunn/seoul256.vim' " a low-contrast Vim color scheme based on Seoul Colors
+NeoBundle 'merlinrebrovic/focus.vim' " A Vim plugin that removes clutter and makes working on a widescreen monitor enjoyable.
+NeoBundle 'fugitive.vim' " 1.0   A Git wrapper so awesome, it should be illegal
+NeoBundle 'gregsexton/VimCalc'
+NeoBundle 'mbbill/undotree' " Display your undo history in a graph.
+nnoremap <leader>ut :UndotreeToggle<CR>
+NeoBundle 'tpope/vim-commentary'
+NeoBundle 'tpope/vim-markdown'
+NeoBundle 'tpope/vim-repeat'
+NeoBundle 'tpope/vim-scriptease'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'tpope/vim-speeddating' " speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
+NeoBundle 'tpope/vim-abolish' " abolish easily search for, substitute, and abbreviate multiple variants of a word
+NeoBundle 'vim-scripts/DrawIt'
+NeoBundle 'hrsh7th/vim-neco-calc' " neocomplcache calculates plugin.
+NeoBundle 'thinca/vim-visualstar' " star for Visual-mode.
+NeoBundle 'dbakker/vim-lint' " check vimScript for errors
+NeoBundle 'dhruvasagar/vim-table-mode' " VIM Table Mode for blazing fast instant table creation.
+let g:table_mode_separator = '|'
+NeoBundle 'roman/golden-ratio' " Automatic resizing of Vim windows to the golden ratio 
+let g:golden_ratio_autocommand = 0 "disable golden ratio autocmd
+nnoremap <C-W>gr :GoldenRatioToggle<CR>
+NeoBundle 'inkarkat/VimTAP' "Test Anything Protocol for vim
+NeoBundle 'inkarkat/runVimTests' " a testing framework for Vim
+NeoBundle 'LanguageTool' " a testing framework for Vim
+let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.jar'
+NeoBundle 'tlvince/vim-compiler-python' " A very basic python compiler script.
+NeoBundle 'justinmk/vim-sneak'
+NeoBundle 'sk1418/HowMuch'
+NeoBundle 'w0ng/vim-hybrid'
+" NeoBundle 'kakkyz81/evervim'
+NeoBundle 'hsitz/VimOrganizer'
+
+" NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
+NeoBundleCheck
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FILE TYPE SETTINGS                                                          {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+filetype on
+filetype plugin on
+filetype indent on
+syntax on " allow syntax highlighting
+set encoding=utf-8 "make vim use UTF-8 by default
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"UI OPTIONS                                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set colorcolumn=79 " add a vertical line at to show Nth column
+set cursorline     "highlight the current line
+set number         " shows line numbers
+set relativenumber " show line numbers relative to curosr
+set showcmd        " display incomplete commands
+"colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+set background=dark 
+
+if !empty($CONEMUBUILD) 
+    set term=xterm
+    set t_Co=256 " make colors work on cygwin minty
+    let &t_AB="\e[48;5;%dm"
+    let &t_AF="\e[38;5;%dm" 
+endif 
+
+"colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"status line""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+" "provide custom colors for status line 
+hi User1 ctermbg=white ctermfg=black guibg=white guifg=black
+hi User2 ctermbg=grey ctermfg=white  guibg=grey   guifg=white
+hi User3 ctermbg=white  ctermfg=green guibg=white  guifg=green
+
+
+set statusline=   " clear the statusline for when vimrc is reloaded
+set statusline+=%1*
+set statusline+=%-3.3n\                      " buffer number
+set statusline+=%-0.40F\                     " file name %f or %F give full path
+set statusline+=%*
+set statusline+=%h%m%r%w                     " flags
+set statusline+=[%{strlen(&filetype)?&filetype:'none'},             " filetype
+set statusline+=%{strlen(&fileencoding)?&fileencoding:&encoding},   " encoding
+set statusline+=%{&fileformat}]              " file format
+set statusline+=%=                           " right align
+set statusline+=%{strftime('%l:%M%P\ %F',getftime(expand('%')))}
+set statusline+=%1*                                       " right align
+set statusline+=[\ %-0.0(LN:%l\ COL:%c%V%)]\ %<[%P]        " offset
+" set statusline+=[%{VimBuddy()}]
+set statusline+=%*
+
+set laststatus=2 "[2]allways show the status line [1]one ore more [0]never
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"tab line"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"TODO: comment this for clarity
+"TODO: if statment for current tab and else for every other
+if exists("+showtabline") 
+    function! MyTabLine() 
+        let s = '' 
+        let t = tabpagenr() 
+        let i = 1 
+        while i <= tabpagenr('$') 
+            let buflist = tabpagebuflist(i) 
+            let winnr = tabpagewinnr(i) 
+            let s .= '%' . i . 'T' 
+            let s .= (i == t ? '%#TabLineSel#' : '%#TabLine#') 
+            let s .=  ' '
+            let s .= (i == t ? '%1*' : '%#TabLine#') 
+            let s .= i
+            let s .= (i == t ? '%#TabLineSel#' : '%#TabLine#') 
+            let s .= ' '
+            let s .= (i == t ? '%#TabLineSel#' : '%2') 
+            let file = bufname(buflist[winnr - 1]) 
+            let file = fnamemodify(file, ':p:t') 
+            if file == '' 
+                let file = '[No Name]' 
+            endif 
+            let s .= ' '. file .' '
+            let s .= '%*' 
+            let i = i + 1 
+        endwhile 
+        let s .= '%T%#TabLineFill#%=|' 
+        " let time =strftime("%Y %b %d %X").'|'
+        " let s .=time.'  '
+        let s.=getcwd().'|  '
+        let s .= (tabpagenr('$') > 1 ? '%999XX' : '|X') 
+        return s 
+    endfunction 
+    set showtabline=2  " show tab labels all the time
+    set tabline=
+    set tabline=%!MyTabLine() 
+endif 
+"status line""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"
+
+"gui settings"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+if has ("gui_running")
+    if has ("autocmd") && s:hasWindows
+        augroup windowsgui:
+            autocmd GUIEnter * simalt ~x " maximize in windows
+        augroup END
+    endif
+    set guioptions-=T  "remove toolbar
+    set guioptions-=r  "remove right-hand scroll bar
+    set guioptions-=l "remove right-hand scroll bar
+    set guioptions=c  "makes dialogs boxes appear like they do in console vim
+    " colorscheme solarized 
+    colorscheme gruvbox
+
+    if s:hasWindows
+        set guifont=DejaVu_Sans_Mono:h10:cANSI
+        "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
+    elseif has('mac')
+        set guifont=DejaVu\ Sans\ Mono:h12
+        " set guifont=Monaco:h12
+    elseif has('unix') && !has('mac')
+        set guifont=DejaVu\ Sans\ Mono\ 12
+    endif
+else
+    set t_Co=256
+    set lazyredraw
+    colorscheme solarized
+endif "gui_running
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"CURSOR SETTINGS                                                             {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set scrolloff=6 " Keep 3 lines (top/bottom) for scope
+set sidescrolloff=1 " keep 3 lines (side/side) for scope
+set sidescroll=1
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+    set mouse=a
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"UNDO & SWAP                                                                 {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set undofile                " Save undos after file closes
+let s:undodir = s:vimpath.'/local_utils/undo' " where to save undo histories
+set undolevels=20000         " How many undo
+set undoreload=20000         " number of lines to save for undo
+
+execute 'set undodir='.s:undodir
+
+let s:swap=s:vimpath.'/local_utils/swap//'
+execute 'set directory='.s:swap
+" ^ Here be magic! Quoth the help: (from godlygeek)
+" For Unix and Win32, if a directory ends in two path separators "//" or "\\",
+" the swap file name will be built from the complete path to the file with all
+" path separators substituted to percent '%' signs.  This will ensure file
+" name uniqueness in the preserve directory.
+set history=20000      " keep 200 lines of command line history
+set backup "allow backupfiles
+"Make the backupfile extension year-month-day_hour ex: file.txt_13-02-24_15
+let myvar = strftime("%y-%m-%d_%H")
+let myvar = "set backupext=_". myvar
+execute myvar
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"BACKUP                                                                      {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:backupdir = s:vimpath.'/local_utils/backup'
+execute 'set backupdir='.s:backupdir
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"LINE WRAPING                                                                {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set nowrap "When on, lines longer than the width of the window will wrap and
+"set wrapmargin=80  "set where wrapping starts 
+"displaying continues on the next line.
+set linebreak " wrap on complete words
+set textwidth=0 "max length of line to be inserted. 0 will not break on space
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SPELLING - THESAURUS                                                        {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set spell
+set spelllang=en_us
+let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
+let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
+
+nnoremap gz= ea<C-X><C-S>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"TEMPLATE MAPPINGS                                                           {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"make using Templates easier 
+let s:templatefile = s:vimpath.'/utils/template/'
+execute 'command! Etemplates :e '. s:templatefile
+if has("autocmd")
+    augroup template 
+        autocmd!
+        execute 'autocmd BufNewFile includes.h 0r '.s:templatefile.'skeleton_master.h'
+        execute 'autocmd BufNewFile *.Tex      0r '.s:templatefile.'skeleton.Tex'
+    augroup END
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"MAPPINGS & COMMANDS                                                        {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set timeoutlen=600
+set updatetime=1000 "how long it takes for the preview to show up in ms
+set previewheight=7 "how tall the preview window is
+
+"Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"cursor moves as expected for wrapped lines
+nnoremap <silent> k gk
+nnoremap <silent> j gj
+nnoremap <silent> gk k
+nnoremap <silent> gj j
+nnoremap * :let b:PlugView=winsaveview()<CR>*N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
+nnoremap g* :let b:PlugView=winsaveview()<CR>g*N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
+nnoremap # :let b:PlugView=winsaveview()<CR>#N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
+nnoremap g# :let b:PlugView=winsaveview()<CR>g#N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
+
+"map arrow keys to move around different windows
+nnoremap  <F12> 2<C-W>>
+nnoremap  <F9>  2<C-W><
+nnoremap  <F11> <C-W>-
+nnoremap  <F10> <C-w>+
+
+nnoremap gh <C-W>h
+nnoremap gj <C-W>j
+nnoremap gk <C-W>k
+nnoremap gl <C-w>l
+"Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"CASE CHANGE BINDINGS"""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"change word to uppercase while in insert mode
+inoremap <leader>U <ESC>bgUawgi
+"change word to lowercase while in inset mode then i do A word 
+inoremap <leader>u <ESC>bguawgi
+"swap case of the first letter in a word while typing
+inoremap <leader>` <ESC>B~gi
+"swap case of the first letter in a word under the cursor
+nnoremap <leader>` viwo<ESC>~h
+"CASE CHANGE BINGINGS"""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"
+" map  \ss for spell check toggling
+nnoremap <leader>sp :setlocal spell!<CR>:set spell?<CR>
+" don't move when searching for word under the cursor, and always highlight 
+" Toggle virtualedit
+set virtualedit=block
+function! Toggle_virtualedit()
+    if &virtualedit == 'all'
+        set virtualedit=block
+    else
+        set virtualedit=all
+    endif
+endfunction
+nnoremap <leader>ve :call Toggle_virtualedit()<CR>:set virtualedit?<CR>
+function! TextWidthToggle(textWidth)
+    if &textwidth!=a:textWidth 
+        execute "setlocal textwidth=".a:textWidth
+        setlocal textwidth?
+    else
+        setlocal textwidth=0
+        setlocal textwidth?
+    endif
+endfunction
+
+nnoremap <leader>tw :call TextWidthToggle(80)<CR>
+"toggles wrap when \wr is entered
+nnoremap <leader>wr <ESC>:setlocal wrap!<CR>:set wrap?<CR>
+"CTRL-l redraws the screen and removes any search highlighting.
+nnoremap <space>l :set hlsearch!<CR><C-l>
+"TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+
+command! Evimrc :tabe $MYVIMRC
+command! Eref :sp ~/Dropbox/data/docs/reference/
+command! Etemp :sp ~/Dropbox/temp
+
+
+nnoremap ]b :bn<CR>
+nnoremap [b :bp<CR>
+
+" make more undos possible after leaving insert mode 
+inoremap <c-u> <c-g>u<c-u>
+inoremap <c-w> <c-g>u<C-W>
+inoremap <BS> <c-g>u<BS>
+inoremap <CR> <c-g>u<CR>
+inoremap <del> <c-g>u<del>
+inoremap <END> <c-g>u<END>
+
+"search and replace a word
+nnoremap <leader>rw :%s/\<<C-R><C-W>\>//gc<left><left><left>
+nnoremap <leader>rW :%s/\<<C-R><C-A>\>//gc<left><left><left>
+nnoremap <leader>rv :%s/\<<C-R><C-A>\>//gc<left><left><left>
+
+nnoremap Q gw
+xnoremap Q gw
+
+noremap Y y$
+nnoremap g= :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
+            \ <CR>:echo "file indented"<CR>
+nnoremap gy :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
+            \ <CR>:echo "file yanked"<CR>
+
+nnoremap <leader>lcd :lcd %:h<cr>:pwd<cr>
+nnoremap <leader>cd :cd! %:h<cr>:pwd<cr>
+
+nnoremap <leader>gf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap <leader>gd :let @f=expand('%:p:h')<CR>:echo @f.' ---> yanked into register f'<CR>
+
+command! -nargs=* Scratch vs ~/Dropbox/temp/_<args>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SCRIPTS                                                                      {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"reverse the selected lines (TODO don't work for line at the top of a file) 
+xnoremap gr <ESC>'<kmr'>:'r+1,.g/^/m 'r<CR>
+"Checksum"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+command! Checksum call Checksum()
+function! Checksum()
+    normal! ^
+    let numOfChars = col("$") - 1
+    normal! yyp
+    let @q = "\\taha + l"
+    execute "normal!" . numOfChars . "@q"
+    s/+  $//g
+    normal! yyp
+    execute "normal! ^v$h\"edi\<c-r>=\<c-r>e\<cr>"
+    normal! yyp
+    s/\d\+/\=printf('0x%x', submatch(0))
+endfunction
+"Checksum"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"FileExplore()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+function! FileExplore(file)
+    if has("win32")
+        let s:stored_shellslash = &shellslash
+        set noshellslash
+    endif
+    if a:file == ''
+        let file = expand('%:p:h')
+    else
+        try
+            let file = a:file
+            let thepwd = getcwd()
+            execute "cd ".file
+            let file = getcwd()
+            execute "cd " thepwd
+        catch
+            let file = expand('%:p:h')
+        endtry
+    endif
+    if has("win32")
+        execute "!start explorer.exe ".file
+    elseif has("gui_kde")
+        execute "!konqueror ".file." &"
+    elseif has("gui_gtk")
+        execute "!nautilus ".file." &"
+    elseif has("mac") && has("unix")
+        let file = substitute(file," ","\\\\ ","g")
+        execute '!open ' .file
+    endif
+    if has("win32")
+        let &shellslash = s:stored_shellslash
+    endif
+endfunc
+command!-nargs=* -complete=file Fexplore call FileExplore('<args>') " or whatever you like
+
+"FileExplore""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"PreviewWord""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"A nice addition is to highlight the found tag, avoid the ":ptag" when there
+"is no word under the cursor, and a few other things:
+let g:PreviewWordEnable=0
+augroup PreviewWord
+    autocmd!
+    au! CursorHold *.[ch] if g:PreviewWordEnable == 1 | call PreviewWord() | endif
+augrou END
+function! PreviewWord()
+    if &previewwindow			" don't do this in the preview window
+        return
+    endif
+    let w = expand("<cword>")		" get the word under cursor
+    if w =~ '\a'			" if the word contains a letter
+
+        " Delete any existing highlight before showing another tag
+        silent! wincmd P			" jump to preview window
+        redraw
+        if &previewwindow			" if we really get there...
+            silent! wincmd K			" jump to preview window
+            redraw
+            match none			" delete existing highlight
+            wincmd p			" back to old window
+            redraw
+        endif
+
+        " Try displaying a matching tag for the word under the cursor
+        try
+            exe "ptag " . w
+        catch
+            return
+        endtry
+
+        silent! wincmd P			" jump to preview window
+        redraw
+        if &previewwindow		" if we really get there...
+            silent! wincmd K			" jump to preview window
+            redraw
+            if has("folding")
+                silent! .foldopen		" don't want a closed fold
+            endif
+            call search("$", "b")		" to end of previous line
+            let w = substitute(w, '\\', '\\\\', "")
+            call search('\<\V' . w . '\>')	" position cursor on match
+            " Add a match highlight to the word at this position
+            hi previewWord term=bold ctermbg=white ctermfg = black guibg=grey guifg = black
+            exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
+            wincmd p			" back to old window
+            redraw
+        endif
+    endif
+endfun
+
+func! PreviewWord()
+    if &previewwindow			" don't do this in the preview window
+        return
+    endif
+    let w = expand("<cword>")		" get the word under cursor
+    if w =~ '\a'			" if the word contains a letter
+
+        " Delete any existing highlight before showing another tag
+        silent! wincmd P			" jump to preview window
+        if &previewwindow			" if we really get there...
+            match none			" delete existing highlight
+            wincmd p			" back to old window
+        endif
+
+        " Try displaying a matching tag for the word under the cursor
+        try
+            exe "ptag " . w
+        catch
+            return
+        endtry
+
+        silent! wincmd P			" jump to preview window
+        if &previewwindow		" if we really get there...
+            if has("folding")
+                silent! .foldopen		" don't want a closed fold
+            endif
+            call search("$", "b")		" to end of previous line
+            let w = substitute(w, '\\', '\\\\', "")
+            call search('\<\V' . w . '\>')	" position cursor on match
+            " Add a match highlight to the word at this position
+            hi previewWord term=bold ctermbg=green guibg=green
+            exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
+            wincmd p			" back to old window
+        endif
+    endif
+endfun
+
+function! PreviewWordToggle()
+    if(g:PreviewWordEnable == 1)
+        let g:PreviewWordEnable = 0
+        pclose
+        echo 'Preview Tag Off'
+    else  
+        let g:PreviewWordEnable = 1
+        echo 'Preview Tag On'
+    endif 
+endfunction
+
+command!  PreviewTagToggle call PreviewWordToggle()
+
+nnoremap <leader>tp :pts <C-R><C-W><CR>
+"PreviewWord""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"save everything and then gcc the current file then run the file returned by
+"gcc
+command! Gcc call Compile('gcc\ %\ -o\ %:t:r', 'gcc', 'exe')
+command! Gpp call Make()
+command! Csc call Compile('csc\ %', 'cs', 'exe')
+
+command! Py cd %:p:h|compiler python|make|cwindow
+
+function! Compile(MakeProgram, Compiler, excutable)
+    let s:oldmakeprg = &makeprg
+    execute "set makeprg=" . a:MakeProgram
+    execute "compiler " . a:Compiler
+    let s:filename = expand("%:t:r")
+    echo s:filename
+    wa
+    lcd %:p:h
+    make!
+    cclose
+    cwindow
+    if &buftype != "quickfix"
+        if exists(':VimShellSendString')
+            wincmd p
+            VimShellBufferDir -popup
+            resize 10
+            wincmd p
+            execute "VimShellSendString exe " . s:filename . ".exe"
+        elseif s:hasWindows
+            execute "!" . s:filename . ".exe"
+        else "linux
+            echom "help fix me!!!!!!!!!!!!!!!!!!!"
+            execute "!./" . s:filename
+        endif
+    else
+    endif
+
+    let &makeprg= s:oldmakeprg
+endfunction
+
+function! Make()
+    let s:oldmakeprg = &makeprg
+    let &makeprg='[[ -f Makefile ]] && make || make -C'
+    lcd %:p:h
+    wa
+    execute make!
+    cclose
+    cwindow
+    if &buftype != "quickfix"
+        if exists(':VimShellSendString')
+            wincmd p
+            VimShellBufferDir -popup
+            resize 10
+            wincmd p
+            if s:hasWindows
+                execute "VimShellSendString exe mycpp.exe"
+            else
+                execute "VimShellSendString exe ./mycpp"
+            endif 
+        elseif s:hasWindows
+            execute "!mycpp.exe"
+        else "linux
+            echo not working
+            execute "!mycpp"
+        endif
+    else
+    endif
+
+    let &makeprg= s:oldmakeprg
+endfunction! 
+
+
+function! SetMkfile()
+    let filemk = "Makefile"
+    let pathmk = "./"
+    let depth = 1
+    while depth < 4
+        if filereadable(pathmk . filemk)
+            return pathmk
+        endif
+        let depth += 1
+        let pathmk = "../" . pathmk
+    endwhile
+    return "."
+endfunction
+
+command! -nargs=* Make tabnew | let mkpath = SetMkfile() | make <args> -C $mkpath | cwindow 10
+
+function! Maker(args)
+    wall
+    wall
+    cd %:p:h
+    let mkpath = SetMkfile() 
+    execute 'make!'.a:args.' -C '.mkpath 
+    cclose
+    cwindow
+    if &buftype != "quickfix"
+        if exists(':VimShellSendString') && s:hasWindows
+            wincmd p
+            VimShellBufferDir -popup
+            wincmd K
+            resize 10
+            wincmd p
+            if s:hasWindows
+                execute "VimShellSendString exe mycpp.exe"
+            else 
+                execute "VimShellSendString exe ./mycpp"
+            endif 
+        elseif s:hasWindows
+            execute "!mycpp.exe"
+        else "linux
+            execute '!./mycpp'
+        endif
+    else
+    endif
+endfunction
+
+command! -nargs=* Make call Maker('<args>')
+
+"Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+command! Rcrunch call ReloadCrunch()
+"Do the stuff for crunch 
+function! ReloadCrunch()
+    vs ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/crunch/debug.vim
+    wq
+    vs ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/crunch.vim
+    wq
+    vs ~/Dropbox/data/code/VimScript/myplugins/crunch/plugin/crunch.vim
+    wq
+    Runtime ~/Dropbox/data/code/VimScript/myplugins/crunch/plugin/*.vim
+    Runtime ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/*.vim
+    Runtime ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/crunch/*.vim
+endfunction
+
+command! TcrunchS call TestCrunchShell()
+function! TestCrunchShell()
+    if s:hasWindows
+        !runVimTests \Users\arecarn\Dropbox\data\code\VimScript\myplugins\crunch\tests
+    else
+        !runVimTests.sh  ~/Dropbox/data/code/VimScript/myplugins/crunch/tests
+    endif
+endfunction
+
+command! TcrunchVs call TestCrunchVShell()
+function! TestCrunchVShell()
+    call ReloadCrunch()
+    RunVS runVimTests C:/Users/arecarn/Dropbox/data/code/VimScript/myplugins/crunch/tests
+    if s:hasWindows
+        RunVSrunVimTests C:\Users\arecarn\Dropbox\data\code\VimScript\myplugins\crunch\tests
+    else
+        RunVS runVimTests.sh  ~/Dropbox/data/code/VimScript/myplugins/crunch/tests
+    endif
+endfunction
+
+function! CrunchB()
+    execute "normal! vip\<ESC>"
+    let topline = line("'<")
+    let bottomline = line("'>")
+    execute topline . "," bottomline . "call " . "crunch#CrunchLine('.')"
+endfunction
+command! CrunchTestBuffer call CrunchTestBuffer()
+function! CrunchTestBuffer()
+    new
+    r ~/Dropbox/data/code/VimScript/crunch\ tests/crunchtest
+endfunction
+"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Frisk Dev Scripts""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+command! Rfrisk call ReloadFrisk()
+"Do the stuff for crunch 
+function! ReloadFrisk()
+    vs ~/Dropbox/data/code/VimScript/myplugins/frisk/plugin/frisk.vim
+    wq
+    vs ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/frisk/debug.vim
+    wq
+    vs ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/frisk.vim
+    wq
+    Runtime ~/Dropbox/data/code/VimScript/myplugins/frisk/plugin/*.vim
+    Runtime ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/*.vim
+    Runtime ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/frisk/*.vim
+endfunction
+
+"Frisk Dev Scripts""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+command! -nargs=* RunVS call RunInVimShell('<args>')
+function! RunInVimShell(cmd)
+    echo a:cmd
+    VimShellBufferDir -popup
+    execute "VimShellSendString " . a:cmd
+endfunction
+"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+" s:PrintDebugHeader()                                                    {{{2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:PrintDebugHeader(text)
+    if s:debug
+        echom repeat(' ', 80)
+        echom repeat('=', 80)
+        echom a:text." Debug"
+        echom repeat('-', 80)
+    endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+" s:PrintDebugMsg()                                                       {{{2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:PrintDebugMsg(text)
+    if s:debug
+        echom a:text
+    endif
+endfunction
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+
+"add numbers to the front or end of a line 
+cabbrev numend s/$/\=1-line("'<")+line(".")/c
+cabbrev numfront s/^/\=1-line("'<")+line(".")/c
+
+"Details:
+"s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
+"            \= : for each match, replace with the result of the following expression:
+"printf("0x%04x", : produce a string using the format "0x%04x", which corresponds to a literal 0x followed by a four digit (or more) hex number, padded with zeros. 
+"submatch(0) : The result of the complete match (i.e. the number).
+cabbrev tohex s/\d\+/\=printf("0x%x", submatch(0))
+"find the first occurrence of a hex digit and changes it to decimal
+cabbrev todec s/0x\x\+/\=printf("%d", submatch(0))
+cabbrev toasc s/0x\x\+/\=printf("%c", submatch(0))
+"delete the current character and replace it with it's ASCII Decimal value
+nnoremap <leader>tad xi<C-r>=printf("%d",char2nr("<C-R>""))<CR><ESC>
+"delete the current character and replace it with it's ASCII Hex value
+nnoremap <leader>tah xi<C-r>=printf("0x%x",char2nr("<C-R>""))<CR><ESC>
+"noremap <leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"TABS - INDENTING                                                            {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set expandtab     " causes spaces to be used instead of tabs
+set tabstop=4     " sets how big tabs are.
+set shiftwidth=4  " how much space to add or remove using indent command
+set softtabstop=4 " fine tunes the amount of white space to be inserted
+set smarttab      " When on, a <Tab> in front of a line inserts blanks
+" according  to  'shiftwidth'.  'tabstop' or 'softtabstop' is used in  other
+" places
+set autoindent    " auto-indenting on
+set formatoptions+=n "formatting text recognize numbered lists. req. autoindent
+set formatoptions+=j "when joining lines remove comment leader when it makes sense
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FOLDING                                                                     {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+function! NeatFoldText()
+    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
+    let lines_count = v:foldend - v:foldstart + 1
+    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+    " let foldchar = matchstr(&fillchars, 'fold:\zs.')
+    let foldchar = '_'
+    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+    let foldtextend = lines_count_text . repeat(foldchar, 8)
+    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+endfunction
+"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+set foldtext=NeatFoldText()
+set foldmethod=indent " the type of folding to use 
+set foldcolumn=2 " column on the far left that shows where folds are 
+set foldnestmax=1 " number of fold levels to use
+set foldlevelstart=99 "when vim starts don't fold anything
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"AUTOCMDS                                                                    {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" automatically reload vimrc when it's saved
+if has("autocmd")
+    augroup vimrc
+        autocmd!
+        autocmd BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC 
+    augroup END
+endif
+
+" autocmnds .txt 
+if has("autocmd")
+    augroup text
+        autocmd!
+        autocmd BufEnter *.txt setlocal spell
+    augroup END
+endif
+
+"autocmnds for all files
+if has("autocmd")
+    augroup ALL
+        autocmd!
+        autocmd FocusLost * silent! wall
+    augroup END
+endif
+
+"quick fix window options
+if has("autocmd")
+    augroup Qf
+        autocmd!
+        autocmd FileType qf wincmd J "opens quick fix window on the bottom of all screens
+    augroup END
+endif
+
+"automatically compile TEX files on save 
+if has("autocmd")
+    if s:hasWindows
+        augroup TEX
+            autocmd!
+            "this is here so .tex files are recognized as latex files note Text files
+            autocmd BufEnter *.tex setf tex
+            "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
+            autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
+            autocmd BufEnter *.tex set concealcursor=
+        augroup END
+    else
+        augroup TEX
+            autocmd!
+            autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
+            autocmd BufEnter *.tex set concealcursor=
+        augroup END
+    endif
+endif
+
+
+if s:hasWindows
+    if has("autocmd")
+        augroup C
+            autocmd!
+
+            "if there is whitespace at the end of lines in cand h files get rid of it
+            " autocmd BufWritePre  *.cpp,*.c,*.h :%s/\s\+$//e
+            " autocmd BufWritePre  *.cpp,*.c,*.h :cd %:p:h
+            " autocmd BufWritePost *.cpp,*.c,*.h silent! !start /min ctags -R
+            "                                      |   \_________/   |
+            "do this without making a fuss---------+        |        |
+            "start this minimized on Windows----------------+        |
+            "generate a tag list using ctag recursivly---------------+
+            
+        augroup END
+    endif
+else
+    if has("autocmd")
+        augroup C
+            autocmd!
+            " autocmd BufWritePre  *.cpp,*.c,*.h :%s/\s\+$//e
+            " autocmd BufWritePre  *.cpp,*.c,*.h :cd %:p:h
+            " autocmd BufWritePost *.cpp,*.c,*.h silent! !ctags -R &
+            "                                    |     \_______/ |
+            "do this without making a fuss-------+        |      |
+            "generate a tag list using ctag recursivly----+      |
+            "start this minimized on Linux-----------------------+
+        augroup END
+    endif
+endif
+
+
+nnoremap <leader>cs :cs<CR>:cs find   <C-R><C-W><HOME><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT>
+set cscoperelative
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SEARCHING                                                                   {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set wrapscan " searches wraparound a file
+set incsearch  " do incremental searching
+set ignorecase
+set smartcase  " overrides ignore  case when caps in search
+
+command! -nargs=+ Ezgrep call Ezgrep(<f-args>)
+cabbrev ezgrep Ezgrep
+nnoremap <leader>eg :execute  Ezgrep(expand("<cword>"))<CR>:echo'finding'<CR>
+function! Ezgrep(...)
+    let searchterms = join(a:000," ")
+    " execute "cd %:p:h"
+    let fileExten = expand("%:e")
+    if fileExten ==? "c" || fileExten ==? "h"
+        let fileExten = "{c,h}"
+    endif 
+    execute "vimgrep/" . searchterms . "/gj **/*." .  fileExten 
+    execute "copen"
+    set hlsearch
+    let @/ = searchterms
+endfunction
+
+
+set path+=../** 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"GENERAL BEHAVIOR                                                            {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"use system clipboard for default yanks and deletes
+set clipboard=unnamedplus,unnamed
+set splitright "new windows open in the right
+
+augroup noBells "disable dang error{visual}bells for good
+    autocmd!
+    autocmd GUIEnter * set vb t_vb= " for your GUI
+    autocmd VimEnter * set vb t_vb=
+augroup END
+set switchbuf=usetab
+set shortmess+=a "Abbrev. of messages (avoids 'hit enter')
+set autowriteall "saves buffer before leaving it
+set autoread "automatically read file when it's changed outside of vim
+set confirm " If any modified, unsaved buffers exist, you will be prompted
+" to save or abandon each one.  There are also choices to
+" save all  or  abandon all
+set backspace=indent,eol,start "backspacing over everything in insert mode
+"set showmatch " If a bracket is inserted briefly jump to the matching one if it
+" is visible on the screen
+set matchtime=3 " time show match takes to jump to the matching bracket in
+" 10th of a second
+set tags=tags;/ "set the tag file to be called tags the ";/" allows you to look back wards
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"COMPETITION                                                                 {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set complete+=kspell
+
+"turn on omicompletion
+if has("autocmd") && exists("+omnifunc")
+    augroup omni
+        autocmd!
+        " Enable omni completion.
+        autocmd FileType c,cpp setlocal omnifunc=syntaxcomplete#Complete
+        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+        autocmd FileType xhtml,html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+        " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+        autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+    augroup END
+    let OmniCpp_GlobalScopeSearch   = 1
+    let OmniCpp_DisplayMode         = 1
+    let OmniCpp_ShowScopeInAbbr     = 0 "do not show namespace in pop-up
+    let OmniCpp_ShowPrototypeInAbbr = 1 "show prototype in pop-up
+    let OmniCpp_ShowAccess          = 1 "show access in pop-up
+    let OmniCpp_SelectFirstItem     = 1 "select first item in pop-up
+endif
+
+set wildmode=full
+set wildmenu
+set completeopt=menuone,menu,preview
+
+function! Rand()
+    return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
+endfunction 
+
+nnoremap <leader>n a<C-R>=Rand()<CR><SPACE><SPACE><ESC>
+
+autocmd CursorMoved * let s:VisualMode = mode()
+
+command! -range=0 VTest call FuncName(<count>, <line1>, <line2>)
+
+function! FuncName(count, firstLine, lastLine)
+
+    echomsg 'count line = ['.a:count.']'
+    echomsg 'first line = ['.a:firstLine.']'
+    echomsg 'last line = ['.a:lastLine.']'
+
+    echomsg 'visual first line = ['.line("'<").']'.' pos = ['.string(getpos("'<")).']'
+    echomsg 'visual last line = ['.line("'>").']' .' pos = ['.string(getpos("'>")).']'
+
+    echomsg 'number of lines in the file = ['.line('$').']'
+
+    if a:count == 0 "no range given 
+        echomsg "do stuff for no given range"
+
+    else
+        if s:VisualMode  =~ '\vV|v|' "range was given
+            echomsg "do stuff for visual selection"
+        else 
+            echomsg "do stuff for normal range"
+        endif
+    endif
+endfunction
+
+function! RangeTest(firstLine, lastLine, count, bang) range
+
+    echomsg 'bang = ['.a:bang.']'
+    echomsg 'count line = ['.a:count.']'
+    echomsg 'first line = ['.a:firstLine.']'
+    echomsg 'last line = ['.a:lastLine.']'
+
+    echomsg 'visual first line = ['.line("'<").']'.' pos = ['.string(getpos("'<")).']'
+    echomsg 'visual last line = ['.line("'>").']' .' pos = ['.string(getpos("'>")).']'
+
+    echomsg 'number of lines in the file = ['.line('$').']'
+
+endfunction
+
+" command! -range Test  <line1>,<line2> call RangeTest()
+
+command! -range=-0 -bang Test  call RangeTest(<line1>,<line2>,<count>,"<bang>")
+
+" xnoremap : :<C-W>let g:cameFromVisual = 1<CR>:echomsg 'from v ='.g:cameFromVisual<CR>gv:
+" nnoremap : :<C-W>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}
+" vi:textwidth=78
+" vim:foldmethod=marker

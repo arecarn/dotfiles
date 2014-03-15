@@ -1,0 +1,139 @@
+"RYAN CARNEY VIMRC                                                         {{{ 
+"=============================================================================
+"Makes Vim not compatible with vi and vi is old so that's a good thing
+"This must be first, because it changes other options as a side effect.
+"it may not even be necessary because just having a vimrc defaults it to on as 
+"far as I know.
+set nocompatible 
+cd $HOME "start in home directory, this is just here for convince 
+"==========================================================================}}}
+"OPERATING SYSTEM VARIABLES                                                {{{
+"=============================================================================
+let s:running_windows = has("win16") || has("win32") || has("win64")
+
+"==========================================================================}}}
+"PLUGINS MANAGMENT                                                         {{{
+"=============================================================================
+"Nebundle================================================================={{{2
+if has('vim_starting')
+    if s:running_windows
+        set runtimepath+=$HOME/vimfiles/bundle/neobundle.vim/
+    else
+        set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
+    endif
+endif
+if s:running_windows
+    call neobundle#rc(expand("$HOME/vimfiles/bundle/"))
+else
+    call neobundle#rc(expand('$HOME/.vim/bundle/'))
+endif 
+" Let NeoBundle manage NeoBundle
+NeoBundleFetch 'Shougo/neobundle.vim'
+"=========================================================================}}}2
+"Vimproc=================================================================={{{2
+NeoBundle 'Shougo/vimproc', {
+            \ 'build' : {
+            \     'windows' : 'make -f make_mingw32.mak',
+            \     'cygwin' : 'make -f make_cygwin.mak',
+            \     'mac' : 'make -f make_mac.mak',
+            \     'unix' : 'make -f make_unix.mak',
+            \    },
+            \ }
+"=========================================================================}}}2
+NeoBundleCheck
+
+"==========================================================================}}}
+"FILE TYPE SETTINGS                                                        {{{
+"=============================================================================
+filetype plugin indent on 
+syntax enable " allow syntax highlighting
+
+set number         " shows line numbers
+set relativenumber " show line numbers relative to curosr
+set showcmd        " display incomplete commands
+
+"}}}==========================================================================
+"Visual Options                                                            {{{
+"=============================================================================
+colorscheme desert 
+set background=dark 
+set laststatus=2 "[2]allways show the status line [1]one ore more [0]never
+
+"==========================================================================}}}
+"CURSOR SETTINGS                                                           {{{
+"=============================================================================
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+    set mouse=a
+endif
+
+"==========================================================================}}}
+"BACKUP & SWAP                                                               {{{
+"=============================================================================
+set nobackup "disable backup files
+set noswapfile
+
+"==========================================================================}}}
+"LINE WRAPING                                                              {{{
+"=============================================================================
+set nowrap "When on, lines longer than the width of the window will wrap and
+"displaying continues on the next line.
+set linebreak " wrap on complete words
+set textwidth=0 "max length of line to be inserted. 0 will not break on space
+
+"==========================================================================}}}
+"SPELLING - THESAURUS                                                      {{{
+"============================================================================
+set spell
+set spelllang=en_us
+""=========================================================================}}}
+"CUSTOM MAPPINGS                                                           {{{1
+"=============================================================================
+noremap <C-l> :set hlsearch!<CR><C-l>
+"Goto vimrc================================================================{{{
+if s:running_windows
+    command! EditVimrcTab tabe $HOME/Dropbox/vim/vimrc.vim
+    command! EditVimrc e $HOME/Dropbox/vim/vimrc.vim
+else
+    command! EditVimrcTab tabe $HOME/Dropbox/vim/vimrc.vim
+    command! EditVimrc e $HOME/Dropbox/vim/vimrc.vim
+endif
+cabbrev evt EditVimrcTab 
+cabbrev ev EditVimrc
+"==========================================================================}}}
+"Goto Dropbox=============================================================={{{
+command! EditDropBox e $HOME/Dropbox
+cabbrev ed EditDropBox
+command! EditDropBoxTab tabe $HOME/Dropbox
+cabbrev edt EditDropBoxTab
+"==========================================================================}}}
+"typing <leader>cd normal mode will change your current directory to match the
+"file you are editing for the window only
+nnoremap <leader>cd  :lcd %:p:h<cr>:pwd<cr>
+"==========================================================================}}}
+"TABS - INDENTING                                                          {{{
+"=============================================================================
+set expandtab     " causes spaces to be used instead of tabs
+set tabstop=4     " sets how big tabs are.
+set shiftwidth=4  " how much space to add or remove using indent command
+set softtabstop=4 " fine tunes the amount of white space to be inserted
+set smarttab      " When on, a <Tab> in front of a line inserts blanks
+" according  to  'shiftwidth'.  'tabstop' or 'softtabstop' is used in  other
+" places
+set autoindent    " auto-indenting on
+
+"==========================================================================}}}
+"SEARCHING                                                                 {{{
+"=============================================================================
+set incsearch  " do incremental searching
+set ignorecase " ignore case while searching
+set smartcase  " overrides ignore  case when caps in search
+set hlsearch " highlight last search term
+
+"==========================================================================}}}
+"GENERAL BEHAVIOR                                                          {{{
+"=============================================================================
+set clipboard=unnamed
+set backspace=indent,eol,start "backspacing over everything in insert mode
+
+"==========================================================================}}}

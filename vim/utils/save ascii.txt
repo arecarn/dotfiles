@@ -1,0 +1,108 @@
+| Dec | Hex | Symbol | Description
+| 32  | 20  |        | space
+| 33  | 21  | !      | exclamation point
+| 34  | 22  | "      | double quotes
+| 35  | 23  | #      | number sign
+| 36  | 24  | $      | dollar sign
+| 37  | 25  | %      | percent sign
+| 38  | 26  | &      | ampersand
+| 39  | 27  | '      | single quote
+| 40  | 28  | (      | opening parenthesis
+| 41  | 29  | )      | closing parenthesis
+| 42  | 2A  | *      | asterisk
+| 43  | 2B  | +      | plus sign
+| 44  | 2C  | ,      | comma
+| 45  | 2D  | -      | minus sign - hyphen
+| 46  | 2E  | .      | period
+| 47  | 2F  | /      | slash
+
+
+| Dec | Hex | Symbol | Description
+| 48  | 30  | 0      | zero
+| 49  | 31  | 1      | one
+| 50  | 32  | 2      | two
+| 51  | 33  | 3      | three
+| 52  | 34  | 4      | four
+| 53  | 35  | 5      | five
+| 54  | 36  | 6      | six
+| 55  | 37  | 7      | seven
+| 56  | 38  | 8      | eight
+| 57  | 39  | 9      | nine
+| 58  | 3A  | :      | colon
+| 59  | 3B  | ;      | semicolon
+| 60  | 3C  | <      | less than sign
+| 61  | 3D  | =      | equal sign
+| 62  | 3E  | >      | greater than sign
+| 63  | 3F  | ?      | question mark
+
+| Dec | Hex | Symbol | Description
+| 64  | 40  | @      |
+| 65  | 41  | A      |
+| 66  | 42  | B      |
+| 67  | 43  | C      |
+| 68  | 44  | D      |
+| 69  | 45  | E      |
+| 70  | 46  | F      |
+| 71  | 47  | G      |
+| 72  | 48  | H      |
+| 73  | 49  | I      |
+| 74  | 4A  | J      |
+| 75  | 4B  | K      |
+| 76  | 4C  | L      |
+| 77  | 4D  | M      |
+| 78  | 4E  | N      |
+| 79  | 4F  | O      |
+
+| Dec | Hex | Symbol | Description
+| 80  | 50  | P      |
+| 81  | 51  | Q      |
+| 82  | 52  | R      |
+| 83  | 53  | S      |
+| 84  | 54  | T      |
+| 85  | 55  | U      |
+| 86  | 56  | V      |
+| 87  | 57  | W      |
+| 88  | 58  | X      |
+| 89  | 59  | Y      |
+| 90  | 5A  | Z      |
+| 91  | 5B  | [      | opening bracket
+| 92  | 5C  | \      | backslash
+| 93  | 5D  | ]      | closing bracket
+| 94  | 5E  | ^      | caret - circumflex
+| 95  | 5F  | _      | underscore
+
+| Dec | Hex | Symbol | Description
+| 96  | 60  | `      | grave accent
+| 97  | 61  | a      |
+| 98  | 62  | b      |
+| 99  | 63  | c      |
+| 100 | 64  | d      |
+| 101 | 65  | e      |
+| 102 | 66  | f      |
+| 103 | 67  | g      |
+| 104 | 68  | h      |
+| 105 | 69  | i      |
+| 106 | 6A  | j      |
+| 107 | 6B  | k      |
+| 108 | 6C  | l      |
+| 109 | 6D  | m      |
+| 110 | 6E  | n      |
+| 111 | 6F  | o      |
+
+| Dec | Hex | Symbol | Description
+| 112 | 70  | p      |
+| 113 | 71  | q      |
+| 114 | 72  | r      |
+| 115 | 73  | s      |
+| 116 | 74  | t      |
+| 117 | 75  | u      |
+| 118 | 76  | v      |
+| 119 | 77  | w      |
+| 120 | 78  | x      |
+| 121 | 79  | y      |
+| 122 | 7A  | z      |
+| 123 | 7B  | {      | opening brace
+| 124 | 7C  | |      | vertical bar
+| 125 | 7D  | }      | closing brace
+| 126 | 7E  | ~      | equivalency sign - tilde
+| 127 | 7F  | DEL    |

@@ -99,6 +99,7 @@ bindkey '^E' _expand_alias
 alias tmux='tmux -2'
 alias e='vim'
 alias trash='~/dotfiles/mybin/scripts/trash.sh'
+alias minivim='vim -u ~/dotfiles/vim/minivimrc'
 
 # geeknote aliases/templates
 ##################

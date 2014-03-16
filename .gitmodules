@@ -1,0 +1,6 @@
+[submodule "mybin/installs/geeknote"]
+	path = mybin/installs/geeknote
+	url = git://github.com/VitaliyRodnenko/geeknote.git
+[submodule "oh-my-zsh/custom/plugins/geeknote"]
+	path = oh-my-zsh/custom/plugins/geeknote
+	url = https://github.com/s7anley/zsh-geeknote.git

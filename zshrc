@@ -1,5 +1,4 @@
 # Path to your oh-my-zsh configuration.
-
 ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
@@ -65,7 +64,7 @@ setopt autocd
 
 # THE FOLLOWING LINES WERE ADDED BY COMPINSTALL
 ################################################################################
-zstyle :compinstall filename '/evtfs/home/rcarney/.zshrc'
+zstyle :compinstall filename '~/.zshrc'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
@@ -82,17 +81,13 @@ export KEYTIMEOUT=1
 # ctrl-p ctrl-n history navigation
 bindkey '^P' up-history
 bindkey '^N' down-history
-
 # backspace and ^h working even after returning from command mode
 bindkey '^?' backward-delete-char
 bindkey '^H' backward-delete-char
-
 # ctrl-w removed word backwards
 bindkey '^W' backward-kill-word
-
 # ctrl-r starts searching history backward
 bindkey '^R' history-incremental-search-backward
-
 bindkey '^E' _expand_alias
 
 
@@ -103,6 +98,7 @@ bindkey '^E' _expand_alias
 ################################################################################
 alias tmux='tmux -2'
 alias e='vim'
+alias trash='~/dotfiles/mybin/scripts/trash.sh'
 
 # geeknote aliases/templates
 ##################
@@ -111,8 +107,23 @@ alias gnc='geeknote create -c " " -tg "@" -t ""'
 # END ALIASES
 ################################################################################
 
-# export MANPATH="/usr/local/man:$MANPATH"
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
+export MANPATH="/usr/local/man:$MANPATH"
+export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # ...
+export PATH=":/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # ...
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+        # ...
+elif [[ "$OSTYPE" == "win32" ]]; then
+        # ...
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        # ...
+else
+        # Unknown.
+fi
 
 # EDITOR
 ################################################################################
@@ -121,4 +132,4 @@ export EDITOR='vim'
 
 # LOCAL CONFIG
 ################################################################################
-source ~/.zshrcLocal
+source ~/.local.zsh

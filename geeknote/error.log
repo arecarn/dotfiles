@@ -1,5 +1,0 @@
-2014-03-05 10:46:26,311 geeknote wrapper 68 : Error: createNote : EDAMUserException(errorCode=11, parameter='Premature end of file.')
-2014-03-06 14:03:00,378 geeknote wrapper 68 : Error: findNotebooks : [Errno 104] Connection reset by peer
-2014-03-06 14:03:50,854 geeknote wrapper 68 : Error: findNotebooks : 
-2014-03-06 14:08:13,705 geeknote wrapper 68 : Error: updateNotebook : EDAMUserException(errorCode=10, parameter='Notebook.name')
-2014-03-06 14:08:44,958 geeknote main 869 : App error: edit() takes exactly 3 arguments (2 given)

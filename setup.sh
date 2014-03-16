@@ -8,8 +8,7 @@
 ########## Variables
 dir=~/dotfiles                    # dotfiles directory
 olddir=~/dotfiles_old             # old dotfiles backup directory
-files="gitconfig zshrc oh-my-zsh geeknote vim" # list of files/folders to symlink in homedir
-noDotFiles="edit-server"          # list of files/folders to symlink in homedir without a dot
+files="gitconfig zshrc oh-my-zsh vim" # list of files/folders to symlink in homedir
 
 ############################
 # Code

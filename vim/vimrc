@@ -601,7 +601,7 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
-nnoremap gz= ea<C-X><C-S>
+nnoremap gs z=1<CR><CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TEMPLATE MAPPINGS                                                           {{{

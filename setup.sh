@@ -6,8 +6,8 @@
 ############################
 
 ########## Variables
-dir=~/dotfiles                    # dotfiles directory
-olddir=~/dotfiles_old             # old dotfiles backup directory
+dir=~/dotfiles                             # dotfiles directory
+olddir=~/dotfiles_old                      # old dotfiles backup directory
 files="gitconfig zshrc oh-my-zsh vim" # list of files/folders to symlink in homedir
 
 ############################
@@ -30,6 +30,10 @@ for file in $noDotFiles; do
     echo "Creating symlink to $file in home directory."
     ln -s $dir/$file ~/$file
 done
+echo "...done"
+
+echo "Moving custom zsh plugins into place"
+ln -s $dir/dotfiles/oh-my-zsh-plugins $dir/oh-my-zsh/custom/plugins
 echo "...done"
 
 # run Vim setup

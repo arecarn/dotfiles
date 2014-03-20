@@ -75,7 +75,7 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 " <CR>: close popup
-inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+inoremap <Expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 " Enable heavy omni completion.
 if !exists('g:neocomplcache_omni_patterns')
     let g:neocomplcache_omni_patterns = {}
@@ -86,45 +86,15 @@ let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 "when you press \neo neocomplchache is enabled and either locked or unlocked
-nnoremap <leader>neo :NeoComplCacheToggle<CR>
+nnoremap <Leader>neo :NeoComplCacheToggle<CR>
 
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/neosnippet.vim'
 NeoBundle 'Shougo/neosnippet-snippets'
 " Tell Neosnippet about the other snippets
 let g:neosnippet#snippets_directory=s:vimpath.'/utils/snippets'
-
-NeoBundle 't9md/vim-choosewin'
-nmap <leader>cw <Plug>(choosewin)
-let g:choosewin_overlay_enable = 1
-let g:choosewin_overlay_clear_multibyte = 1
-
-NeoBundle 't9md/vim-textmanip'
-xmap <Space>d <Plug>(textmanip-duplicate-down)
-nmap <Space>d <Plug>(textmanip-duplicate-down)
-xmap <Space>D <Plug>(textmanip-duplicate-up)
-nmap <Space>D <Plug>(textmanip-duplicate-up)
-
-xmap <C-j> <Plug>(textmanip-move-down)
-xmap <C-k> <Plug>(textmanip-move-up)
-xmap <C-h> <Plug>(textmanip-move-left)
-xmap <C-l> <Plug>(textmanip-move-right)
-
-" toggle insert/replace with <F10>
-nmap <leader>mt <Plug>(textmanip-toggle-mode)
-xmap <leader>mt <Plug>(textmanip-toggle-mode)
-NeoBundle 't9md/vim-quickhl'
-nmap <Space>h <Plug>(quickhl-manual-this)
-xmap <Space>h <Plug>(quickhl-manual-this)
-nmap <Space>H <Plug>(quickhl-manual-reset)
-xmap <Space>H <Plug>(quickhl-manual-reset)
-
-NeoBundle 'airblade/vim-gitgutter'
-highlight link GitGutterAdd          DiffAdd 
-highlight link GitGutterChange       DiffChange
-highlight link GitGutterDelete       DiffDelete
-highlight link GitGutterChangeDelete DiffDelete
-
+NeoBundle 'Shougo/neosnippet.vim'
+"Neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "CommentLine""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
 function! CommentLine(char, width)
     let b:multiline_str_start = matchstr(&commentstring, '.\+\ze%s.*')
@@ -219,10 +189,10 @@ endfunction
 "xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+imap <Expr><TAB> neosnippet#expandable_or_jumpable() ?
             \ "\<Plug>(neosnippet_expand_or_jump)"
             \: pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+smap <Expr><TAB> neosnippet#expandable_or_jumpable() ?
             \ "\<Plug>(neosnippet_expand_or_jump)"
             \: "\<TAB>"
 
@@ -255,29 +225,30 @@ call unite#custom_source('file_rec,file_rec/async,file_mru,file,grep',
             \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$' 
             \ ], '\|'))
 
-nnoremap <leader>f :Unite -start-insert file file_rec<CR>
-nnoremap <leader>y :Unite history/yank<CR>
-nnoremap <leader>m :Unite output:message<CR>
-nnoremap <leader>r :Unite -start-insert file_mru directory_mru bookmark <CR>
-nnoremap <leader>b :Unite -start-insert buffer<CR>
+nnoremap <Leader>f :Unite -start-insert file file_rec<CR>
+nnoremap <Leader>y :Unite history/yank<CR>
+nnoremap <Leader>m :Unite output:message<CR>
+nnoremap <Leader>r :Unite -start-insert file_mru directory_mru bookmark <CR>
+nnoremap <Leader>b :Unite -start-insert buffer<CR>
 nnoremap g/ :Unite -start-insert outline line<CR>
-nnoremap <leader>g :Unite -start-insert -auto-preview grep<CR>
+nnoremap <Leader>g :Unite -start-insert -auto-preview grep<CR>
 
 autocmd FileType unite call s:unite_settings()
 
 function! s:unite_settings()
-    imap <silent><buffer><expr> <C-s> unite#do_action('split')
-    imap <silent><buffer><expr> <C-v> unite#do_action('vsplit')
-    imap <silent><buffer><expr> <C-t> unite#do_action('tabopen')
-    imap <silent><buffer><expr> <C-g>  unite#do_action('goto')
+    imap <Silent><Buffer><Expr> <C-s> unite#do_action('split')
+    imap <Silent><Buffer><Expr> <C-v> unite#do_action('vsplit')
+    imap <Silent><Buffer><Expr> <C-t> unite#do_action('tabopen')
+    imap <Silent><Buffer><Expr> <C-g>  unite#do_action('goto')
 endfunction
 
 NeoBundle 'Shougo/unite-ssh'
 NeoBundle 'Shougo/unite-outline'
 NeoBundle 'Shougo/unite-session'
+NeoBundle 'Shougo/neomru.vim'
 let g:unite_source_session_enable_auto_save = 1
-nnoremap <leader>ss :UniteSessionSave<space>
-nnoremap <leader>sl :Unite session<CR>
+nnoremap <Leader>ss :UniteSessionSave<Space>
+nnoremap <Leader>sl :Unite session<CR>
 
 " " Load session automatically.
 " autocmd VimEnter * UniteSessionLoad
@@ -292,15 +263,15 @@ let g:loaded_netrw        = 1 " Disable netrw
 let g:loaded_netrwPlugin  = 1 " Disable netrw
 let g:vimfiler_as_default_explorer = 1	"make vimfiler the default explorer	
 
-command! -nargs=* Explore :VimFilerBufferDir <args>
-command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <args>
-command! -nargs=* Vexplore :VimFilerBufferDir -split  <args>
-command! -nargs=* Texplore :VimFilerBufferDir -tab <args>
+command! -nargs=* Explore :VimFilerBufferDir <Args>
+command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>
+command! -nargs=* Vexplore :VimFilerBufferDir -split  <Args>
+command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/vimshell.vim'
-nnoremap <leader>vs :VimShellBufferDir -popup -toggle<CR>
+nnoremap <Leader>vs :VimShellBufferDir -popup -toggle<CR>
 let g:vimshell_vimshrc_path = s:vimpath.'/local_utils/vimshell/'
 
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -313,23 +284,23 @@ call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 "Crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 " NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/data/code/VimScript/myplugins'} 
 NeoBundle 'arecarn/crunch', 'Dev'
-nmap <Leader>ce <plug>CrunchCrunchBlockExc
+nmap <Leader>ce <Plug>CrunchCrunchBlockExc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'godlygeek/tabular'
 "following filetype commands align linewise comments 
-autocmd FileType vim noremap <buffer> <leader>ac :Tabularize/"<CR>
-autocmd FileType tex noremap <buffer> <leader>ac :Tabularize/%<CR>
-autocmd FileType c,js noremap <buffer> <leader>ac :Tabularize/\/\/<CR>
-"map <leader>t to open tabularize
-nnoremap <leader>tz :Tabularize/
-xnoremap <leader>tz :Tabularize/
+autocmd FileType vim noremap <Buffer> <Leader>ac :Tabularize/"<CR>
+autocmd FileType tex noremap <Buffer> <Leader>ac :Tabularize/%<CR>
+autocmd FileType c,js noremap <Buffer> <Leader>ac :Tabularize/\/\/<CR>
+"map <Leader>t to open tabularize
+nnoremap <Leader>tz :Tabularize/
+xnoremap <Leader>tz :Tabularize/
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "ctrlp""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'kien/ctrlp.vim'
-let g:ctrlp_map = '<c-p>'
+let g:ctrlp_map = '<C-p>'
 let g:ctrlp_cmd = 'CtrlPLastMode'
 let g:ctrlp_extensions = ['buffertag', 'tag', 'line', 'dir']  
 
@@ -380,16 +351,53 @@ call textobj#user#plugin('num',
 
 NeoBundle 'coderifous/textobj-word-column.vim' "not textobj Dependant
 "text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 't9md/vim-textmanip'
+xmap <Space>d <Plug>(textmanip-duplicate-down)
+nmap <Space>d <Plug>(textmanip-duplicate-down)
+xmap <Space>D <Plug>(textmanip-duplicate-up)
+nmap <Space>D <Plug>(textmanip-duplicate-up)
+
+xmap <C-j> <Plug>(textmanip-move-down)
+xmap <C-k> <Plug>(textmanip-move-up)
+xmap <C-h> <Plug>(textmanip-move-left)
+xmap <C-l> <Plug>(textmanip-move-right)
+
+" toggle insert/replace with <F10>
+nmap <Leader>mt <Plug>(textmanip-toggle-mode)
+xmap <Leader>mt <Plug>(textmanip-toggle-mode)
+"textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 't9md/vim-quickhl'
+nmap <Space>h <Plug>(quickhl-manual-this)
+xmap <Space>h <Plug>(quickhl-manual-this)
+nmap <Space>H <Plug>(quickhl-manual-reset)
+xmap <Space>H <Plug>(quickhl-manual-reset)
+"quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 't9md/vim-choosewin'
+nmap gt? <Plug>(choosewin)
+let g:choosewin_overlay_enable = 1
+let g:choosewin_overlay_clear_multibyte = 1
+"choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'airblade/vim-gitgutter'
+highlight link GitGutterAdd          DiffAdd 
+highlight link GitGutterChange       DiffChange
+highlight link GitGutterDelete       DiffDelete
+highlight link GitGutterChangeDelete DiffDelete
+let gittgutter_realtime = 1
+let g:gitgutter_eager = 0
+"gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'TeTrIs.vim' " 0.1   A tetris game in pure vim
 NeoBundle 'altercation/vim-colors-solarized'
-let g:solarized_termcolors=256 "make solarized work in terminal with 256 colors
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'junegunn/seoul256.vim' " a low-contrast Vim color scheme based on Seoul Colors
 NeoBundle 'merlinrebrovic/focus.vim' " A Vim plugin that removes clutter and makes working on a widescreen monitor enjoyable.
 NeoBundle 'fugitive.vim' " 1.0   A Git wrapper so awesome, it should be illegal
 NeoBundle 'gregsexton/VimCalc'
 NeoBundle 'mbbill/undotree' " Display your undo history in a graph.
-nnoremap <leader>ut :UndotreeToggle<CR>
+nnoremap <Leader>ut :UndotreeToggle<CR>
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-markdown'
 NeoBundle 'tpope/vim-repeat'
@@ -405,17 +413,18 @@ NeoBundle 'dhruvasagar/vim-table-mode' " VIM Table Mode for blazing fast instant
 let g:table_mode_separator = '|'
 NeoBundle 'roman/golden-ratio' " Automatic resizing of Vim windows to the golden ratio 
 let g:golden_ratio_autocommand = 0 "disable golden ratio autocmd
-nnoremap <C-W>gr :GoldenRatioToggle<CR>
+nnoremap <C-w>gr :GoldenRatioToggle<CR>
 NeoBundle 'inkarkat/VimTAP' "Test Anything Protocol for vim
 NeoBundle 'inkarkat/runVimTests' " a testing framework for Vim
 NeoBundle 'LanguageTool' " a testing framework for Vim
+"TODO make system independent 18 Mar 2014
 let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.jar'
 NeoBundle 'tlvince/vim-compiler-python' " A very basic python compiler script.
 NeoBundle 'justinmk/vim-sneak'
 NeoBundle 'sk1418/HowMuch'
 NeoBundle 'w0ng/vim-hybrid'
-" NeoBundle 'kakkyz81/evervim'
 NeoBundle 'hsitz/VimOrganizer'
+NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks of code
 
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
 NeoBundleCheck
@@ -437,15 +446,29 @@ set cursorline     "highlight the current line
 set number         " shows line numbers
 set relativenumber " show line numbers relative to curosr
 set showcmd        " display incomplete commands
-"colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-set background=dark 
+set lazyredraw
+set laststatus=2 "allways show the status line
+"Maximize Window on Startup
+if has ("gui_running") 
+    if has("autocmd") && s:hasWindows
+        augroup windowsgui:
+            autocmd GUIEnter * simalt ~x " maximize in windows
+        augroup END
+    else
+        set lines=99
+        set columns=99
+    endif 
+endif
 
-if !empty($CONEMUBUILD) 
-    set term=xterm
-    set t_Co=256 " make colors work on cygwin minty
-    let &t_AB="\e[48;5;%dm"
-    let &t_AF="\e[38;5;%dm" 
-endif 
+"colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+
+set background=dark 
+if has ("gui_running")
+    colorscheme solarized 
+    "colorscheme gruvbox
+else
+    colorscheme solarized 
+endif
 
 "colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "status line""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -453,7 +476,6 @@ endif
 hi User1 ctermbg=white ctermfg=black guibg=white guifg=black
 hi User2 ctermbg=grey ctermfg=white  guibg=grey   guifg=white
 hi User3 ctermbg=white  ctermfg=green guibg=white  guifg=green
-
 
 set statusline=   " clear the statusline for when vimrc is reloaded
 set statusline+=%1*
@@ -468,10 +490,8 @@ set statusline+=%=                           " right align
 set statusline+=%{strftime('%l:%M%P\ %F',getftime(expand('%')))}
 set statusline+=%1*                                       " right align
 set statusline+=[\ %-0.0(LN:%l\ COL:%c%V%)]\ %<[%P]        " offset
-" set statusline+=[%{VimBuddy()}]
 set statusline+=%*
 
-set laststatus=2 "[2]allways show the status line [1]one ore more [0]never
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "tab line"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -513,36 +533,25 @@ if exists("+showtabline")
     set tabline=
     set tabline=%!MyTabLine() 
 endif 
-"status line""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"
-
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "gui settings"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 if has ("gui_running")
-    if has ("autocmd") && s:hasWindows
-        augroup windowsgui:
-            autocmd GUIEnter * simalt ~x " maximize in windows
-        augroup END
-    endif
+    "Make GVim more like Terminal Vim
     set guioptions-=T  "remove toolbar
     set guioptions-=r  "remove right-hand scroll bar
     set guioptions-=l "remove right-hand scroll bar
     set guioptions=c  "makes dialogs boxes appear like they do in console vim
-    " colorscheme solarized 
-    colorscheme gruvbox
 
+    "Set Font
     if s:hasWindows
         set guifont=DejaVu_Sans_Mono:h10:cANSI
         "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
     elseif has('mac')
         set guifont=DejaVu\ Sans\ Mono:h12
         " set guifont=Monaco:h12
-    elseif has('unix') && !has('mac')
-        set guifont=DejaVu\ Sans\ Mono\ 12
+    elseif has('unix') && !has('mac') "linux
+        set guifont=DejaVu\ Sans\ Mono\ 10
     endif
-else
-    set t_Co=256
-    set lazyredraw
-    colorscheme solarized
 endif "gui_running
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -626,40 +635,45 @@ set previewheight=7 "how tall the preview window is
 
 "Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "cursor moves as expected for wrapped lines
-nnoremap <silent> k gk
-nnoremap <silent> j gj
-nnoremap <silent> gk k
-nnoremap <silent> gj j
-nnoremap * :let b:PlugView=winsaveview()<CR>*N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
-nnoremap g* :let b:PlugView=winsaveview()<CR>g*N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
-nnoremap # :let b:PlugView=winsaveview()<CR>#N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
-nnoremap g# :let b:PlugView=winsaveview()<CR>g#N:set hlsearch<cr>:call winrestview(b:PlugView)<CR>
+nnoremap <Silent> k gk
+nnoremap <Silent> j gj
+nnoremap <Silent> gk k
+nnoremap <Silent> gj j
+nnoremap * :let b:PlugView=winsaveview()<CR>*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
+nnoremap g* :let b:PlugView=winsaveview()<CR>g*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
+nnoremap # :let b:PlugView=winsaveview()<CR>#N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
+nnoremap g# :let b:PlugView=winsaveview()<CR>g#N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
 
 "map arrow keys to move around different windows
-nnoremap  <F12> 2<C-W>>
-nnoremap  <F9>  2<C-W><
-nnoremap  <F11> <C-W>-
+nnoremap  <F12> 2<C-w>>
+nnoremap  <F9>  2<C-w><
+nnoremap  <F11> <C-w>-
 nnoremap  <F10> <C-w>+
 
-nnoremap gh <C-W>h
-nnoremap gj <C-W>j
-nnoremap gk <C-W>k
+nnoremap gh <C-w>h
+nnoremap gj <C-w>j
+nnoremap gk <C-w>k
 nnoremap gl <C-w>l
+
+nnoremap gH <C-w>H
+nnoremap gJ <C-w>J
+nnoremap gK <C-w>K
+nnoremap gL <C-w>L
 "Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "CASE CHANGE BINDINGS"""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "change word to uppercase while in insert mode
-inoremap <leader>U <ESC>bgUawgi
+inoremap <Leader>U <ESC>bgUawgi
 "change word to lowercase while in inset mode then i do A word 
-inoremap <leader>u <ESC>bguawgi
+inoremap <Leader>u <ESC>bguawgi
 "swap case of the first letter in a word while typing
-inoremap <leader>` <ESC>B~gi
+inoremap <Leader>` <ESC>B~gi
 "swap case of the first letter in a word under the cursor
-nnoremap <leader>` viwo<ESC>~h
+nnoremap <Leader>` viwo<ESC>~h
 "CASE CHANGE BINGINGS"""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "
 " map  \ss for spell check toggling
-nnoremap <leader>sp :setlocal spell!<CR>:set spell?<CR>
+nnoremap <Leader>sp :setlocal spell!<CR>:set spell?<CR>
 " don't move when searching for word under the cursor, and always highlight 
 " Toggle virtualedit
 set virtualedit=block
@@ -670,7 +684,7 @@ function! Toggle_virtualedit()
         set virtualedit=all
     endif
 endfunction
-nnoremap <leader>ve :call Toggle_virtualedit()<CR>:set virtualedit?<CR>
+nnoremap <Leader>ve :call Toggle_virtualedit()<CR>:set virtualedit?<CR>
 function! TextWidthToggle(textWidth)
     if &textwidth!=a:textWidth 
         execute "setlocal textwidth=".a:textWidth
@@ -681,56 +695,68 @@ function! TextWidthToggle(textWidth)
     endif
 endfunction
 
-nnoremap <leader>tw :call TextWidthToggle(80)<CR>
+nnoremap <Leader>tw :call TextWidthToggle(80)<CR>
 "toggles wrap when \wr is entered
-nnoremap <leader>wr <ESC>:setlocal wrap!<CR>:set wrap?<CR>
+nnoremap <Leader>wr <ESC>:setlocal wrap!<CR>:set wrap?<CR>
 "CTRL-l redraws the screen and removes any search highlighting.
-nnoremap <space>l :set hlsearch!<CR><C-l>
-"TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+nnoremap <C-l> :set hlsearch!<CR><C-l>
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
-command! Evimrc :tabe $MYVIMRC
-command! Eref :sp ~/Dropbox/data/docs/reference/
-command! Etemp :sp ~/Dropbox/temp
+"update diff with a keymapping
+nnoremap du :diffupdate<CR>
 
-
+"navigate buffers easier
 nnoremap ]b :bn<CR>
 nnoremap [b :bp<CR>
 
 " make more undos possible after leaving insert mode 
-inoremap <c-u> <c-g>u<c-u>
-inoremap <c-w> <c-g>u<C-W>
-inoremap <BS> <c-g>u<BS>
-inoremap <CR> <c-g>u<CR>
-inoremap <del> <c-g>u<del>
-inoremap <END> <c-g>u<END>
+inoremap <C-u> <C-g>u<C-u>
+inoremap <C-w> <C-g>u<C-w>
+inoremap <BS> <C-g>u<BS>
+inoremap <CR> <C-g>u<CR>
+inoremap <Del> <C-g>u<Del>
+inoremap <END> <C-g>u<END>
+
+
 
 "search and replace a word
-nnoremap <leader>rw :%s/\<<C-R><C-W>\>//gc<left><left><left>
-nnoremap <leader>rW :%s/\<<C-R><C-A>\>//gc<left><left><left>
-nnoremap <leader>rv :%s/\<<C-R><C-A>\>//gc<left><left><left>
+nnoremap <Leader>rw :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
+nnoremap <Leader>rW :%s/\<<C-r><C-a>\>//gc<Left><Left><Left>
 
+"Rebind Q to reformat without moving cursor
 nnoremap Q gw
 xnoremap Q gw
 
+"Yank till end of line 
 noremap Y y$
+
 nnoremap g= :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
             \ <CR>:echo "file indented"<CR>
 nnoremap gy :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
             \ <CR>:echo "file yanked"<CR>
 
-nnoremap <leader>lcd :lcd %:h<cr>:pwd<cr>
-nnoremap <leader>cd :cd! %:h<cr>:pwd<cr>
+nnoremap <Leader>lcd :lcd %:h<Cr>:pwd<Cr>
+nnoremap <Leader>cd :cd! %:h<Cr>:pwd<Cr>
 
-nnoremap <leader>gf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
-nnoremap <leader>gd :let @f=expand('%:p:h')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap <Leader>gf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap <Leader>gd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
 
-command! -nargs=* Scratch vs ~/Dropbox/temp/_<args>
+
+cnoremap <C-j> <DOWN>
+cnoremap <C-k> <UP>
+cnoremap <C-h> <LEFT>
+cnoremap <C-l> <RIGHT>
+cnoremap <C-a> <HOME>
+cnoremap <C-e> <END>
+
+cabbrev %f <C-r>=expand('%:p')<CR>
+cabbrev %d <C-r>=expand('%:h')<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SCRIPTS                                                                      {{{
+"SCRIPTS                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "reverse the selected lines (TODO don't work for line at the top of a file) 
-xnoremap gr <ESC>'<kmr'>:'r+1,.g/^/m 'r<CR>
+xnoremap gr <ESC>'<Kmr'>:'r+1,.g/^/m 'r<CR>
 "Checksum"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 command! Checksum call Checksum()
 function! Checksum()
@@ -741,7 +767,7 @@ function! Checksum()
     execute "normal!" . numOfChars . "@q"
     s/+  $//g
     normal! yyp
-    execute "normal! ^v$h\"edi\<c-r>=\<c-r>e\<cr>"
+    execute "normal! ^v$h\"edi\<C-r>=\<C-r>e\<Cr>"
     normal! yyp
     s/\d\+/\=printf('0x%x', submatch(0))
 endfunction
@@ -779,7 +805,7 @@ function! FileExplore(file)
         let &shellslash = s:stored_shellslash
     endif
 endfunc
-command!-nargs=* -complete=file Fexplore call FileExplore('<args>') " or whatever you like
+command!-nargs=* -complete=file Fexplore call FileExplore('<Args>') " or whatever you like
 
 "FileExplore""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "PreviewWord""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -794,7 +820,7 @@ function! PreviewWord()
     if &previewwindow			" don't do this in the preview window
         return
     endif
-    let w = expand("<cword>")		" get the word under cursor
+    let w = expand("<Cword>")		" get the word under cursor
     if w =~ '\a'			" if the word contains a letter
 
         " Delete any existing highlight before showing another tag
@@ -839,7 +865,7 @@ func! PreviewWord()
     if &previewwindow			" don't do this in the preview window
         return
     endif
-    let w = expand("<cword>")		" get the word under cursor
+    let w = expand("<Cword>")		" get the word under cursor
     if w =~ '\a'			" if the word contains a letter
 
         " Delete any existing highlight before showing another tag
@@ -885,7 +911,7 @@ endfunction
 
 command!  PreviewTagToggle call PreviewWordToggle()
 
-nnoremap <leader>tp :pts <C-R><C-W><CR>
+nnoremap <Leader>tp :pts <C-r><C-w><CR>
 "PreviewWord""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "save everything and then gcc the current file then run the file returned by
@@ -913,7 +939,11 @@ function! Compile(MakeProgram, Compiler, excutable)
             VimShellBufferDir -popup
             resize 10
             wincmd p
-            execute "VimShellSendString exe " . s:filename . ".exe"
+            if s:hasWindows
+                execute "VimShellSendString exe " . s:filename . ".exe"
+            else
+                execute "VimShellSendString exe ./" . s:filename
+            endif
         elseif s:hasWindows
             execute "!" . s:filename . ".exe"
         else "linux
@@ -972,7 +1002,7 @@ function! SetMkfile()
     return "."
 endfunction
 
-command! -nargs=* Make tabnew | let mkpath = SetMkfile() | make <args> -C $mkpath | cwindow 10
+command! -nargs=* Make tabnew | let mkpath = SetMkfile() | make <Args> -C $mkpath | cwindow 10
 
 function! Maker(args)
     wall
@@ -1003,7 +1033,7 @@ function! Maker(args)
     endif
 endfunction
 
-command! -nargs=* Make call Maker('<args>')
+command! -nargs=* Make call Maker('<Args>')
 
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -1070,7 +1100,7 @@ endfunction
 
 "Frisk Dev Scripts""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-command! -nargs=* RunVS call RunInVimShell('<args>')
+command! -nargs=* RunVS call RunInVimShell('<Args>')
 function! RunInVimShell(cmd)
     echo a:cmd
     VimShellBufferDir -popup
@@ -1112,10 +1142,10 @@ cabbrev tohex s/\d\+/\=printf("0x%x", submatch(0))
 cabbrev todec s/0x\x\+/\=printf("%d", submatch(0))
 cabbrev toasc s/0x\x\+/\=printf("%c", submatch(0))
 "delete the current character and replace it with it's ASCII Decimal value
-nnoremap <leader>tad xi<C-r>=printf("%d",char2nr("<C-R>""))<CR><ESC>
+nnoremap <Leader>tad xi<C-r>=printf("%d",char2nr("<C-r>""))<CR><ESC>
 "delete the current character and replace it with it's ASCII Hex value
-nnoremap <leader>tah xi<C-r>=printf("0x%x",char2nr("<C-R>""))<CR><ESC>
-"noremap <leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
+nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
+"noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TABS - INDENTING                                                            {{{
@@ -1222,7 +1252,7 @@ if s:hasWindows
             "do this without making a fuss---------+        |        |
             "start this minimized on Windows----------------+        |
             "generate a tag list using ctag recursivly---------------+
-            
+
         augroup END
     endif
 else
@@ -1241,7 +1271,7 @@ else
 endif
 
 
-nnoremap <leader>cs :cs<CR>:cs find   <C-R><C-W><HOME><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT>
+nnoremap <Leader>cs :cs<CR>:cs find   <C-r><C-w><HOME><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT>
 set cscoperelative
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -1252,9 +1282,9 @@ set incsearch  " do incremental searching
 set ignorecase
 set smartcase  " overrides ignore  case when caps in search
 
-command! -nargs=+ Ezgrep call Ezgrep(<f-args>)
+command! -nargs=+ Ezgrep call Ezgrep(<F-args>)
 cabbrev ezgrep Ezgrep
-nnoremap <leader>eg :execute  Ezgrep(expand("<cword>"))<CR>:echo'finding'<CR>
+nnoremap <Leader>eg :execute  Ezgrep(expand("<Cword>"))<CR>:echo'finding'<CR>
 function! Ezgrep(...)
     let searchterms = join(a:000," ")
     " execute "cd %:p:h"
@@ -1330,11 +1360,11 @@ function! Rand()
     return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
 endfunction 
 
-nnoremap <leader>n a<C-R>=Rand()<CR><SPACE><SPACE><ESC>
+nnoremap <Leader>n a<C-r>=Rand()<CR><SPACE><SPACE><ESC>
 
 autocmd CursorMoved * let s:VisualMode = mode()
 
-command! -range=0 VTest call FuncName(<count>, <line1>, <line2>)
+command! -range=0 VTest call FuncName(<Count>, <Line1>, <Line2>)
 
 function! FuncName(count, firstLine, lastLine)
 
@@ -1373,14 +1403,15 @@ function! RangeTest(firstLine, lastLine, count, bang) range
 
 endfunction
 
-" command! -range Test  <line1>,<line2> call RangeTest()
+" command! -range Test  <Line1>,<Line2> call RangeTest()
 
-command! -range=-0 -bang Test  call RangeTest(<line1>,<line2>,<count>,"<bang>")
+command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 
-" xnoremap : :<C-W>let g:cameFromVisual = 1<CR>:echomsg 'from v ='.g:cameFromVisual<CR>gv:
-" nnoremap : :<C-W>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
+" xnoremap : :<C-w>let g:cameFromVisual = 1<CR>:echomsg 'from v ='.g:cameFromVisual<CR>gv:
+" nnoremap : :<C-w>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}
-" vi:textwidth=78
-" vim:foldmethod=marker
+set  modeline
+" vim: textwidth=78:
+" vim: foldmethod=marker:

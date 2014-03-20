@@ -1,9 +1,12 @@
 [submodule "mybin/installs/geeknote"]
     path = mybin/installs/geeknote
     url = git://github.com/VitaliyRodnenko/geeknote.git
-# [submodule "oh-my-zsh/custom/plugins/geeknote"]
-# 	path = oh-my-zsh/custom/plugins/geeknote
-# 	url = https://github.com/s7anley/zsh-geeknote.git
+[submodule "oh-my-zsh-plugins/geeknote"]
+	path = oh-my-zsh-plugins/geeknote
+	url = https://github.com/s7anley/zsh-geeknote.git
+[submodule "oh-my-zsh"]
+	path = oh-my-zsh
+	url = https://github.com/robbyrussell/oh-my-zsh.git
 [submodule "mybin/installs/atdtool"]
 	path = mybin/installs/atdtool
 	url = https://github.com/lpenz/atdtool.git

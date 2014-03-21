@@ -455,8 +455,8 @@ if has ("gui_running")
             autocmd GUIEnter * simalt ~x " maximize in windows
         augroup END
     else
-        set lines=99
-        set columns=99
+        set lines=999
+        set columns=999
     endif 
 endif
 

@@ -10,6 +10,8 @@ set cinoptions+=C1
 set cinoptions+=:0
 set cinoptions+=c4
 
+let mapleader="\<Space>"
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "OPERATING SYSTEM VARIABLES                                                  {{{
@@ -238,7 +240,7 @@ call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_rank'])
 
 
-call unite#custom_source('file_rec,file_rec/async,file_mru,file,grep',
+call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
             \ 'ignore_pattern', join([
             \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$' 
             \ ], '\|'))
@@ -249,7 +251,14 @@ nnoremap <Leader>m :Unite output:message<CR>
 nnoremap <Leader>r :Unite -start-insert file_mru directory_mru bookmark <CR>
 nnoremap <Leader>b :Unite -start-insert buffer<CR>
 nnoremap g/ :Unite -start-insert outline line<CR>
-nnoremap <Leader>g :Unite -start-insert -auto-preview grep<CR>
+
+" For ack.
+if executable('ack')
+    let g:unite_source_grep_command = 'ack'
+    let g:unite_source_grep_default_opts = '--no-heading --no-color -k -H'
+    let g:unite_source_grep_recursive_opt = ''
+endif
+nnoremap <Leader>g :Unite -auto-preview -start-insert grep<CR>
 
 autocmd FileType unite call s:unite_settings()
 
@@ -308,10 +317,6 @@ nmap <Leader>ce <Plug>CrunchCrunchBlockExc
 "Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'godlygeek/tabular'
 "following filetype commands align linewise comments 
-autocmd FileType vim noremap <Buffer> <Leader>ac :Tabularize/"<CR>
-autocmd FileType tex noremap <Buffer> <Leader>ac :Tabularize/%<CR>
-autocmd FileType c,js noremap <Buffer> <Leader>ac :Tabularize/\/\/<CR>
-"map <Leader>t to open tabularize
 nnoremap <Leader>tz :Tabularize/
 xnoremap <Leader>tz :Tabularize/
 
@@ -668,31 +673,11 @@ nnoremap  <F9>  2<C-w><
 nnoremap  <F11> <C-w>-
 nnoremap  <F10> <C-w>+
 
-nnoremap gh <C-w>h
-nnoremap gj <C-w>j
-nnoremap gk <C-w>k
-nnoremap gl <C-w>l
-
-nnoremap gH <C-w>H
-nnoremap gJ <C-w>J
-nnoremap gK <C-w>K
-nnoremap gL <C-w>L
 "Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"CASE CHANGE BINDINGS"""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-"change word to uppercase while in insert mode
-inoremap <Leader>U <ESC>bgUawgi
-"change word to lowercase while in inset mode then i do A word 
-inoremap <Leader>u <ESC>bguawgi
-"swap case of the first letter in a word while typing
-inoremap <Leader>` <ESC>B~gi
-"swap case of the first letter in a word under the cursor
-nnoremap <Leader>` viwo<ESC>~h
-"CASE CHANGE BINGINGS"""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-"
-" map  \ss for spell check toggling
+
+" map  \sp for spell check toggling
 nnoremap <Leader>sp :setlocal spell!<CR>:set spell?<CR>
-" don't move when searching for word under the cursor, and always highlight 
 " Toggle virtualedit
 set virtualedit=block
 function! Toggle_virtualedit()
@@ -717,7 +702,7 @@ nnoremap <Leader>tw :call TextWidthToggle(80)<CR>
 "toggles wrap when \wr is entered
 nnoremap <Leader>wr <ESC>:setlocal wrap!<CR>:set wrap?<CR>
 "CTRL-l redraws the screen and removes any search highlighting.
-nnoremap <C-l> :set hlsearch!<CR><C-l>
+nnoremap <leader>l :set hlsearch!<CR><C-l>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
 "update diff with a keymapping
@@ -775,162 +760,8 @@ cabbrev %d <C-r>=expand('%:h')<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "reverse the selected lines (TODO don't work for line at the top of a file) 
 xnoremap gr <ESC>'<Kmr'>:'r+1,.g/^/m 'r<CR>
-"Checksum"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-command! Checksum call Checksum()
-function! Checksum()
-    normal! ^
-    let numOfChars = col("$") - 1
-    normal! yyp
-    let @q = "\\taha + l"
-    execute "normal!" . numOfChars . "@q"
-    s/+  $//g
-    normal! yyp
-    execute "normal! ^v$h\"edi\<C-r>=\<C-r>e\<Cr>"
-    normal! yyp
-    s/\d\+/\=printf('0x%x', submatch(0))
-endfunction
-"Checksum"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"FileExplore()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-function! FileExplore(file)
-    if has("win32")
-        let s:stored_shellslash = &shellslash
-        set noshellslash
-    endif
-    if a:file == ''
-        let file = expand('%:p:h')
-    else
-        try
-            let file = a:file
-            let thepwd = getcwd()
-            execute "cd ".file
-            let file = getcwd()
-            execute "cd " thepwd
-        catch
-            let file = expand('%:p:h')
-        endtry
-    endif
-    if has("win32")
-        execute "!start explorer.exe ".file
-    elseif has("gui_kde")
-        execute "!konqueror ".file." &"
-    elseif has("gui_gtk")
-        execute "!nautilus ".file." &"
-    elseif has("mac") && has("unix")
-        let file = substitute(file," ","\\\\ ","g")
-        execute '!open ' .file
-    endif
-    if has("win32")
-        let &shellslash = s:stored_shellslash
-    endif
-endfunc
-command!-nargs=* -complete=file Fexplore call FileExplore('<Args>') " or whatever you like
-
-"FileExplore""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"PreviewWord""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-"A nice addition is to highlight the found tag, avoid the ":ptag" when there
-"is no word under the cursor, and a few other things:
-let g:PreviewWordEnable=0
-augroup PreviewWord
-    autocmd!
-    au! CursorHold *.[ch] if g:PreviewWordEnable == 1 | call PreviewWord() | endif
-augrou END
-function! PreviewWord()
-    if &previewwindow			" don't do this in the preview window
-        return
-    endif
-    let w = expand("<Cword>")		" get the word under cursor
-    if w =~ '\a'			" if the word contains a letter
-
-        " Delete any existing highlight before showing another tag
-        silent! wincmd P			" jump to preview window
-        redraw
-        if &previewwindow			" if we really get there...
-            silent! wincmd K			" jump to preview window
-            redraw
-            match none			" delete existing highlight
-            wincmd p			" back to old window
-            redraw
-        endif
-
-        " Try displaying a matching tag for the word under the cursor
-        try
-            exe "ptag " . w
-        catch
-            return
-        endtry
-
-        silent! wincmd P			" jump to preview window
-        redraw
-        if &previewwindow		" if we really get there...
-            silent! wincmd K			" jump to preview window
-            redraw
-            if has("folding")
-                silent! .foldopen		" don't want a closed fold
-            endif
-            call search("$", "b")		" to end of previous line
-            let w = substitute(w, '\\', '\\\\', "")
-            call search('\<\V' . w . '\>')	" position cursor on match
-            " Add a match highlight to the word at this position
-            hi previewWord term=bold ctermbg=white ctermfg = black guibg=grey guifg = black
-            exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
-            wincmd p			" back to old window
-            redraw
-        endif
-    endif
-endfun
-
-func! PreviewWord()
-    if &previewwindow			" don't do this in the preview window
-        return
-    endif
-    let w = expand("<Cword>")		" get the word under cursor
-    if w =~ '\a'			" if the word contains a letter
-
-        " Delete any existing highlight before showing another tag
-        silent! wincmd P			" jump to preview window
-        if &previewwindow			" if we really get there...
-            match none			" delete existing highlight
-            wincmd p			" back to old window
-        endif
-
-        " Try displaying a matching tag for the word under the cursor
-        try
-            exe "ptag " . w
-        catch
-            return
-        endtry
-
-        silent! wincmd P			" jump to preview window
-        if &previewwindow		" if we really get there...
-            if has("folding")
-                silent! .foldopen		" don't want a closed fold
-            endif
-            call search("$", "b")		" to end of previous line
-            let w = substitute(w, '\\', '\\\\', "")
-            call search('\<\V' . w . '\>')	" position cursor on match
-            " Add a match highlight to the word at this position
-            hi previewWord term=bold ctermbg=green guibg=green
-            exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
-            wincmd p			" back to old window
-        endif
-    endif
-endfun
-
-function! PreviewWordToggle()
-    if(g:PreviewWordEnable == 1)
-        let g:PreviewWordEnable = 0
-        pclose
-        echo 'Preview Tag Off'
-    else  
-        let g:PreviewWordEnable = 1
-        echo 'Preview Tag On'
-    endif 
-endfunction
-
 command!  PreviewTagToggle call PreviewWordToggle()
-
 nnoremap <Leader>tp :pts <C-r><C-w><CR>
-"PreviewWord""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "save everything and then gcc the current file then run the file returned by
 "gcc
@@ -1051,7 +882,9 @@ function! Maker(args)
     endif
 endfunction
 
-command! -nargs=* Make call Maker('<Args>')
+command! -nargs=* Maker call Maker('<Args>')
+
+command! -nargs=* Make make! <Args> | cwindow
 
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -1289,7 +1122,7 @@ else
 endif
 
 
-nnoremap <Leader>cs :cs<CR>:cs find   <C-r><C-w><HOME><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT><RIGHT>
+execute "nnoremap <Leader>cs :cs<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
 set cscoperelative
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -1316,8 +1149,7 @@ function! Ezgrep(...)
     let @/ = searchterms
 endfunction
 
-
-set path+=../** 
+set path+=*/**
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "GENERAL BEHAVIOR                                                            {{{

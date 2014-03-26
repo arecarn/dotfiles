@@ -1,0 +1,78 @@
+#Your Gmail account details
+set imap_user = "arecarn@gmail.com"
+set smtp_url = "smtp://arecarn@smtp.gmail.com:587/"
+set from = "arecarn@gmail.com"
+set realname = "Ryan Carney"
+set folder = "imaps://imap.gmail.com:993"
+ 
+# Setup your favorite editor to write email bodies
+set editor = "vim"
+ 
+# Basic config, you can leave this as is
+set imap_check_subscribed
+set hostname = gmail.com
+set mail_check = 120
+set timeout = 300
+set imap_keepalive = 300
+
+# My mailboxes
+mailboxes +GMail/INBOX +GMail/1-now +GMail/2-next +GMail/3-later
+set spoolfile = "+INBOX"
+set postponed = "+[GMail]/Drafts"
+set record = "+[GMail]/Sent Mail"
+
+# Where to put stuff
+set header_cache=~/.mutt/cache/headers
+set message_cachedir=~/.mutt/cache/bodies
+set certificate_file=~/.mutt/certificates
+
+set move = no
+set include
+
+set sort = 'threads'
+set sort_aux = 'reverse-last-date-received'
+set auto_tag = yes
+
+ignore "Authentication-Results:"
+ignore "DomainKey-Signature:"
+ignore "DKIM-Signature:"
+
+hdr_order Date From To Cc
+alternative_order text/plain text/html *
+auto_view text/html
+
+# Need trash patch for this to work
+# set trash = "+[Gmail]/Trash"
+
+# store message headers locally to speed things up
+set header_cache = ~/.mutt/hcache
+
+# allow mutt to open new imap connection automatically
+unset imap_passive
+
+# keep imap connection alive by polling intermittently (time in seconds)
+set imap_keepalive = 300
+
+# how often to check for new mail (time in seconds)
+set mail_check = 120
+
+##############################################################################
+# MAPPINGS / MACROS
+##############################################################################
+# Archive Messages (A)
+macro index,pager a "<enter-command>unset trash\n<delete-message>" "Gmail archive message"
+macro index,pager d "<enter-command>set my_resolve=\$resolve resolve=no<enter>\<clear-flag>N\<enter-command>set resolve=\$my_resolve &my_resolve<enter>\<save-message>+[Gmail]/Trash<enter>" "move message to the trash"
+# macro index,pager d "<enter-command>set trash=\"+Gmail/Trash\"\n<delete-message>" "Gmail delete message"
+# macro index,pager A "<enter-command>unset trash\n<delete-pattern>" "Gmail archive pattern"
+# macro index,pager D "<enter-command>set trash=\"+Gmail/Trash\"\n<delete-pattern>" "Gmail delete pattern"
+
+macro index,pager gi "<change-folder>=INBOX<enter>!<return>" "Go to inbox"
+macro index,pager ga "<change-folder>=[Gmail]/All Mail<enter>" "Go to all mail"
+macro index,pager gd "<change-folder>=[Gmail]/Drafts<quote-char> robocze<enter>" "Go to drafts"
+macro index,pager gs "<change-folder>=[Gmail]/Starred<enter>" "Go to sent mail"
+macro index,pager gt "<change-folder>=[Gmail]/Trash<enter>" "Go to trash"
+
+##############################################################################
+# Color Scheme
+##############################################################################
+source ~/.mutt/colors/mutt-colors-solarized/mutt-colors-solarized-dark-256.muttrc

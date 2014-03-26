@@ -10,3 +10,6 @@
 [submodule "mybin/installs/atdtool"]
 	path = mybin/installs/atdtool
 	url = https://github.com/lpenz/atdtool.git
+[submodule "mutt/colors/mutt-colors-solarized"]
+	path = mutt/colors/mutt-colors-solarized
+	url = https://github.com/altercation/mutt-colors-solarized.git

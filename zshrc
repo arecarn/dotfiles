@@ -8,9 +8,6 @@ ZSH=$HOME/.oh-my-zsh
 # ZSH_THEME="af-magic"
 ZSH_THEME="terminalparty"
 
-
-
-
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
@@ -100,6 +97,7 @@ bindkey '^E' _expand_alias
 
 # ALIASES
 ################################################################################
+alias pslevel='pstree -s $$'
 alias tmux='tmux -2'
 alias e='vim'
 alias trash='~/dotfiles/mybin/scripts/trash.sh'
@@ -112,11 +110,11 @@ alias gnc='geeknote create -c " " -tg "@" -t ""'
 # END ALIASES
 ################################################################################
 
-export MANPATH="/usr/local/man:$MANPATH"
-export PATH="/usr/local/bin:$PATH"
-export PATH="/usr/bin:$PATH"
-export PATH="/bin:$PATH"
-export PATH="$HOME/dotfiles/mybin/scripts:$PATH"
+export MANPATH="/usr/local/man"
+export PATH="$PATH:/usr/local/bin"
+export PATH="$PATH:/usr/bin"
+export PATH="$PATH:/bin"
+export PATH="$PATH:$HOME/dotfiles/mybin/scripts"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
         # ...
@@ -142,9 +140,13 @@ export EDITOR='vim'
 ################################################################################
 source ~/.local.zsh
 
-# LOCAL CONFIG
+# END LOCAL CONFIG
 ################################################################################
 if [[ $TERM == "xterm" ]]; then
         export TERM=xterm-256color
 fi
+
+# stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
+stty -ixon
+stty stop undef
 

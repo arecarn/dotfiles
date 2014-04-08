@@ -13,7 +13,7 @@ dir=~/dotfiles
 olddir=~/dotfiles_old                      
 
 # list of files/folders to symlink in homedir
-files="mutt gitconfig zshrc oh-my-zsh vim ctags"
+files="tmux.conf mutt gitconfig zshrc oh-my-zsh vim ctags"
 
 ############################
 # Code

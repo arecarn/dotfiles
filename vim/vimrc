@@ -3,15 +3,7 @@
 set cpo&vim
 set fileformats=unix,dos
 
-set cinoptions=
-set cinoptions+=(s
-set cinoptions+=m1
-set cinoptions+=C1
-set cinoptions+=:0
-set cinoptions+=c4
-
 let mapleader="\<Space>"
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "OPERATING SYSTEM VARIABLES                                                  {{{
@@ -54,30 +46,51 @@ if !isdirectory(s:vimpath.'/local_utils/neocomplcache')
     call mkdir(s:vimpath.'/local_utils/neocomplcache', "p", 0700)
 endif
 let g:neocomplcache_temporary_dir = s:vimpath.'/local_utils/neocomplcache'
-let g:pymode_folding = 0  
 let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_camel_case_completion = 1
 let g:neocomplcache_enable_underbar_completion = 1
+
 " Sets minimum char length of syntax keyword.
-let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_min_syntax_length = 2
 let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 let g:neocomplcache_enable_auto_delimiter = 1
-let g:neocomplcache_max_list = 5
-let g:neocomplcache_force_overwrite_completefunc = 1
+let g:neocomplcache_max_list = 8
+
 " Define file-type dependent dictionaries.
 let g:neocomplcache_dictionary_filetype_lists = {
             \ 'default' : '',
             \ 'vimshell' : s:vimpath.'/.vimshell_hist',
             \ 'scheme' : s:vimpath.'/.gosh_completions'
             \ }
+
 " Define keyword, for minor languages
 if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-" <CR>: close popup
-inoremap <Expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplcache#undo_completion()
+inoremap <expr><C-l>     neocomplcache#complete_common_string()
+
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return neocomplcache#smart_close_popup() . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><C-y>  neocomplcache#close_popup()
+inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
 " Enable heavy omni completion.
 if !exists('g:neocomplcache_omni_patterns')
     let g:neocomplcache_omni_patterns = {}
@@ -87,15 +100,14 @@ let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-"when you press \neo neocomplchache is enabled and either locked or unlocked
-nnoremap <Leader>neo :NeoComplCacheToggle<CR>
+nnoremap <Leader>nc :NeoComplCacheToggle<CR>
 
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/neosnippet.vim'
 "Plugin key-mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -107,14 +119,13 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 
 " For snippet_complete marker.
 if has('conceal')
-  set conceallevel=2 concealcursor=i
-  endif
+    set conceallevel=2 concealcursor=i
+endif
 
 NeoBundle 'Shougo/neosnippet-snippets'
 " Tell Neosnippet about the other snippets
 let g:neosnippet#snippets_directory=s:vimpath.'/utils/snippets'
 NeoBundle 'Shougo/neosnippet.vim'
-"Neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "CommentLine""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
 function! CommentLine(char, width)
     let b:multiline_str_start = matchstr(&commentstring, '.\+\ze%s.*')
@@ -180,47 +191,6 @@ function! CommentBox(char, width)
     return b:line1 . b:line2 . b:line3 
 endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
-"Ctest()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
-function! Ctest()
-    let commentFormat = split(&comments, ',')
-    echo &comments
-    echo string(commentFormat)
-    let start_str = matchstr(&comments, 's.*:\zs.*,\{0,1}')
-    let start_fmt = matchstr(&comments, 's\zs.*\ze:.*,\{0,1}')
-    echo '[' . start_str . '] is the start_str'
-    echo '[' . start_fmt . '] is the start_fmt'
-
-    let middle_str = matchstr(&comments, 'm.*:\zs.*,\{0,1}')
-    let middle_fmt = matchstr(&comments, 'm\zs.*\ze:s.*,\{0,1}')
-    echo '[' . middle_str . '] is the middle_str'
-    echo '[' . middle_fmt . '] is the middle_fmt'
-
-    let end_str = matchstr(&comments, 'e.*:\zs.*,\{0,1}')
-    let end_fmt = matchstr(&comments, 'e\zs.*\ze:s.*,\{0,1}')
-    echo '[' . end_str . '] is the end_str'
-    echo '[' . end_fmt . '] is the end_fmt'
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
-"function! CommnetLinePlus(char, before, after, col, lines)
-" Plugin key-mappings.
-"imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-"smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-"xmap <C-k>     <Plug>(neosnippet_expand_target)
-
-" SuperTab like snippets behavior.
-imap <Expr><TAB> neosnippet#expandable_or_jumpable() ?
-            \ "\<Plug>(neosnippet_expand_or_jump)"
-            \: pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <Expr><TAB> neosnippet#expandable_or_jumpable() ?
-            \ "\<Plug>(neosnippet_expand_or_jump)"
-            \: "\<TAB>"
-
-" For snippet_complete marker.
-if has('conceal')
-    set conceallevel=2 concealcursor=i
-endif
-
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "unite""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/unite.vim'
@@ -245,20 +215,20 @@ call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
             \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$' 
             \ ], '\|'))
 
-nnoremap <Leader>f :Unite -start-insert file file_rec<CR>
-nnoremap <Leader>y :Unite history/yank<CR>
-nnoremap <Leader>m :Unite output:message<CR>
-nnoremap <Leader>r :Unite -start-insert file_mru directory_mru bookmark <CR>
-nnoremap <Leader>b :Unite -start-insert buffer<CR>
-nnoremap g/ :Unite -start-insert outline line<CR>
-
 " For ack.
 if executable('ack')
     let g:unite_source_grep_command = 'ack'
     let g:unite_source_grep_default_opts = '--no-heading --no-color -k -H'
     let g:unite_source_grep_recursive_opt = ''
 endif
-nnoremap <Leader>g :Unite -auto-preview -start-insert grep<CR>
+nnoremap <Leader>g :Unite -auto-preview grep<CR>
+nnoremap <Leader>f :Unite -start-insert file_rec/async<CR>
+nnoremap <Leader>y :Unite history/yank<CR>
+nnoremap <Leader>m :Unite output:message<CR>
+nnoremap <Leader>r :Unite -start-insert file_mru directory_mru<CR>
+nnoremap <Leader>b :Unite -start-insert buffer<CR>
+nnoremap <Leader>/ :Unite -start-insert outline line<CR>
+
 
 autocmd FileType unite call s:unite_settings()
 
@@ -399,9 +369,10 @@ xmap <Space>H <Plug>(quickhl-manual-reset)
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-choosewin'
-nmap gt? <Plug>(choosewin)
+nmap <space>w <Plug>(choosewin)
 let g:choosewin_overlay_enable = 1
 let g:choosewin_overlay_clear_multibyte = 1
+let g:choosewin_statusline_replace = 0
 "choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'airblade/vim-gitgutter'
@@ -448,7 +419,30 @@ NeoBundle 'sk1418/HowMuch'
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks of code
-
+NeoBundle 'majutsushi/tagbar' " Vim plugin that displays tags in a window, ordered by scope
+NeoBundle "reedes/vim-lexical"
+let g:lexical#spell_key = '<leader>s'
+let g:lexical#thesaurus_key = '<leader>t'
+let g:lexical#dictionary_key = '<leader>k'
+NeoBundle 'osyo-manga/vim-reunions'
+"vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'osyo-manga/vim-marching' " Async clang code completion.
+" path to clang command
+let g:marching_clang_command = "clang"
+let g:marching_enable_neocomplete = 1
+if !exists('g:neocomplete#force_omni_input_patterns')
+  let g:neocomplete#force_omni_input_patterns = {}
+endif
+let g:neocomplete#force_omni_input_patterns.cpp =
+    \ '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
+imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
+"vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'Shougo/echodoc.vim'
+let g:echodoc_enable_at_startup=1
+set cmdheight=2
+"echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
 NeoBundleCheck
 
@@ -633,7 +627,9 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
-nnoremap gs z=1<CR><CR>
+nnoremap gs 1z=<CR><CR>
+inoremap <C-S> <ESC>[s1z=gi
+"this is a tarp deal you bogus 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TEMPLATE MAPPINGS                                                           {{{
@@ -654,14 +650,16 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set timeoutlen=600
 set updatetime=1000 "how long it takes for the preview to show up in ms
-set previewheight=7 "how tall the preview window is
+set previewheight=12 "how tall the preview window is
 
 "Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "cursor moves as expected for wrapped lines
-nnoremap <Silent> k gk
-nnoremap <Silent> j gj
-nnoremap <Silent> gk k
-nnoremap <Silent> gj j
+nnoremap k gk
+nnoremap j gj
+nnoremap gk k
+nnoremap gj j
+
+
 nnoremap * :let b:PlugView=winsaveview()<CR>*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
 nnoremap g* :let b:PlugView=winsaveview()<CR>g*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
 nnoremap # :let b:PlugView=winsaveview()<CR>#N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
@@ -759,9 +757,9 @@ cabbrev %d <C-r>=expand('%:h')<CR>
 "SCRIPTS                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "reverse the selected lines (TODO don't work for line at the top of a file) 
-xnoremap gr <ESC>'<Kmr'>:'r+1,.g/^/m 'r<CR>
+xnoremap gr <ESC>'<mr'>:'r+1,.g/^/m 'r<CR>
 command!  PreviewTagToggle call PreviewWordToggle()
-nnoremap <Leader>tp :pts <C-r><C-w><CR>
+nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "save everything and then gcc the current file then run the file returned by
 "gcc
@@ -1122,7 +1120,18 @@ else
 endif
 
 
-execute "nnoremap <Leader>cs :cs<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
+function! PrintCscopeOptions()
+    echo "G: Find this definition"
+    echo "C: Find functions calling this function"
+    echo "D: Find functions called by this function"
+    echo "F: Find this file"
+    echo "I: Find files #including this file"
+    echo "S: Find this C symbol"
+    echo "T: Find this text string"
+    echo "E: Find this egrep pattern"
+endfunction
+execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
+
 set cscoperelative
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -1181,26 +1190,6 @@ set tags=tags;/ "set the tag file to be called tags the ";/" allows you to look 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set complete+=kspell
 
-"turn on omicompletion
-if has("autocmd") && exists("+omnifunc")
-    augroup omni
-        autocmd!
-        " Enable omni completion.
-        autocmd FileType c,cpp setlocal omnifunc=syntaxcomplete#Complete
-        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-        autocmd FileType xhtml,html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-        " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-        autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-    augroup END
-    let OmniCpp_GlobalScopeSearch   = 1
-    let OmniCpp_DisplayMode         = 1
-    let OmniCpp_ShowScopeInAbbr     = 0 "do not show namespace in pop-up
-    let OmniCpp_ShowPrototypeInAbbr = 1 "show prototype in pop-up
-    let OmniCpp_ShowAccess          = 1 "show access in pop-up
-    let OmniCpp_SelectFirstItem     = 1 "select first item in pop-up
-endif
 
 set wildmode=full
 set wildmenu

@@ -16,10 +16,9 @@ set timeout = 300
 set imap_keepalive = 300
 
 # My mailboxes
-mailboxes +GMail/INBOX +GMail/1-now +GMail/2-next +GMail/3-later
+mailboxes +[Gmail]/INBOX +[Gmail]/0-inbox +[Gmail]/1-now +[Gmail]/2-next +[Gmail]/3-later
 set spoolfile = "+INBOX"
-set postponed = "+[GMail]/Drafts"
-set record = "+[GMail]/Sent Mail"
+set postponed = "+[Gmail]/Drafts"
 
 # Where to put stuff
 set header_cache=~/.mutt/cache/headers
@@ -65,12 +64,18 @@ macro index,pager d "<enter-command>set my_resolve=\$resolve resolve=no<enter>\<
 # macro index,pager d "<enter-command>set trash=\"+Gmail/Trash\"\n<delete-message>" "Gmail delete message"
 # macro index,pager A "<enter-command>unset trash\n<delete-pattern>" "Gmail archive pattern"
 # macro index,pager D "<enter-command>set trash=\"+Gmail/Trash\"\n<delete-pattern>" "Gmail delete pattern"
-
-macro index,pager gi "<change-folder>=INBOX<enter>!<return>" "Go to inbox"
+ 
+# make space not do weird things inside the command line
+bind editor <space> noop 
+macro index,pager gi "<change-folder>=INBOX<enter>" "Go to inbox"
 macro index,pager ga "<change-folder>=[Gmail]/All Mail<enter>" "Go to all mail"
-macro index,pager gd "<change-folder>=[Gmail]/Drafts<quote-char> robocze<enter>" "Go to drafts"
-macro index,pager gs "<change-folder>=[Gmail]/Starred<enter>" "Go to sent mail"
+macro index,pager gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
+macro index,pager gs "<change-folder>=[Gmail]/Sent Mail<enter>" "Go to starred mail"
 macro index,pager gt "<change-folder>=[Gmail]/Trash<enter>" "Go to trash"
+
+macro index,pager g1 "<change-folder>=1-now<enter>" "Go to 1-now"
+macro index,pager g2 "<change-folder>=2-next<enter>" "Go to 2-next"
+macro index,pager g3 "<change-folder>=3-later<enter>" "Go to 3-later"
 
 ##############################################################################
 # Color Scheme

@@ -43,9 +43,6 @@ echo "...done"
 
 # run Vim setup
 echo "Running Vim Setup"
-rm -Rf $dir/vim/bundle/neobundle.vim/
-# install Neobundle to manage plugins
-git clone https://github.com/Shougo/neobundle.vim.git $dir/vim/bundle/neobundle.vim
 # start vim loading the vimrc file then close right after
 vim -c 'q'
 echo "...done"

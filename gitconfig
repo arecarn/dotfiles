@@ -14,3 +14,8 @@
     l = !git --no-pager log --color -p
     exists = ls-files --error-unmatch
 
+[push]
+	default = simple
+[user]
+	name = Ryan
+	email = arecarn@gmail.com

@@ -400,6 +400,8 @@ NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tpope/vim-speeddating' " speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
 NeoBundle 'tpope/vim-abolish' " abolish easily search for, substitute, and abbreviate multiple variants of a word
+NeoBundle 'tpope/vim-unimpaired' " unimpaired.vim: pairs of handy bracket mappings
+nnoremap cop :set paste!<CR>:echo "paste = ".&paste<CR>
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'hrsh7th/vim-neco-calc' " neocomplcache calculates plugin.
 NeoBundle 'thinca/vim-visualstar' " star for Visual-mode.

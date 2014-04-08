@@ -8,9 +8,6 @@ ZSH=$HOME/.oh-my-zsh
 # ZSH_THEME="af-magic"
 ZSH_THEME="terminalparty"
 
-
-
-
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
@@ -102,7 +99,7 @@ bindkey '^E' _expand_alias
 ################################################################################
 alias tmux='tmux -2'
 alias e='vim'
-alias trash='~/dotfiles/mybin/scripts/trash.sh'
+alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias minivim='vim -u ~/dotfiles/vim/minivimrc'
 
 # geeknote aliases/templates
@@ -112,11 +109,11 @@ alias gnc='geeknote create -c " " -tg "@" -t ""'
 # END ALIASES
 ################################################################################
 
-export MANPATH="/usr/local/man:$MANPATH"
-export PATH="/usr/local/bin:$PATH"
-export PATH="/usr/bin:$PATH"
-export PATH="/bin:$PATH"
 export PATH="$HOME/dotfiles/mybin/scripts:$PATH"
+export PATH="/bin:$PATH"
+export PATH="/usr/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+export MANPATH="/usr/local/man:$MANPATH"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
         # ...

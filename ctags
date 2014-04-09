@@ -1,0 +1,2 @@
+--python-kinds=-i
+--exclude=*/build/* 

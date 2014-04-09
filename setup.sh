@@ -9,7 +9,7 @@
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
 files="mutt gitconfig zshrc oh-my-zsh vim" # list of files/folders to symlink in homedir
-localfiles="~/.local.zsh ~/.Trash"
+touch ~/.zshrc_local ~/.Trash
 
 ############################
 # Code

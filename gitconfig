@@ -15,7 +15,7 @@
     exists = ls-files --error-unmatch
 
 [push]
-	default = simple
+	default = tracking
 [user]
 	name = Ryan
 	email = arecarn@gmail.com

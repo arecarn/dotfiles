@@ -8,7 +8,8 @@
 ########## Variables
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
-files="mutt gitconfig zshrc oh-my-zsh vim" # list of files/folders to symlink in homedir
+dotfiles="mutt gitconfig zshrc oh-my-zsh vim" # list of files/folders to symlink in homedir
+files=""
 
 ############################
 # Code
@@ -20,12 +21,14 @@ echo "...done"
 
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
     echo "Moving any existing dotfiles from ~ to $olddir"
-for file in $files; do
-    mv ~/.$file ~/dotfiles_old/
+for file in $dotfiles; do
+    mv ~/.$file $olddir/.
     echo "Creating symlink to $file in home directory."
     ln -s $dir/$file ~/.$file
 done
-for file in $noDotFiles; do
+
+# move any existing files in homedir to dotfiles_old directory, then create symlinks 
+for file in $files; do
     mv ~/$file ~/dotfiles_old/
     echo "Creating symlink to $file in home directory."
     ln -s $dir/$file ~/$file

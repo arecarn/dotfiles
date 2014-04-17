@@ -18,6 +18,11 @@ files="inputrc tmux.conf mutt gitconfig zshrc oh-my-zsh vim ctags"
 ############################
 # Code
 ############################
+
+echo "Creating Blank Local config files"
+touch ~/.zshrc_local ~/.vim/vimrc_local  ~/.Trash
+echo "...done"
+
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir

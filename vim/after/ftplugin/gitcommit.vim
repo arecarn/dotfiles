@@ -1,6 +1,7 @@
 " open diff in preview window 
-pedit GitDiffCached
-wincmd w
-set filetype=git
+new
+wincmd J 
+setlocal buftype=nofile
+setlocal filetype=git
 read !git diff --cached
 wincmd p

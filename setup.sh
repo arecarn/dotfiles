@@ -31,16 +31,18 @@ echo "...done"
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
     echo "Moving any existing dotfiles from ~ to $olddir"
 for file in $files; do
-    mv ~/.$file ~/dotfiles_old/
+    mv ~/.$file $olddir
     echo "Creating symlink to $file in home directory."
     ln -s $dir/$file ~/.$file
 done
+
 for file in $noDotFiles; do
-    mv ~/$file ~/dotfiles_old/
+    mv ~/$file $olddir
     echo "Creating symlink to $file in home directory."
     ln -s $dir/$file ~/$file
 done
 echo "...done"
+
 
 echo "Moving custom zsh plugins into place"
 ln -s $dir/dotfiles/oh-my-zsh-plugins $dir/oh-my-zsh/custom/plugins
@@ -52,4 +54,4 @@ echo "Running Vim Setup"
 vim -c 'q'
 echo "...done"
 
-echo "Done Installing, You're So Cool Now!"
+echo "Done Installing, You're So Cool!"

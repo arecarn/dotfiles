@@ -114,17 +114,14 @@ alias gnc='geeknote create -c " " -tg "@" -t ""'
 # END ALIASES
 ################################################################################
 
-export MANPATH="/usr/local/man"
-export PATH="$PATH:/usr/local/bin"
-export PATH="$PATH:/usr/bin"
-export PATH="$PATH:/bin"
 export PATH="$PATH:$HOME/dotfiles/mybin/scripts"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        # ...
-export PATH=":/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
+    export PATH=":/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-        # ...
+    #for home brew
+    export MANPATH="/usr/local/man"
+    export PATH="/usr/local/bin:$PATH"
 elif [[ "$OSTYPE" == "cygwin" ]]; then
         # ...
 elif [[ "$OSTYPE" == "win32" ]]; then

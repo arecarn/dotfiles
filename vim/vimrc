@@ -295,15 +295,15 @@ let g:vimshell_vimshrc_path = s:vimpath.'/local_utils/vimshell/'
 
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Frisk""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-" NeoBundle  'frisk', {'type' : 'nosync',  'base' : '~/Dropbox/data/code/VimScript/myplugins' }
+" NeoBundle  'frisk', {'type' : 'nosync',  'base' : '~/Dropbox/projects/frisk/' }
 NeoBundle 'arecarn/frisk'
 call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/data/code/VimScript/myplugins'} 
-NeoBundle 'arecarn/crunch', 'Dev'
-map <silent> ++ <plug>CrunchEvalLine
+
+NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
+" NeoBundle 'arecarn/crunch', 'Dev'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -899,34 +899,34 @@ command! -nargs=* MyMake make! <Args> | cwindow
 command! Rcrunch call ReloadCrunch()
 "Do the stuff for crunch 
 function! ReloadCrunch()
-    vs ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/crunch/debug.vim
+    vs ~/Dropbox/projects/crunch/crunch/autoload/crunch/debug.vim
     wq
-    vs ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/crunch.vim
+    vs ~/Dropbox/projects/crunch/crunch/autoload/crunch.vim
     wq
-    vs ~/Dropbox/data/code/VimScript/myplugins/crunch/plugin/crunch.vim
+    vs ~/Dropbox/projects/crunch/crunch/plugin/crunch.vim
     wq
-    Runtime ~/Dropbox/data/code/VimScript/myplugins/crunch/plugin/*.vim
-    Runtime ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/*.vim
-    Runtime ~/Dropbox/data/code/VimScript/myplugins/crunch/autoload/crunch/*.vim
+    Runtime ~/Dropbox/projects/crunch/crunch/plugin/*.vim
+    Runtime ~/Dropbox/projects/crunch/crunch/autoload/*.vim
+    Runtime ~/Dropbox/projects/crunch/crunch/autoload/crunch/*.vim
 endfunction
 
 command! TcrunchS call TestCrunchShell()
 function! TestCrunchShell()
     if s:hasWindows
-        !runVimTests \Users\arecarn\Dropbox\data\code\VimScript\myplugins\crunch\tests
+        !runVimTests \Users\arecarn\Dropbox\projects\crunch\crunch\tests
     else
-        !runVimTests.sh  ~/Dropbox/data/code/VimScript/myplugins/crunch/tests
+        !runVimTests.sh  ~/Dropbox/projects/crunch/crunch/tests
     endif
 endfunction
 
 command! TcrunchVs call TestCrunchVShell()
 function! TestCrunchVShell()
     call ReloadCrunch()
-    RunVS runVimTests C:/Users/arecarn/Dropbox/data/code/VimScript/myplugins/crunch/tests
+    RunVS runVimTests C:/Users/arecarn/Dropbox/projects/crunch/crunch/tests
     if s:hasWindows
         RunVSrunVimTests C:\Users\arecarn\Dropbox\data\code\VimScript\myplugins\crunch\tests
     else
-        RunVS runVimTests.sh  ~/Dropbox/data/code/VimScript/myplugins/crunch/tests
+        RunVS runVimTests.sh  ~/Dropbox/projects/crunch/crunch/tests
     endif
 endfunction
 
@@ -946,15 +946,15 @@ endfunction
 command! Rfrisk call ReloadFrisk()
 "Do the stuff for crunch 
 function! ReloadFrisk()
-    vs ~/Dropbox/data/code/VimScript/myplugins/frisk/plugin/frisk.vim
+    vs ~/Dropbox/projects/frisk/gc/frisk/plugin/frisk.vim
     wq
-    vs ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/frisk/debug.vim
+    vs ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk/debug.vim
     wq
-    vs ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/frisk.vim
+    vs ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk.vim
     wq
-    Runtime ~/Dropbox/data/code/VimScript/myplugins/frisk/plugin/*.vim
-    Runtime ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/*.vim
-    Runtime ~/Dropbox/data/code/VimScript/myplugins/frisk/autoload/frisk/*.vim
+    Runtime ~/Dropbox/projects/frisk/gc/frisk/plugin/*.vim
+    Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/*.vim
+    Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk/*.vim
 endfunction
 
 "Frisk Dev Scripts""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2

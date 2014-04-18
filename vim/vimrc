@@ -302,13 +302,7 @@ call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-<<<<<<< HEAD
 " NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
-=======
-
-" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
-
->>>>>>> 6a40917d4e8029c001ac54e8f2cb7218d8dd1c6d
 " NeoBundle 'arecarn/crunch', 'Dev'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2

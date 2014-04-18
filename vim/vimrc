@@ -201,10 +201,11 @@ endfunction
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "unite""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/unite.vim'
-" let g:unite_winheight = 10				
+let g:unite_winheight = 10				
 let g:unite_data_directory = s:vimpath.'/local_utils/unite/'
 let g:unite_matcher_fuzzy_max_input_length = 1000
 let g:unite_source_history_yank_enable = 1
+let g:unite_source_history_yank_limit = 10000
 let g:unite_split_rule = 'botright'
 let g:unite_source_file_rec_max_cache_files = 0
 let g:unite_source_mru_do_validate = 0
@@ -343,13 +344,14 @@ let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'terryma/vim-expand-region'
 NeoBundle 'kana/vim-textobj-user' " Vim plugin: Create your own text objects
 NeoBundle 'kana/vim-textobj-indent' " indent text object ii ai
 NeoBundle 'kana/vim-textobj-entire' " entire text object ie ae
 NeoBundle 'thinca/vim-textobj-between' " if<CHAR> af<CHAR> eg between '*' vif*
 NeoBundle 'saihoooooooo/vim-textobj-space' "text object for space iS aS
 NeoBundle 'mattn/vim-textobj-url' " text object for ul iu au
-
+NeoBundle 'Julian/vim-textobj-variable-segment' "iv av for snake_case & CamelCase
 call textobj#user#plugin('num', 
             \{
             \'-': 
@@ -748,14 +750,14 @@ cabbrev %d <C-r>=expand('%:h')<CR>
 
 " disable Ex mode key and map it to something awesome
 nnoremap Q @@
-xnoremap Q :normal! @@<CR>
 " replay macro for each line of a visual selection
-xnoremap @q :normal! @q<CR>
 xnoremap Q :normal! @@<CR>
+xnoremap @q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
 " repeat the last edit on the next [count] matches.
 nnoremap <C-n> @='n.'<cr>
+nnoremap <C-p> @='N.'<cr>
 
 "Z-maps! Z-maps!
 nnoremap ZW :wa<cr>
@@ -1190,11 +1192,8 @@ set matchtime=3 " time show match takes to jump to the matching bracket in
 " 10th of a second
 set tags=tags;/ "set the tag file to be called tags the ";/" allows you to look back wards
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"COMPETITION                                                                 {{{
+"COMPLETION                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set complete+=kspell
-
-
 set wildmode=full
 set wildmenu
 set completeopt=menuone,menu,preview
@@ -1209,6 +1208,9 @@ autocmd CursorMoved * let s:VisualMode = mode()
 
 command! -range=0 VTest call FuncName(<Count>, <Line1>, <Line2>)
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"TESTING                                                                     {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! FuncName(count, firstLine, lastLine)
 
     echomsg 'count line = ['.a:count.']'
@@ -1254,9 +1256,12 @@ command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 " nnoremap : :<C-w>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FINAL SETTINGS                                                              {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 source ~/.vim/vimrc_local
 
 set  modeline
 " vim: textwidth=78:
 " vim: foldmethod=marker:
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

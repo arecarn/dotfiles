@@ -279,9 +279,8 @@ call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
+" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
 " NeoBundle 'arecarn/crunch', 'Dev'
-nmap <Leader>ce <Plug>CrunchCrunchBlockExc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -412,6 +411,7 @@ let g:golden_ratio_autocommand = 0 "disable golden ratio autocmd
 nnoremap <C-w>gr :GoldenRatioToggle<CR>
 NeoBundle 'inkarkat/VimTAP' "Test Anything Protocol for vim
 NeoBundle 'inkarkat/runVimTests' " a testing framework for Vim
+NeoBundle 'junegunn/vader.vim' " A simple Vimscript test framework
 NeoBundle 'LanguageTool' " a testing framework for Vim
 "TODO make system independent 18 Mar 2014
 let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.jar'
@@ -921,6 +921,9 @@ function! TestCrunchVShell()
         RunVS runVimTests.sh  ~/Dropbox/projects/crunch/crunch/tests
     endif
 endfunction
+
+"do crunch tests
+nnoremap dct :!/usr/local/bin/vim -u ~/Dropbox/projects/crunch/crunch/.vimrc_minimal +Vader\*<CR>
 
 function! CrunchB()
     execute "normal! vip\<ESC>"

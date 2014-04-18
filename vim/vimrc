@@ -57,6 +57,13 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 let g:neocomplcache_enable_auto_delimiter = 1
 let g:neocomplcache_max_list = 8
 
+
+augroup Ctags
+    autocmd FileType c,cpp NeoComplCacheCachingTags   
+augroup END
+
+let g:neocomplcache_tags_caching_limit_file_size= 100000000
+
 " Define file-type dependent dictionaries.
 let g:neocomplcache_dictionary_filetype_lists = {
             \ 'default' : '',
@@ -100,7 +107,7 @@ let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-nnoremap <Leader>nc :NeoComplCacheToggle<CR>
+nnoremap coneo :NeoComplCacheToggle<CR>
 
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/neosnippet.vim'
@@ -194,10 +201,11 @@ endfunction
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "unite""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/unite.vim'
-" let g:unite_winheight = 10				
+let g:unite_winheight = 10				
 let g:unite_data_directory = s:vimpath.'/local_utils/unite/'
 let g:unite_matcher_fuzzy_max_input_length = 1000
 let g:unite_source_history_yank_enable = 1
+let g:unite_source_history_yank_limit = 10000
 let g:unite_split_rule = 'botright'
 let g:unite_source_file_rec_max_cache_files = 0
 let g:unite_source_mru_do_validate = 0
@@ -221,14 +229,6 @@ if executable('ack')
     let g:unite_source_grep_default_opts = '--no-heading --no-color -k -H'
     let g:unite_source_grep_recursive_opt = ''
 endif
-nnoremap <Leader>g :Unite -auto-preview grep<CR>
-nnoremap <Leader>f :Unite -start-insert file_rec/async<CR>
-nnoremap <Leader>y :Unite history/yank<CR>
-nnoremap <Leader>m :Unite output:message<CR>
-nnoremap <Leader>r :Unite -start-insert file_mru directory_mru<CR>
-nnoremap <Leader>b :Unite -start-insert buffer<CR>
-nnoremap <Leader>/ :Unite -start-insert outline line<CR>
-
 
 autocmd FileType unite call s:unite_settings()
 
@@ -236,22 +236,45 @@ function! s:unite_settings()
     imap <Silent><Buffer><Expr> <C-s> unite#do_action('split')
     imap <Silent><Buffer><Expr> <C-v> unite#do_action('vsplit')
     imap <Silent><Buffer><Expr> <C-t> unite#do_action('tabopen')
-    imap <Silent><Buffer><Expr> <C-g>  unite#do_action('goto')
+    imap <Silent><Buffer><Expr> <C-g> unite#do_action('goto')
 endfunction
+
+let g:unite_source_menu_menus = {}
+
+let g:unite_source_menu_menus.test = {
+      \     'description' : 'Interpreter Menu',
+      \ }
+let g:unite_source_menu_menus.test.command_candidates = [
+      \   ['bc', 'VimShellInteractive bc'],
+      \   ['octave', 'VimShellInteractive octave'],
+      \   ['python', 'VimShellInteractive python']
+      \ ]
+
 
 NeoBundle 'Shougo/unite-ssh'
 NeoBundle 'Shougo/unite-outline'
 NeoBundle 'Shougo/unite-session'
 NeoBundle 'Shougo/neomru.vim'
-let g:unite_source_session_enable_auto_save = 1
-nnoremap <Leader>ss :UniteSessionSave<Space>
-nnoremap <Leader>sl :Unite session<CR>
-
-" " Load session automatically.
-" autocmd VimEnter * UniteSessionLoad
-
 NeoBundle 'tsukkee/unite-help' " help source for unite.vim
 NeoBundle 'ujihisa/unite-colorscheme' " A unite.vim plugin
+NeoBundle 'kmnk/unite-command'
+NeoBundle 'majkinetor/unite-cmdmatch' " Vim unite plugin that provides command line completition
+NeoBundle 'voi/unite-ctags' " unite.vim's source to show tag information by ctags.
+
+nnoremap sg :Unite -auto-preview grep<CR>
+nnoremap sf :Unite file_rec/async<CR>
+nnoremap sy :Unite history/yank<CR>
+nnoremap smg :Unite output:message<CR>
+nnoremap smp :Unite mapping<CR>
+nnoremap sr :Unite file_mru directory_mru<CR>
+nnoremap sb :Unite buffer<CR>
+nnoremap so :Unite outline line<CR>
+nnoremap sh :Unite help<CR>
+nnoremap ss :Unite session<CR>
+nnoremap si  :<C-u>Unite menu:test<CR>
+nnoremap sc  :Unite cmdmatch<CR>
+nnoremap dss :UniteSessionSave<Space>
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "VimFiler"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/vimfiler.vim'
@@ -268,7 +291,7 @@ command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/vimshell.vim'
-nnoremap <Leader>vs :VimShellBufferDir -popup -toggle<CR>
+nnoremap covs :VimShellBufferDir -popup -toggle<CR>
 let g:vimshell_vimshrc_path = s:vimpath.'/local_utils/vimshell/'
 
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -279,27 +302,26 @@ call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+<<<<<<< HEAD
 " NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
+=======
+
+" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} 
+
+>>>>>>> 6a40917d4e8029c001ac54e8f2cb7218d8dd1c6d
 " NeoBundle 'arecarn/crunch', 'Dev'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'godlygeek/tabular'
 "following filetype commands align linewise comments 
-nnoremap <Leader>tz :Tabularize/
-xnoremap <Leader>tz :Tabularize/
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"ctrlp""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-NeoBundle 'kien/ctrlp.vim'
-let g:ctrlp_map = '<C-p>'
-let g:ctrlp_cmd = 'CtrlPLastMode'
-let g:ctrlp_extensions = ['buffertag', 'tag', 'line', 'dir']  
+nnoremap dz :Tabularize/
+xnoremap dz :Tabularize/
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "indent guides""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'nathanaelkane/vim-indent-guides'
-"to toggle indent guides type \ig
+nmap <silent> coig <Plug>IndentGuidesToggle
 let g:indent_guides_enable_on_vim_startup=0 "start indent guides on startup
 let g:indent_guides_guide_size = 1 "don't make the guides too big
 
@@ -309,12 +331,13 @@ NeoBundle 'scrooloose/syntastic'
 let g:syntastic_check_on_open=1
 
 let g:syntastic_python_checkers = ['python']
+nnoremap cost :SyntasticToggleMode<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2 
 "fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'thinca/vim-fontzoom'
 let g:fontzoom_no_default_key_mappings = 1
-nmap <F11> <Plug>(fontzoom-larger)
-nmap  <F12> <Plug>(fontzoom-smaller)
+nnoremap  ]f <Plug>(fontzoom-larger)
+nnoremap  [f <Plug>(fontzoom-smaller)
 
 "fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "netrw""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -325,13 +348,14 @@ let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+NeoBundle 'terryma/vim-expand-region'
 NeoBundle 'kana/vim-textobj-user' " Vim plugin: Create your own text objects
-NeoBundle 'kana/vim-textobj-indent' " inent text object ii ai
+NeoBundle 'kana/vim-textobj-indent' " indent text object ii ai
 NeoBundle 'kana/vim-textobj-entire' " entire text object ie ae
 NeoBundle 'thinca/vim-textobj-between' " if<CHAR> af<CHAR> eg between '*' vif*
 NeoBundle 'saihoooooooo/vim-textobj-space' "text object for space iS aS
 NeoBundle 'mattn/vim-textobj-url' " text object for ul iu au
-
+NeoBundle 'Julian/vim-textobj-variable-segment' "iv av for snake_case & CamelCase
 call textobj#user#plugin('num', 
             \{
             \'-': 
@@ -345,10 +369,10 @@ NeoBundle 'coderifous/textobj-word-column.vim' "not textobj Dependant
 "text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-textmanip'
-xmap <Space>d <Plug>(textmanip-duplicate-down)
-nmap <Space>d <Plug>(textmanip-duplicate-down)
-xmap <Space>D <Plug>(textmanip-duplicate-up)
-nmap <Space>D <Plug>(textmanip-duplicate-up)
+xmap <Leader>d <Plug>(textmanip-duplicate-down)
+nmap <Leader>d <Plug>(textmanip-duplicate-down)
+xmap <Leader>D <Plug>(textmanip-duplicate-up)
+nmap <Leader>D <Plug>(textmanip-duplicate-up)
 
 xmap <C-j> <Plug>(textmanip-move-down)
 xmap <C-k> <Plug>(textmanip-move-up)
@@ -361,14 +385,14 @@ xmap <Leader>mt <Plug>(textmanip-toggle-mode)
 "textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-quickhl'
-nmap <Space>h <Plug>(quickhl-manual-this)
-xmap <Space>h <Plug>(quickhl-manual-this)
-nmap <Space>H <Plug>(quickhl-manual-reset)
-xmap <Space>H <Plug>(quickhl-manual-reset)
+nmap dh <Plug>(quickhl-manual-this)
+xmap dh <Plug>(quickhl-manual-this)
+nmap dH <Plug>(quickhl-manual-reset)
+xmap dH <Plug>(quickhl-manual-reset)
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-choosewin'
-nmap <space>w <Plug>(choosewin)
+nmap sw <Plug>(choosewin)
 let g:choosewin_overlay_enable = 1
 let g:choosewin_overlay_clear_multibyte = 1
 let g:choosewin_statusline_replace = 0
@@ -390,7 +414,7 @@ NeoBundle 'merlinrebrovic/focus.vim' " A Vim plugin that removes clutter and mak
 NeoBundle 'fugitive.vim' " 1.0   A Git wrapper so awesome, it should be illegal
 NeoBundle 'gregsexton/VimCalc'
 NeoBundle 'mbbill/undotree' " Display your undo history in a graph.
-nnoremap <Leader>ut :UndotreeToggle<CR>
+nnoremap sut :UndotreeToggle<CR>
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-markdown'
 NeoBundle 'tpope/vim-repeat'
@@ -399,7 +423,7 @@ NeoBundle 'tpope/vim-surround'
 NeoBundle 'tpope/vim-speeddating' " speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
 NeoBundle 'tpope/vim-abolish' " abolish easily search for, substitute, and abbreviate multiple variants of a word
 NeoBundle 'tpope/vim-unimpaired' " unimpaired.vim: pairs of handy bracket mappings
-nnoremap cop :set paste!<CR>:echo "paste = ".&paste<CR>
+NeoBundle 'tpope/vim-dispatch' 
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'hrsh7th/vim-neco-calc' " neocomplcache calculates plugin.
 NeoBundle 'thinca/vim-visualstar' " star for Visual-mode.
@@ -408,7 +432,7 @@ NeoBundle 'dhruvasagar/vim-table-mode' " VIM Table Mode for blazing fast instant
 let g:table_mode_separator = '|'
 NeoBundle 'roman/golden-ratio' " Automatic resizing of Vim windows to the golden ratio 
 let g:golden_ratio_autocommand = 0 "disable golden ratio autocmd
-nnoremap <C-w>gr :GoldenRatioToggle<CR>
+nnoremap cogr :GoldenRatioToggle<CR>
 NeoBundle 'inkarkat/VimTAP' "Test Anything Protocol for vim
 NeoBundle 'inkarkat/runVimTests' " a testing framework for Vim
 NeoBundle 'junegunn/vader.vim' " A simple Vimscript test framework
@@ -416,36 +440,34 @@ NeoBundle 'LanguageTool' " a testing framework for Vim
 "TODO make system independent 18 Mar 2014
 let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.jar'
 NeoBundle 'tlvince/vim-compiler-python' " A very basic python compiler script.
-NeoBundle 'justinmk/vim-sneak'
 NeoBundle 'sk1418/HowMuch'
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks of code
 NeoBundle 'majutsushi/tagbar' " Vim plugin that displays tags in a window, ordered by scope
 NeoBundle "reedes/vim-lexical"
-let g:lexical#spell_key = '<leader>s'
-let g:lexical#thesaurus_key = '<leader>t'
-let g:lexical#dictionary_key = '<leader>k'
-NeoBundle 'osyo-manga/vim-reunions'
+" NeoBundle 'osyo-manga/vim-reunions'
 "vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-NeoBundle 'osyo-manga/vim-marching' " Async clang code completion.
-" path to clang command
-let g:marching_clang_command = "clang"
-let g:marching_enable_neocomplete = 1
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.cpp =
-    \ '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
-imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
+" " NeoBundle 'osyo-manga/vim-marching' " Async clang code completion.
+" " path to clang command
+" let g:marching_clang_command = "clang"
+" let g:marching_enable_neocomplete = 1
+" if !exists('g:neocomplete#force_omni_input_patterns')
+"   let g:neocomplete#force_omni_input_patterns = {}
+" endif
+" let g:neocomplete#force_omni_input_patterns.cpp =
+"     \ '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+" imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
+" imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
 "vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/echodoc.vim'
 let g:echodoc_enable_at_startup=1
 set cmdheight=2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+NeoBundle 'tommcdo/vim-exchange' " Easy text exchange operator for Vim
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
+" NeoBundle 'justinmk/vim-sneak'
 NeoBundleCheck
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -455,7 +477,7 @@ filetype on
 filetype plugin on
 filetype indent on
 syntax on " allow syntax highlighting
-set encoding=utf-8 "make vim use UTF-8 by default
+set encoding=utf-8 "make Vim use UTF-8 by default
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "UI OPTIONS                                                                  {{{
@@ -474,9 +496,8 @@ if has ("gui_running")
             autocmd GUIEnter * simalt ~x " maximize in windows
         augroup END
     else
-        set lines=999
-        set columns=999
-    endif 
+        call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
+    endif
 endif
 
 "colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -614,7 +635,7 @@ let s:backupdir = s:vimpath.'/local_utils/backup'
 execute 'set backupdir='.s:backupdir
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"LINE WRAPING                                                                {{{
+"LINE WRAPPING                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nowrap "When on, lines longer than the width of the window will wrap and
 "set wrapmargin=80  "set where wrapping starts 
@@ -629,9 +650,16 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
-nnoremap gs 1z=<CR><CR>
+
+"TODO make Capitalize words operator
+"TODO make Scripts to go though all misspellings words and fix them
+nnoremap cgg 1z=
+nnoremap cgl z=
+nnoremap cga :spellrepall<CR>
+nnoremap cgs t<space>a<C-x><C-s>
+nnoremap cgt t<space>a<C-x><C-t>
+nnoremap cgd t<space>a<C-x><C-k>
 inoremap <C-S> <ESC>[s1z=gi
-"this is a tarp deal you bogus 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TEMPLATE MAPPINGS                                                           {{{
@@ -650,7 +678,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "MAPPINGS & COMMANDS                                                        {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set timeoutlen=600
+set timeout timeoutlen=1000 ttimeoutlen=100
 set updatetime=1000 "how long it takes for the preview to show up in ms
 set previewheight=12 "how tall the preview window is
 
@@ -660,7 +688,6 @@ nnoremap k gk
 nnoremap j gj
 nnoremap gk k
 nnoremap gj j
-
 
 nnoremap * :let b:PlugView=winsaveview()<CR>*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
 nnoremap g* :let b:PlugView=winsaveview()<CR>g*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
@@ -675,42 +702,18 @@ nnoremap  <F10> <C-w>+
 
 "Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+nnoremap cop :set paste!<CR>:set paste?<CR>
+nnoremap <silent> cotw :if &tw==0<CR>:set tw=78<CR>:else<CR>:set tw=0<CR>:endif<CR>:set tw?<CR>
 
-" map  \sp for spell check toggling
-nnoremap <Leader>sp :setlocal spell!<CR>:set spell?<CR>
-" Toggle virtualedit
-set virtualedit=block
-function! Toggle_virtualedit()
-    if &virtualedit == 'all'
-        set virtualedit=block
-    else
-        set virtualedit=all
-    endif
-endfunction
-nnoremap <Leader>ve :call Toggle_virtualedit()<CR>:set virtualedit?<CR>
-function! TextWidthToggle(textWidth)
-    if &textwidth!=a:textWidth 
-        execute "setlocal textwidth=".a:textWidth
-        setlocal textwidth?
-    else
-        setlocal textwidth=0
-        setlocal textwidth?
-    endif
-endfunction
-
-nnoremap <Leader>tw :call TextWidthToggle(80)<CR>
-"toggles wrap when \wr is entered
-nnoremap <Leader>wr <ESC>:setlocal wrap!<CR>:set wrap?<CR>
-"CTRL-l redraws the screen and removes any search highlighting.
-nnoremap <leader>l :set hlsearch!<CR><C-l>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
-"update diff with a keymapping
+"update diff with a key mapping
 nnoremap du :diffupdate<CR>
+nnoremap dr <C-L>:redraw<CR>
 
-"navigate buffers easier
-nnoremap ]b :bn<CR>
-nnoremap [b :bp<CR>
+" lets use this as a command prefix for "show"
+nmap s <Nop>
+nnoremap sv :e $MYVIMRC<CR>
 
 " make more undos possible after leaving insert mode 
 inoremap <C-u> <C-g>u<C-u>
@@ -720,15 +723,6 @@ inoremap <CR> <C-g>u<CR>
 inoremap <Del> <C-g>u<Del>
 inoremap <END> <C-g>u<END>
 
-
-
-"search and replace a word
-nnoremap <Leader>rw :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
-nnoremap <Leader>rW :%s/\<<C-r><C-a>\>//gc<Left><Left><Left>
-
-"Rebind Q to reformat without moving cursor
-nnoremap Q gw
-xnoremap Q gw
 
 "Yank till end of line 
 noremap Y y$
@@ -745,15 +739,37 @@ nnoremap <Leader>gf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into registe
 nnoremap <Leader>gd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
 
 
+"navigation in command line 
 cnoremap <C-j> <DOWN>
 cnoremap <C-k> <UP>
-cnoremap <C-h> <LEFT>
-cnoremap <C-l> <RIGHT>
+cnoremap <C-b> <LEFT>
+cnoremap <C-f> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
+"split a line 
+nnoremap S i<c-j><esc>k$
+
 cabbrev %f <C-r>=expand('%:p')<CR>
 cabbrev %d <C-r>=expand('%:h')<CR>
+
+" disable Ex mode key and map it to something awesome
+nnoremap Q @@
+" replay macro for each line of a visual selection
+xnoremap Q :normal! @@<CR>
+xnoremap @q :normal! @q<CR>
+" repeat last command for each line of a visual selection
+xnoremap . :normal! .<CR>
+" repeat the last edit on the next [count] matches.
+nnoremap <C-n> @='n.'<cr>
+nnoremap <C-p> @='N.'<cr>
+
+"Z-maps! Z-maps!
+nnoremap ZW :wa<cr>
+nnoremap ZZ :wqa<cr>
+nnoremap Zq :qa<cr>
+nnoremap ZQ :qa!<cr>
+nnoremap ZB :bd<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "SCRIPTS                                                                     {{{
@@ -851,7 +867,7 @@ function! SetMkfile()
     return "."
 endfunction
 
-command! -nargs=* Make tabnew | let mkpath = SetMkfile() | make <Args> -C $mkpath | cwindow 10
+" command! -nargs=* Make tabnew | let mkpath = SetMkfile() | make <Args> -C $mkpath | cwindow 10
 
 function! Maker(args)
     wall
@@ -884,7 +900,7 @@ endfunction
 
 command! -nargs=* Maker call Maker('<Args>')
 
-command! -nargs=* Make make! <Args> | cwindow
+command! -nargs=* MyMake make! <Args> | cwindow
 
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -1032,10 +1048,10 @@ function! NeatFoldText()
 endfunction
 "NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 set foldtext=NeatFoldText()
-set foldmethod=indent " the type of folding to use 
-set foldcolumn=2 " column on the far left that shows where folds are 
-set foldnestmax=1 " number of fold levels to use
-set foldlevelstart=99 "when vim starts don't fold anything
+set foldmethod=indent "the type of folding to use 
+set foldcolumn=2 "column on the far left that shows where folds are 
+set foldnestmax=1 "number of fold levels to use
+set foldlevelstart=99 "when Vim starts don't fold anything
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "AUTOCMDS                                                                    {{{
@@ -1048,13 +1064,6 @@ if has("autocmd")
     augroup END
 endif
 
-" autocmnds .txt 
-if has("autocmd")
-    augroup text
-        autocmd!
-        autocmd BufEnter *.txt setlocal spell
-    augroup END
-endif
 
 "autocmnds for all files
 if has("autocmd")
@@ -1081,13 +1090,13 @@ if has("autocmd")
             autocmd BufEnter *.tex setf tex
             "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
             autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
-            autocmd BufEnter *.tex set concealcursor=
+            autocmd BufEnter *.tex setlocal concealcursor=
         augroup END
     else
         augroup TEX
             autocmd!
             autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
-            autocmd BufEnter *.tex set concealcursor=
+            autocmd BufEnter *.tex setlocal concealcursor=
         augroup END
     endif
 endif
@@ -1191,11 +1200,8 @@ set matchtime=3 " time show match takes to jump to the matching bracket in
 " 10th of a second
 set tags=tags;/ "set the tag file to be called tags the ";/" allows you to look back wards
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"COMPETITION                                                                 {{{
+"COMPLETION                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set complete+=kspell
-
-
 set wildmode=full
 set wildmenu
 set completeopt=menuone,menu,preview
@@ -1210,6 +1216,9 @@ autocmd CursorMoved * let s:VisualMode = mode()
 
 command! -range=0 VTest call FuncName(<Count>, <Line1>, <Line2>)
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"TESTING                                                                     {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! FuncName(count, firstLine, lastLine)
 
     echomsg 'count line = ['.a:count.']'
@@ -1255,7 +1264,12 @@ command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 " nnoremap : :<C-w>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FINAL SETTINGS                                                              {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+source ~/.vim/vimrc_local
+
 set  modeline
 " vim: textwidth=78:
 " vim: foldmethod=marker:
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

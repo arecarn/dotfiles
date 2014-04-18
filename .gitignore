@@ -6,3 +6,4 @@ vim/local_utils/unite/file_mru_long
 vim/local_utils/unite/history_yank
 vim/local_utils/unite/outline/**
 vim/local_utils/unite/rec/file/**
+vim/vimrc_local

@@ -89,6 +89,10 @@ bindkey '^H' backward-delete-char
 bindkey '^W' backward-kill-word
 # ctrl-r starts searching history backward
 bindkey '^R' history-incremental-search-backward
+# ctrl-s starts searching history backward
+bindkey '^S' history-incremental-search-forward
+bindkey -M vicmd 'j' down-line-or-search
+bindkey -M vicmd 'k' up-line-or-search
 bindkey '^E' _expand_alias
 
 
@@ -135,7 +139,7 @@ export EDITOR='vim'
 
 # LOCAL CONFIG
 ################################################################################
-source ~/.local.zsh
+source ~/.zshrc_local
 
 # END LOCAL CONFIG
 ################################################################################

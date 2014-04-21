@@ -7,7 +7,7 @@
 
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
-dotfiles=.inputrc .tmux.conf .mutt .gitconfig .zshrc .oh-my-zsh .vim .ctags" # list of files/folders to symlink in homedir
+dotfiles=".inputrc .tmux.conf .mutt .gitconfig .zshrc .oh-my-zsh .vim .ctags" # list of files/folders to symlink in homedir
 
 ############################
 # Code
@@ -25,14 +25,14 @@ echo "...done"
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
     echo "Moving any existing dotfiles from ~ to $olddir"
 for file in $dotfiles; do
-    mv ~/.$file $olddir/.
+    mv ~/$file $olddir/$file
     echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file ~/.
+    ln -s $dir/$file ~/$file
 done
 echo "...done"
 
 echo "Moving custom zsh plugins into place"
-ln -s $dir/dotfiles/oh-my-zsh-plugins $dir/oh-my-zsh/custom/plugins
+ln -s $dir/dotfiles/oh-my-zsh-plugins $dir/.oh-my-zsh/custom/plugins
 echo "...done"
 
 # run Vim setup
@@ -41,4 +41,5 @@ echo "Running Vim Setup"
 vim -c 'q'
 echo "...done"
 
-echo "Done Installing, You're So Cool!"
+echo "Done Installing, You are So Cool!"
+

@@ -57,7 +57,6 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 let g:neocomplcache_enable_auto_delimiter = 1
 let g:neocomplcache_max_list = 8
 
-
 augroup Ctags
     autocmd FileType c,cpp NeoComplCacheCachingTags   
 augroup END
@@ -80,7 +79,6 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 " Plugin key-mappings.
 inoremap <expr><C-g>     neocomplcache#undo_completion()
 inoremap <expr><C-l>     neocomplcache#complete_common_string()
-
 
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
@@ -439,7 +437,7 @@ NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks of code
 NeoBundle 'majutsushi/tagbar' " Vim plugin that displays tags in a window, ordered by scope
-NeoBundle "reedes/vim-lexical"
+NeoBundle 'osyo-manga/vim-over'
 " NeoBundle 'osyo-manga/vim-reunions'
 "vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 " " NeoBundle 'osyo-manga/vim-marching' " Async clang code completion.
@@ -490,7 +488,7 @@ if has ("gui_running")
             autocmd GUIEnter * simalt ~x " maximize in windows
         augroup END
     else
-        call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
+
     endif
 endif
 
@@ -736,8 +734,8 @@ nnoremap <Leader>gd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into registe
 "navigation in command line 
 cnoremap <C-j> <DOWN>
 cnoremap <C-k> <UP>
-cnoremap <C-b> <LEFT>
-cnoremap <C-f> <RIGHT>
+cnoremap <C-h> <LEFT>
+cnoremap <C-l> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
@@ -933,7 +931,7 @@ function! TestCrunchVShell()
 endfunction
 
 "do crunch tests
-nnoremap dct :!/usr/local/bin/vim -u ~/Dropbox/projects/crunch/crunch/.vimrc_minimal +Vader\*<CR>
+nnoremap dct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
 
 function! CrunchB()
     execute "normal! vip\<ESC>"

@@ -42,10 +42,10 @@ NeoBundle 'Shougo/vimproc', {
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "neocomplchache"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/neocomplcache'
-if !isdirectory(s:vimpath.'/local_utils/neocomplcache')
-    call mkdir(s:vimpath.'/local_utils/neocomplcache', "p", 0700)
+if !isdirectory(s:vimpath.'/utils_local/neocomplcache')
+    callrch)<Plug>(over-restore-search-pattern) mkdir(s:vimpath.'/utils_local/neocomplcache', "p", 0700)
 endif
-let g:neocomplcache_temporary_dir = s:vimpath.'/local_utils/neocomplcache'
+let g:neocomplcache_temporary_dir = s:vimpath.'/utils_local/neocomplcache'
 let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_camel_case_completion = 1
@@ -62,8 +62,7 @@ augroup Ctags
     autocmd FileType c,cpp NeoComplCacheCachingTags   
 augroup END
 
-let g:neocomplcache_tags_caching_limit_file_size= 100000000
-
+let g:neocomplcache_tags_caching_limit_file_size= 100000000 "one million
 " Define file-type dependent dictionaries.
 let g:neocomplcache_dictionary_filetype_lists = {
             \ 'default' : '',
@@ -133,76 +132,11 @@ NeoBundle 'Shougo/neosnippet-snippets'
 " Tell Neosnippet about the other snippets
 let g:neosnippet#snippets_directory=s:vimpath.'/utils/snippets'
 NeoBundle 'Shougo/neosnippet.vim'
-"CommentLine""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
-function! CommentLine(char, width)
-    let b:multiline_str_start = matchstr(&commentstring, '.\+\ze%s.*')
-    let b:multiline_str_end = matchstr(&commentstring, '.\+%s\zs.*')
-    " echom '[' . b:multiline_str_end . '] = the end'
-    " echom '[' . b:multiline_str_start . '] = the start'
-    if  b:multiline_str_end == '' || b:multiline_str_end == ' '
-        let b:multilinecomment = 0
-    else 
-        let b:multilinecomment = 1
-    endif
-    let b:comment_length = strlen(&commentstring)-2
-    let b:commentLine = ""
-
-    while strlen(b:commentLine) + b:comment_length + col('.') - 1 <= a:width
-        let b:commentLine = b:commentLine.a:char 
-    endwhile
-    return substitute(&commentstring,'%s', b:commentLine, '')
-endfunction
-"fun2
-function! Comment_line()
-    let b:comment_length = strlen(&commentstring)-2
-    let b:commentLine = ""
-    while strlen(b:commentLine) + b:comment_length + col('.') != 80
-        let b:commentLine = b:commentLine . '=' 
-    endwhile
-    let b:line = printf(&commentstring,b:commentLine)
-    call setline('.', b:line)
-endfunction                                                               
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
-"CommentStr"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
-function! CommnetStr(str)
-    let b:multiline_str = substitute(&commentstring, '%s\ze', '')
-    echo b:multiline_str
-    let b:comment_length = strlen(&commentstring)-2
-    let b:commentLine = ""
-    while strlen(b:commentLine) + b:comment_length != a:width
-        let b:commentLine = b:commentLine . a:char 
-    endwhile
-    return substitute(&commentstring,'%s', b:commentLine, '')
-endfunction
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
-"CommentBox()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
-function! CommentBox(char, width)
-    let b:multiline_str_start = matchstr(&commentstring, '.\+\ze%s.*')
-    let b:multiline_str_end = matchstr(&commentstring, '.\+%s\zs.*')
-    "echom '[' . b:multiline_str_end . '] = the end'
-    "echom '[' . b:multiline_str_start . '] = the start'
-    if  b:multiline_str_end == '' || b:multiline_str_end == ' '
-        let b:multilinecomment = 0
-    else 
-        let b:multilinecomment = 1
-    endif
-    if b:multilinecomment == 1
-        let b:line1 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start)) . "\n"
-        let b:line2 = '*' . repeat(' ', a:width) . "\n"
-        let b:line3 = repeat(a:char, a:width-strlen(b:multiline_str_end)) . b:multiline_str_end
-    else
-        let b:line1 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start)) . "\n"
-        let b:line2 = b:multiline_str_start . repeat(' ', a:width) . "\n"
-        let b:line3 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start))
-    endif 
-    return b:line1 . b:line2 . b:line3 
-endfunction
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "unite""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/unite.vim'
 let g:unite_winheight = 10				
-let g:unite_data_directory = s:vimpath.'/local_utils/unite/'
+let g:unite_data_directory = s:vimpath.'/utils_local/unite/'
 let g:unite_matcher_fuzzy_max_input_length = 1000
 let g:unite_source_history_yank_enable = 1
 let g:unite_source_history_yank_limit = 10000
@@ -211,7 +145,6 @@ let g:unite_source_file_rec_max_cache_files = 0
 let g:unite_source_mru_do_validate = 0
 call unite#custom#source('file_rec,file_rec/async',
             \ 'max_candidates', 0)
-
 
 call unite#custom#profile('files', 'filters', 'sorter_rank')
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
@@ -249,7 +182,6 @@ let g:unite_source_menu_menus.test.command_candidates = [
       \   ['octave', 'VimShellInteractive octave'],
       \   ['python', 'VimShellInteractive python']
       \ ]
-
 
 NeoBundle 'Shougo/unite-ssh'
 NeoBundle 'Shougo/unite-outline'
@@ -292,7 +224,7 @@ command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/vimshell.vim'
 nnoremap covs :VimShellBufferDir -popup -toggle<CR>
-let g:vimshell_vimshrc_path = s:vimpath.'/local_utils/vimshell/'
+let g:vimshell_vimshrc_path = s:vimpath.'/utils_local/vimshell/'
 
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Frisk""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -363,19 +295,14 @@ NeoBundle 'coderifous/textobj-word-column.vim' "not textobj Dependant
 "text-obj"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-textmanip'
-xmap <Leader>d <Plug>(textmanip-duplicate-down)
-nmap <Leader>d <Plug>(textmanip-duplicate-down)
-xmap <Leader>D <Plug>(textmanip-duplicate-up)
-nmap <Leader>D <Plug>(textmanip-duplicate-up)
-
 xmap <C-j> <Plug>(textmanip-move-down)
 xmap <C-k> <Plug>(textmanip-move-up)
 xmap <C-h> <Plug>(textmanip-move-left)
 xmap <C-l> <Plug>(textmanip-move-right)
 
 " toggle insert/replace with <F10>
-nmap <Leader>mt <Plug>(textmanip-toggle-mode)
-xmap <Leader>mt <Plug>(textmanip-toggle-mode)
+nmap comt <Plug>(textmanip-toggle-mode)
+xmap comt <Plug>(textmanip-toggle-mode)
 "textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-quickhl'
@@ -460,6 +387,7 @@ let g:echodoc_enable_at_startup=1
 set cmdheight=2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'tommcdo/vim-exchange' " Easy text exchange operator for Vim
+NeoBundle 'osyo-manga/vim-over'
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
 " NeoBundle 'justinmk/vim-sneak'
 NeoBundleCheck
@@ -603,13 +531,13 @@ endif
 "UNDO & SWAP                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set undofile                " Save undos after file closes
-let s:undodir = s:vimpath.'/local_utils/undo' " where to save undo histories
+let s:undodir = s:vimpath.'/utils_local/undo' " where to save undo histories
 set undolevels=20000         " How many undo
 set undoreload=20000         " number of lines to save for undo
 
 execute 'set undodir='.s:undodir
 
-let s:swap=s:vimpath.'/local_utils/swap//'
+let s:swap=s:vimpath.'/utils_local/swap//'
 execute 'set directory='.s:swap
 " ^ Here be magic! Quoth the help: (from godlygeek)
 " For Unix and Win32, if a directory ends in two path separators "//" or "\\",
@@ -625,7 +553,7 @@ execute myvar
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "BACKUP                                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:backupdir = s:vimpath.'/local_utils/backup'
+let s:backupdir = s:vimpath.'/utils_local/backup'
 execute 'set backupdir='.s:backupdir
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -721,23 +649,27 @@ inoremap <END> <C-g>u<END>
 "Yank till end of line 
 noremap Y y$
 
-nnoremap g= :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
+nnoremap =ae  :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
             \ <CR>:echo "file indented"<CR>
-nnoremap gy :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
+nnoremap =ie  :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
+            \ <CR>:echo "file indented"<CR>
+nnoremap yae :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
+            \ <CR>:echo "file yanked"<CR>
+nnoremap yie :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
             \ <CR>:echo "file yanked"<CR>
 
-nnoremap <Leader>lcd :lcd %:h<Cr>:pwd<Cr>
-nnoremap <Leader>cd :cd! %:h<Cr>:pwd<Cr>
+nnoremap dcd :cd! %:h<Cr>:pwd<Cr>
+nnoremap dcdl :lcd! %:h<Cr>:pwd<Cr>
 
-nnoremap <Leader>gf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
-nnoremap <Leader>gd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap dgf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap dgd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
 
 
 "navigation in command line 
 cnoremap <C-j> <DOWN>
 cnoremap <C-k> <UP>
-cnoremap <C-b> <LEFT>
-cnoremap <C-f> <RIGHT>
+cnoremap <C-h> <LEFT>
+cnoremap <C-l> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
@@ -771,7 +703,7 @@ nnoremap ZB :bd<cr>
 "reverse the selected lines (TODO don't work for line at the top of a file) 
 xnoremap gr <ESC>'<mr'>:'r+1,.g/^/m 'r<CR>
 command!  PreviewTagToggle call PreviewWordToggle()
-nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
+nnoremap dtp :ptjump <C-r><C-w><CR>
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "save everything and then gcc the current file then run the file returned by
 "gcc
@@ -1012,7 +944,7 @@ nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
 "noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"TABS - INDENTING                                                            {{{
+"TABS & INDENTING                                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set expandtab     " causes spaces to be used instead of tabs
 set tabstop=4     " sets how big tabs are.
@@ -1138,7 +1070,7 @@ function! PrintCscopeOptions()
     echo "T: Find this text string"
     echo "E: Find this egrep pattern"
 endfunction
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
+execute "nnoremap dcs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
 
 set cscoperelative
 
@@ -1149,25 +1081,7 @@ set wrapscan " searches wraparound a file
 set incsearch  " do incremental searching
 set ignorecase
 set smartcase  " overrides ignore  case when caps in search
-
-command! -nargs=+ Ezgrep call Ezgrep(<F-args>)
-cabbrev ezgrep Ezgrep
-nnoremap <Leader>eg :execute  Ezgrep(expand("<Cword>"))<CR>:echo'finding'<CR>
-function! Ezgrep(...)
-    let searchterms = join(a:000," ")
-    " execute "cd %:p:h"
-    let fileExten = expand("%:e")
-    if fileExten ==? "c" || fileExten ==? "h"
-        let fileExten = "{c,h}"
-    endif 
-    execute "vimgrep/" . searchterms . "/gj **/*." .  fileExten 
-    execute "copen"
-    set hlsearch
-    let @/ = searchterms
-endfunction
-
 set path+=*/**
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "GENERAL BEHAVIOR                                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1180,6 +1094,7 @@ augroup noBells "disable dang error{visual}bells for good
     autocmd GUIEnter * set vb t_vb= " for your GUI
     autocmd VimEnter * set vb t_vb=
 augroup END
+
 set switchbuf=usetab
 set shortmess+=a "Abbrev. of messages (avoids 'hit enter')
 set autowriteall "saves buffer before leaving it
@@ -1200,9 +1115,6 @@ set wildmode=full
 set wildmenu
 set completeopt=menuone,menu,preview
 
-function! Rand()
-    return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
-endfunction 
 
 nnoremap <Leader>n a<C-r>=Rand()<CR><SPACE><SPACE><ESC>
 
@@ -1261,7 +1173,7 @@ command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FINAL SETTINGS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-source ~/.vim/vimrc_local
+execute 'source'.s:vimpath.'/vimrc_local'
 
 set  modeline
 " vim: textwidth=78:

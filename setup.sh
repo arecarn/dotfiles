@@ -7,7 +7,9 @@
 
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
+omzpluginsdir=~/dotfiles/oh-my-zsh/custom/plugins/
 dotfiles="inputrc tmux.conf mutt gitconfig zshrc oh-my-zsh vim ctags" # list of files/folders to symlink in homedir
+omzplugins="geeknote" # list of custome zsh plugins
 
 ############################
 # Code
@@ -31,8 +33,11 @@ for file in $dotfiles; do
 done
 echo "...done"
 
-echo "Moving custom zsh plugins into place"
-ln -s $dir/dotfiles/oh-my-zsh-plugins $dir/oh-my-zsh/custom/plugins
+echo "Moving oh-my-zsh plugins into $omzpluginsdir "
+for file in $omzplugins; do
+    echo "Creating symlink to $file in zsh plugins dir "
+    ln -s $dir/oh-my-zsh-plugins/$file  $omzpluginsdir/$file
+done
 echo "...done"
 
 # run Vim setup

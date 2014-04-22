@@ -4,15 +4,12 @@
 [submodule "oh-my-zsh-plugins/geeknote"]
 	path = oh-my-zsh-plugins/geeknote
 	url = https://github.com/s7anley/zsh-geeknote.git
-[submodule "oh-my-zsh"]
-	path = oh-my-zsh
+[submodule ".oh-my-zsh"]
+	path = .oh-my-zsh
 	url = https://github.com/robbyrussell/oh-my-zsh.git
 [submodule "mybin/installs/atdtool"]
 	path = mybin/installs/atdtool
 	url = https://github.com/lpenz/atdtool.git
-[submodule "mutt/colors/mutt-colors-solarized"]
-	path = mutt/colors/mutt-colors-solarized
-	url = https://github.com/altercation/mutt-colors-solarized.git
-[submodule "vim/bundle/neobundle.vim"]
-	path = vim/bundle/neobundle.vim
+[submodule ".vim/bundle/neobundle.vim"]
+	path = .vim/bundle/neobundle.vim
 	url = https://github.com/Shougo/neobundle.vim.git

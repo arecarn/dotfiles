@@ -79,7 +79,6 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 inoremap <expr><C-g>     neocomplcache#undo_completion()
 inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
-
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
@@ -206,7 +205,7 @@ nnoremap sc  :Unite cmdmatch<CR>
 nnoremap shs :Unite history/search<CR>
 nnoremap shy :Unite history/yank<CR>
 nnoremap shc :Unite history/command<CR>
-nnoremap dss :UniteSessionSave<Space>
+nnoremap dsss :UniteSessionSave<Space>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "VimFiler"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -242,8 +241,8 @@ call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 "Tabular""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'godlygeek/tabular'
 "following filetype commands align linewise comments 
-nnoremap dz :Tabularize/
-xnoremap dz :Tabularize/
+nnoremap dsa :Tabularize/
+xnoremap dsa :Tabularize/
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "indent guides""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -307,10 +306,10 @@ xmap comt <Plug>(textmanip-toggle-mode)
 "textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-quickhl'
-nmap dh <Plug>(quickhl-manual-this)
-xmap dh <Plug>(quickhl-manual-this)
-nmap dH <Plug>(quickhl-manual-reset)
-xmap dH <Plug>(quickhl-manual-reset)
+nmap dsh <Plug>(quickhl-manual-this)
+xmap dsh <Plug>(quickhl-manual-this)
+nmap dsH <Plug>(quickhl-manual-reset)
+xmap dsH <Plug>(quickhl-manual-reset)
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-choosewin'
@@ -368,7 +367,7 @@ NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks of code
 xnoremap dsld :Linediff<CR>
 NeoBundle 'majutsushi/tagbar' " Vim plugin that displays tags in a window, ordered by scope
-NeoBundle "reedes/vim-lexical"
+NeoBundle 'osyo-manga/vim-over'
 " NeoBundle 'osyo-manga/vim-reunions'
 "vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 " " NeoBundle 'osyo-manga/vim-marching' " Async clang code completion.
@@ -421,7 +420,7 @@ if has ("gui_running")
             autocmd GUIEnter * simalt ~x " maximize in windows
         augroup END
     else
-        call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
+
     endif
 endif
 
@@ -633,7 +632,7 @@ nnoremap <silent> cotw :if &tw==0<CR>:set tw=78<CR>:else<CR>:set tw=0<CR>:endif<
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
 "update diff with a key mapping
-nnoremap du :diffupdate<CR>
+nnoremap ds :diffupdate<CR>
 nnoremap dr <C-L>:redraw<CR>
 
 " lets use this as a command prefix for "show"
@@ -661,11 +660,11 @@ nnoremap yae :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
 nnoremap yie :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
             \ <CR>:echo "file yanked"<CR>
 
-nnoremap dcd :cd! %:h<Cr>:pwd<Cr>
-nnoremap dcdl :lcd! %:h<Cr>:pwd<Cr>
+nnoremap dscd :cd! %:h<Cr>:pwd<Cr>
+nnoremap dslcd :lcd! %:h<Cr>:pwd<Cr>
 
-nnoremap dgf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
-nnoremap dgd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap dsgf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap dsgd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
 
 
 "navigation in command line 
@@ -706,7 +705,7 @@ nnoremap ZB :bd<cr>
 "reverse the selected lines (TODO don't work for line at the top of a file) 
 xnoremap gr <ESC>'<mr'>:'r+1,.g/^/m 'r<CR>
 command!  PreviewTagToggle call PreviewWordToggle()
-nnoremap dtp :ptjump <C-r><C-w><CR>
+nnoremap dstp :ptjump <C-r><C-w><CR>
 "Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 "save everything and then gcc the current file then run the file returned by
 "gcc
@@ -868,7 +867,7 @@ function! TestCrunchVShell()
 endfunction
 
 "do crunch tests
-nnoremap dct :!/usr/local/bin/vim -u ~/Dropbox/projects/crunch/crunch/.vimrc_minimal +Vader\*<CR>
+nnoremap dsct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
 
 function! CrunchB()
     execute "normal! vip\<ESC>"
@@ -1073,7 +1072,7 @@ function! PrintCscopeOptions()
     echo "T: Find this text string"
     echo "E: Find this egrep pattern"
 endfunction
-execute "nnoremap dcs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
+execute "nnoremap dscs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
 
 set cscoperelative
 

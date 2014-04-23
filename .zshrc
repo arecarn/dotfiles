@@ -57,8 +57,8 @@ source $ZSH/oh-my-zsh.sh
 # LINES CONFIGURED BY ZSH-NEWUSER-INSTALL
 ################################################################################
 HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
+HISTSIZE=10000
+SAVEHIST=10000
 setopt autocd
 # End of lines configured by zsh-newuser-install
 ################################################################################
@@ -93,6 +93,8 @@ bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
 bindkey -M vicmd 'j' down-line-or-search
 bindkey -M vicmd 'k' up-line-or-search
+bindkey '^J' down-line-or-search
+bindkey '^K' up-line-or-search
 bindkey '^E' _expand_alias
 
 

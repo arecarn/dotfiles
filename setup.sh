@@ -23,7 +23,7 @@ mkdir -p $olddir
 echo "...done"
 
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
-    echo "Moving any existing dotfiles from ~ to $olddir"
+echo "Moving any existing dotfiles from ~ to $olddir"
 for file in $dotfiles; do
     mv ~/$file $olddir/$file
     echo "Creating symlink to $file in home directory."

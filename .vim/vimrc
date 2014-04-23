@@ -57,7 +57,6 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 let g:neocomplcache_enable_auto_delimiter = 1
 let g:neocomplcache_max_list = 8
 
-
 augroup Ctags
     autocmd FileType c,cpp NeoComplCacheCachingTags   
 augroup END
@@ -142,7 +141,6 @@ let g:unite_source_history_yank_enable = 1
 let g:unite_source_history_yank_limit = 10000
 let g:unite_split_rule = 'botright'
 let g:unite_source_file_rec_max_cache_files = 0
-let g:unite_source_mru_do_validate = 0
 call unite#custom#source('file_rec,file_rec/async',
             \ 'max_candidates', 0)
 
@@ -192,19 +190,22 @@ NeoBundle 'ujihisa/unite-colorscheme' " A unite.vim plugin
 NeoBundle 'kmnk/unite-command'
 NeoBundle 'majkinetor/unite-cmdmatch' " Vim unite plugin that provides command line completition
 NeoBundle 'voi/unite-ctags' " unite.vim's source to show tag information by ctags.
+NeoBundle 'thinca/vim-unite-history'
 
-nnoremap sg :Unite -auto-preview grep<CR>
-nnoremap sf :Unite file_rec/async<CR>
-nnoremap sy :Unite history/yank<CR>
+nnoremap dsg  :Unite -auto-preview grep<CR>
+nnoremap sf  :Unite file_rec/async<CR>
 nnoremap smg :Unite output:message<CR>
 nnoremap smp :Unite mapping<CR>
-nnoremap sr :Unite file_mru directory_mru<CR>
-nnoremap sb :Unite buffer<CR>
-nnoremap so :Unite outline line<CR>
-nnoremap sh :Unite help<CR>
-nnoremap ss :Unite session<CR>
+nnoremap sr  :Unite file_mru directory_mru<CR>
+nnoremap sb  :Unite buffer<CR>
+nnoremap so  :Unite outline line<CR>
+nnoremap sh  :Unite help<CR>
+nnoremap ss  :Unite session<CR>
 nnoremap si  :<C-u>Unite menu:test<CR>
 nnoremap sc  :Unite cmdmatch<CR>
+nnoremap shs :Unite history/search<CR>
+nnoremap shy :Unite history/yank<CR>
+nnoremap shc :Unite history/command<CR>
 nnoremap dss :UniteSessionSave<Space>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -223,7 +224,7 @@ command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/vimshell.vim'
-nnoremap covs :VimShellBufferDir -popup -toggle<CR>
+nnoremap svs :VimShellBufferDir -popup -toggle<CR>
 let g:vimshell_vimshrc_path = s:vimpath.'/utils_local/vimshell/'
 
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -365,6 +366,7 @@ NeoBundle 'sk1418/HowMuch'
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks of code
+xnoremap dsld :Linediff<CR>
 NeoBundle 'majutsushi/tagbar' " Vim plugin that displays tags in a window, ordered by scope
 NeoBundle "reedes/vim-lexical"
 " NeoBundle 'osyo-manga/vim-reunions'
@@ -390,6 +392,7 @@ NeoBundle 'tommcdo/vim-exchange' " Easy text exchange operator for Vim
 NeoBundle 'osyo-manga/vim-over'
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
 " NeoBundle 'justinmk/vim-sneak'
+call neobundle#end()
 NeoBundleCheck
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -635,7 +638,7 @@ nnoremap dr <C-L>:redraw<CR>
 
 " lets use this as a command prefix for "show"
 nmap s <Nop>
-nnoremap sv :e $MYVIMRC<CR>
+nnoremap src :e $MYVIMRC<CR>
 
 " make more undos possible after leaving insert mode 
 inoremap <C-u> <C-g>u<C-u>

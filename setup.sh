@@ -16,7 +16,7 @@ dotfiles=".inputrc .tmux.conf .mutt .gitconfig .zshrc .oh-my-zsh .vim .ctags" # 
 ############################
 
 echo "Creating Blank Local config files"
-touch ~/.zshrc_local ~/.vim/vimrc_local  ~/.Trash
+touch ~/.zshrc_local ~/.vim/vimrc_local  ~/.Trash ~/.gitconfig_local
 echo "...done"
 
 # create dotfiles_old in homedir

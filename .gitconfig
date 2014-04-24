@@ -17,5 +17,7 @@
 [push]
 	default = tracking
 [user]
-	name = Ryan
+	name = Ryan Carney
 	email = arecarn@gmail.com
+[include]
+    path = ~/.gitconfig_local

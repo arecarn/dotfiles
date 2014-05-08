@@ -43,7 +43,7 @@ NeoBundle 'Shougo/vimproc', {
 "neocomplchache"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/neocomplcache'
 if !isdirectory(s:vimpath.'/utils_local/neocomplcache')
-    callrch)<Plug>(over-restore-search-pattern) mkdir(s:vimpath.'/utils_local/neocomplcache', "p", 0700)
+    mkdir(s:vimpath.'/utils_local/neocomplcache', "p", 0700)
 endif
 let g:neocomplcache_temporary_dir = s:vimpath.'/utils_local/neocomplcache'
 let g:neocomplcache_enable_at_startup = 1
@@ -75,25 +75,18 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplcache#undo_completion()
-inoremap <expr><C-l>     neocomplcache#complete_common_string()
+imap <C-l>  <Plug>(neocomplcache_start_unite_complete)
+imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
 
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 function! s:my_cr_function()
-  return neocomplcache#smart_close_popup() . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+  " return neocomplcache#smart_close_popup() . "\<CR>"
+  return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y>  neocomplcache#close_popup()
-inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
 " Enable heavy omni completion.
 if !exists('g:neocomplcache_omni_patterns')
@@ -108,10 +101,6 @@ nnoremap coneo :NeoComplCacheToggle<CR>
 
 "neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/neosnippet.vim'
-"Plugin key-mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -205,8 +194,6 @@ nnoremap si  :<C-u>Unite menu:test<CR>
 nnoremap sc  :Unite cmdmatch<CR>
 nnoremap shs :Unite history/search<CR>
 nnoremap shy :Unite history/yank<CR>
-nnoremap shc :Unite history/command<CR>
-nnoremap <Leader>ss :UniteSessionSave<Space>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "VimFiler"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -645,7 +632,6 @@ nnoremap src :e $MYVIMRC<CR>
 inoremap <C-u> <C-g>u<C-u>
 inoremap <C-w> <C-g>u<C-w>
 inoremap <BS> <C-g>u<BS>
-inoremap <CR> <C-g>u<CR>
 inoremap <Del> <C-g>u<Del>
 inoremap <END> <C-g>u<END>
 
@@ -684,21 +670,12 @@ cabbrev %d <C-r>=expand('%:h')<CR>
 " disable Ex mode key and map it to something awesome
 nnoremap Q @@
 " replay macro for each line of a visual selection
-xnoremap Q :normal! @@<CR>
-xnoremap @q :normal! @q<CR>
+xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
 " repeat the last edit on the next [count] matches.
 nnoremap <C-n> @='n.'<cr>
 nnoremap <C-p> @='N.'<cr>
-
-"Z-maps! Z-maps!
-nnoremap <Leader>wa :wa<cr>
-nnoremap <Leader>wqa :wqa<cr>
-nnoremap <Leader>qa :qa<cr>
-nnoremap <Leader>Q :q!<cr>
-nnoremap <Leader>QA :qa!<cr>
-nnoremap <Leader>bd :bd<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "SCRIPTS                                                                     {{{

@@ -418,21 +418,21 @@ hi User1 ctermbg=white ctermfg=black guibg=white guifg=black
 hi User2 ctermbg=grey ctermfg=white  guibg=grey   guifg=white
 hi User3 ctermbg=white  ctermfg=green guibg=white  guifg=green
 
-set statusline=   " clear the statusline for when vimrc is reloaded
-set statusline+=%1*
-set statusline+=%-3.3n\                      " buffer number
-set statusline+=%-0.40F\                     " file name %f or %F give full path
-set statusline+=%*
-set statusline+=%h%m%r%w                     " flags
-set statusline+=[%{strlen(&filetype)?&filetype:'none'},             " filetype
-set statusline+=%{strlen(&fileencoding)?&fileencoding:&encoding},   " encoding
-set statusline+=%{&fileformat}]              " file format
-set statusline+=%=                           " right align
-set statusline+=%{strftime('%l:%M%P\ %F',getftime(expand('%')))}
-set statusline+=%1*                                       " right align
-set statusline+=[\ %-0.0(LN:%l\ COL:%c%V%)]\ %<[%P]        " offset
-set statusline+=%*
-
+set statusline=                                                      " clear the statusline 
+set statusline+=%1*                                                  " User color 1
+set statusline+=\ [W%{winnr()}\|                                     " window number
+set statusline+=B%n]\                                                " Buffer number
+set statusline+=[FILE:%-0.40F]\                                           " File name    
+set statusline+=%*\                                                  " dunno        
+set statusline+=%h%m%r%w                                             " modified flag
+set statusline+=[%{strlen(&filetype)?&filetype:'none'}\|             " file information
+set statusline+=%{strlen(&fileencoding)?&fileencoding:&encoding}\|   " encoding
+set statusline+=%{&fileformat}]                                      " file format 
+set statusline+=%=                                                   " right align 
+set statusline+=[%<%{strftime('%l:%M%P\ %F',getftime(expand('%')))}]\  " time last saved
+set statusline+=%1*                                                  " right align
+set statusline+=\ [%-0.0(L%l\|C%c%V%)]\ [%P]\                      " offset
+set statusline+=%*                                                   " Fin
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "tab line"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
@@ -463,13 +463,11 @@ if exists("+showtabline")
             let s .= '%*' 
             let i = i + 1 
         endwhile 
-        let s .= '%T%#TabLineFill#%=|' 
-        " let time =strftime("%Y %b %d %X").'|'
-        " let s .=time.'  '
-        let s.=getcwd().'|  '
-        let s .= (tabpagenr('$') > 1 ? '%999XX' : '|X') 
-        return s 
-    endfunction 
+        let s .= '%T%#TabLineFill#%=[' 
+        let s.='PWD:'.getcwd().']  '
+        let s .= (tabpagenr('$') > 1 ? '%999XX' : '[X]') 
+        return s
+    endfunction
     set showtabline=2  " show tab labels all the time
     set tabline=
     set tabline=%!MyTabLine() 

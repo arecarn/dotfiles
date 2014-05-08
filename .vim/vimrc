@@ -186,12 +186,15 @@ nnoremap sf  :Unite file_rec/async<CR>
 nnoremap smg :Unite output:message<CR>
 nnoremap smp :Unite mapping<CR>
 nnoremap sr  :Unite file_mru directory_mru<CR>
+nnoremap srg :Unite registers<CR>
 nnoremap sb  :Unite buffer<CR>
-nnoremap so  :Unite outline line<CR>
+nnoremap so  :Unite outline <CR>
+nnoremap sl  :Unite line<CR>
 nnoremap sh  :Unite help<CR>
 nnoremap ss  :Unite session<CR>
+nnoremap <Leader>ss :UniteSessionSave<Space>
 nnoremap si  :<C-u>Unite menu:test<CR>
-nnoremap sc  :Unite cmdmatch<CR>
+nnoremap shc  :Unite cmdmatch history/command<CR>
 nnoremap shs :Unite history/search<CR>
 nnoremap shy :Unite history/yank<CR>
 
@@ -265,6 +268,7 @@ let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
 NeoBundle 'terryma/vim-expand-region'
 NeoBundle 'kana/vim-textobj-user' " Vim plugin: Create your own text objects
 NeoBundle 'kana/vim-textobj-indent' " indent text object ii ai
+NeoBundle 'kana/vim-textobj-line' " indent text object ii ai
 NeoBundle 'kana/vim-textobj-entire' " entire text object ie ae
 NeoBundle 'thinca/vim-textobj-between' " if<CHAR> af<CHAR> eg between '*' vif*
 NeoBundle 'saihoooooooo/vim-textobj-space' "text object for space iS aS
@@ -290,7 +294,6 @@ xmap <C-l> <Plug>(textmanip-move-right)
 
 " toggle insert/replace with <F10>
 nmap comt <Plug>(textmanip-toggle-mode)
-xmap comt <Plug>(textmanip-toggle-mode)
 "textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 't9md/vim-quickhl'
@@ -320,8 +323,9 @@ NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'junegunn/seoul256.vim' " a low-contrast Vim color scheme based on Seoul Colors
 NeoBundle 'merlinrebrovic/focus.vim' " A Vim plugin that removes clutter and makes working on a widescreen monitor enjoyable.
+let g:focus_use_default_mapping = 0
+nmap cof <Plug>FocusModeToggle
 NeoBundle 'fugitive.vim' " 1.0   A Git wrapper so awesome, it should be illegal
-NeoBundle 'gregsexton/VimCalc'
 NeoBundle 'mbbill/undotree' " Display your undo history in a graph.
 nnoremap sut :UndotreeToggle<CR>
 NeoBundle 'tpope/vim-commentary'
@@ -342,8 +346,6 @@ let g:table_mode_separator = '|'
 NeoBundle 'roman/golden-ratio' " Automatic resizing of Vim windows to the golden ratio 
 let g:golden_ratio_autocommand = 0 "disable golden ratio autocmd
 nnoremap cogr :GoldenRatioToggle<CR>
-NeoBundle 'inkarkat/VimTAP' "Test Anything Protocol for vim
-NeoBundle 'inkarkat/runVimTests' " a testing framework for Vim
 NeoBundle 'junegunn/vader.vim' " A simple Vimscript test framework
 NeoBundle 'LanguageTool' " a testing framework for Vim
 "TODO make system independent 18 Mar 2014
@@ -356,20 +358,6 @@ NeoBundle 'AndrewRadev/linediff.vim' " A vim plugin to perform diffs on blocks o
 xnoremap <Leader>ld :Linediff<CR>
 NeoBundle 'majutsushi/tagbar' " Vim plugin that displays tags in a window, ordered by scope
 NeoBundle 'osyo-manga/vim-over'
-" NeoBundle 'osyo-manga/vim-reunions'
-"vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-" " NeoBundle 'osyo-manga/vim-marching' " Async clang code completion.
-" " path to clang command
-" let g:marching_clang_command = "clang"
-" let g:marching_enable_neocomplete = 1
-" if !exists('g:neocomplete#force_omni_input_patterns')
-"   let g:neocomplete#force_omni_input_patterns = {}
-" endif
-" let g:neocomplete#force_omni_input_patterns.cpp =
-"     \ '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-" imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
-" imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
-"vim-marching"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 NeoBundle 'Shougo/echodoc.vim'
 let g:echodoc_enable_at_startup=1
@@ -378,8 +366,8 @@ set cmdheight=2
 NeoBundle 'tommcdo/vim-exchange' " Easy text exchange operator for Vim
 NeoBundle 'osyo-manga/vim-over'
 NeoBundle 'spiiph/vim-space'
+NeoBundle 'tracyone/CCtree'
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
-" NeoBundle 'justinmk/vim-sneak'
 call neobundle#end()
 NeoBundleCheck
 
@@ -668,7 +656,7 @@ cabbrev %f <C-r>=expand('%:p')<CR>
 cabbrev %d <C-r>=expand('%:h')<CR>
 
 " disable Ex mode key and map it to something awesome
-nnoremap Q @@
+nnoremap Q @q
 " replay macro for each line of a visual selection
 xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection

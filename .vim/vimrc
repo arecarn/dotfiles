@@ -497,7 +497,7 @@ endif "gui_running
 "CURSOR SETTINGS                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set scrolloff=6 " Keep 3 lines (top/bottom) for scope
-set sidescrolloff=1 " keep 3 lines (side/side) for scope
+set sidescrolloff=6 " keep 3 lines (side/side) for scope
 set sidescroll=1
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
@@ -522,8 +522,8 @@ execute 'set directory='.s:swap
 " path separators substituted to percent '%' signs.  This will ensure file
 " name uniqueness in the preserve directory.
 set history=20000      " keep 200 lines of command line history
-set backup "allow backupfiles
-"Make the backupfile extension year-month-day_hour ex: file.txt_13-02-24_15
+set backup "allow back up files
+"Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
 let myvar = strftime("%y-%m-%d_%H")
 let myvar = "set backupext=_". myvar
 execute myvar
@@ -577,7 +577,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "MAPPINGS & COMMANDS                                                        {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set timeout timeoutlen=1000 ttimeoutlen=100
+set timeout timeoutlen=500
 set updatetime=1000 "how long it takes for the preview to show up in ms
 set previewheight=12 "how tall the preview window is
 
@@ -922,6 +922,7 @@ set smarttab      " When on, a <Tab> in front of a line inserts blanks
 set autoindent    " auto-indenting on
 set formatoptions+=n "formatting text recognize numbered lists. req. autoindent
 set formatoptions+=j "when joining lines remove comment leader when it makes sense
+set listchars=trail:·,tab:»·,extends:→,precedes:←
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FOLDING                                                                     {{{
@@ -1139,7 +1140,7 @@ command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FINAL SETTINGS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-execute 'source'.s:vimpath.'/vimrc_local'
+source ~/.vimrc_local
 
 set  modeline
 " vim: textwidth=78:

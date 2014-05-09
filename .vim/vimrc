@@ -88,8 +88,8 @@ imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 function! s:my_cr_function()
-  " return neocomplcache#smart_close_popup() . "\<CR>"
-  return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+    " return neocomplcache#smart_close_popup() . "\<CR>"
+    return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -107,11 +107,11 @@ nnoremap coneo :NeoComplCacheToggle<CR>
 "neocomplcache""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/neosnippet.vim' "{{{2
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: pumvisible() ? "\<C-n>" : "\<TAB>"
+            \ "\<Plug>(neosnippet_expand_or_jump)"
+            \: pumvisible() ? "\<C-n>" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: "\<TAB>"
+            \ "\<Plug>(neosnippet_expand_or_jump)"
+            \: "\<TAB>"
 if has('conceal')
     set conceallevel=2 concealcursor=i
 endif
@@ -151,14 +151,14 @@ function! s:unite_settings()
 endfunction
 let g:unite_source_menu_menus = {}
 let g:unite_source_menu_menus.test = {
-      \     'description' : 'Interpreter Menu',
-      \ }
+            \     'description' : 'Interpreter Menu',
+            \ }
 let g:unite_source_menu_menus.test.command_candidates = [
-      \   ['VimShell', 'VimShell -split'],
-      \   ['bc', 'VimShellInteractive bc'],
-      \   ['octave', 'VimShellInteractive octave'],
-      \   ['python', 'VimShellInteractive python']
-      \ ]
+            \   ['VimShell', 'VimShell -split'],
+            \   ['bc', 'VimShellInteractive bc'],
+            \   ['octave', 'VimShellInteractive octave'],
+            \   ['python', 'VimShellInteractive python']
+            \ ]
 
 NeoBundle 'Shougo/unite-ssh'
 NeoBundle 'Shougo/unite-outline'
@@ -210,13 +210,13 @@ NeoBundle 'Shougo/echodoc.vim' "{{{2
 let g:echodoc_enable_at_startup=1
 set cmdheight=2 "}}}2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-" NeoBundle  'frisk', {'type' : 'nosync',  'base' : '~/Dropbox/projects/frisk/' } "{{{2
 NeoBundle 'arecarn/frisk'
 call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
+" NeoBundle  'frisk', {'type' : 'nosync',  'base' : '~/Dropbox/projects/frisk/' } "{{{2
 
 "frisk""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'} "{{{2
-" NeoBundle 'arecarn/crunch', 'Dev'
+NeoBundle 'arecarn/crunch', 'Dev' "{{{2
+" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'}
 
 "crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'godlygeek/tabular' "{{{2
@@ -237,14 +237,6 @@ let g:syntastic_python_checkers = ['python']
 nnoremap cost :SyntasticToggleMode<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2 
-NeoBundle 'thinca/vim-fontzoom' "{{{2
-let g:fontzoom_no_default_key_mappings = 1
-nnoremap  ]f <Plug>(fontzoom-larger)
-nnoremap  [f <Plug>(fontzoom-smaller)
-
-"fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-NeoBundle 'thinca/vim-textobj-between'
-NeoBundle 'thinca/vim-visualstar'
 NeoBundle 't9md/vim-textmanip' "{{{2
 xmap <C-j> <Plug>(textmanip-move-down)
 xmap <C-k> <Plug>(textmanip-move-up)
@@ -296,13 +288,20 @@ let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.jar'
 NeoBundle 'AndrewRadev/linediff.vim' "{{{2
 xnoremap <Leader>ld :Linediff<CR>
 "linediff.vim"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+NeoBundle 'thinca/vim-fontzoom' "{{{2
+let g:fontzoom_no_default_key_mappings = 1
+nnoremap  ]f <Plug>(fontzoom-larger)
+nnoremap  [f <Plug>(fontzoom-smaller)
+
+"fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+NeoBundle 'thinca/vim-textobj-between'
+NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'Julian/vim-textobj-variable-segment'
 NeoBundle 'TeTrIs.vim'
 NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'coderifous/textobj-word-column.vim'
 NeoBundle 'dbakker/vim-lint'
 NeoBundle 'fugitive.vim'
-NeoBundle 'henrik/vim-indexed-search'
 NeoBundle 'hrsh7th/vim-neco-calc'
 NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'junegunn/seoul256.vim'
@@ -317,7 +316,6 @@ NeoBundle 'osyo-manga/vim-over'
 NeoBundle 'osyo-manga/vim-over'
 NeoBundle 'saihoooooooo/vim-textobj-space'
 NeoBundle 'sk1418/HowMuch'
-NeoBundle 'spiiph/vim-space'
 NeoBundle 'terryma/vim-expand-region'
 NeoBundle 'tlvince/vim-compiler-python'
 NeoBundle 'tommcdo/vim-exchange'
@@ -333,6 +331,7 @@ NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'tracyone/CCtree'
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'w0ng/vim-hybrid'
+NeoBundle 'arecarn/Preserve.vim'
 call neobundle#end()
 NeoBundleCheck
 
@@ -502,7 +501,7 @@ execute 'set backupdir='.s:backupdir
 "LINE WRAPPING                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nowrap "When on, lines longer than the width of the window will wrap and
-"set wrapmargin=80  "set where wrapping starts 
+"set wrap margin=80  "set where wrapping starts 
 "displaying continues on the next line.
 set linebreak " wrap on complete words
 set textwidth=0 "max length of line to be inserted. 0 will not break on space
@@ -516,14 +515,16 @@ let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
 
 "TODO make Capitalize words operator
-"TODO make Scripts to go though all misspellings words and fix them
-nnoremap cgg 1z=
-nnoremap cgl z=
-nnoremap cga :spellrepall<CR>
-nnoremap cgs t<space>a<C-x><C-s>
-nnoremap cgt t<space>a<C-x><C-t>
-nnoremap cgd t<space>a<C-x><C-k>
+"TODO make "Scripts"cappella to go though all misspellings words and fix them
+nnoremap csf 1z=
+nnoremap csl z=
+nnoremap csa :spellrepall<CR>
+nnoremap csc t<space>a<C-x><C-s>
+nnoremap cst t<space>a<C-x><C-t>
+nnoremap csd t<space>a<C-x><C-k>
 inoremap <C-S> <ESC>[s1z=gi
+nnoremap ]fs :PreserveSave<CR>]s1z=<C-o>:PreserveRestore<CR>
+nnoremap [fs :PreserveSave<CR>[s1z=<C-o>:PreserveRestore<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TEMPLATE MAPPINGS                                                           {{{
@@ -553,10 +554,10 @@ nnoremap j gj
 nnoremap gk k
 nnoremap gj j
 
-nnoremap * :let b:PlugView=winsaveview()<CR>*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
-nnoremap g* :let b:PlugView=winsaveview()<CR>g*N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
-nnoremap # :let b:PlugView=winsaveview()<CR>#N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
-nnoremap g# :let b:PlugView=winsaveview()<CR>g#N:set hlsearch<Cr>:call winrestview(b:PlugView)<CR>
+nnoremap <silent> *  :PreserveSave<CR>:normal! *N<CR>:set hlsearch<CR>:PreserveRestore<CR>
+nnoremap <silent> g* :PreserveSave<CR>:normal! g*N<CR>:set hlsearch<CR>:PreserveRestore<CR>
+nnoremap <silent> #  :PreserveSave<CR>:normal! #N<CR>:set hlsearch<CR>:PreserveRestore<CR>
+nnoremap <silent> g# :PreserveSave<CR>:normal! g#N<CR>:set hlsearch<CR>:PreserveRestore<CR>
 
 "map arrow keys to move around different windows
 nnoremap  <F12> 2<C-w>>
@@ -589,14 +590,11 @@ inoremap <END> <C-g>u<END>
 "Yank till end of line 
 noremap Y y$
 
-nnoremap =ae  :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
-            \ <CR>:echo "file indented"<CR>
-nnoremap =ie  :let b:PlugView=winsaveview()<CR>gg=G:call winrestview(b:PlugView)
-            \ <CR>:echo "file indented"<CR>
-nnoremap yae :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
-            \ <CR>:echo "file yanked"<CR>
-nnoremap yie :let b:PlugView=winsaveview()<CR>ggVGy:call winrestview(b:PlugView)
-            \ <CR>:echo "file yanked"<CR>
+nnoremap =ae :call Preserve("normal! gg=G")<CR>
+nnoremap =ie :call Preserve("normal! gg=G")<CR>
+nnoremap yae :call Preserve("normal! ggyG")<CR>
+nnoremap yie :call Preserve("normal! GGyG")<CR>
+
 
 nnoremap <Leader>cd :cd! %:h<Cr>:pwd<Cr>
 nnoremap <Leader>lcd :lcd! %:h<Cr>:pwd<Cr>
@@ -798,12 +796,6 @@ endfunction
 "do crunch tests
 nnoremap <Leader>ct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
 
-function! CrunchB()
-    execute "normal! vip\<ESC>"
-    let topline = line("'<")
-    let bottomline = line("'>")
-    execute topline . "," bottomline . "call " . "crunch#CrunchLine('.')"
-endfunction
 command! CrunchTestBuffer call CrunchTestBuffer()
 function! CrunchTestBuffer()
     new

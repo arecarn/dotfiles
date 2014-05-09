@@ -52,8 +52,8 @@ echo "Done Installing, You are So Cool!"
 # git clone git://github.com/VitaliyRodnenko/geeknote.git mybin/installs/geeknote --recursive
 # git clone github.com/lpenz/atdtool.git                  mybin/installs/atdtool --recursive
 
-# git clone github.com/s7anley/zsh-geeknote.git oh-my-zsh-plugins/geeknote --recursive
-# git clone github.com/robbyrussell/oh-my-zsh.git .oh-my-zsh --recursive
+# git clone github.com/s7anley/zsh-geeknote.git           oh-my-zsh-plugins/geeknote --recursive
+# git clone github.com/robbyrussell/oh-my-zsh.git         .oh-my-zsh --recursive
 
-# git clone https://github.com/Shougo/neobundle.vim.git .vim/bundle/neobundle.vim --recursive
-# git clone https://github.com/altercation/mutt-colors-solarized.git --recursive
+# git clone https://github.com/Shougo/neobundle.vim.git   .vim/bundle/neobundle.vim --recursive
+# git clone https://github.com/altercation/mutt-colors-solarized.git  mutt/colors/mutt-colors-solarized --recursive

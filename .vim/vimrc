@@ -390,7 +390,6 @@ set cmdheight=2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'tommcdo/vim-exchange' " Easy text exchange operator for Vim
 NeoBundle 'osyo-manga/vim-over'
-NeoBundle 'spiiph/vim-space'
 " NeoBundle 'henrik/vim-indexed-search' " matches out of total in Vim searches. By Yakov Lerner.
 " NeoBundle 'justinmk/vim-sneak'
 call neobundle#end()
@@ -869,6 +868,7 @@ endfunction
 
 "do crunch tests
 nnoremap <Leader>ct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
+nnoremap <Leader>tc :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
 
 function! CrunchB()
     execute "normal! vip\<ESC>"

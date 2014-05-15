@@ -346,6 +346,8 @@ NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-surround'
+NeoBundle 'tpope/vim-unimpaired'
+NeoBundle 'tpope/vim-eunuch'
 NeoBundle 'tracyone/CCtree'
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'w0ng/vim-hybrid'
@@ -718,6 +720,8 @@ nnoremap <Leader>r :redraw!<CR>
 nmap s <Nop>
 nnoremap src :e $MYVIMRC<CR>
 
+
+
 " make more undos possible after leaving insert mode 
 inoremap <C-u> <C-g>u<C-u>
 inoremap <C-w> <C-g>u<C-w>
@@ -763,6 +767,8 @@ xnoremap . :normal! .<CR>
 " repeat the last edit on the next [count] matches.
 nnoremap <C-n> @='n.'<cr>
 nnoremap <C-p> @='N.'<cr>
+
+command! -nargs=0 Fg normal! <C-Z>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "SCRIPTS                                                                     {{{
@@ -933,6 +939,7 @@ endfunction
 
 "do crunch tests
 nnoremap <Leader>ct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
+nnoremap <Leader>tc :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
 
 command! CrunchTestBuffer call CrunchTestBuffer()
 function! CrunchTestBuffer()

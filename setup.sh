@@ -32,13 +32,28 @@ for file in $dotfiles; do
     ln -s $dir/$file ~/$file
 done
 echo "...done"
+function grab 
+{
+    repo=$1
+    location=$2
+    echo "For $repo"
+    if [ ! -d $location  ]; then # DIRECTORY does not exist
+        git clone --recursive $repo "$location"
+    else 
+        cd $location
+        git pull --rebase && git submodule update --init --recursive
+        echo "in directory $location"
+        cd -
+    fi
+}
 
-echo "Moving oh-my-zsh plugins into $omzpluginsdir "
-for file in $omzplugins; do
-    echo "Creating symlink to $file in zsh plugins dir "
-    ln -s $dir/oh-my-zsh-plugins/$file  $omzpluginsdir/$file
-done
-echo "...done"
+grab https://github.com/VitaliyRodnenko/geeknote.git          "~/dotfiles/boobz"
+grab https//:github.com/lpenz/atdtool.git                     "mybin/installs/atdtool"
+grab https//:github.com/robbyrussell/oh-my-zsh.git            ".oh-my-zsh"
+grab https//:github.com/s7anley/zsh-geeknote.git              "~/dotfiles/oh-my-zsh/custom/plugins/geeknote"
+grab https://github.com/Shougo/neobundle.vim.git              ".vim/bundle/neobundle.vim"
+grab https://github.com/altercation/mutt-colors-solarized.git "mutt/colors/mutt"
+
 
 # run Vim setup
 echo "Running Vim Setup"
@@ -48,12 +63,3 @@ echo "...done"
 
 echo "Done Installing, You are So Cool!"
 
-# Pre work for getting rid of submodules  
-# git clone git://github.com/VitaliyRodnenko/geeknote.git mybin/installs/geeknote --recursive
-# git clone github.com/lpenz/atdtool.git                  mybin/installs/atdtool --recursive
-
-# git clone github.com/s7anley/zsh-geeknote.git oh-my-zsh-plugins/geeknote --recursive
-# git clone github.com/robbyrussell/oh-my-zsh.git .oh-my-zsh --recursive
-
-# git clone https://github.com/Shougo/neobundle.vim.git .vim/bundle/neobundle.vim --recursive
-# git clone https://github.com/altercation/mutt-colors-solarized.git --recursive

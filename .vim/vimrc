@@ -990,7 +990,6 @@ nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
 "
 nmap <silent> gM :set opfunc=MixedCase<CR>g@
 vmap <silent> gM :<C-U>call MixedCase(visualmode(), 1)<CR>
-nnoremap <silent> gMM :s/\(^\\| \)\zs\a/\u&/g<CR>
 
 function! MixedCase(type, ...)
     let sel_save = &selection
@@ -1009,8 +1008,12 @@ function! MixedCase(type, ...)
 
     let reg_save_x = @x
     let @x = @@
-    let @x = substitute(@x, '\(^\| \)\zs\a', '\u&', 'g')
+    let @x = substitute(@x, '\w\+', '\u&', 'g')
+    "don't capitalize the  t in can't or the re in your're
+    let @x = substitute(@x, '\a''\zs\a', '\l&', 'g')
+
     normal! gv"xp
+    set nohlsearch
 
     let &selection = sel_save
     let @@ = reg_save

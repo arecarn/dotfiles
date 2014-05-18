@@ -7,18 +7,19 @@
 
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
-omzpluginsdir=~/dotfiles/oh-my-zsh/custom/plugins/
-omzplugins="geeknote" # list of custome zsh plugins
 dotfiles=".inputrc .tmux.conf .mutt .gitconfig .zshrc .oh-my-zsh .vim .ctags" # list of files/folders to symlink in homedir
 
 ############################
-# Code
+# Blank Local Files
 ############################
-
 echo "Creating Blank Local config files"
 touch ~/.zshrc_local ~/.vim/vimrc_local  ~/.Trash ~/.gitconfig_local
 echo "...done"
 
+
+############################
+# Symbolic Links
+############################
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
@@ -32,6 +33,10 @@ for file in $dotfiles; do
     ln -s $dir/$file ~/$file
 done
 echo "...done"
+
+############################
+# Git Repo Downloads/Updates
+############################
 function grab 
 {
     repo=$1
@@ -47,14 +52,15 @@ function grab
     fi
 }
 
-grab https://github.com/VitaliyRodnenko/geeknote.git          "~/dotfiles/boobz"
-grab https//:github.com/lpenz/atdtool.git                     "mybin/installs/atdtool"
-grab https//:github.com/robbyrussell/oh-my-zsh.git            ".oh-my-zsh"
-grab https//:github.com/s7anley/zsh-geeknote.git              "~/dotfiles/oh-my-zsh/custom/plugins/geeknote"
+grab https://github.com/lpenz/atdtool.git                     "mybin/installs/atdtool"
+grab https://github.com/robbyrussell/oh-my-zsh.git            ".oh-my-zsh"
+grab https://github.com/s7anley/zsh-geeknote.git              "~/dotfiles/oh-my-zsh/custom/plugins/geeknote"
 grab https://github.com/Shougo/neobundle.vim.git              ".vim/bundle/neobundle.vim"
 grab https://github.com/altercation/mutt-colors-solarized.git "mutt/colors/mutt"
 
-
+############################
+# Vim Setup
+############################
 # run Vim setup
 echo "Running Vim Setup"
 # start vim loading the vimrc file then close right after

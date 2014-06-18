@@ -38,14 +38,16 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Vimproc {{{2
-NeoBundle 'Shougo/vimproc', {
-            \ 'build' : {
-            \     'windows' : 'make -f make_mingw32.mak',
-            \     'cygwin' : 'make -f make_cygwin.mak',
-            \     'mac' : 'make -f make_mac.mak',
-            \     'unix' : 'make -f make_unix.mak',
-            \    },
-            \ }
+let vimproc_updcmd = has('win64') ?
+      \ 'tools\\update-dll-mingw 64' : 'tools\\update-dll-mingw 32'
+execute "NeoBundle 'Shougo/vimproc.vim'," . string({
+      \ 'build' : {
+      \     'windows' : vimproc_updcmd,
+      \     'cygwin' : 'make -f make_cygwin.mak',
+      \     'mac' : 'make -f make_mac.mak',
+      \     'unix' : 'make -f make_unix.mak',
+      \    },
+      \ })
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/neocomplcache' "{{{2
 if !isdirectory(s:vimpath.'/utils_local/neocomplcache')
@@ -123,14 +125,14 @@ NeoBundle 'Shougo/unite.vim' "{{{2
 let g:unite_winheight = 10				
 let g:unite_data_directory = s:vimpath.'/utils_local/unite/'
 let g:unite_matcher_fuzzy_max_input_length = 1000
-let g:unite_source_history_yank_enable = 1
+" let g:unite_source_history_yank_enable = 1
 let g:unite_source_history_yank_limit = 10000
 let g:unite_split_rule = 'botright'
 let g:unite_source_file_rec_max_cache_files = 0
 call unite#custom#source('file_rec,file_rec/async',
             \ 'max_candidates', 0)
 call unite#custom#profile('files', 'filters', 'sorter_rank')
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
+" call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_rank'])
 call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
             \ 'ignore_pattern', join([
@@ -187,6 +189,7 @@ nnoremap si  :<C-u>Unite menu:test<CR>
 nnoremap shc  :Unite cmdmatch history/command<CR>
 nnoremap shs :Unite history/search<CR>
 nnoremap shy :Unite history/yank<CR>
+nnoremap sp :Unite process<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/vimfiler.vim' "{{{2
@@ -311,10 +314,12 @@ nnoremap  [f <Plug>(fontzoom-smaller)
 "fontzoom"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'tpope/vim-unimpaired' "{{{
 "vim-unimpaired"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-NeoBundle 'takac/vim-hardtime' "{{{
-let g:hardtime_default_on = 1
+NeoBundle 'thinca/vim-textobj-between' "{{{2
 "}}}
-NeoBundle 'thinca/vim-textobj-between'
+NeoBundle 'majutsushi/tagbar' "{{{2
+nnoremap  stb :TagbarToggle<CR>
+"}}}
+NeoBundle 'tommcdo/vim-lion'
 NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'Julian/vim-textobj-variable-segment'
 NeoBundle 'TeTrIs.vim'
@@ -323,19 +328,14 @@ NeoBundle 'coderifous/textobj-word-column.vim'
 NeoBundle 'dbakker/vim-lint'
 NeoBundle 'fugitive.vim'
 NeoBundle 'hrsh7th/vim-neco-calc'
-NeoBundle 'hsitz/VimOrganizer'
 NeoBundle 'junegunn/seoul256.vim'
 NeoBundle 'kana/vim-textobj-entire'
 NeoBundle 'kana/vim-textobj-indent'
 NeoBundle 'kana/vim-textobj-line'
 NeoBundle 'kana/vim-textobj-user'
-NeoBundle 'majutsushi/tagbar'
 NeoBundle 'mattn/vim-textobj-url'
 NeoBundle 'morhetz/gruvbox'
-NeoBundle 'osyo-manga/vim-over'
 NeoBundle 'saihoooooooo/vim-textobj-space'
-NeoBundle 'sk1418/HowMuch'
-NeoBundle 'terryma/vim-expand-region'
 NeoBundle 'tlvince/vim-compiler-python'
 NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-abolish'
@@ -351,9 +351,17 @@ NeoBundle 'tpope/vim-eunuch'
 NeoBundle 'tracyone/CCtree'
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'w0ng/vim-hybrid'
-NeoBundle 'arecarn/Preserve.vim'
+NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
+NeoBundle 'tmhedberg/matchit'
+" NeoBundle 'google/maktaba'
+" NeoBundle 'glts/vim-magnum'
+" Initializes all maktaba plugins.
+" call maktaba#plugin#Detect()
+" NeoBundle 'glts/vim-radical'
+
 call neobundle#end()
 NeoBundleCheck
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FILE TYPE SETTINGS                                                          {{{
@@ -385,6 +393,14 @@ if has ("gui_running")
     endif
 endif
 
+if has("autocmd")
+  " Highlight TODO, FIXME, NOTE, etc.
+  if v:version > 701
+    autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
+    autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\)')
+  endif
+endif
+
 "colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 
 set background=dark 
@@ -406,7 +422,7 @@ set statusline=                                                      " clear the
 set statusline+=%1*                                                  " User color 1
 set statusline+=\ [W%{winnr()}\|                                     " window number
 set statusline+=B%n]\                                                " Buffer number
-set statusline+=[FILE:%-0.40F]\                                           " File name    
+set statusline+=[Buffer:%-0.40F]\                                    " Buffer name    
 set statusline+=%*\                                                  " dunno        
 set statusline+=%h%m%r%w                                             " modified flag
 set statusline+=[%{strlen(&filetype)?&filetype:'none'}\|             " file information
@@ -541,7 +557,7 @@ function! MyTabLine()
             endif
             " no final ' ' added...formatting looks better done later
             if bc > 1
-                let n .= ' '
+                let n .= '» '
             endif
             let bc -= 1
         endfor
@@ -564,7 +580,7 @@ function! MyTabLine()
             let s .= n
         endif
         " switch to no underlining and add final space to buffer list
-        let s .= ' '
+        let s .= ' ┋'
     endfor
     " after the last tab fill with TabLineFill and reset tab page nr
     let s .= '%#TabLineFill#%T'
@@ -654,17 +670,23 @@ let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
 
-"TODO make Capitalize words operator
 "TODO make "Scripts" to go though all misspellings words and fix them
-nnoremap csf 1z=
+nnoremap <silent> <Plug>FixSpelling 1z=
+            \:call repeat#set("\<Plug>FixSpelling")<CR>
+nmap csf <Plug>FixSpelling
+
 nnoremap csl z=
 nnoremap csa :spellrepall<CR>
 nnoremap csc t<space>a<C-x><C-s>
 nnoremap cst t<space>a<C-x><C-t>
 nnoremap csd t<space>a<C-x><C-k>
-inoremap <C-S> <ESC>[s1z=gi
+inoremap <C-F> <ESC>[s1z=gi<C-o>
 nnoremap ]fs ]s:sleep 300m<CR>1z=
 nnoremap [fs [s:sleep 300m<CR>1z=
+
+" fdjf dsfkl   dsfk jsdflksjdkflj     dsdjfskljdsfk def
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TEMPLATE MAPPINGS                                                           {{{
@@ -683,7 +705,8 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "MAPPINGS & COMMANDS                                                        {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set timeout timeoutlen=500
+set timeout
+set timeoutlen=500
 set updatetime=1000 "how long it takes for the preview to show up in ms
 set previewheight=12 "how tall the preview window is
 
@@ -720,9 +743,28 @@ nnoremap <Leader>r :redraw!<CR>
 nmap s <Nop>
 nnoremap src :e $MYVIMRC<CR>
 
+nnoremap <leader>m  :call SearchPosition()<CR>
+
+function! SearchPosition()
+    if @/ !~ '\v(\\\%\d+[lc](\\\|)?)+'
+        let @/ = ''
+        " echo "pattern didn't match = ".@/
+    else 
+         let @/ .= '\|'
+        " echo "added bar = ".@/
+    endif 
+
+    let line = getpos('.')[1]
+    let col = getpos('.')[2]
+    execute "let @/ .= '\\%".line."l'"
+    execute "let @/ .= '\\%".col."c'"
+endfunction
+        
+    
 
 
-" make more undos possible after leaving insert mode 
+
+" make more undos possible after leaving insert m
 inoremap <C-u> <C-g>u<C-u>
 inoremap <C-w> <C-g>u<C-w>
 inoremap <BS> <C-g>u<BS>
@@ -764,10 +806,8 @@ nnoremap Q @q
 xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
-" repeat the last edit on the next [count] matches.
-nnoremap <C-n> @='n.'<cr>
-nnoremap <C-p> @='N.'<cr>
 
+"put vim in background if using shell.
 command! -nargs=0 Fg normal! <C-Z>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -994,7 +1034,8 @@ nnoremap <Leader>tad xi<C-r>=printf("%d",char2nr("<C-r>""))<CR><ESC>
 "delete the current character and replace it with it's ASCII Hex value
 nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
 "noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
-"
+
+
 nmap <silent> gM :set opfunc=MixedCase<CR>g@
 vmap <silent> gM :<C-U>call MixedCase(visualmode(), 1)<CR>
 
@@ -1166,7 +1207,7 @@ set wrapscan " searches wraparound a file
 set incsearch  " do incremental searching
 set ignorecase
 set smartcase  " overrides ignore  case when caps in search
-set path+=*/**
+set path=*/**
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "GENERAL BEHAVIOR                                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1251,6 +1292,7 @@ command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 
 " xnoremap : :<C-w>let g:cameFromVisual = 1<CR>:echomsg 'from v ='.g:cameFromVisual<CR>gv:
 " nnoremap : :<C-w>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

@@ -7,23 +7,36 @@
 
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
-omzpluginsdir=~/dotfiles/oh-my-zsh/custom/plugins/
-omzplugins="geeknote" # list of custome zsh plugins
 dotfiles=".inputrc .tmux.conf .mutt .gitconfig .zshrc .oh-my-zsh .vim .ctags" # list of files/folders to symlink in homedir
 
 ############################
-# Code
+# Blank Local Files
 ############################
-
 echo "Creating Blank Local config files"
 touch ~/.zshrc_local ~/.vim/vimrc_local  ~/.Trash ~/.gitconfig_local
 echo "...done"
 
+
+############################
+# Symbolic Links
+############################
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
 echo "...done"
 
+# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
+echo "Moving any existing dotfiles from ~ to $olddir"
+for file in $dotfiles; do
+    mv ~/$file $olddir/$file
+    echo "Creating symlink to $file in home directory."
+    ln -s $dir/$file ~/$file
+done
+echo "...done"
+
+############################
+# Git Repo Downloads/Updates
+############################
 function grab 
 {
     repo=$1
@@ -39,9 +52,11 @@ function grab
     fi
 }
 
+############################
 # this was pulled from a reddit from user
 # http://www.reddit.com/r/vim/comments/28e8z5/simple_vim_plugin_downloader/ciaer2x
 # it might be useful
+############################
 function lookatthis
 {
     cnt=0
@@ -72,7 +87,9 @@ for file in $dotfiles; do
 done
 echo "...done"
 
-
+############################
+# Vim Setup
+############################
 # run Vim setup
 echo "Running Vim Setup"
 # start vim loading the vimrc file then close right after

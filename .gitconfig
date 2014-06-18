@@ -11,7 +11,7 @@
     co = checkout
     s = status
     ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h %Cred%ad%Creset %an%Cgreen%d %Creset%s' --date=short --max-count=20
-    l = !git --no-pager log --color -p
+    l = !git log --color -p
     exists = ls-files --error-unmatch
 
 [push]

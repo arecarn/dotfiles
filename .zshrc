@@ -36,7 +36,7 @@ ZSH_THEME="terminalparty"
 # Uncomment following line if you want to disable marking untracked files under
 # VCS as dirty. This makes repository status check for large repositories much,
 # much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
+DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Uncomment following line if you want to  shown in the command execution time stamp 
 # in the history command output. The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|
@@ -71,11 +71,14 @@ compinit
 # End of lines added by compinstall
 ################################################################################
 
+# General Settings
+################################################################################
+setopt histignoredups
+
 # KEY BINDINGS
 ################################################################################
 
 # vi like settings
-################################################################################
 bindkey -v
 export KEYTIMEOUT=1
 
@@ -107,7 +110,7 @@ alias pslevel='pstree -s $$'
 alias tmux='tmux -2'
 alias e='vim'
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
-alias minivim='vim -u ~/dotfiles/vim/minivimrc'
+alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'
 
 # geeknote aliases/templates
 ##################
@@ -152,4 +155,3 @@ fi
 # stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
 stty -ixon
 stty stop undef
-

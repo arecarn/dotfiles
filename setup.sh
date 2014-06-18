@@ -42,7 +42,6 @@ function grab
 # this was pulled from a reddit from user
 # http://www.reddit.com/r/vim/comments/28e8z5/simple_vim_plugin_downloader/ciaer2x
 # it might be useful
-
 function lookatthis
 {
     cnt=0

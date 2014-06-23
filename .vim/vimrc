@@ -1040,9 +1040,10 @@ nmap <silent> gM :set opfunc=MixedCase<CR>g@
 vmap <silent> gM :<C-U>call MixedCase(visualmode(), 1)<CR>
 
 function! MixedCase(type, ...)
+    let saveReg = getreg('"')
+    let saveRegMode = getregtype('"')
     let sel_save = &selection
     let &selection = "inclusive"
-    let reg_save = @@
 
     if a:0  " Invoked from Visual mode, use '< and '> marks.
         silent exe "normal! `<" . a:type . "`>y"
@@ -1054,18 +1055,15 @@ function! MixedCase(type, ...)
         silent exe "normal! `[v`]y"
     endif
 
-    let reg_save_x = @x
-    let @x = @@
-    let @x = substitute(@x, '\w\+', '\u&', 'g')
+    call setreg('"', substitute(@", '\w\+', '\u&', 'g'), a:type)
     "don't capitalize the  t in can't or the re in your're
-    let @x = substitute(@x, '\a''\zs\a', '\l&', 'g')
+    call setreg('"', substitute(@", '\w\+', '\u&', 'g'), a:type)
 
-    normal! gv"xp
+    normal! gv""p
     set nohlsearch
 
     let &selection = sel_save
-    let @@ = reg_save
-    let @x = reg_save_x
+    call setreg('"', saveReg, saveRegMode)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

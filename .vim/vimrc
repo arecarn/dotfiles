@@ -748,8 +748,8 @@ nnoremap gj j
 
 "map F9 - F12 (like hjkl) to resize windows
 nnoremap  <F9>  :ObviousResizeLeft<CR>
-nnoremap  <F10> :ObviousResizeUp<CR>
-nnoremap  <F11> :ObviousResizeDown<CR>
+nnoremap  <F10> :ObviousResizeDown<CR>
+nnoremap  <F11> :ObviousResizeUp<CR>
 nnoremap  <F12> :ObviousResizeRight<CR>
 
 "Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -1100,14 +1100,10 @@ function! MixedCase(type, ...)
         silent exe "normal! `[v`]y"
     endif
 
-<<<<<<< HEAD
     let reg_save_x = @x
     let @x = @@
 
     let @x = substitute(@x, '\w\+', '\u\L&', 'g')
-=======
-    call setreg('"', substitute(@", '\w\+', '\u&', 'g'), a:type)
->>>>>>> d3b903e96ebfe95c1a7f68a99473023d5d31991a
     "don't capitalize the  t in can't or the re in your're
     call setreg('"', substitute(@", '\w\+', '\u&', 'g'), a:type)
 

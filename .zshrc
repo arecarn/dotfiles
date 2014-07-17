@@ -25,7 +25,7 @@ ZSH_THEME="terminalparty"
 # DISABLE_LS_COLORS="true"
 
 # Uncomment following line if you want to disable autosetting terminal title.
-# ="true" = 
+# ="true" =
 
 # Uncomment following line if you want to disable command autocorrection
 # DISABLE_CORRECTION="true"
@@ -38,7 +38,7 @@ ZSH_THEME="terminalparty"
 # much faster.
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# Uncomment following line if you want to  shown in the command execution time stamp 
+# Uncomment following line if you want to  shown in the command execution time stamp
 # in the history command output. The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|
 # yyyy-mm-dd
 # HIST_STAMPS="mm/dd/yyyy"
@@ -151,6 +151,8 @@ source ~/.zshrc_local
 if [[ $TERM == "xterm" ]]; then
         export TERM=xterm-256color
 fi
+
+source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 
 # stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
 stty -ixon

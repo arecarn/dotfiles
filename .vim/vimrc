@@ -38,16 +38,14 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Vimproc {{{2
-let vimproc_updcmd = has('win64') ?
-      \ 'tools\\update-dll-mingw 64' : 'tools\\update-dll-mingw 32'
-execute "NeoBundle 'Shougo/vimproc.vim'," . string({
-      \ 'build' : {
-      \     'windows' : vimproc_updcmd,
-      \     'cygwin' : 'make -f make_cygwin.mak',
-      \     'mac' : 'make -f make_mac.mak',
-      \     'unix' : 'make -f make_unix.mak',
-      \    },
-      \ })
+NeoBundle 'Shougo/vimproc.vim', {
+     \ 'build' : {
+     \     'windows' : 'make -f make_mingw32.mak',
+     \     'cygwin' : 'make -f make_cygwin.mak',
+     \     'mac' : 'make -f make_mac.mak',
+     \     'unix' : 'make -f make_unix.mak',
+     \    },
+     \ }
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/neocomplcache' "{{{2
 if !isdirectory(s:vimpath.'/utils_local/neocomplcache')
@@ -978,8 +976,13 @@ function! TestCrunchVShell()
 endfunction
 
 "do crunch tests
-nnoremap <Leader>ct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
-nnoremap <Leader>tc :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
+if s:hasWindows
+    nnoremap <Leader>ct :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\ && gvim -u .vimrc_minimal +Vader*<CR>
+    nnoremap <Leader>tc :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\ && gvim -u .vimrc_minimal<CR>
+else
+    nnoremap <Leader>ct :!cd ~/Dropbox/repos/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
+    nnoremap <Leader>tc :!cd ~/Dropbox/repos/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
+endif
 
 command! CrunchTestBuffer call CrunchTestBuffer()
 function! CrunchTestBuffer()

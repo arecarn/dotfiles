@@ -176,31 +176,29 @@ NeoBundle 'kopischke/unite-spell-suggest'
 NeoBundle 'kmnk/vim-unite-giti'
 
 
-nnoremap <Leader>g  :Unite -auto-preview grep<CR>
-nnoremap sf  :Unite file_rec/async<CR>
-nnoremap smg :Unite output:message<CR>
-nnoremap smp :Unite mapping<CR>
-nnoremap sr  :Unite file_mru directory_mru<CR>
-nnoremap srg :Unite registers<CR>
-nnoremap sb  :Unite buffer<CR>
-nnoremap so  :Unite outline <CR>
-nnoremap sl  :Unite line<CR>
-nnoremap sh  :Unite help<CR>
-nnoremap ss  :Unite session<CR>
-nnoremap <Leader>ss :UniteSessionSave<Space>
-nnoremap si  :<C-u>Unite menu:test<CR>
-nnoremap shc  :Unite cmdmatch history/command<CR>
-nnoremap shs :Unite history/search<CR>
-nnoremap shy :Unite history/yank<CR>
-xnoremap <Leader>shy :Unite history/yank<CR>
-nnoremap sp :Unite process<CR>
+nnoremap <TAB>g  :<C-u>Unite grep -no-resize -auto-preview<CR>
+nnoremap <TAB>f  :<C-u>Unite file_rec/async -start-insert<CR>
+nnoremap <TAB>r  :<C-u>Unite file_mru -start-insert<CR>
+nnoremap <TAB>rg :<C-u>Unite register -vertical<CR>
+nnoremap <TAB>b  :<C-u>Unite buffer -auto-resize<CR>
+nnoremap <TAB>o  :<C-u>Unite outline -vertical<CR>
+nnoremap <TAB>l  :<C-u>Unite line -start-insert<CR>
+nnoremap <TAB>h  :<C-u>Unite help -start-insert<CR>
+nnoremap <TAB>s  :<C-u>Unite session -auto-resize<CR>
+nnoremap <TAB>ss :<C-u>UniteSessionSave<Space>
+nnoremap <TAB>i  :<C-u>Unite menu:test -auto-resize<CR>
+nnoremap <TAB>hc :<C-u>Unite cmdmatch history/command<CR>
+nnoremap <TAB>hs :<C-u>Unite history/search<CR>
+nnoremap <TAB>y  :<C-u>Unite history/yank<CR>
+xnoremap <TAB>y  :<C-u>Unite history/yank<CR>
+nnoremap <TAB>p  :<C-u>Unite process -start-insert -vertical<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/vimfiler.vim' "{{{2
 " Replace netrw commands with vimfiler
 let g:loaded_netrw        = 1 " Disable netrw
 let g:loaded_netrwPlugin  = 1 " Disable netrw
-let g:vimfiler_as_default_explorer = 1	"make vimfiler the default explorer
+let g:vimfiler_as_default_explorer = 1  "make vimfiler the default explorer
 
 command! -nargs=* Explore :VimFilerBufferDir <Args>
 command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>
@@ -209,7 +207,7 @@ command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/vimshell.vim' "{{{2
-nnoremap svs :VimShellBufferDir -popup -toggle<CR>
+nnoremap <TAB>vs :VimShellBufferDir -popup -toggle<CR>
 let g:vimshell_vimshrc_path = s:vimpath.'/utils_local/vimshell/'
 
 "Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
@@ -254,7 +252,7 @@ let g:indent_guides_guide_size = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'scrooloose/syntastic' "{{{2
-let g:syntastic_check_on_open=1
+" let g:syntastic_check_on_open=1
 let g:syntastic_python_checkers = ['python']
 nnoremap cost :SyntasticToggleMode<CR>
 
@@ -275,7 +273,7 @@ nmap <Leader>H <Plug>(quickhl-manual-reset)
 xmap <Leader>H <Plug>(quickhl-manual-reset)
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 't9md/vim-choosewin' "{{{2
-nmap sw <Plug>(choosewin)
+nmap <TAB>w <Plug>(choosewin)
 let g:choosewin_overlay_enable = 1
 let g:choosewin_overlay_clear_multibyte = 1
 let g:choosewin_statusline_replace = 0
@@ -295,7 +293,7 @@ let g:focus_use_default_mapping = 0
 nmap cof <Plug>FocusModeToggle
 "}}}2
 NeoBundle 'mbbill/undotree' "{{{2
-nnoremap sut :UndotreeToggle<CR>
+nnoremap <TAB>ut :UndotreeToggle<CR>
 "}}}2
 NeoBundle 'dhruvasagar/vim-table-mode' "{{{2
 let g:table_mode_separator = '|'
@@ -320,15 +318,19 @@ nnoremap  [f <Plug>(fontzoom-smaller)
 NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'thinca/vim-textobj-between'
 NeoBundle 'majutsushi/tagbar' "{{{2
-nnoremap  stb :TagbarToggle<CR>
+nnoremap <TAB>tb :TagbarToggle<CR>
 "}}}2
 NeoBundle 'bling/vim-airline' "{{{2
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#tab_nr_type = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline_powerline_fonts = 1 "}}}2
+let g:airline_powerline_fonts = 1 
+"For refreshing airline
+if !has('vim_starting')
+    AirlineRefresh
+    normal! gtgT
+endif "}}}2
 NeoBundle 'tommcdo/vim-lion'
-" NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'Julian/vim-textobj-variable-segment'
 NeoBundle 'TeTrIs.vim'
 NeoBundle 'altercation/vim-colors-solarized'
@@ -342,7 +344,15 @@ NeoBundle 'kana/vim-textobj-entire'
 NeoBundle 'kana/vim-textobj-indent'
 NeoBundle 'kana/vim-textobj-line'
 NeoBundle 'kana/vim-textobj-user'
-NeoBundle 'mattn/vim-textobj-url'
+NeoBundle 'mattn/vim-textobj-url' "{{{2
+NeoBundle 'kana/vim-textobj-lastpat'
+NeoBundle 'glts/vim-textobj-comment'
+let g:textobj_comment_no_default_key_mappings = 1
+xmap agc <Plug>(textobj-comment-a)
+omap agc <Plug>(textobj-comment-a)
+xmap igc <Plug>(textobj-comment-i)
+omap igc <Plug>(textobj-comment-i)
+"}}}2
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'saihoooooooo/vim-textobj-space'
 NeoBundle 'tlvince/vim-compiler-python'
@@ -369,8 +379,12 @@ NeoBundle 'junegunn/vim-oblique'
 NeoBundle 'int3/vim-extradite'
 NeoBundle 'gregsexton/gitv'
 NeoBundle 'jaxbot/semantic-highlight.vim'
-
-
+NeoBundle 'svermeulen/vim-easyclip'
+let g:EasyClipUseSubstituteDefaults = 1
+let g:EasyClipEnableBlackHoleRedirect = 0
+nnoremap d "_d
+vnoremap d "_d
+noremap m d
 
 " NeoBundle 'inside/vim-search-pulse' "TODO fix this so it works with vim-oblique
 " let g:vim_search_pulse_mode = 'pattern'
@@ -399,6 +413,13 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set colorcolumn=79
 set cursorline
+if has("autocmd")
+    augroup CURSOR
+        autocmd WinEnter * setlocal cursorline
+        autocmd WinLeave * setlocal nocursorline
+    augroup END
+endif
+
 set number
 set relativenumber
 set showcmd
@@ -481,15 +502,16 @@ set undoreload=20000         " number of lines to save for undo
 
 execute 'set undodir='.s:undodir
 
-let s:swap=s:vimpath.'/utils_local/swap//'
-execute 'set directory='.s:swap
+" let s:swap=s:vimpath.'/utils_local/swap//'
+set noswapfile
+" execute 'set directory='.s:swap
 " ^ Here be magic! Quoth the help: (from godlygeek)
 " For Unix and Win32, if a directory ends in two path separators "//" or "\\",
 " the swap file name will be built from the complete path to the file with all
 " path separators substituted to percent '%' signs.  This will ensure file
 " name uniqueness in the preserve directory.
-set history=20000      " keep 200 lines of command line history
-set backup "allow back up files
+set history=10000
+set backup
 "Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
 let myvar = strftime("%y-%m-%d_%H")
 let myvar = "set backupext=_". myvar
@@ -558,8 +580,6 @@ nnoremap j gj
 nnoremap gk k
 nnoremap gj j
 
-nnoremap <Leader>d "_d
-
 "map F9 - F12 (like hjkl) to resize windows
 nnoremap  <F9>  :ObviousResizeLeft<CR>
 nnoremap  <F10> :ObviousResizeDown<CR>
@@ -575,11 +595,9 @@ nnoremap <silent> cotw :if &tw==0<CR>:set tw=78<CR>:else<CR>:set tw=0<CR>:endif<
 "update diff with a key mapping
 nnoremap du :diffupdate<CR>
 nnoremap <silent> <leader>dt :PreserveSave<CR>:%s,\s\+$,,ge<CR>:PreserveRestore<CR>
-nnoremap <Leader>r :redraw!<CR>
+nnoremap <silent> <C-l> :redraw!<CR><C-l>
 
-" lets use this as a command prefix for "show"
-nmap s <Nop>
-nnoremap src :e $MYVIMRC<CR>
+nnoremap <TAB>rc :e $MYVIMRC<CR>
 
 " nmap gb :call Go2Buff("forward", v:count)<CR>
 " nmap gB :call Go2Buff("backward", v:count)<CR>
@@ -615,7 +633,7 @@ endfunction
 
 nnoremap <C-W>d :bd<CR>
 
-" make more undos possible after leaving insert m
+" make more undoes possible after leaving insert mode
 inoremap <C-u> <C-g>u<C-u>
 inoremap <C-w> <C-g>u<C-w>
 inoremap <BS> <C-g>u<BS>
@@ -631,10 +649,10 @@ nnoremap yae :call Preserve("normal! ggyG")<CR>
 nnoremap yie :call Preserve("normal! ggyG")<CR>
 
 
-nnoremap <Leader>cd :cd! %:h<Cr>:pwd<Cr>
-nnoremap <Leader>lcd :lcd! %:h<Cr>:pwd<Cr>
+nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
+nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
 nnoremap <leader>e :e **/*
-nnoremap <leader>f :find<SPACE>
+nnoremap <leader>f :find<SPACE>*
 
 nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
 nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
@@ -647,11 +665,13 @@ cnoremap <C-l> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
+cnoremap <C-y> <SPACE><BS><TAB>
+
 "split a line
 nnoremap S i<cr><esc>k$
 
-cnoremap %f <C-r>=expand('%:p')<CR>
-cnoremap %d <C-r>=expand('%:h')<CR>/
+cabbrev %f <C-r>=expand('%:p')<CR>
+cabbrev %d <C-r>=expand('%:h')<CR>/
 
 " disable Ex mode key and map it to something awesome
 nnoremap Q @q
@@ -831,16 +851,10 @@ endfunction
 nnoremap <Leader>ct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
 nnoremap <Leader>tc :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
 
-command! CrunchTestBuffer call CrunchTestBuffer()
-function! CrunchTestBuffer()
-    new
-    r ~/Dropbox/data/code/VimScript/crunch\ tests/crunchtest
-endfunction
 "Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-command! -nargs=* RunVS call RunInVimShell('<Args>')
+command! -nargs=* VshSend call RunInVimShell('<Args>')
 function! RunInVimShell(cmd)
-    echo a:cmd
     VimShellBufferDir -popup
     execute "VimShellSendString " . a:cmd
 endfunction
@@ -929,19 +943,17 @@ function! MixedCase(type, ...)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"TABS & INDENTING                                                            {{{
+"TABS, INDENTING & FORMAT OPTIONS                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set expandtab     " causes spaces to be used instead of tabs
 set tabstop=4     " sets how big tabs are.
 set shiftwidth=4  " how much space to add or remove using indent command
 set softtabstop=4 " fine tunes the amount of white space to be inserted
-set smarttab      " When on, a <Tab> in front of a line inserts blanks
-" according  to  'shiftwidth'.  'tabstop' or 'softtabstop' is used in  other
-" places
+set smarttab
 
-set autoindent    " auto-indenting on
-set formatoptions+=n "formatting text recognize numbered lists. req. autoindent
-set formatoptions+=j "when joining lines remove comment leader when it makes sense
+set autoindent
+set formatoptions+=n
+set formatoptions+=j
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FOLDING                                                                     {{{
@@ -960,38 +972,33 @@ function! NeatFoldText()
 endfunction
 "NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 set foldtext=NeatFoldText()
-set foldmethod=indent "the type of folding to use
-set foldcolumn=2 "column on the far left that shows where folds are
-set foldnestmax=1 "number of fold levels to use
-set foldlevelstart=99 "when Vim starts don't fold anything
+set foldmethod=indent
+set foldcolumn=2
+set foldnestmax=1
+set foldlevelstart=99
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "AUTOCMDS                                                                    {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" automatically reload vimrc when it's saved
 if has("autocmd")
     augroup vimrc
         autocmd!
         autocmd BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC
     augroup END
 
-    "autocmnds for all files
-    augroup ALL
+    augroup AllFiles
         autocmd!
         autocmd FocusLost * silent! wall
     augroup END
 
-    "quick fix window options
-    augroup Qf
+    augroup QuickFix
         autocmd!
         autocmd FileType qf wincmd J "opens quick fix window on the bottom of all screens
     augroup END
 
-    "automatically compile TEX files on save
     if s:hasWindows
         augroup TEX
             autocmd!
-            "this is here so .tex files are recognized as latex files note Text files
             autocmd BufEnter *.tex setf tex
             "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
             autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
@@ -1007,74 +1014,72 @@ if has("autocmd")
 endif
 
 function! PrintCscopeOptions()
-    echo "G: Find this definition"
-    echo "C: Find functions calling this function"
-    echo "D: Find functions called by this function"
-    echo "F: Find this file"
-    echo "I: Find files #including this file"
-    echo "S: Find this C symbol"
-    echo "T: Find this text string"
-    echo "E: Find this egrep pattern"
+    echo "g: Definition"
+    echo "c: Functions calling this function"
+    echo "d: Functions called by this function"
+    echo "f: This file"
+    echo "i: Files #including this file"
+    echo "s: This C symbol"
+    echo "t: This text string"
+    echo "e: This egrep pattern"
 endfunction
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat("<RIGHT>",8)
+execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find  "
 
 set cscoperelative
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "SEARCHING                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wrapscan " searches wraparound a file
-set incsearch  " do incremental searching
+set wrapscan
+set incsearch
 set ignorecase
-set smartcase  " overrides ignore  case when caps in search
-set path=*/**
+set smartcase
+set path=**/*
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "GENERAL BEHAVIOR                                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"use system clipboard for default yanks and deletes
 set clipboard=unnamedplus,unnamed
-set splitright "new windows open in the right
+set splitright
 
+"disable dang error{visual}bells for good
 if has("autocmd")
-    augroup noBells "disable dang error{visual}bells for good
+    augroup noBells
         autocmd!
-        autocmd GUIEnter * set vb t_vb= " for your GUI
+        autocmd GUIEnter * set vb t_vb=
         autocmd VimEnter * set vb t_vb=
     augroup END
 endif
 
 set switchbuf=usetab
-set shortmess+=a "Abbrev. of messages (avoids 'hit enter')
-set autowriteall "saves buffer before leaving it
+set shortmess+=a
+set autowriteall
 
-set autoread "automatically read file when it's changed outside of vim
+"automatically read file when it's changed outside of vim
+set autoread
 augroup autoread
     autocmd CursorHold * call Timer()
 augroup END
 function! Timer()
-    call feedkeys("f\e")
-    checktime
+    if expand("%") == "[Command Line]"
+    else
+        call feedkeys("f\e")
+        checktime
+    endif
 endfunction
 
 set updatetime=5000  " milliseconds
-
-set confirm " If any modified, unsaved buffers exist, you will be prompted
-" to save or abandon each one.  There are also choices to
-" save all  or  abandon all
-set backspace=indent,eol,start "backspacing over everything in insert mode
-"set showmatch " If a bracket is inserted briefly jump to the matching one if it
-" is visible on the screen
-set matchtime=3 " time show match takes to jump to the matching bracket in
-" 10th of a second
-set tags=tags;/ "set the tag file to be called tags the ";/" allows you to look back wards
+set confirm
+set backspace=indent,eol,start
+set tags=tags;/ "the ";/" allows you to look back wards
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "COMPLETION                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set wildmode=full
 set wildmenu
 set completeopt=menuone,menu,preview
-
-
+set wildcharm=<TAB>
+set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TESTING                                                                     {{{
@@ -1135,6 +1140,6 @@ command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
 source ~/.vimrc_local
 
 set  modeline
-" vim: textwidth=78:
-" vim: foldmethod=marker:
+" vim: textwidth=78
+" vim: foldmethod=marker
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

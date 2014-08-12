@@ -1,12 +1,12 @@
-"RYAN CARNEY VIMRC                                                           {{{
+"RYAN CARNEY VIMRC                                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
 set fileformats=unix,dos
 
 let mapleader="\<Enter>"
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"OPERATING SYSTEM VARIABLES                                                  {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"OPERATING SYSTEM VARIABLES                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let s:hasWindows = has("win16") || has("win32") || has("win64")
 if s:hasWindows
@@ -16,8 +16,8 @@ else
     let s:vimpath = $HOME."/.vim"
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"PLUGINS MANAGEMENT                                                          {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"PLUGINS MANAGEMENT                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "netrw{{{2
 "aka the File Explorer. set up line numebring and other good stuff
@@ -25,7 +25,7 @@ let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
 "hide .swp .o12 .dbg .lst files in explorer
 let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Nebundle{{{2
 if has('vim_starting')
     let s:runtimepath = s:vimpath.'/bundle/neobundle.vim/'
@@ -36,7 +36,7 @@ call neobundle#rc(expand(s:vimpath.'/bundle'))
 " Let NeoBundle manage NeoBundle
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 "Vimproc {{{2
 let vimproc_updcmd = has('win64') ?
             \ 'tools\\update-dll-mingw 64' : 'tools\\update-dll-mingw 32'
@@ -48,7 +48,7 @@ execute "NeoBundle 'Shougo/vimproc.vim'," . string({
             \     'unix' : 'make -f make_unix.mak',
             \    },
             \ })
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/neocomplcache' "{{{2
 if !isdirectory(s:vimpath.'/utils_local/neocomplcache')
     mkdir(s:vimpath.'/utils_local/neocomplcache', "p", 0700)
@@ -58,8 +58,6 @@ let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_camel_case_completion = 1
 let g:neocomplcache_enable_underbar_completion = 1
-
-" Sets minimum char length of syntax keyword.
 let g:neocomplcache_min_syntax_length = 2
 let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 let g:neocomplcache_enable_auto_delimiter = 1
@@ -120,19 +118,19 @@ endif
 NeoBundle 'Shougo/neosnippet-snippets'
 let g:neosnippet#snippets_directory=s:vimpath.'/utils/snippets'
 NeoBundle 'Shougo/neosnippet.vim'
-"neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"neosnippet"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/unite.vim' "{{{2
 let g:unite_winheight = 10
 let g:unite_data_directory = s:vimpath.'/utils_local/unite/'
 let g:unite_matcher_fuzzy_max_input_length = 1000
-let g:unite_source_history_yank_enable = 1 "TODO this line is causing problems on windows :(
+let g:unite_source_history_yank_enable = 1
 let g:unite_source_history_yank_limit = 10000
 let g:unite_split_rule = 'botright'
 let g:unite_source_file_rec_max_cache_files = 0
 call unite#custom#source('file_rec,file_rec/async',
             \ 'max_candidates', 0)
 call unite#custom#profile('files', 'filters', 'sorter_rank')
-" call unite#filters#matcher_default#use(['matcher_fuzzy']) "TODO this line is causing problems on windows :(
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_rank'])
 call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
             \ 'ignore_pattern', join([
@@ -152,10 +150,10 @@ function! s:unite_settings()
     imap <Silent><Buffer><Expr> <C-g> unite#do_action('goto')
 endfunction
 let g:unite_source_menu_menus = {}
-let g:unite_source_menu_menus.test = {
+let g:unite_source_menu_menus.interpreters = {
             \     'description' : 'Interpreter Menu',
             \ }
-let g:unite_source_menu_menus.test.command_candidates = [
+let g:unite_source_menu_menus.interpreters.command_candidates = [
             \   ['VimShell', 'VimShell -split'],
             \   ['bc', 'VimShellInteractive bc'],
             \   ['octave', 'VimShellInteractive octave'],
@@ -175,7 +173,6 @@ NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'kopischke/unite-spell-suggest'
 NeoBundle 'kmnk/vim-unite-giti'
 
-
 nnoremap <TAB>g  :<C-u>Unite grep -no-resize -auto-preview<CR>
 nnoremap <TAB>f  :<C-u>Unite file_rec/async -start-insert<CR>
 nnoremap <TAB>r  :<C-u>Unite file_mru -start-insert<CR>
@@ -186,39 +183,39 @@ nnoremap <TAB>l  :<C-u>Unite line -start-insert<CR>
 nnoremap <TAB>h  :<C-u>Unite help -start-insert<CR>
 nnoremap <TAB>s  :<C-u>Unite session -auto-resize<CR>
 nnoremap <TAB>ss :<C-u>UniteSessionSave<Space>
-nnoremap <TAB>i  :<C-u>Unite menu:test -auto-resize<CR>
+nnoremap <TAB>i  :<C-u>Unite menu:interpreters -auto-resize<CR>
 nnoremap <TAB>hc :<C-u>Unite cmdmatch history/command<CR>
+nnoremap <TAB>mg :<C-u>Unite output:message<CR>
 nnoremap <TAB>hs :<C-u>Unite history/search<CR>
 nnoremap <TAB>y  :<C-u>Unite history/yank<CR>
 xnoremap <TAB>y  :<C-u>Unite history/yank<CR>
 nnoremap <TAB>p  :<C-u>Unite process -start-insert -vertical<CR>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/vimfiler.vim' "{{{2
 " Replace netrw commands with vimfiler
-let g:loaded_netrw        = 1 " Disable netrw
-let g:loaded_netrwPlugin  = 1 " Disable netrw
-let g:vimfiler_as_default_explorer = 1  "make vimfiler the default explorer
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
+let g:vimfiler_as_default_explorer = 1
 
 command! -nargs=* Explore :VimFilerBufferDir <Args>
 command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>
 command! -nargs=* Vexplore :VimFilerBufferDir -split  <Args>
 command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/vimshell.vim' "{{{2
 nnoremap <TAB>vs :VimShellBufferDir -popup -toggle<CR>
 let g:vimshell_vimshrc_path = s:vimpath.'/utils_local/vimshell/'
 
-"Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Vimshell"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'Shougo/echodoc.vim' "{{{2
 let g:echodoc_enable_at_startup=1
 set cmdheight=2 "}}}2
 "echodoc.vim""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'arecarn/frisk' "{{{2
 call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
-" NeoBundle  'frisk', {'type' : 'nosync',  'base' : '~/Dropbox/projects/frisk/' }
-"
 
 command! Rfrisk call ReloadFrisk()
 "Do the stuff for crunch
@@ -234,29 +231,27 @@ function! ReloadFrisk()
     Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk/*.vim
 endfunction
 
-"frisk""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"frisk""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'arecarn/crunch', 'Dev' "{{{2
-" NeoBundle  'crunch', {'type' : 'nosync',  'base' : '~/Dropbox/projects/crunch'}
 
-"crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"crunch"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'godlygeek/tabular' "{{{2
-"following filetype commands align linewise comments
 nnoremap <Leader>a :Tabularize/
 xnoremap <Leader>a :Tabularize/
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'nathanaelkane/vim-indent-guides' "{{{2
 nmap <silent> coig <Plug>IndentGuidesToggle
-let g:indent_guides_enable_on_vim_startup=0
+let g:indent_guides_enable_on_vim_startup = 0
 let g:indent_guides_guide_size = 1
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'scrooloose/syntastic' "{{{2
-" let g:syntastic_check_on_open=1
+let g:syntastic_check_on_open = 0
 let g:syntastic_python_checkers = ['python']
 nnoremap cost :SyntasticToggleMode<CR>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 't9md/vim-textmanip' "{{{2
 xmap <C-j> <Plug>(textmanip-move-down)
 xmap <C-k> <Plug>(textmanip-move-up)
@@ -265,19 +260,19 @@ xmap <C-l> <Plug>(textmanip-move-right)
 
 " toggle insert/replace with <F10>
 nmap comt <Plug>(textmanip-toggle-mode)
-"textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"textmanip""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 't9md/vim-quickhl' "{{{2
 nmap <Leader>h <Plug>(quickhl-manual-this)
 xmap <Leader>h <Plug>(quickhl-manual-this)
 nmap <Leader>H <Plug>(quickhl-manual-reset)
 xmap <Leader>H <Plug>(quickhl-manual-reset)
-"quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 't9md/vim-choosewin' "{{{2
 nmap <TAB>w <Plug>(choosewin)
 let g:choosewin_overlay_enable = 1
 let g:choosewin_overlay_clear_multibyte = 1
 let g:choosewin_statusline_replace = 0
-"choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'airblade/vim-gitgutter' "{{{2
 highlight link GitGutterAdd          DiffAdd
 highlight link GitGutterChange       DiffChange
@@ -287,7 +282,7 @@ nnoremap cogg :GitGutterToggle<CR>
 let g:gitgutter_enabled = 0
 let gittgutter_realtime = 1
 let g:gitgutter_eager = 0
-"gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'merlinrebrovic/focus.vim' "{{{2
 let g:focus_use_default_mapping = 0
 nmap cof <Plug>FocusModeToggle
@@ -298,25 +293,10 @@ nnoremap <TAB>ut :UndotreeToggle<CR>
 NeoBundle 'dhruvasagar/vim-table-mode' "{{{2
 let g:table_mode_separator = '|'
 "}}}2
-NeoBundle 'roman/golden-ratio'
-"{{{2
+NeoBundle 'roman/golden-ratio' "{{{2
 let g:golden_ratio_autocommand = 0
 nnoremap cogr :GoldenRatioToggle<CR>
 "}}}2
-NeoBundle 'junegunn/vader.vim'
-NeoBundle 'LanguageTool'
-"TODO make system independent 18 Mar 2014
-let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.jar'
-NeoBundle 'AndrewRadev/linediff.vim' "{{{2
-xnoremap <Leader>ld :Linediff<CR>
-"}}}2
-NeoBundle 'thinca/vim-fontzoom' "{{{2
-let g:fontzoom_no_default_key_mappings = 1
-nnoremap  ]f <Plug>(fontzoom-larger)
-nnoremap  [f <Plug>(fontzoom-smaller)
-"}}}2
-NeoBundle 'tpope/vim-unimpaired'
-NeoBundle 'thinca/vim-textobj-between'
 NeoBundle 'majutsushi/tagbar' "{{{2
 nnoremap <TAB>tb :TagbarToggle<CR>
 "}}}2
@@ -324,12 +304,7 @@ NeoBundle 'bling/vim-airline' "{{{2
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#tab_nr_type = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline_powerline_fonts = 1 
-"For refreshing airline
-if !has('vim_starting')
-    AirlineRefresh
-    normal! gtgT
-endif "}}}2
+let g:airline_powerline_fonts = 1
 NeoBundle 'tommcdo/vim-lion'
 NeoBundle 'Julian/vim-textobj-variable-segment'
 NeoBundle 'TeTrIs.vim'
@@ -353,6 +328,31 @@ omap agc <Plug>(textobj-comment-a)
 xmap igc <Plug>(textobj-comment-i)
 omap igc <Plug>(textobj-comment-i)
 "}}}2
+NeoBundle 'svermeulen/vim-easyclip' "{{{2
+let g:EasyClipUseSubstituteDefaults = 1
+let g:EasyClipEnableBlackHoleRedirect = 0
+let g:EasyClipUseCutDefaults = 0
+nmap m  "_d
+nmap mm "_dd
+nmap M  "_D
+xmap m  "_d
+nnoremap gm m
+
+"}}}2
+NeoBundle 'LanguageTool' "{{{2
+"TODO make system independent 18 Mar 2014
+let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.j' "}}}2
+NeoBundle 'AndrewRadev/linediff.vim' "{{{2
+xnoremap <Leader>ld :Linediff<CR>
+"}}}2
+NeoBundle 'thinca/vim-fontzoom' "{{{2
+let g:fontzoom_no_default_key_mappings = 1
+nnoremap  ]f <Plug>(fontzoom-larger)
+nnoremap  [f <Plug>(fontzoom-smaller)
+"}}}2
+NeoBundle 'junegunn/vader.vim'
+NeoBundle 'tpope/vim-unimpaired'
+NeoBundle 'thinca/vim-textobj-between'
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'saihoooooooo/vim-textobj-space'
 NeoBundle 'tlvince/vim-compiler-python'
@@ -379,16 +379,13 @@ NeoBundle 'junegunn/vim-oblique'
 NeoBundle 'int3/vim-extradite'
 NeoBundle 'gregsexton/gitv'
 NeoBundle 'jaxbot/semantic-highlight.vim'
-NeoBundle 'svermeulen/vim-easyclip'
-let g:EasyClipUseSubstituteDefaults = 1
-let g:EasyClipEnableBlackHoleRedirect = 0
-nnoremap d "_d
-vnoremap d "_d
-noremap m d
+NeoBundle 'vim-scripts/FormatToWidth'
+xmap gQ <Plug>FormatToWidth
+NeoBundle 'vim-scripts/ingo-library'
+NeoBundle 'lopter/moin.vim'
 
 " NeoBundle 'inside/vim-search-pulse' "TODO fix this so it works with vim-oblique
 " let g:vim_search_pulse_mode = 'pattern'
-
 " NeoBundle 'google/maktaba'
 " NeoBundle 'glts/vim-magnum'
 " Initializes all maktaba plugins.
@@ -399,33 +396,26 @@ call neobundle#end()
 NeoBundleCheck
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"FILE TYPE SETTINGS                                                          {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FILE TYPE SETTINGS                                                        {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 filetype on
 filetype plugin on
 filetype indent on
 syntax on " allow syntax highlighting
 set encoding=utf-8 "make Vim use UTF-8 by default
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"UI OPTIONS                                                                  {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"UI OPTIONS                                                                {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set colorcolumn=79
-set cursorline
-if has("autocmd")
-    augroup CURSOR
-        autocmd WinEnter * setlocal cursorline
-        autocmd WinLeave * setlocal nocursorline
-    augroup END
-endif
 
 set number
 set relativenumber
 set showcmd
 set list
 set lazyredraw
-set laststatus=2 "allways show the status line
+set laststatus=2
 set listchars=trail:·,tab:»·,extends:→,precedes:←
 
 "Maximize Window on Startup
@@ -438,15 +428,15 @@ if has ("gui_running")
     endif
 endif
 
+" Highlight TODO, FIXME, NOTE, etc.
 if has("autocmd")
-    " Highlight TODO, FIXME, NOTE, etc.
     if v:version > 701
         autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
         autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\)')
     endif
 endif
 
-"colorscheme""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"colorscheme{{{2
 
 if has ("gui_running")
     " colorscheme solarized
@@ -459,9 +449,8 @@ if !has("gui_running")
     let g:gruvbox_italic=0
 endif
 
-set background=dark "}}}
-
-"gui settings"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+set background=dark "}}}2
+"gui settings {{{2
 if has ("gui_running")
     "Make GVim more like Terminal Vim
     set guioptions-=T  "remove toolbar
@@ -479,11 +468,11 @@ if has ("gui_running")
     elseif has('unix') && !has('mac') "linux
         set guifont=DejaVu\ Sans\ Mono\ 10
     endif
-endif "gui_running "}}}2
+endif "}}}2
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"CURSOR SETTINGS                                                             {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"CURSOR SETTINGS                                                           {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set scrolloff=6 " Keep 3 lines (top/bottom) for scope
 set sidescrolloff=6 " keep 3 lines (side/side) for scope
 set sidescroll=1
@@ -492,15 +481,24 @@ if has('mouse')
     set mouse=a
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"UNDO & SWAP                                                                 {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set undofile                " Save undos after file closes
-let s:undodir = s:vimpath.'/utils_local/undo' " where to save undo histories
-set undolevels=20000         " How many undo
-set undoreload=20000         " number of lines to save for undo
+set cursorline
+if has("autocmd")
+    augroup CURSOR
+        autocmd WinEnter * setlocal cursorline
+        autocmd WinLeave * setlocal nocursorline
+    augroup END
+endif
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"UNDO & SWAP                                                               {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set undofile
+let s:undodir = s:vimpath.'/utils_local/undo//'
 execute 'set undodir='.s:undodir
+set undolevels=20000
+set undoreload=20000
+
 
 " let s:swap=s:vimpath.'/utils_local/swap//'
 set noswapfile
@@ -516,81 +514,185 @@ set backup
 let myvar = strftime("%y-%m-%d_%H")
 let myvar = "set backupext=_". myvar
 execute myvar
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"BACKUP                                                                      {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:backupdir = s:vimpath.'/utils_local/backup'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"BACKUP                                                                    {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:backupdir = s:vimpath.'/utils_local/backup//'
 execute 'set backupdir='.s:backupdir
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"LINE WRAPPING                                                                {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set nowrap "When on, lines longer than the width of the window will wrap and
-set linebreak " wrap on complete words
-let g:d_tw = 78
-let &textwidth= g:d_tw "max length of line to be inserted. 0 will not break on space
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SPELLING - THESAURUS                                                        {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"LINE WRAPPING                                                             {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set nowrap
+set linebreak
+set textwidth=78
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SPELLING - THESAURUS                                                      {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set spell
 set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
+inoremap <C-S> <ESC>[s1z=gi<C-o>
+nnoremap ]gs ]s:sleep 300m<CR>1z=
+nnoremap [gs [s:sleep 300m<CR>1z=
 
-"TODO make "Scripts" to go though all misspellings words and fix them
-nnoremap <silent> <Plug>FixSpelling 1z=
-            \:call repeat#set("\<Plug>FixSpelling")<CR>
-nmap csf <Plug>FixSpelling
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"TABS, INDENTING & FORMAT OPTIONS                                          {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set smarttab
 
-nnoremap csl z=
-nnoremap csa :spellrepall<CR>
-nnoremap csc t<space>a<C-x><C-s>
-nnoremap cst t<space>a<C-x><C-t>
-nnoremap csd t<space>a<C-x><C-k>
-inoremap <C-F> <ESC>[s1z=gi<C-o>
-nnoremap ]fs ]s:sleep 300m<CR>1z=
-nnoremap [fs [s:sleep 300m<CR>1z=
+set autoindent
+set formatoptions+=n
+set formatoptions+=j
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"TEMPLATE MAPPINGS                                                           {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"make using Templates easier
-let s:templatefile = s:vimpath.'/utils/template/'
-execute 'command! Etemplates :e '. s:templatefile
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FOLDING                                                                   {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+function! NeatFoldText()
+    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
+    let lines_count = v:foldend - v:foldstart + 1
+    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+    " let foldchar = matchstr(&fillchars, 'fold:\zs.')
+    let foldchar = '_'
+    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+    let foldtextend = lines_count_text . repeat(foldchar, 8)
+    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+endfunction
+"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+set foldtext=NeatFoldText()
+set foldmethod=indent
+set foldcolumn=2
+set foldnestmax=1
+set foldlevelstart=99
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"AUTOCMDS                                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
-    augroup template
+    augroup vimrc
         autocmd!
-        execute 'autocmd BufNewFile includes.h 0r '.s:templatefile.'skeleton_master.h'
-        execute 'autocmd BufNewFile *.Tex      0r '.s:templatefile.'skeleton.Tex'
+        autocmd BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC
+    augroup END
+
+    augroup AllFiles
+        autocmd!
+        autocmd FocusLost * silent! wall
+    augroup END
+
+    augroup QuickFix
+        autocmd!
+        "opens quick fix window on the bottom of all screens
+        autocmd FileType qf wincmd J
+    augroup END
+
+    if s:hasWindows
+        augroup TEX
+            autocmd!
+            autocmd BufEnter *.tex setf tex
+            "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
+            autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
+            autocmd BufEnter *.tex setlocal concealcursor=
+        augroup END
+    else
+        augroup TEX
+            autocmd!
+            autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
+            autocmd BufEnter *.tex setlocal concealcursor=
+        augroup END
+    endif
+endif
+
+function! PrintCscopeOptions()
+    echo "g: Definition"
+    echo "c: Functions calling this function"
+    echo "d: Functions called by this function"
+    echo "f: This file"
+    echo "i: Files #including this file"
+    echo "s: This C symbol"
+    echo "t: This text string"
+    echo "e: This egrep pattern"
+endfunction
+execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find  "
+
+set cscoperelative
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SEARCHING                                                                 {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set wrapscan
+set incsearch
+set ignorecase
+set smartcase
+set path=**/*
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"GENERAL BEHAVIOR                                                          {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set clipboard=unnamedplus,unnamed
+set splitright
+
+"disable dang error{visual}bells for good
+if has("autocmd")
+    augroup noBells
+        autocmd!
+        autocmd GUIEnter * set vb t_vb=
+        autocmd VimEnter * set vb t_vb=
     augroup END
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"MAPPINGS & COMMANDS                                                        {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set switchbuf=usetab
+set shortmess+=a
+set autowriteall
+
+"automatically read file when it's changed outside of vim
+set autoread
+augroup autoread
+    autocmd CursorHold * call Timer()
+augroup END
+function! Timer()
+    if expand("%") == "[Command Line]"
+    else
+        call feedkeys("f\e")
+        checktime
+    endif
+endfunction
+
+set updatetime=5000  "milliseconds
+set confirm
+set backspace=indent,eol,start
+set tags=tags;/ "the ";/" allows you to look back wards
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"COMPLETION                                                                {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set wildmode=full
+set wildmenu
+set completeopt=menuone,menu,preview
+set wildcharm=<TAB>
+set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"MAPPINGS & COMMANDS                                                       {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set timeout
 set timeoutlen=500
-set updatetime=1000 "how long it takes for the preview to show up in ms
+set updatetime=1000
 
-"Navigation"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-"cursor moves as expected for wrapped lines
+"Navigation
 nnoremap k gk
 nnoremap j gj
 nnoremap gk k
 nnoremap gj j
 
-"map F9 - F12 (like hjkl) to resize windows
-nnoremap  <F9>  :ObviousResizeLeft<CR>
-nnoremap  <F10> :ObviousResizeDown<CR>
-nnoremap  <F11> :ObviousResizeUp<CR>
-nnoremap  <F12> :ObviousResizeRight<CR>
-"}}}2
-
-"TOGGLE OPTIONS"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-nnoremap cop :set paste!<CR>:set paste?<CR>
-nnoremap <silent> cotw :if &tw==0<CR>:set tw=78<CR>:else<CR>:set tw=0<CR>:endif<CR>:set tw?<CR>
-"}}}2
+nnoremap cotw :<C-U>let &l:textwidth=v:count<CR>:set tw?<CR>
 
 "update diff with a key mapping
 nnoremap du :diffupdate<CR>
@@ -599,23 +701,73 @@ nnoremap <silent> <C-l> :redraw!<CR><C-l>
 
 nnoremap <TAB>rc :e $MYVIMRC<CR>
 
-" nmap gb :call Go2Buff("forward", v:count)<CR>
-" nmap gB :call Go2Buff("backward", v:count)<CR>
 
-" function! Go2Buff(forwardOrBackward, count)
-"     echom a:count. " this is the count"
-"     if a:count == 0
-"         if a:forwardOrBackward == "forward"
-"             execute "normal! :bn\<CR>"
-"         elseif a:forwardOrBackward == "backward"
-"             execute "normal! :bp\<CR>"
-"         endif
-"     else
-"         execute "normal! :".a:count."b\<CR>"
-"     endif
-" endfunction
+"map F9 - F12 (like hjkl) to resize windows
+nnoremap  <F9>  :ObviousResizeLeft<CR>
+nnoremap  <F10> :ObviousResizeDown<CR>
+nnoremap  <F11> :ObviousResizeUp<CR>
+nnoremap  <F12> :ObviousResizeRight<CR>
 
+nnoremap <C-W>d :bd<CR>
+
+" make more undoes possible after leaving insert mode
+inoremap <C-u> <C-g>u<C-u>
+inoremap <C-w> <C-g>u<C-w>
+inoremap <BS> <C-g>u<BS>
+inoremap <Del> <C-g>u<Del>
+inoremap <END> <C-g>u<END>
+
+noremap Y y$
+
+nnoremap =ae :call Preserve("normal! gg=G")<CR>
+nnoremap =ie :call Preserve("normal! gg=G")<CR>
+nnoremap yae :call Preserve("normal! ggyG")<CR>
+nnoremap yie :call Preserve("normal! ggyG")<CR>
+
+nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
+nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
+nnoremap <leader>e :e **/*
+nnoremap <leader>f :find<SPACE>*
+
+nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
+
+"split a line
+nnoremap S i<cr><esc>k$
+nnoremap <C-S> i<CR><ESC>ddkP
+
+"join from above
+nnoremap <C-J> ddpkJ
+
+"disable Ex mode key and map it to something awesome
+nnoremap Q @q
+"replay macro for each line of a visual selection
+xnoremap Q :normal! @q<CR>
+"repeat last command for each line of a visual selection
+xnoremap . :normal! .<CR>
+nnoremap <C-q> .n
+
+"navigation in command line
+cnoremap <C-j> <DOWN>
+cnoremap <C-k> <UP>
+cnoremap <C-h> <LEFT>
+cnoremap <C-l> <RIGHT>
+cnoremap <C-a> <HOME>
+cnoremap <C-e> <END>
+
+"current file and directory abbreviations
+cabbrev %f <C-r>=expand('%:p')<CR>
+cabbrev %d <C-r>=expand('%:h')<CR>/
+
+"accept completion (requires "set wildcharm = <TAB>)
+cnoremap <C-y> <SPACE><BS><TAB>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SCRIPTS                                                                   {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap <leader>m  :call SearchPosition()<CR>
+nnoremap <leader>M  :let @/ = ""<CR>
 function! SearchPosition()
     if @/ !~ '\v(\\\%\d+[lc](\\\|)?)+'
         let @/ = ''
@@ -631,63 +783,36 @@ function! SearchPosition()
     execute "let @/ .= '\\%".col."c'"
 endfunction
 
-nnoremap <C-W>d :bd<CR>
+xnoremap g* :<C-U>call AddToSearch()<CR>
+function! AddToSearch()
+    let save_reg = @@
+    if @/ != ''
+        let @/ .= '\|'
+    endif
+    normal! gvy
+    let @/ .= @@
+    let @@ = save_reg
+endfunction
 
-" make more undoes possible after leaving insert mode
-inoremap <C-u> <C-g>u<C-u>
-inoremap <C-w> <C-g>u<C-w>
-inoremap <BS> <C-g>u<BS>
-inoremap <Del> <C-g>u<Del>
-inoremap <END> <C-g>u<END>
+nnoremap gb :<C-U>exec "call Go2Buff('forward',".v:count.")"<CR>
+nnoremap gB :<C-U>exec "call Go2Buff('backward',".v:count.")"<CR>
+function! Go2Buff(forwardOrBackward, count)
+    if a:count == 0
+        echom a:count. " using bn"
+        if a:forwardOrBackward == "forward"
+            execute "normal! :bn\<CR>"
+        elseif a:forwardOrBackward == "backward"
+            execute "normal! :bp\<CR>"
+        endif
+    else
+        execute "normal! :".a:count."b\<CR>"
+    endif
+endfunction
 
-"Yank till end of line
-noremap Y y$
-
-nnoremap =ae :call Preserve("normal! gg=G")<CR>
-nnoremap =ie :call Preserve("normal! gg=G")<CR>
-nnoremap yae :call Preserve("normal! ggyG")<CR>
-nnoremap yie :call Preserve("normal! ggyG")<CR>
-
-
-nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
-nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
-nnoremap <leader>e :e **/*
-nnoremap <leader>f :find<SPACE>*
-
-nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
-nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
-
-"navigation in command line
-cnoremap <C-j> <DOWN>
-cnoremap <C-k> <UP>
-cnoremap <C-h> <LEFT>
-cnoremap <C-l> <RIGHT>
-cnoremap <C-a> <HOME>
-cnoremap <C-e> <END>
-
-cnoremap <C-y> <SPACE><BS><TAB>
-
-"split a line
-nnoremap S i<cr><esc>k$
-
-cabbrev %f <C-r>=expand('%:p')<CR>
-cabbrev %d <C-r>=expand('%:h')<CR>/
-
-" disable Ex mode key and map it to something awesome
-nnoremap Q @q
-" replay macro for each line of a visual selection
-xnoremap Q :normal! @q<CR>
-" repeat last command for each line of a visual selection
-xnoremap . :normal! .<CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SCRIPTS                                                                     {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"reverse the selected lines (TODO don't work for line at the top of a file)
-xnoremap gr <ESC>'<mr'>:'r+1,.g/^/m 'r<CR>
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
-"Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+
+"Compile {{{2
 "save everything and then gcc the current file then run the file returned by
 "gcc
 command! Gcc call Compile('gcc\ %\ -o\ %:t:r', 'gcc', 'exe')
@@ -728,7 +853,8 @@ function! Compile(MakeProgram, Compiler, excutable)
     endif
 
     let &makeprg= s:oldmakeprg
-endfunction
+endfunction "}}}2
+
 
 function! Make()
     let s:oldmakeprg = &makeprg
@@ -803,7 +929,6 @@ function! Maker(args)
         else "linux
             execute '!./mycpp'
         endif
-    else
     endif
 endfunction
 
@@ -811,8 +936,7 @@ command! -nargs=* Maker call Maker('<Args>')
 
 command! -nargs=* MyMake make! <Args> | cwindow
 
-"Compile()""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 command! Rcrunch call ReloadCrunch()
 "Do the stuff for crunch
 function! ReloadCrunch()
@@ -851,39 +975,19 @@ endfunction
 nnoremap <Leader>ct :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
 nnoremap <Leader>tc :!cd ~/Dropbox/projects/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
 
-"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+
+"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 command! -nargs=* VshSend call RunInVimShell('<Args>')
 function! RunInVimShell(cmd)
     VimShellBufferDir -popup
     execute "VimShellSendString " . a:cmd
 endfunction
-"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-" s:PrintDebugHeader()                                                    {{{2
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:PrintDebugHeader(text)
-    if s:debug
-        echom repeat(' ', 80)
-        echom repeat('=', 80)
-        echom a:text." Debug"
-        echom repeat('-', 80)
-    endif
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-" s:PrintDebugMsg()                                                       {{{2
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:PrintDebugMsg(text)
-    if s:debug
-        echom a:text
-    endif
-endfunction
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
 "add numbers to the front or end of a line
 cabbrev numend s/$/\=1-line("'<")+line(".")/c
 cabbrev numfront s/^/\=1-line("'<")+line(".")/c
-
 
 "Details:
 "s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
@@ -909,237 +1013,79 @@ vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
             \:let @a=old_reg_a<CR>
             \:let @"=old_reg<CR>
 
-nmap <silent> gM :set opfunc=MixedCase<CR>g@
-vmap <silent> gM :<C-U>call MixedCase(visualmode(), 1)<CR>
+if has('vim_starting')
+    nnoremap <unique> <script> <plug>MixedCaseOperator <SID>MixedCaseOperator
+    nnoremap <SID>MixedCaseOperator :<C-U>set opfunc=MixedCase<CR>g@
+    if !hasmapto('<Plug>MixedCaseOperator')
+        nmap <unique> gM <Plug>MixedCaseOperator
+    endif
 
-function! MixedCase(type, ...)
-    let saveReg = getreg('"')
-    let saveRegMode = getregtype('"')
+    nnoremap <unique> <script> <plug>MixedCaseOperatorLine <SID>MixedCaseOperatorLine
+    nnoremap <sid>mixedcaseoperatorline :<c-u>set opfunc=mixedcase<bar>exe 'norm! 'v:count1.'g@_'<cr>
+    if !hasmapto('<plug>mixedcaseoperatorline')
+        nmap <unique> gmm <plug>mixedcaseoperatorline
+    endif
+
+    xnoremap <unique> <script> <plug>VisualMixedCaseOperator  <SID>VisualMixedCaseOperator
+    xnoremap <SID>VisualMixedCaseOperator :<C-U>call crunch#operator(visualmode())<CR>
+    if !hasmapto('<Plug>VisualMixedCaseOperator')
+        xmap <unique> gM <Plug>VisualMixedCaseOperator
+    endif
+endif
+
+function! MixedCase(type)
+    "Backup Settings That We Will Change
     let sel_save = &selection
-    let &selection = "inclusive"
+    let cb_save = &clipboard
+    "make selection and clipboard work the way we need
+    set selection=inclusive clipboard-=unnamed clipboard-=unnamedplus
+    "Backup The Unnamed Register, Which We Will Be Yanking Into    "Backup The Unnamed Register, Which We Will Be Yanking Into
+    let reg_save = @@
 
-    if a:0  " Invoked from Visual mode, use '< and '> marks.
+    if a:type =~ '^.$'
+        "if type is 'v', 'V', or '<C-V>' (i.e. 0x16) then reselect the visual region
         silent exe "normal! `<" . a:type . "`>y"
-    elseif a:type == 'line'
-        silent exe "normal! '[V']y"
+        let type=a:type
     elseif a:type == 'block'
         silent exe "normal! `[\<C-V>`]y"
+        let type=''
+    elseif a:type == 'line'
+        "line-based text motion
+        silent exe "normal! `[V`]y"
+        let type='V'
     else
         silent exe "normal! `[v`]y"
+        let type='v'
     endif
+    let regtype = type
 
-    let reg_save_x = @x
-    let @x = @@
-
-    let @x = substitute(@x, '\w\+', '\u\L&', 'g')
+    let repl = substitute(@@, '\w\+', '\u\L&', 'g')
     "don't capitalize the  t in can't or the re in your're
-    call setreg('"', substitute(@", '\w\+', '\u&', 'g'), a:type)
+    let repl = substitute(repl, '\w\+', '\u&', 'g')
 
-    normal! gv""p
+    call setreg('@', repl, regtype)
+
+    normal! gvp
     set nohlsearch
 
+    "Restore Saved Settings And Register Value
+    let @@ = reg_save
     let &selection = sel_save
-    call setreg('"', saveReg, saveRegMode)
+    let &clipboard = cb_save
 endfunction
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"TABS, INDENTING & FORMAT OPTIONS                                            {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set expandtab     " causes spaces to be used instead of tabs
-set tabstop=4     " sets how big tabs are.
-set shiftwidth=4  " how much space to add or remove using indent command
-set softtabstop=4 " fine tunes the amount of white space to be inserted
-set smarttab
-
-set autoindent
-set formatoptions+=n
-set formatoptions+=j
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"FOLDING                                                                     {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-function! NeatFoldText()
-    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
-    let lines_count = v:foldend - v:foldstart + 1
-    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
-    " let foldchar = matchstr(&fillchars, 'fold:\zs.')
-    let foldchar = '_'
-    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
-    let foldtextend = lines_count_text . repeat(foldchar, 8)
-    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
-    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
-endfunction
-"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-set foldtext=NeatFoldText()
-set foldmethod=indent
-set foldcolumn=2
-set foldnestmax=1
-set foldlevelstart=99
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"AUTOCMDS                                                                    {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has("autocmd")
-    augroup vimrc
-        autocmd!
-        autocmd BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC
-    augroup END
-
-    augroup AllFiles
-        autocmd!
-        autocmd FocusLost * silent! wall
-    augroup END
-
-    augroup QuickFix
-        autocmd!
-        autocmd FileType qf wincmd J "opens quick fix window on the bottom of all screens
-    augroup END
-
-    if s:hasWindows
-        augroup TEX
-            autocmd!
-            autocmd BufEnter *.tex setf tex
-            "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
-            autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
-            autocmd BufEnter *.tex setlocal concealcursor=
-        augroup END
-    else
-        augroup TEX
-            autocmd!
-            autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
-            autocmd BufEnter *.tex setlocal concealcursor=
-        augroup END
-    endif
-endif
-
-function! PrintCscopeOptions()
-    echo "g: Definition"
-    echo "c: Functions calling this function"
-    echo "d: Functions called by this function"
-    echo "f: This file"
-    echo "i: Files #including this file"
-    echo "s: This C symbol"
-    echo "t: This text string"
-    echo "e: This egrep pattern"
-endfunction
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find  "
-
-set cscoperelative
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SEARCHING                                                                   {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wrapscan
-set incsearch
-set ignorecase
-set smartcase
-set path=**/*
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"GENERAL BEHAVIOR                                                            {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set clipboard=unnamedplus,unnamed
-set splitright
-
-"disable dang error{visual}bells for good
-if has("autocmd")
-    augroup noBells
-        autocmd!
-        autocmd GUIEnter * set vb t_vb=
-        autocmd VimEnter * set vb t_vb=
-    augroup END
-endif
-
-set switchbuf=usetab
-set shortmess+=a
-set autowriteall
-
-"automatically read file when it's changed outside of vim
-set autoread
-augroup autoread
-    autocmd CursorHold * call Timer()
-augroup END
-function! Timer()
-    if expand("%") == "[Command Line]"
-    else
-        call feedkeys("f\e")
-        checktime
-    endif
-endfunction
-
-set updatetime=5000  " milliseconds
-set confirm
-set backspace=indent,eol,start
-set tags=tags;/ "the ";/" allows you to look back wards
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"COMPLETION                                                                  {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wildmode=full
-set wildmenu
-set completeopt=menuone,menu,preview
-set wildcharm=<TAB>
-set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"TESTING                                                                     {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd CursorMoved * let s:VisualMode = mode()
-
-command! -range=0 VTest call FuncName(<Count>, <Line1>, <Line2>)
-
-function! FuncName(count, firstLine, lastLine)
-
-    echomsg 'count line = ['.a:count.']'
-    echomsg 'first line = ['.a:firstLine.']'
-    echomsg 'last line = ['.a:lastLine.']'
-
-    echomsg 'visual first line = ['.line("'<").']'.' pos = ['.string(getpos("'<")).']'
-    echomsg 'visual last line = ['.line("'>").']' .' pos = ['.string(getpos("'>")).']'
-
-    echomsg 'number of lines in the file = ['.line('$').']'
-
-    if a:count == 0 "no range given
-        echomsg "do stuff for no given range"
-
-    else
-        if s:VisualMode  =~ '\vV|v|' "range was given
-            echomsg "do stuff for visual selection"
-        else
-            echomsg "do stuff for normal range"
-        endif
-    endif
-endfunction
-
-function! RangeTest(firstLine, lastLine, count, bang) range
-
-    echomsg 'bang = ['.a:bang.']'
-    echomsg 'count line = ['.a:count.']'
-    echomsg 'first line = ['.a:firstLine.']'
-    echomsg 'last line = ['.a:lastLine.']'
-
-    echomsg 'visual first line = ['.line("'<").']'.' pos = ['.string(getpos("'<")).']'
-    echomsg 'visual last line = ['.line("'>").']' .' pos = ['.string(getpos("'>")).']'
-
-    echomsg 'number of lines in the file = ['.line('$').']'
-
-endfunction
-
-" command! -range Test  <Line1>,<Line2> call RangeTest()
-
-command! -range=-0 -bang Test  call RangeTest(<Line1>,<Line2>,<Count>,"<Bang>")
-
-" xnoremap : :<C-w>let g:cameFromVisual = 1<CR>:echomsg 'from v ='.g:cameFromVisual<CR>gv:
-" nnoremap : :<C-w>let g:cameFromVisual = 0<CR>:echomsg 'from v ='.g:cameFromVisual<CR>:
-
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"FINAL SETTINGS                                                              {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"FIN                                                                       {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 source ~/.vimrc_local
+
+"Refreshing airline
+if !has('vim_starting') && g:loaded_airline
+    AirlineRefresh
+    normal! gtgT
+endif "}}}2
 
 set  modeline
 " vim: textwidth=78
 " vim: foldmethod=marker
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

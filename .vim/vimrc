@@ -636,7 +636,7 @@ if has ("gui_running")
 
     "Set Font
     if s:hasWindows
-        set guifont=DejaVu_Sans_Mono:h10:cANSI
+        set guifont=DejaVu_Sans_Mono_For_Powerline:h10:cANSI
         "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
     elseif has('mac')
         set guifont=DejaVu\ Sans\ Mono:h12
@@ -775,7 +775,7 @@ function! Go2Buff(forwardOrBackward)
             execute "normal! :bn\<CR>"
         elseif a:forwardOrBackward == "backward"
             execute "normal! :bp\<CR>"
-        endif 
+        endif
     else
             execute "normal! :b".v:count"\<CR>"
     endif
@@ -831,8 +831,10 @@ cnoremap <C-l> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
-"split a line
 nnoremap S i<cr><esc>k$
+"nmap <C-S> Sjddkkp
+
+nnoremap <C-J> ddpkJ
 
 cabbrev %f <C-r>=expand('%:p')<CR>
 cabbrev %d <C-r>=expand('%:h')<CR>

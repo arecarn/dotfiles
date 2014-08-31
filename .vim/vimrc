@@ -1349,11 +1349,11 @@ endfunction
 
 "do crunch tests
 if s:hasWindows
-    nnoremap <Leader>ct :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\ && gvim -u .vimrc_minimal +Vader*<CR>
-    nnoremap <Leader>tc :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\ && gvim -u .vimrc_minimal<CR>
+    nnoremap <Leader>ct :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal +Vader*<CR>
+    nnoremap <Leader>tc :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal<CR>
 else
-    nnoremap <Leader>ct :!cd ~/Dropbox/repos/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal +Vader\*<CR>
-    nnoremap <Leader>tc :!cd ~/Dropbox/repos/crunch/crunch && /usr/local/bin/vim -u .vimrc_minimal<CR>
+    nnoremap <Leader>ct :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal +Vader\*<CR>
+    nnoremap <Leader>tc :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal<CR>
 endif
 
 "Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2

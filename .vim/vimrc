@@ -120,11 +120,9 @@ NeoBundle 'Shougo/neosnippet.vim'
 NeoBundle 'Shougo/unite.vim' "{{{2
 let g:unite_winheight = 10
 let g:unite_data_directory = s:vimpath.'/utils_local/unite/'
-let g:unite_matcher_fuzzy_max_input_length = 1000
 let g:unite_source_history_yank_enable = 1
-let g:unite_source_history_yank_limit = 10000
+let g:unite_source_history_yank_limit = 100
 let g:unite_split_rule = 'botright'
-let g:unite_source_file_rec_max_cache_files = 0
 call unite#custom#source('file_rec,file_rec/async',
             \ 'max_candidates', 0)
 call unite#custom#profile('files', 'filters', 'sorter_rank')
@@ -171,9 +169,9 @@ NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'kopischke/unite-spell-suggest'
 NeoBundle 'kmnk/vim-unite-giti'
 
-nnoremap <TAB>g  :<C-u>Unite -no-empty -no-resize grep:.::
-nnoremap <TAB>gw  :<C-u>Unite -no-empty -no-resize grep:.::<C-r><C-w><CR>
-nnoremap <TAB>f  :<C-u>Unite file_rec/async -resume -start-insert -input=<CR>
+nnoremap <TAB>g  :<C-u>Unite -no-empty -no-resize -no-quit -winheight={30} grep:.::
+nnoremap <TAB>gw :<C-u>Unite -no-empty -no-resize -no-quit -winheight={30} grep:.::<C-r><C-w><CR>
+nnoremap <TAB>f  :<C-u>Unite file file_rec/async -start-insert -input=<CR>
 nnoremap <TAB>r  :<C-u>Unite file_mru -start-insert<CR>
 nnoremap <TAB>rg :<C-u>Unite register -vertical<CR>
 nnoremap <TAB>b  :<C-u>Unite buffer -auto-resize<CR>
@@ -275,21 +273,11 @@ nmap <Leader>H <Plug>(quickhl-manual-reset)
 xmap <Leader>H <Plug>(quickhl-manual-reset)
 "quickhl""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 't9md/vim-choosewin' "{{{2
-nmap <TAB>w <Plug>(choosewin)
+nmap <C-W>p <Plug>(choosewin)
 let g:choosewin_overlay_enable = 1
 let g:choosewin_overlay_clear_multibyte = 1
 let g:choosewin_statusline_replace = 0
 "choosewin""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-NeoBundle 'airblade/vim-gitgutter' "{{{2
-highlight link GitGutterAdd          DiffAdd
-highlight link GitGutterChange       DiffChange
-highlight link GitGutterDelete       DiffDelete
-highlight link GitGutterChangeDelete DiffDelete
-nnoremap cogg :GitGutterToggle<CR>
-let g:gitgutter_enabled = 0
-let gittgutter_realtime = 1
-let g:gitgutter_eager = 0
-"gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 NeoBundle 'junegunn/goyo.vim' "{{{2
 nnoremap cof :<C-U>call SetGoyo(v:count)<CR>
 
@@ -307,13 +295,6 @@ nnoremap <TAB>ut :UndotreeToggle<CR>:UndotreeFocus<CR>
 NeoBundle 'dhruvasagar/vim-table-mode' "{{{2
 let g:table_mode_separator = '|'
 "}}}2
-NeoBundle 'roman/golden-ratio' "{{{2
-let g:golden_ratio_autocommand = 0
-nnoremap cogr :GoldenRatioToggle<CR>
-"}}}2
-NeoBundle 'majutsushi/tagbar' "{{{2
-nnoremap <TAB>tb :TagbarToggle<CR>
-"}}}2
 NeoBundle 'bling/vim-airline' "{{{2
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#tab_nr_type = 1
@@ -322,15 +303,17 @@ let g:airline_powerline_fonts = 1
 let g:airline_inactive_collapse = 0
 let g:airline_theme='gruvbox'
 NeoBundle 'tommcdo/vim-lion'
-NeoBundle 'Julian/vim-textobj-variable-segment'
 NeoBundle 'TeTrIs.vim'
 NeoBundle 'altercation/vim-colors-solarized'
-NeoBundle 'coderifous/textobj-word-column.vim'
 NeoBundle 'dbakker/vim-lint'
 NeoBundle 'fugitive.vim'
 NeoBundle 'hrsh7th/vim-neco-calc'
 NeoBundle 'junegunn/seoul256.vim'
 NeoBundle 'kana/vim-niceblock'
+
+NeoBundle 'saihoooooooo/vim-textobj-space'
+NeoBundle 'Julian/vim-textobj-variable-segment'
+NeoBundle 'coderifous/textobj-word-column.vim'
 NeoBundle 'kana/vim-textobj-entire'
 NeoBundle 'kana/vim-textobj-indent'
 NeoBundle 'kana/vim-textobj-line'
@@ -343,6 +326,13 @@ xmap a# <Plug>(textobj-comment-a)
 omap a# <Plug>(textobj-comment-a)
 xmap i# <Plug>(textobj-comment-i)
 omap i# <Plug>(textobj-comment-i)
+"}}}2
+NeoBundle 'thinca/vim-textobj-between' "{{{2
+let g:textobj_between_no_default_key_mappings = 1
+xmap am <Plug>(textobj-between-a)
+omap am <Plug>(textobj-between-a)
+xmap im <Plug>(textobj-between-i)
+omap im <Plug>(textobj-between-i)
 "}}}2
 NeoBundle 'svermeulen/vim-easyclip' "{{{2
 let g:EasyClipUseSubstituteDefaults = 1
@@ -367,18 +357,9 @@ nnoremap  ]z <Plug>(fontzoom-larger)
 nnoremap  [z <Plug>(fontzoom-smaller)
 "}}}2
 NeoBundle 'junegunn/vader.vim'
-NeoBundle 'tpope/vim-unimpaired'
-NeoBundle 'thinca/vim-textobj-between' "{{{2
-let g:textobj_between_no_default_key_mappings = 1
-xmap am <Plug>(textobj-between-a)
-omap am <Plug>(textobj-between-a)
-xmap im <Plug>(textobj-between-i)
-omap im <Plug>(textobj-between-i)
-"}}}2
 NeoBundle 'morhetz/gruvbox'
-NeoBundle 'saihoooooooo/vim-textobj-space'
-NeoBundle 'tlvince/vim-compiler-python'
 NeoBundle 'tommcdo/vim-exchange'
+NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'tpope/vim-abolish'
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-dispatch'
@@ -389,11 +370,9 @@ NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'tpope/vim-eunuch'
-NeoBundle 'tracyone/CCtree'
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
-NeoBundle 'tmhedberg/matchit'
 NeoBundle 'chreekat/vim-paren-crosshairs'
 NeoBundle 'talek/obvious-resize'
 NeoBundle 'junegunn/vim-pseudocl'
@@ -415,7 +394,6 @@ augroup VIMRC_aliases
     au VimEnter * Alias sex Sexplore
     au VimEnter * Alias tex Texplore
     au VimEnter * Alias vex Vexplore
-    au VimEnter * Alias s %s
 augroup END "}}}2
 NeoBundle 'oblitum/rainbow' "{{{2
 let g:rainbow_active = 1 "}}}2
@@ -427,6 +405,24 @@ NeoBundle 'henrik/vim-qargs'
 " Initializes all maktaba plugins.
 " call maktaba#plugin#Detect()
 " NeoBundle 'glts/vim-radical'
+
+" NeoBundle 'roman/golden-ratio' "{{{2
+" let g:golden_ratio_autocommand = 0
+" nnoremap cogr :GoldenRatioToggle<CR>
+" "}}}2
+" NeoBundle 'tlvince/vim-compiler-python'
+" NeoBundle 'tracyone/CCtree'
+" NeoBundle 'tmhedberg/matchit'
+" NeoBundle 'airblade/vim-gitgutter' "{{{2
+" highlight link GitGutterAdd          DiffAdd
+" highlight link GitGutterChange       DiffChange
+" highlight link GitGutterDelete       DiffDelete
+" highlight link GitGutterChangeDelete DiffDelete
+" nnoremap cogg :GitGutterToggle<CR>
+" let g:gitgutter_enabled = 0
+" let gittgutter_realtime = 1
+" let g:gitgutter_eager = 0
+"gitgutter""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
 call neobundle#end()
 NeoBundleCheck
@@ -553,7 +549,7 @@ execute 'set backupdir='.s:backupdir
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nowrap
 set linebreak
-set textwidth=78
+set textwidth=0 "TODO for c make tw=78
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "SPELLING - THESAURUS                                                      {{{
@@ -564,8 +560,6 @@ let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
 inoremap <C-S> <ESC>[s1z=gi<C-o>
-
-
 nnoremap ]gs ]s:sleep 300m<CR>1z=
 nnoremap [gs [s:sleep 300m<CR>1z=
 
@@ -586,19 +580,18 @@ set formatoptions+=j
 "FOLDING                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-function! NeatFoldText()
+function! NeatFoldText(foldchar) "TODO handle wide chars with visual col
     let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
     let lines_count = v:foldend - v:foldstart + 1
     let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
-    " let foldchar = matchstr(&fillchars, 'fold:\zs.')
-    let foldchar = '_'
-    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
-    let foldtextend = lines_count_text . repeat(foldchar, 8)
+    " let a:foldchar = matchstr(&fillchars, 'fold:\zs.')
+    let foldtextstart = strpart('|' . repeat(a:foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+    let foldtextend = lines_count_text . repeat(a:foldchar, 8)
     let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
-    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+    return foldtextstart . repeat(a:foldchar, winwidth(0)-foldtextlength) . foldtextend
 endfunction
 "NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-set foldtext=NeatFoldText()
+set foldtext=NeatFoldText('_')
 set foldmethod=indent
 set foldcolumn=2
 set foldnestmax=1
@@ -787,6 +780,10 @@ cnoremap <C-e> <END>
 cabbrev %o <C-r>=expand('%:p:r:.')<CR>
 cabbrev %f <C-r>=expand('%:p:.')<CR>
 cabbrev %d <C-r>=expand('%:h:.')<CR>/
+nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR>
+nnoremap <leader>ef :e <C-r>=expand('%:p:.')<CR>
+nnoremap <leader>ed :e <C-r>=expand('%:h:.')<CR>/
+
 command! Psnr call feedkeys(":grep! \<C-R>\<C-W> | Qdo %s/\<C-R>\<C-W>//gc\<LEFT>\<LEFT>\<LEFT>")
 
 "accept completion (requires "set wildcharm = <TAB>)
@@ -1143,6 +1140,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 try
     source ~/.vimrc_local
+    source ./.vimrc_local
 catch
 endtry
 

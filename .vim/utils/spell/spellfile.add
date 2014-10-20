@@ -141,3 +141,5 @@ wirelessly
 IDE
 config
 SCons
+MSP430s
+FC

@@ -1,23 +1,32 @@
 [core]
-	editor = vim
+    editor = vim
 [diff]
-	tool = vimdiff
+    tool = vimdiff
 [difftool]
-	prompt = false
+    prompt = false
 [alias]
-	d = diff --color
-	dt = difftool
+    d = diff --color
+    dc = diff --color --cached
+    dt = difftool
+    dtc = difftool --cached
+
+    b = branch
     c = commit
     co = checkout
     s = status
-    ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h %Cred%ad%Creset %an%Cgreen%d %Creset%s' --date=short --max-count=20
-    l = !git log --color -p
-    exists = ls-files --error-unmatch
+    ri = rebase -i
 
+    ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cred%ad%Creset %an %ae%Cgreen%d %Creset%s' --date=short --max-count=20 --graph
+    l = !git log --color -p
+
+    update = add -u
+    up = add -u
+
+    exists = ls-files --error-unmatch
 [push]
-	default = tracking
+    default = tracking
 [user]
-	name = Ryan Carney
-	email = arecarn@gmail.com
+    name = Ryan Carney
+    email = arecarn@gmail.com
 [include]
     path = ~/.gitconfig_local

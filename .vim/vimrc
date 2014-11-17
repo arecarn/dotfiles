@@ -44,6 +44,8 @@ NeoBundle 'Shougo/vimproc.vim', {
 NeoBundle 'Shougo/vimfiler.vim'
 NeoBundle 'Shougo/vimshell.vim'
 
+NeoBundle  'pyclewn', {'type' : 'nosync',  'base' : '~/.vim/bundle'}
+
 NeoBundle 'vim-scripts/LanguageTool'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'dbakker/vim-lint'
@@ -55,9 +57,13 @@ NeoBundle 'henrik/vim-qargs'
 NeoBundle 'junegunn/goyo.vim'
 NeoBundle 'junegunn/vim-oblique'
 NeoBundle 'junegunn/vim-pseudocl' "vim-oblique requirement
+" NeoBundle 'haya14busa/incsearch.vim'
 NeoBundle 'kana/vim-niceblock'
 NeoBundle 't9md/vim-choosewin'
 NeoBundle 't9md/vim-quickhl'
+NeoBundle 't9md/vim-smalls'
+" NeoBundle 'rhysd/clever-f.vim'
+
 NeoBundle 'tpope/vim-abolish'
 NeoBundle 'tpope/vim-dispatch'
 NeoBundle 'tpope/vim-scriptease'
@@ -75,9 +81,11 @@ NeoBundle 'TeTrIs.vim'
 NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
 
 NeoBundle 'bling/vim-airline'
+NeoBundle 'edkolev/tmuxline.vim'
+
 NeoBundle 'chreekat/vim-paren-crosshairs'
 NeoBundle 'nathanaelkane/vim-indent-guides'
-NeoBundle 'oblitum/rainbow'
+" NeoBundle 'oblitum/rainbow' "This slows down scrolling a lot
 
 "colorschemes {{{2
 NeoBundle 'w0ng/vim-hybrid'
@@ -125,7 +133,7 @@ NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'tsukkee/unite-help'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'kmnk/unite-command'
-NeoBundle 'majkinetor/unite-cmdmatch' "causes can't set ignorecase error
+NeoBundle 'majkinetor/unite-cmdmatch'
 NeoBundle 'voi/unite-ctags'
 NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'kopischke/unite-spell-suggest'
@@ -216,7 +224,7 @@ if neobundle#is_installed('neocomplcache')
     let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
     let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
     let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-    nnoremap coneo :NeoComplCacheToggle<CR>
+    nnoremap conc :NeoComplCacheToggle<CR>
 endif
 
 
@@ -224,7 +232,15 @@ endif
 " neocomplete {{{2
 if neobundle#is_installed('neocomplete')
     " Use neocomplete.
+    augroup NEOCOMPLETE
+        autocmd!
+        " autocmd BufRead * NeoCompleteLock
+        autocmd FileType gitcommit let g:neocomplete#enable_auto_close_preview = 0
+    augroup END
+    nnoremap conc :NeoCompleteToggle<CR>
+
     let g:neocomplete#enable_at_startup = 1
+    let g:neocomplete#disable_auto_complete = 1
     let g:neocomplete#enable_smart_case = 1
     let g:neocomplete#enable_camel_case = 1
     let g:neocomplete#enable_under_bar = 1
@@ -263,8 +279,21 @@ if neobundle#is_installed('neocomplete')
         return neocomplete#close_popup() . "\<CR>"
     endfunction
 
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    inoremap <expr><CR>  pumvisible() ? "\<Esc>" : "\<CR>"
+    inoremap <expr><C-l> neocomplete#complete_common_string()
+
+    " For smart TAB completion.
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
+                \ <SID>check_back_space() ? "\<TAB>" :
+                \ neocomplete#start_manual_complete()
+    function! s:check_back_space() "{{{
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~ '\s'
+    endfunction"}}}
+
+
+
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#close_popup()
     inoremap <expr><C-e>  neocomplete#cancel_popup()
@@ -291,12 +320,35 @@ endif
 "neocomplete }}}2
 "neosnippet {{{2
 if neobundle#is_installed('neosnippet-snippets')
+
+
+
+    " imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+    "             \ "\<Plug>(neosnippet_expand_or_jump)"
+    "             \: pumvisible() ? "\<C-n>" : "\<TAB>"
+
+    " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
+    "         \ <SID>check_back_space() ? "\<TAB>" :
+    "         \ neocomplete#start_manual_complete()
+    "   function! s:check_back_space() "{{{
+    "     let col = col('.') - 1
+    "     return !col || getline('.')[col - 1]  =~ '\s'
+    "   endfunction"}}}
+
     imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-                \ "\<Plug>(neosnippet_expand_or_jump)"
-                \: pumvisible() ? "\<C-n>" : "\<TAB>"
+                \ "\<Plug>(neosnippet_expand_or_jump)":
+                \  pumvisible() ? "\<C-n>" :
+                \ <SID>check_back_space() ? "\<TAB>" :
+                \ neocomplete#start_manual_complete()
+    function! s:check_back_space() "{{{
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~ '\s'
+    endfunction
+
     smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
                 \ "\<Plug>(neosnippet_expand_or_jump)"
                 \: "\<TAB>"
+
     if has('conceal')
         set conceallevel=2 concealcursor=i
     endif
@@ -351,6 +403,7 @@ if neobundle#is_installed('unite.vim')
                 \   ['python', 'VimShellInteractive python']
                 \ ]
 
+    nnoremap <TAB><TAB>  :<C-u>Unite -start-insert<CR>
     xnoremap <TAB>g  y:<C-u>Unite -no-empty -no-resize -no-quit grep:.::<C-r>=escape(expand(@@), ' ')<CR>
     nnoremap <TAB>g  :<C-u>Unite -no-empty -no-resize -no-quit grep:.::
     nnoremap <TAB>gw :<C-u>Unite -no-empty -no-resize -no-quit grep:.::<C-r>=expand('<cword>')<CR><CR>
@@ -365,11 +418,12 @@ if neobundle#is_installed('unite.vim')
     nnoremap <TAB>ss :<C-u>UniteSessionSave<Space>
     nnoremap <TAB>i  :<C-u>Unite menu:interpreters -auto-resize<CR>
     nnoremap <TAB>hc :<C-u>Unite cmdmatch history/command<CR>
-    nnoremap <TAB>mg :<C-u>Unite output:message<CR>
+    nnoremap <TAB>ms :<C-u>Unite output:message<CR>
     nnoremap <TAB>hs :<C-u>Unite history/search<CR>
     nnoremap <TAB>y  :<C-u>Unite history/yank<CR>
     xnoremap <TAB>y  :<C-u>Unite history/yank<CR>
     nnoremap <TAB>p  :<C-u>Unite process -start-insert<CR>
+    nnoremap <TAB>up  :<C-u>Unite neobundle/update<CR>
 
     " toggle the preview window when I press the "p" key.
     autocmd FileType unite call s:unite_my_settings()
@@ -398,8 +452,14 @@ endif
 "vimfiler }}}2
 "vimshell {{{2
 if neobundle#is_installed('vimshell.vim')
-    nnoremap <TAB>vs :VimShellBufferDir -popup -toggle<CR>
-    let g:vimshell_vimshrc_path = s:vimpath.'/utils_local/vimshell/'
+    nnoremap <TAB>sh :VimShellBufferDir -popup -toggle<CR>
+
+    let g:vimshell_vimshrc_path = s:vimpath.'/utils/vimshell/vimshellrc'
+
+    if !isdirectory(s:vimpath.'/utils_local/vimshell')
+        call mkdir(s:vimpath.'/utils_local/vimshell', "p", 0700)
+    endif
+    let g:vimshell_data_directory = s:vimpath.'/utils_local/vimshell/'
 endif
 "}}}2
 
@@ -412,9 +472,19 @@ endif
 
 "echodoc }}}2
 "oblique {{{2
-let g:oblique#incsearch_highlight_all = 1
+if neobundle#is_installed('vim-oblique')
+    let g:oblique#incsearch_highlight_all = 1
+endif
 "oblique }}}2
-
+"fugitive {{{2
+if neobundle#is_installed('vim-fugitive')
+    nnoremap <Leader>gs :Gstatus<CR>
+    nnoremap <Leader>gd :Gdiff<CR>
+    nnoremap <Leader>gc :Gcommit<CR>
+    nmap <Leader>gn <C-W>P<C-N>D
+    nmap <Leader>gp <C-W>P<C-P>D
+endif
+"fugitive }}}2
 " frisk {{{2
 if neobundle#is_installed('frisk')
     call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
@@ -468,15 +538,26 @@ endif
 "textmanip }}}2
 "vim-quickhl {{{2
 if neobundle#is_installed('vim-quickhl')
-    nmap <leader>* <Plug>(quickhl-manual-this)
-    xmap <leader>* <Plug>(quickhl-manual-this)
-    nmap <leader># <Plug>(quickhl-manual-reset)
-    xmap <leader># <Plug>(quickhl-manual-reset)
+    nmap m <Plug>(quickhl-manual-this)
+    nnoremap gm m
+    nnoremap gm m
+    xmap m <Plug>(quickhl-manual-this)
+    nmap M <Plug>(quickhl-manual-reset)
+    xmap M <Plug>(quickhl-manual-reset)
+endif
+"vim-quickhl }}}2
+"vim-smalls {{{2
+if neobundle#is_installed('vim-smalls')
+    " map normal-mode 's' for simple search
+    nmap <leader>/ <Plug>(smalls)
+    " if you want to use smalls in visual/operator or both mode.
+    omap <leader>/ <Plug>(smalls)
+    xmap <leader>/ <Plug>(smalls)
 endif
 "vim-quickhl }}}2
 "choosewin {{{2
 if neobundle#is_installed('vim-choosewin')
-    nmap <C-W>p <Plug>(choosewin)
+    nmap <C-w><leader> <Plug>(choosewin)
     let g:choosewin_overlay_enable = 1
     let g:choosewin_overlay_clear_multibyte = 1
     let g:choosewin_statusline_replace = 0
@@ -528,11 +609,6 @@ if neobundle#is_installed('vim-easyclip')
     let g:EasyClipUseSubstituteDefaults = 1
     let g:EasyClipEnableBlackHoleRedirect = 0
     let g:EasyClipUseCutDefaults = 0
-    nmap m  "_d
-    nmap mm "_dd
-    nmap M  "_D
-    xmap m  "_d
-    nnoremap gm m
 endif
 " vim-easyclip }}}2
 " vim-textobj-between {{{2
@@ -596,6 +672,36 @@ filetype plugin on
 filetype indent on
 syntax on " allow syntax highlighting
 set encoding=utf-8 "make Vim use UTF-8 by default
+
+augroup GIT
+    autocmd!
+    autocmd FileType gitcommit call CachedPreview(18)
+augroup END
+
+function! CachedPreview(max_height)
+    if (!&previewwindow) && (expand('%:t') !~# 'index')
+        DiffGitCached
+
+        let lines = line('$')
+
+        "close if empty
+        if lines == 0
+            pclose
+            wincmd p
+            finish
+
+        "resize to show maximum or less
+        elseif line('$') > a:max_height
+            let size = a:max_height
+        else
+            let size = line('$')
+        endif
+        execute 'resize '.size
+
+        "go to previous window
+        wincmd p
+    endif
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "UI OPTIONS                                                                {{{
@@ -719,9 +825,40 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
-inoremap <C-S> <ESC>[s1z=gi<C-o>
+function! Spellgewd()
+    if &spell
+        let colPos = getpos(".")[2]
+        let oldLen = len(getline('.'))
+
+        execute "normal! \<ESC>[s"
+        sleep 100m
+        normal! gs1z=gi
+
+
+        let newLen = len(getline('.'))
+
+
+        let lenDifference =  oldLen - newLen
+        if oldLen > newLen
+            if oldLen != colPos
+                execute "normal! ". lenDifference ."h"
+            endif
+        elseif newLen > oldLen
+            let lenDifference = abs(lenDifference)
+            execute "normal! ". lenDifference ."l"
+        endif
+
+        call feedkeys("a")
+    else
+        echohl WarningMsg | echo "spelling no enabled" | echohl None
+    endif
+endfunction
+
+inoremap <C-S> <ESC>:call Spellgewd()<CR>
 nnoremap ]gs ]s:sleep 300m<CR>1z=
 nnoremap [gs [s:sleep 300m<CR>1z=
+nnoremap <C-s> viw<Esc>a<C-X><C-S>
+nnoremap <leader>s viw<Esc>a<C-X><C-S>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TABS, INDENTING & FORMAT OPTIONS                                          {{{
@@ -839,7 +976,7 @@ set switchbuf=usetab
 set shortmess+=a
 set autowriteall
 
-"automatically read file when it's changed outside of vim
+"automatically read file when it's changed outside of Vim
 set autoread
 if has("autocmd")
     augroup autoread
@@ -862,7 +999,7 @@ set exrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "COMPLETION                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wildmode=full
+set wildmode=longest,full
 set wildmenu
 set completeopt=menuone,menu,preview
 set wildcharm=<TAB>
@@ -878,12 +1015,19 @@ set updatetime=1000
 set grepprg=ack\ -H\ --nocolor\ --nogroup
 
 "Navigation
-nnoremap k gk
-nnoremap j gj
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
 nnoremap gj j
 
-" nnoremap g-  :call DoNum('*')<CR>
+nnoremap <leader>u :call Underline()<CR>
+
+function! Underline()
+    let char = nr2char(getchar())
+    execute "normal! yypVr".char
+endfunction
+
+inoremap <C-F> <ESC>gwapa
 
 "TODO Is the word under the cursor a number?
 function! DoNum(operator)
@@ -902,20 +1046,20 @@ function! DoNum(operator)
 endfunction
 
 function! CalculateCursor(x, operator)
-  let p = @/
-  try
-    silent exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
-    exe "normal \<C-O>"
-  catch /^Vim\%((\a\+)\)\=:E486/
+    let p = @/
     try
-      silent exe "normal /\\%#.\\{-}\\zs\\d\\+/b\<CR>"
-      exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
-      exe "normal \<C-O>"
+        silent exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
+        exe "normal \<C-O>"
     catch /^Vim\%((\a\+)\)\=:E486/
+        try
+            silent exe "normal /\\%#.\\{-}\\zs\\d\\+/b\<CR>"
+            exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
+            exe "normal \<C-O>"
+        catch /^Vim\%((\a\+)\)\=:E486/
+        endtry
+    finally
+        let @/ = p
     endtry
-  finally
-    let @/ = p
-  endtry
 endfunction
 
 vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
@@ -964,6 +1108,8 @@ nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
 nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
 nnoremap <leader>e :e **/*
 nnoremap <leader>f :find<SPACE>*
+nnoremap <leader>qa :qa!<Cr>
+nnoremap <leader>q :q!<Cr>
 
 nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
 nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
@@ -1024,32 +1170,6 @@ function! SearchPosition()
     let col = getpos('.')[2]
     execute "let @/ .= '\\%".line."l'"
     execute "let @/ .= '\\%".col."c'"
-endfunction
-
-" Cycle through all spelling suggestions
-nnoremap <silent> gs :call SpellCycle()<CR>
-let g:spellSum = 0
-let g:spellCursPos = []
-if has("autocmd")
-    augroup SpellCycle
-        autocmd!
-        autocmd CursorHold * let g:spellSum=0
-    augroup END
-endif
-
-function! SpellCycle()
-    if &spell == 1
-        if g:spellSum != 0 && g:spellCursPos == getpos('.')
-            normal! u
-        else
-          let g:sepllSum = 0
-          let g:spellCursPos = getpos('.')
-        endif
-        let g:spellSum = g:spellSum + 1
-        execute 'normal! '.g:spellSum.'z='
-    else
-        echoerr "Spell checking is not enabled"
-    endif
 endfunction
 
 xnoremap g* :<C-U>call AddToSearch()<CR>
@@ -1303,7 +1423,7 @@ if has('vim_starting')
     endif
 
     xnoremap <unique> <script> <plug>VisualMixedCaseOperator  <SID>VisualMixedCaseOperator
-    xnoremap <SID>VisualMixedCaseOperator :<C-U>call crunch#operator(visualmode())<CR>
+    xnoremap <SID>VisualMixedCaseOperator :<C-U>call MixedCase(visualmode())<CR>
     if !hasmapto('<Plug>VisualMixedCaseOperator')
         xmap <unique> gM <Plug>VisualMixedCaseOperator
     endif

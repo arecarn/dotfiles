@@ -82,6 +82,7 @@ alias pslevel='pstree -s $$'
 alias tmux='tmux -2'
 alias e='vim'
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
+alias nfind='find . -name '
 alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'
 
 # geeknote aliases/templates

@@ -1,6 +1,16 @@
-nnoremap gb :<C-U>exec "call Go2Buff('forward',".v:count.")"<CR>
-nnoremap gB :<C-U>exec "call Go2Buff('backward',".v:count.")"<CR>
-function! Go2Buff(forwardOrBackward, count)
+nnoremap <unique> <script> <plug>GoToBuffForward <SID>GoToBuffForward
+nnoremap <SID>GoToBuffForward :<C-U>exec "call GoToBuff('forward',".v:count.")"<CR>
+if !hasmapto('<Plug>GoToBuffForward')
+    nmap <unique> gb <Plug>GoToBuffForward
+endif
+
+nnoremap <unique> <script> <plug>GoToBuffBackward <SID>GoToBuffBackward
+nnoremap <SID>GoToBuffBackward :<C-U>exec "call GoToBuff('backward',".v:count.")"<CR>
+if !hasmapto('<Plug>GoToBuffBackward')
+    nmap <unique> gB <Plug>GoToBuffBackward
+endif
+
+function! GoToBuff(forwardOrBackward, count)
     if a:count == 0
         echom a:count. " using bn"
         if a:forwardOrBackward == "forward"

@@ -44,7 +44,7 @@ NeoBundle 'Shougo/vimproc.vim', {
 NeoBundle 'Shougo/vimfiler.vim'
 NeoBundle 'Shougo/vimshell.vim'
 
-NeoBundle  'pyclewn', {'type' : 'nosync',  'base' : '~/.vim/bundle'}
+NeoBundle 'pyclewn', {'type' : 'nosync',  'base' : '~/.vim/bundle'}
 
 NeoBundle 'vim-scripts/LanguageTool'
 NeoBundle 'scrooloose/syntastic'
@@ -61,7 +61,8 @@ NeoBundle 'junegunn/vim-pseudocl' "vim-oblique requirement
 NeoBundle 'kana/vim-niceblock'
 NeoBundle 't9md/vim-choosewin'
 NeoBundle 't9md/vim-quickhl'
-NeoBundle 't9md/vim-smalls'
+
+NeoBundle 'Lokaltog/vim-easymotion'
 " NeoBundle 'rhysd/clever-f.vim'
 
 NeoBundle 'tpope/vim-abolish'
@@ -163,6 +164,9 @@ NeoBundle 'svermeulen/vim-easyclip'
 
 NeoBundle 'vim-scripts/cmdalias.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
+
+NeoBundle 'vim-scripts/scons.vim'
+
 
 " NeoBundle 'inside/vim-search-pulse' "TODO fix this so it works with vim-oblique
 " let g:vim_search_pulse_mode = 'pattern'
@@ -365,16 +369,15 @@ let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
 " unite.vim {{{2
 if neobundle#is_installed('unite.vim')
 
-    let g:unite_winheight = 10
     let g:unite_data_directory = s:vimpath.'/utils_local/unite/'
+    let g:unite_winheight = 10
     let g:unite_source_history_yank_enable = 1
     let g:unite_source_history_yank_limit = 100
     let g:unite_split_rule = 'botright'
-    call unite#custom#source('file_rec,file_rec/async',
-                \ 'max_candidates', 0)
-    call unite#custom#profile('files', 'filters', 'sorter_rank')
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
     call unite#filters#sorter_default#use(['sorter_rank'])
+    call unite#custom#source('file_rec,file_rec/async', 'max_candidates', 0)
+    call unite#custom#profile('files', 'filters', 'sorter_rank')
     call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
                 \ 'ignore_pattern', join([
                 \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$'
@@ -400,7 +403,8 @@ if neobundle#is_installed('unite.vim')
                 \   ['VimShell', 'VimShell -split'],
                 \   ['bc', 'VimShellInteractive bc'],
                 \   ['octave', 'VimShellInteractive octave'],
-                \   ['python', 'VimShellInteractive python']
+                \   ['python', 'VimShellInteractive python'],
+                \   ['ipython', 'VimShellInteractive ipython --colors=NoColor'],
                 \ ]
 
     nnoremap <TAB><TAB>  :<C-u>Unite -start-insert<CR>
@@ -408,9 +412,10 @@ if neobundle#is_installed('unite.vim')
     nnoremap <TAB>g  :<C-u>Unite -no-empty -no-resize -no-quit grep:.::
     nnoremap <TAB>gw :<C-u>Unite -no-empty -no-resize -no-quit grep:.::<C-r>=expand('<cword>')<CR><CR>
     nnoremap <TAB>f  :<C-u>Unite file file_rec/async -start-insert -input=<CR>
+    nnoremap <TAB>fg  :<C-u>Unite file file_rec/git -start-insert -input=<CR>
     nnoremap <TAB>r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap <TAB>rg :<C-u>Unite register -vertical<CR>
-    nnoremap <TAB>b  :<C-u>Unite buffer -auto-resize<CR>
+    nnoremap <TAB>b  :<C-u>Unite buffer<CR>
     nnoremap <TAB>o  :<C-u>Unite outline line -vertical<CR>
     nnoremap <TAB>l  :<C-u>Unite line -start-insert<CR>
     nnoremap <TAB>h  :<C-u>Unite help -start-insert<CR>
@@ -452,8 +457,9 @@ endif
 "vimfiler }}}2
 "vimshell {{{2
 if neobundle#is_installed('vimshell.vim')
-    nnoremap <TAB>sh :VimShellBufferDir -popup -toggle<CR>
+    nnoremap <TAB>sh :VimShell -popup -toggle<CR><ESC>
 
+    let g:vimshell_enable_start_insert = 1
     let g:vimshell_vimshrc_path = s:vimpath.'/utils/vimshell/vimshellrc'
 
     if !isdirectory(s:vimpath.'/utils_local/vimshell')
@@ -481,8 +487,8 @@ if neobundle#is_installed('vim-fugitive')
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
     nnoremap <Leader>gc :Gcommit<CR>
-    nmap <Leader>gn <C-W>P<C-N>D
-    nmap <Leader>gp <C-W>P<C-P>D
+    nmap <Leader>gj <C-W>P<C-N>D
+    nmap <Leader>gk <C-W>P<C-P>D
 endif
 "fugitive }}}2
 " frisk {{{2
@@ -546,15 +552,15 @@ if neobundle#is_installed('vim-quickhl')
     xmap M <Plug>(quickhl-manual-reset)
 endif
 "vim-quickhl }}}2
-"vim-smalls {{{2
-if neobundle#is_installed('vim-smalls')
-    " map normal-mode 's' for simple search
-    nmap <leader>/ <Plug>(smalls)
-    " if you want to use smalls in visual/operator or both mode.
-    omap <leader>/ <Plug>(smalls)
-    xmap <leader>/ <Plug>(smalls)
+"vim-easymotion {{{2
+if neobundle#is_installed('vim-easymotion')
+    map s <Plug>(easymotion-prefix)
+    map s/ <Plug>(easymotion-sn)
+    map <leader><leader> <Plug>(easymotion-sn)
+    map s? <Plug>(easymotion-sn)
+    nmap sl <Plug>(easymotion-bd-jk)
 endif
-"vim-quickhl }}}2
+"vim-easymotion }}}2
 "choosewin {{{2
 if neobundle#is_installed('vim-choosewin')
     nmap <C-w><leader> <Plug>(choosewin)
@@ -570,17 +576,16 @@ endif
 " rainbow }}}2
 " cmdalias.vim {{{2
 if neobundle#is_installed('cmdalias.vim')
-    if neobundle#is_installed('cmdalias.vim')
-        command! Pwf echo expand('%:p')
-        augroup VIMRC_aliases
-            au!
-            au VimEnter * Alias pwf Pwf
-            au VimEnter * Alias ex Explore
-            au VimEnter * Alias sex Sexplore
-            au VimEnter * Alias tex Texplore
-            au VimEnter * Alias vex Vexplore
-        augroup END
-    endif
+    command! Pwf echo expand('%:p')
+    augroup VIMRC_aliases
+        au!
+        au VimEnter * Alias pwf Pwf
+        au VimEnter * Alias ex Explore
+        au VimEnter * Alias sex Sexplore
+        au VimEnter * Alias tex Texplore
+        au VimEnter * Alias vex Vexplore
+        au VimEnter * Alias vex Vexplore
+    augroup END
 endif
 " cmdalias.vim }}}2
 " FormatToWidth {{{2
@@ -663,6 +668,15 @@ if neobundle#is_installed('goyo.vim')
     endfunction
 endif
 " goyo.vim }}}2
+" scons {{{2
+if neobundle#is_installed('scons.vim')
+    augroup SCONS
+        autocmd!
+        autocmd BufNewFile,BufRead SCons*,scons* set filetype=scons
+    augroup END
+endif
+" scons }}}2
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FILE TYPE SETTINGS                                                        {{{
@@ -690,7 +704,7 @@ function! CachedPreview(max_height)
             wincmd p
             finish
 
-        "resize to show maximum or less
+            " resize to show maximum or less
         elseif line('$') > a:max_height
             let size = a:max_height
         else
@@ -825,40 +839,10 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
-function! Spellgewd()
-    if &spell
-        let colPos = getpos(".")[2]
-        let oldLen = len(getline('.'))
-
-        execute "normal! \<ESC>[s"
-        sleep 100m
-        normal! gs1z=gi
-
-
-        let newLen = len(getline('.'))
-
-
-        let lenDifference =  oldLen - newLen
-        if oldLen > newLen
-            if oldLen != colPos
-                execute "normal! ". lenDifference ."h"
-            endif
-        elseif newLen > oldLen
-            let lenDifference = abs(lenDifference)
-            execute "normal! ". lenDifference ."l"
-        endif
-
-        call feedkeys("a")
-    else
-        echohl WarningMsg | echo "spelling no enabled" | echohl None
-    endif
-endfunction
-
-inoremap <C-S> <ESC>:call Spellgewd()<CR>
 nnoremap ]gs ]s:sleep 300m<CR>1z=
 nnoremap [gs [s:sleep 300m<CR>1z=
 nnoremap <C-s> viw<Esc>a<C-X><C-S>
-nnoremap <leader>s viw<Esc>a<C-X><C-S>
+" nnoremap <leader>s viw<Esc>a<C-X><C-S>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TABS, INDENTING & FORMAT OPTIONS                                          {{{
@@ -1020,6 +1004,8 @@ nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
 nnoremap gj j
 
+xnoremap gr r<space>gvo<esc>R
+
 nnoremap <leader>u :call Underline()<CR>
 
 function! Underline()
@@ -1072,7 +1058,8 @@ noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
 vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
 
 
-nnoremap cotw :<C-U>let &l:textwidth=v:count<CR>:set tw?<CR>
+nnoremap cotw :<C-U>setlocal textwidth=
+nnoremap cocl :<C-U>setlocal conceallevel=
 
 "update diff with a key mapping
 nnoremap du :diffupdate<CR>

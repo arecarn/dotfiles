@@ -160,7 +160,7 @@ NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'mbbill/undotree'
 NeoBundle 'dhruvasagar/vim-table-mode'
 
-NeoBundle 'svermeulen/vim-easyclip'
+" NeoBundle 'svermeulen/vim-easyclip'
 
 NeoBundle 'vim-scripts/cmdalias.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
@@ -839,6 +839,7 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
+inoremap <C-S> <ESC>[s1z=gi<C-o>
 nnoremap ]gs ]s:sleep 300m<CR>1z=
 nnoremap [gs [s:sleep 300m<CR>1z=
 nnoremap <C-s> viw<Esc>a<C-X><C-S>

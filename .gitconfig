@@ -24,9 +24,10 @@
 
     exists = ls-files --error-unmatch
 [push]
-    default = tracking
+    default = simple
 [user]
     name = Ryan Carney
     email = arecarn@gmail.com
+    email = ryan.carney@fluke.com
 [include]
     path = ~/.gitconfig_local

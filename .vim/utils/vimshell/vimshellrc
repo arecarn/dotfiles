@@ -1,1 +1,2 @@
 alias g = git
+source ~/.vimshellrc_local

@@ -44,8 +44,6 @@ NeoBundle 'Shougo/vimproc.vim', {
 NeoBundle 'Shougo/vimfiler.vim'
 NeoBundle 'Shougo/vimshell.vim'
 
-NeoBundle 'pyclewn', {'type' : 'nosync',  'base' : '~/.vim/bundle'}
-
 NeoBundle 'vim-scripts/LanguageTool'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'dbakker/vim-lint'
@@ -142,7 +140,7 @@ NeoBundle 'kmnk/vim-unite-giti'
 "unite }}}2
 "operators {{{2
 NeoBundle 'tommcdo/vim-exchange'
-NeoBundle 'tpope/vim-surround'
+" NeoBundle 'tpope/vim-surround'
 NeoBundle 'arecarn/crunch'
 NeoBundle 'tpope/vim-commentary'
 
@@ -220,22 +218,23 @@ if neobundle#is_installed('neocomplcache')
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
     " Enable heavy omni completion.
-    if !exists('g:neocomplcache_omni_patterns')
-        let g:neocomplcache_omni_patterns = {}
-    endif
-    let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-    let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-    let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-    let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-    let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-    nnoremap conc :NeoComplCacheToggle<CR>
+    " if !exists('g:neocomplcache_omni_patterns')
+    "     let g:neocomplcache_omni_patterns = {}
+    " endif
+    " let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+    " let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    " let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    " let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+    " let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+    " nnoremap conc :NeoComplCacheToggle<CR>
 endif
-
 
 "neocomplcache }}}2
 " neocomplete {{{2
 if neobundle#is_installed('neocomplete')
     " Use neocomplete.
+    let g:neocomplete#enable_at_startup = 1
+
     augroup NEOCOMPLETE
         autocmd!
         " autocmd BufRead * NeoCompleteLock
@@ -243,8 +242,7 @@ if neobundle#is_installed('neocomplete')
     augroup END
     nnoremap conc :NeoCompleteToggle<CR>
 
-    let g:neocomplete#enable_at_startup = 1
-    let g:neocomplete#disable_auto_complete = 1
+    let g:neocomplete#disable_auto_complete = 0
     let g:neocomplete#enable_smart_case = 1
     let g:neocomplete#enable_camel_case = 1
     let g:neocomplete#enable_under_bar = 1
@@ -257,7 +255,6 @@ if neobundle#is_installed('neocomplete')
         call mkdir(s:vimpath.'/utils_local/neocomplete', "p", 0700)
     endif
     let g:neocomplete#data_directory = s:vimpath.'/utils_local/neocomplete/'
-
 
     " Define dictionary.
     let g:neocomplete#sources#dictionary#dictionaries = {
@@ -295,8 +292,6 @@ if neobundle#is_installed('neocomplete')
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~ '\s'
     endfunction"}}}
-
-
 
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#close_popup()
@@ -425,9 +420,10 @@ if neobundle#is_installed('unite.vim')
     nnoremap <TAB>hc :<C-u>Unite cmdmatch history/command<CR>
     nnoremap <TAB>ms :<C-u>Unite output:message<CR>
     nnoremap <TAB>hs :<C-u>Unite history/search<CR>
-    nnoremap <TAB>y  :<C-u>Unite history/yank<CR>
-    xnoremap <TAB>y  :<C-u>Unite history/yank<CR>
-    nnoremap <TAB>p  :<C-u>Unite process -start-insert<CR>
+    nnoremap <TAB>p  :<C-u>Unite history/yank<CR>
+    xnoremap <TAB>p  dk:<C-u>Unite history/yank<CR>
+    nnoremap <TAB>ps  :<C-u>Unite process -start-insert<CR>
+    nnoremap <TAB>ps  :<C-u>Unite process -start-insert<CR>
     nnoremap <TAB>up  :<C-u>Unite neobundle/update<CR>
 
     " toggle the preview window when I press the "p" key.
@@ -676,6 +672,25 @@ if neobundle#is_installed('scons.vim')
     augroup END
 endif
 " scons }}}2
+" obviouse-resize {{{2
+if neobundle#is_installed('obviouse-resize')
+    "map F9 - F12 (like hjkl) to resize windows
+    nnoremap  <silent><F9>  :ObviousResizeLeft<CR>
+    nnoremap  <silent><F10> :ObviousResizeDown<CR>
+    nnoremap  <silent><F11> :ObviousResizeUp<CR>
+    nnoremap  <silent><F12> :ObviousResizeRight<CR>
+endif
+" obviouse-resize }}}2
+" preserve {{{2
+if neobundle#is_installed('Preserve.vim')
+    nnoremap <silent><leader>dt :PreserveSave<CR>:%s,\s\+$,,ge<CR>:PreserveRestore<CR>
+    nnoremap =ae :call Preserve("normal! gg=G")<CR>
+    nnoremap =ie :call Preserve("normal! gg=G")<CR>
+    nnoremap yae :call Preserve("normal! ggyG")<CR>
+    nnoremap yie :call Preserve("normal! ggyG")<CR>
+endif
+" preserve }}}2
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -810,11 +825,12 @@ set spelllang=en_us
 let &spellfile=s:vimpath.'/utils/spell/spellfile.add'
 let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 
-inoremap <C-S> <ESC>[s1z=gi<C-o>
+" inoremap <C-S> <ESC>[s1z=gi<C-o>
 nnoremap ]gs ]s:sleep 300m<CR>1z=
 nnoremap [gs [s:sleep 300m<CR>1z=
-nnoremap <C-s> viw<Esc>a<C-X><C-S>
-" nnoremap <leader>s viw<Esc>a<C-X><C-S>
+" nnoremap <C-s> viw<Esc>a<C-X><C-S>
+nnoremap <leader>s viw<Esc>a<C-X><C-S>
+" imap <C-s> <Plug>InsertSpellCorrection
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "TABS, INDENTING & FORMAT OPTIONS                                          {{{
@@ -833,18 +849,8 @@ set formatoptions+=j
 "FOLDING                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-function! NeatFoldText(foldchar) "TODO handle wide chars with visual col
-    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
-    let lines_count = v:foldend - v:foldstart + 1
-    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
-    " let a:foldchar = matchstr(&fillchars, 'fold:\zs.')
-    let foldtextstart = strpart('|' . repeat(a:foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
-    let foldtextend = lines_count_text . repeat(a:foldchar, 8)
-    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
-    return foldtextstart . repeat(a:foldchar, winwidth(0)-foldtextlength) . foldtextend
-endfunction
 "NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-set foldtext=NeatFoldText('_')
+set foldtext=CleanFold('_')
 set foldmethod=indent
 set foldcolumn=2
 set foldnestmax=1
@@ -887,18 +893,6 @@ if has("autocmd")
     endif
 endif
 
-function! PrintCscopeOptions()
-    echo "g: Definition"
-    echo "c: Functions calling this function"
-    echo "d: Functions called by this function"
-    echo "f: This file"
-    echo "i: Files #including this file"
-    echo "s: This C symbol"
-    echo "t: This text string"
-    echo "e: This egrep pattern"
-endfunction
-execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
 
 set cscoperelative
 set cscopetag
@@ -931,21 +925,7 @@ endif
 set switchbuf=usetab
 set shortmess+=a
 set autowriteall
-
-"automatically read file when it's changed outside of Vim
 set autoread
-if has("autocmd")
-    augroup autoread
-        autocmd CursorHold * call Timer()
-    augroup END
-endif
-function! Timer()
-    if expand("%") == "[Command Line]"
-    else
-        call feedkeys("f\e")
-        checktime
-    endif
-endfunction
 
 set updatetime=5000  "milliseconds
 set confirm
@@ -979,13 +959,101 @@ nnoremap gj j
 xnoremap gr r<space>gvo<esc>R
 
 nnoremap <leader>u :call Underline()<CR>
-
 function! Underline()
     let char = nr2char(getchar())
     execute "normal! yypVr".char
 endfunction
 
 inoremap <C-F> <ESC>gwapa
+
+nnoremap cotw :<C-U>setlocal textwidth=
+nnoremap cocl :<C-U>setlocal conceallevel=
+
+"update diff with a key mapping
+nnoremap du :diffupdate<CR>
+
+nnoremap <silent><C-l> :redraw!<CR><C-l>
+
+nnoremap <TAB>rc :e $MYVIMRC<CR>
+
+nnoremap <C-W>d :bd<CR>
+
+" make more undoes possible after leaving insert mode
+inoremap <C-u> <C-g>u<C-u>
+inoremap <C-w> <C-g>u<C-w>
+inoremap <BS> <C-g>u<BS>
+inoremap <Del> <C-g>u<Del>
+inoremap <END> <C-g>u<END>
+
+noremap Y y$
+
+nnoremap <leader>qa :qa!<Cr>
+nnoremap <leader>q :q!<Cr>
+
+nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
+nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
+
+"disable Ex mode key and map it to something awesome
+nnoremap Q @q
+"replay macro for each line of a visual selection
+xnoremap Q :normal! @q<CR>
+"repeat last command for each line of a visual selection
+xnoremap . :normal! .<CR>
+nnoremap <C-q> .n
+
+"navigation in command line
+cnoremap <C-p> <UP>
+cnoremap <C-n> <DOWN>
+cnoremap <C-h> <LEFT>
+cnoremap <C-l> <RIGHT>
+cnoremap <C-a> <HOME>
+cnoremap <C-e> <END>
+
+nnoremap <leader>e :e **/*
+nnoremap <leader>f :find<SPACE>*
+
+"current file and directory abbreviations
+cabbrev %o <C-r>=expand('%:p:r:.')<CR>
+cabbrev %f <C-r>=expand('%:p:.')<CR>
+cabbrev %d <C-r>=expand('%:h:.')<CR>/
+
+nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR>
+nnoremap <leader>ef :e <C-r>=expand('%:p:.')<CR>
+nnoremap <leader>ed :e <C-r>=expand('%:h:.')<CR>/
+
+nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
+nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
+
+command! Psnr call feedkeys(":grep! \<C-R>\<C-W> | Qdo %s/\<C-R>\<C-W>//gc\<LEFT>\<LEFT>\<LEFT>")
+
+"accept completion (requires "set wildcharm = <TAB>)
+cnoremap <C-y> <SPACE><BS><TAB>
+
+
+
+nnoremap S i<cr><esc>k$
+nnoremap gJ ddpkJ
+
+nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
+nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\').'\v\s*#\r#g'<CR>
+xnoremap <silent> <leader>J  :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').'#g'<CR>
+xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').' #g'<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+"SCRIPTS                                                                   {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! PrintCscopeOptions()
+    echo "g: Definition"
+    echo "c: Functions calling this function"
+    echo "d: Functions called by this function"
+    echo "f: This file"
+    echo "i: Files #including this file"
+    echo "s: This C symbol"
+    echo "t: This text string"
+    echo "e: This egrep pattern"
+endfunction
+execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
+execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
 
 "TODO Is the word under the cursor a number?
 function! DoNum(operator)
@@ -1022,98 +1090,11 @@ endfunction
 
 vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
 vnoremap <silent><c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "+")<CR>:noh<CR>gv
-
 noremap <silent>g<c-x> :<C-U>call CalculateCursor(v:count1, "*")<CR>:noh<CR>
 vnoremap <silent>g<c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "*")<CR>:noh<CR>gv
-
 noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
 vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
 
-
-nnoremap cotw :<C-U>setlocal textwidth=
-nnoremap cocl :<C-U>setlocal conceallevel=
-
-"update diff with a key mapping
-nnoremap du :diffupdate<CR>
-nnoremap <silent><leader>dt :PreserveSave<CR>:%s,\s\+$,,ge<CR>:PreserveRestore<CR>
-nnoremap <silent><C-l> :redraw!<CR><C-l>
-
-nnoremap <TAB>rc :e $MYVIMRC<CR>
-
-
-"map F9 - F12 (like hjkl) to resize windows
-nnoremap  <silent><F9>  :ObviousResizeLeft<CR>
-nnoremap  <silent><F10> :ObviousResizeDown<CR>
-nnoremap  <silent><F11> :ObviousResizeUp<CR>
-nnoremap  <silent><F12> :ObviousResizeRight<CR>
-
-nnoremap <C-W>d :bd<CR>
-
-" make more undoes possible after leaving insert mode
-inoremap <C-u> <C-g>u<C-u>
-inoremap <C-w> <C-g>u<C-w>
-inoremap <BS> <C-g>u<BS>
-inoremap <Del> <C-g>u<Del>
-inoremap <END> <C-g>u<END>
-
-noremap Y y$
-
-nnoremap =ae :call Preserve("normal! gg=G")<CR>
-nnoremap =ie :call Preserve("normal! gg=G")<CR>
-nnoremap yae :call Preserve("normal! ggyG")<CR>
-nnoremap yie :call Preserve("normal! ggyG")<CR>
-
-nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
-nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
-nnoremap <leader>e :e **/*
-nnoremap <leader>f :find<SPACE>*
-nnoremap <leader>qa :qa!<Cr>
-nnoremap <leader>q :q!<Cr>
-
-nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
-nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
-
-"disable Ex mode key and map it to something awesome
-nnoremap Q @q
-"replay macro for each line of a visual selection
-xnoremap Q :normal! @q<CR>
-"repeat last command for each line of a visual selection
-xnoremap . :normal! .<CR>
-nnoremap <C-q> .n
-
-"navigation in command line
-cnoremap <C-p> <UP>
-cnoremap <C-n> <DOWN>
-cnoremap <C-h> <LEFT>
-cnoremap <C-l> <RIGHT>
-cnoremap <C-a> <HOME>
-cnoremap <C-e> <END>
-
-"current file and directory abbreviations
-cabbrev %o <C-r>=expand('%:p:r:.')<CR>
-cabbrev %f <C-r>=expand('%:p:.')<CR>
-cabbrev %d <C-r>=expand('%:h:.')<CR>/
-nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR>
-nnoremap <leader>ef :e <C-r>=expand('%:p:.')<CR>
-nnoremap <leader>ed :e <C-r>=expand('%:h:.')<CR>/
-
-command! Psnr call feedkeys(":grep! \<C-R>\<C-W> | Qdo %s/\<C-R>\<C-W>//gc\<LEFT>\<LEFT>\<LEFT>")
-
-"accept completion (requires "set wildcharm = <TAB>)
-cnoremap <C-y> <SPACE><BS><TAB>
-
-nnoremap S i<cr><esc>k$
-
-nnoremap gJ ddpkJ
-
-nnoremap <silent> <leader>S :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
-nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\').'\v\s*#\r#g'<CR>
-xnoremap <silent> <leader>J :<C-U>execute '''<,''>:s#\n#\V'.escape(nr2char(getchar()), '\').'#g'<CR>
-xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#\V'.escape(nr2char(getchar()), '\').' #g'<CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SCRIPTS                                                                   {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap <leader>m  :call SearchPosition()<CR>
 nnoremap <leader>M  :let @/ = ""<CR>
 function! SearchPosition()
@@ -1145,130 +1126,6 @@ endfunction
 
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
-
-"Compile {{{2
-"save everything and then gcc the current file then run the file returned by
-"gcc
-command! Gcc call Compile('gcc\ %\ -o\ %:t:r', 'gcc', 'exe')
-command! Gpp call Make()
-command! Csc call Compile('csc\ %', 'cs', 'exe')
-
-command! Py cd %:p:h|compiler python|make|cwindow
-
-function! Compile(MakeProgram, Compiler, excutable)
-    let s:oldmakeprg = &makeprg
-    execute "set makeprg=" . a:MakeProgram
-    execute "compiler " . a:Compiler
-    let s:filename = expand("%:t:r")
-    echo s:filename
-    wa
-    lcd %:p:h
-    make!
-    cclose
-    cwindow
-    if &buftype != "quickfix"
-        if exists(':VimShellSendString')
-            wincmd p
-            VimShellBufferDir -popup
-            resize 10
-            wincmd p
-            if s:hasWindows
-                execute "VimShellSendString exe " . s:filename . ".exe"
-            else
-                execute "VimShellSendString exe ./" . s:filename
-            endif
-        elseif s:hasWindows
-            execute "!" . s:filename . ".exe"
-        else "linux
-            echom "help fix me!!!!!!!!!!!!!!!!!!!"
-            execute "!./" . s:filename
-        endif
-    else
-    endif
-
-    let &makeprg= s:oldmakeprg
-endfunction "}}}2
-
-
-function! Make()
-    let s:oldmakeprg = &makeprg
-    let &makeprg='[[ -f Makefile ]] && make || make -C'
-    lcd %:p:h
-    wa
-    execute make!
-    cclose
-    cwindow
-    if &buftype != "quickfix"
-        if exists(':VimShellSendString')
-            wincmd p
-            VimShellBufferDir -popup
-            resize 10
-            wincmd p
-            if s:hasWindows
-                execute "VimShellSendString exe mycpp.exe"
-            else
-                execute "VimShellSendString exe ./mycpp"
-            endif
-        elseif s:hasWindows
-            execute "!mycpp.exe"
-        else "linux
-            echo not working
-            execute "!mycpp"
-        endif
-    else
-    endif
-
-    let &makeprg= s:oldmakeprg
-endfunction!
-
-
-function! SetMkfile()
-    let filemk = "Makefile"
-    let pathmk = "./"
-    let depth = 1
-    while depth < 4
-        if filereadable(pathmk . filemk)
-            return pathmk
-        endif
-        let depth += 1
-        let pathmk = "../" . pathmk
-    endwhile
-    return "."
-endfunction
-
-" command! -nargs=* Make tabnew | let mkpath = SetMkfile() | make <Args> -C $mkpath | cwindow 10
-
-function! Maker(args)
-    wall
-    wall
-    cd %:p:h
-    let mkpath = SetMkfile()
-    execute 'make!'.a:args.' -C '.mkpath
-    cclose
-    cwindow
-    if &buftype != "quickfix"
-        if exists(':VimShellSendString') && s:hasWindows
-            wincmd p
-            VimShellBufferDir -popup
-            wincmd K
-            resize 10
-            wincmd p
-            if s:hasWindows
-                execute "VimShellSendString exe mycpp.exe"
-            else
-                execute "VimShellSendString exe ./mycpp"
-            endif
-        elseif s:hasWindows
-            execute "!mycpp.exe"
-        else "linux
-            execute '!./mycpp'
-        endif
-    endif
-endfunction
-
-command! -nargs=* Maker call Maker('<Args>')
-
-command! -nargs=* MyMake make! <Args> | cwindow
 
 "Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 command! Rcrunch call ReloadCrunch()

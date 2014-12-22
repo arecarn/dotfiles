@@ -1,23 +1,23 @@
 nnoremap <unique> <script> <plug>MixedCaseOperator <SID>MixedCaseOperator
-nnoremap <SID>MixedCaseOperator :<C-U>set opfunc=MixedCase<CR>g@
+nnoremap <SID>MixedCaseOperator :<C-U>set opfunc=<SID>MixedCase<CR>g@
 if !hasmapto('<Plug>MixedCaseOperator')
     nmap <unique> gM <Plug>MixedCaseOperator
 endif
 
 nnoremap <unique> <script> <plug>MixedCaseOperatorLine <SID>MixedCaseOperatorLine
-nnoremap <SID>MixedCaseOperatorLine :<C-U>set opfunc=MixedCase<bar>exe 'norm! 'v:count1.'g@_'<CR>
+nnoremap <SID>MixedCaseOperatorLine :<C-U>set opfunc=<SID>MixedCase<bar>exe 'norm! 'v:count1.'g@_'<CR>
 if !hasmapto('<plug>MixedCaseOperatorLine')
     nmap <unique> gMM <plug>MixedCaseOperatorLine
 endif
 
 xnoremap <unique> <script> <plug>VisualMixedCaseOperator  <SID>VisualMixedCaseOperator
-xnoremap <SID>VisualMixedCaseOperator :<C-U>call crunch#operator(visualmode())<CR>
+xnoremap <SID>VisualMixedCaseOperator :<C-U>call <SID>MixedCase(visualmode())<CR>
 if !hasmapto('<Plug>VisualMixedCaseOperator')
     xmap <unique> gM <Plug>VisualMixedCaseOperator
 endif
 
 
-function! MixedCase(type)
+function! s:MixedCase(type)
     "Backup Settings That We Will Change
     let sel_save = &selection
     let cb_save = &clipboard

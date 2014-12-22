@@ -1,7 +1,7 @@
 
 function! my#Rand()
     return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
-endfunction 
+endfunction
 
 "CommentLine""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
 function! my#CommentLine(char, width)
@@ -11,27 +11,28 @@ function! my#CommentLine(char, width)
     " echom '[' . b:multiline_str_start . '] = the start'
     if  b:multiline_str_end == '' || b:multiline_str_end == ' '
         let b:multilinecomment = 0
-    else 
+    else
         let b:multilinecomment = 1
     endif
     let b:comment_length = strlen(&commentstring)-2
     let b:commentLine = ""
 
     while strlen(b:commentLine) + b:comment_length + col('.') - 1 <= a:width
-        let b:commentLine = b:commentLine.a:char 
+        let b:commentLine = b:commentLine.a:char
     endwhile
     return substitute(&commentstring,'%s', b:commentLine, '')
 endfunction
+
 "fun2
 function! my#Comment_line()
     let b:comment_length = strlen(&commentstring)-2
     let b:commentLine = ""
     while strlen(b:commentLine) + b:comment_length + col('.') != 80
-        let b:commentLine = b:commentLine . '=' 
+        let b:commentLine = b:commentLine . '='
     endwhile
     let b:line = printf(&commentstring,b:commentLine)
     call setline('.', b:line)
-endfunction                                                               
+endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3
 
 "CommentStr"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{3
@@ -41,7 +42,7 @@ function! my#CommnetStr(str)
     let b:comment_length = strlen(&commentstring)-2
     let b:commentLine = ""
     while strlen(b:commentLine) + b:comment_length != a:width
-        let b:commentLine = b:commentLine . a:char 
+        let b:commentLine = b:commentLine . a:char
     endwhile
     return substitute(&commentstring,'%s', b:commentLine, '')
 endfunction
@@ -55,7 +56,7 @@ function! my#CommentBox(char, width)
     "echom '[' . b:multiline_str_start . '] = the start'
     if  b:multiline_str_end == '' || b:multiline_str_end == ' '
         let b:multilinecomment = 0
-    else 
+    else
         let b:multilinecomment = 1
     endif
     if b:multilinecomment == 1
@@ -66,7 +67,7 @@ function! my#CommentBox(char, width)
         let b:line1 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start)) . "\n"
         let b:line2 = b:multiline_str_start . repeat(' ', a:width) . "\n"
         let b:line3 = b:multiline_str_start . repeat(a:char, a:width-strlen(b:multiline_str_start))
-    endif 
-    return b:line1 . b:line2 . b:line3 
+    endif
+    return b:line1 . b:line2 . b:line3
 endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}3

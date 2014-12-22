@@ -1,9 +1,9 @@
 augroup GIT
     autocmd!
-    autocmd FileType gitcommit call CachedPreview(18)
+    autocmd FileType gitcommit call s:GitDiffCachedPreview(18)
 augroup END
 
-function! CachedPreview(max_height)
+function! s:GitDiffCachedPreview(max_height)
     if (!&previewwindow) && (expand('%:t') !~# 'index')
         DiffGitCached
 

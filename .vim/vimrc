@@ -53,8 +53,7 @@ NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/frisk'
 NeoBundle 'henrik/vim-qargs'
 NeoBundle 'junegunn/goyo.vim'
-NeoBundle 'junegunn/vim-oblique'
-NeoBundle 'junegunn/vim-pseudocl' "vim-oblique requirement
+NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl' }
 " NeoBundle 'haya14busa/incsearch.vim'
 NeoBundle 'kana/vim-niceblock'
 NeoBundle 't9md/vim-choosewin'
@@ -67,8 +66,7 @@ NeoBundle 'tpope/vim-abolish'
 NeoBundle 'tpope/vim-dispatch'
 NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'tpope/vim-speeddating'
-NeoBundle 'vim-scripts/FormatToWidth'
-NeoBundle 'vim-scripts/ingo-library' "FormatToWidth requirment
+NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 
 NeoBundle 'tpope/vim-eunuch'
 NeoBundle 'tpope/vim-unimpaired'
@@ -102,13 +100,13 @@ NeoBundle 'gregsexton/gitv'
 NeoBundle 'int3/vim-extradite'
 "git }}}2
 "text objects {{{2
+NeoBundle 'kana/vim-textobj-user'
 NeoBundle 'saihoooooooo/vim-textobj-space'
 NeoBundle 'Julian/vim-textobj-variable-segment'
 NeoBundle 'coderifous/textobj-word-column.vim'
 NeoBundle 'kana/vim-textobj-entire'
 NeoBundle 'kana/vim-textobj-indent'
 NeoBundle 'kana/vim-textobj-line'
-NeoBundle 'kana/vim-textobj-user'
 NeoBundle 'mattn/vim-textobj-url'
 NeoBundle 'kana/vim-textobj-lastpat'
 NeoBundle 'glts/vim-textobj-comment'

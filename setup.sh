@@ -37,10 +37,6 @@ echo "...done"
 ############################
 # Git Repo Downloads/Updates
 ############################
-<<<<<<< HEAD
-
-=======
->>>>>>> d3b903e96ebfe95c1a7f68a99473023d5d31991a
 function grab 
 {
     repo=$1
@@ -56,11 +52,7 @@ function grab
     fi
 }
 
-<<<<<<< HEAD
-
-=======
 ############################
->>>>>>> d3b903e96ebfe95c1a7f68a99473023d5d31991a
 # this was pulled from a reddit from user
 # http://www.reddit.com/r/vim/comments/28e8z5/simple_vim_plugin_downloader/ciaer2x
 # it might be useful
@@ -105,4 +97,3 @@ vim -c 'q'
 echo "...done"
 
 echo "Done Installing, You are So Cool!"
-

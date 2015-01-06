@@ -41,13 +41,14 @@ NeoBundle 'Shougo/vimproc.vim', {
             \ }
 "vimproc }}}2
 
-NeoBundle 'Shougo/vimfiler.vim'
-NeoBundle 'Shougo/vimshell.vim'
+NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'Shougo/vimshell.vim' "depends on 'Shougo/vimproc'
 
 NeoBundle 'vim-scripts/LanguageTool'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'dbakker/vim-lint'
 NeoBundle 'junegunn/vader.vim'
+
 
 NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/frisk'
@@ -111,6 +112,7 @@ NeoBundle 'mattn/vim-textobj-url'
 NeoBundle 'kana/vim-textobj-lastpat'
 NeoBundle 'glts/vim-textobj-comment'
 NeoBundle 'thinca/vim-textobj-between'
+NeoBundle 'osyo-manga/vim-textobj-multiblock'
 "text objects }}}2
 "completion  "{{{2
 " NeoBundle 'Shougo/neocomplcache'
@@ -137,6 +139,11 @@ NeoBundle 'kopischke/unite-spell-suggest'
 NeoBundle 'kmnk/vim-unite-giti'
 "unite }}}2
 "operators {{{2
+NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
+ " operator mappings
+map <silent>sa <Plug>(operator-surround-append)
+map <silent>sd <Plug>(operator-surround-delete)
+map <silent>sr <Plug>(operator-surround-replace)
 NeoBundle 'tommcdo/vim-exchange'
 " NeoBundle 'tpope/vim-surround'
 NeoBundle 'arecarn/crunch'
@@ -548,11 +555,11 @@ endif
 "vim-quickhl }}}2
 "vim-easymotion {{{2
 if neobundle#is_installed('vim-easymotion')
-    map s <Plug>(easymotion-prefix)
-    map s/ <Plug>(easymotion-sn)
-    map <leader><leader> <Plug>(easymotion-sn)
-    map s? <Plug>(easymotion-sn)
-    nmap sl <Plug>(easymotion-bd-jk)
+    " map s <Plug>(easymotion-prefix)
+    " map s/ <Plug>(easymotion-sn)
+    " map <leader><leader> <Plug>(easymotion-sn)
+    " map s? <Plug>(easymotion-sn)
+    " nmap sl <Plug>(easymotion-bd-jk)
 endif
 "vim-easymotion }}}2
 "choosewin {{{2

@@ -28,6 +28,10 @@
 [user]
     name = Ryan Carney
     email = arecarn@gmail.com
-    email = arecarn@gmail.com
 [include]
     path = ~/.gitconfig_local
+[merge]
+    conflictstyle = diff3
+    tool = vimdiff
+[mergetool]
+    prompt = false

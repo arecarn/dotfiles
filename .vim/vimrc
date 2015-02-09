@@ -153,7 +153,7 @@ NeoBundle 'hewes/unite-gtags'
 "unite }}}2
 "operators {{{2
 NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
- " operator mappings
+" operator mappings
 map <silent>sa <Plug>(operator-surround-append)
 map <silent>sd <Plug>(operator-surround-delete)
 map <silent>sr <Plug>(operator-surround-replace)
@@ -1223,6 +1223,36 @@ vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
             \gvc<C-R>a<Esc>
             \:let @a=old_reg_a<CR>
             \:let @"=old_reg<CR>
+
+
+command! -nargs=* -range=0 -bang Tfunc
+            \ call Tfunc(<count>, <line1>, <line2>, <q-args>, "<bang>")
+
+function! Tfunc(count, firstLine, lastLine, cmdInput, bang) abort
+    let rg_expression = '\v`.*`'
+    let rg_cleaned_expression = '\v`\zs.*\ze`'
+
+    let rg_front = '\v^.*\ze'.rg_expression
+    let rg_back = rg_expression.'\zs\v.*'
+
+    let front = matchstr(a:cmdInput, rg_front)
+    let back = matchstr(a:cmdInput, rg_back)
+
+    let x =  matchstr(a:cmdInput, rg_expression)
+    echo x
+
+    let x = matchstr(x, rg_cleaned_expression)
+    echo x
+
+    let l = 0
+    for i in range(0, a:lastLine-a:firstLine)
+        echo "x = ".x
+        echo "l = ".l
+        let fin  = eval(x)
+        call append(i+a:firstLine, front.fin.back)
+        let l = l +1
+    endfor
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FIN                                                                       {{{

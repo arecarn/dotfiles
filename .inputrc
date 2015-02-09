@@ -1,8 +1,11 @@
 set editing-mode vi
+
 set keymap vi
+
 "\C-e": alias-expand-line
+
 "\C-p": history-search-backward
 "\C-n": history-search-forward
+
 set show-all-if-ambiguous on
-set completion-ignore-case on et show-all-if-ambiguous on
 set completion-ignore-case on

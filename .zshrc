@@ -1,3 +1,5 @@
+# ZSHRC                                                                    {{{
+##############################################################################
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
@@ -19,34 +21,34 @@ plugins=(git vi-mode geeknote)
 
 source $ZSH/oh-my-zsh.sh
 
-################################################################################
-# USER CONFIGURATION
-################################################################################
+###########################################################################}}}
+# USER CONFIGURATION                                                       {{{
+##############################################################################
 
-# LINES CONFIGURED BY ZSH-NEWUSER-INSTALL
-################################################################################
+###########################################################################}}}
+# LINES CONFIGURED BY ZSH-NEWUSER-INSTALL                                  {{{
+##############################################################################
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
 setopt autocd
-# End of lines configured by zsh-newuser-install
-################################################################################
 
-# THE FOLLOWING LINES WERE ADDED BY COMPINSTALL
-################################################################################
+###########################################################################}}}
+# THE FOLLOWING LINES WERE ADDED BY COMPINSTALL                            {{{
+##############################################################################
 zstyle :compinstall filename '~/.zshrc'
 autoload -Uz compinit
 compinit
-# End of lines added by compinstall
-################################################################################
 
-# General Settings
-################################################################################
+###########################################################################}}}
+# General Settings                                                         {{{
+##############################################################################
 setopt histignoredups
+setopt autonamedirs
 
-# KEY BINDINGS
-################################################################################
-
+###########################################################################}}}
+# KEY BINDINGS                                                             {{{
+##############################################################################
 # vi like settings
 bindkey -v
 export KEYTIMEOUT=1
@@ -73,11 +75,10 @@ bindkey -M vicmd '^N' history-beginning-search-forward
 
 bindkey '^E' _expand_alias
 
-# END OF KEY BINDINGS
-################################################################################
 
-# ALIASES
-################################################################################
+###########################################################################}}}
+# ALIASES                                                                  {{{
+##############################################################################
 alias pslevel='pstree -s $$'
 alias tmux='tmux -2'
 alias e='vim'
@@ -85,42 +86,47 @@ alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias nfind='find . -name '
 alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'
 
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    alias open='xdg-open'
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    alias open='xdg-open'
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    alias open='cygstart'
+elif [[ "$OSTYPE" == "win32" ]]; then
+    alias open='start'
+else
+fi
+
 # geeknote aliases/templates
 ##################
 alias gnc='geeknote create -c " " -tg "@" -t ""'
 
-# END ALIASES
-################################################################################
+###########################################################################}}}
+# PATH                                                                     {{{
+##############################################################################
 
 export PATH="$PATH:$HOME/dotfiles/mybin/scripts"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     export PATH=":/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     #for home brew
     export MANPATH="/usr/local/man"
     export PATH="/usr/local/bin:$PATH"
 elif [[ "$OSTYPE" == "cygwin" ]]; then
-        # ...
 elif [[ "$OSTYPE" == "win32" ]]; then
-        # ...
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
-        # ...
 else
-        # Unknown.
 fi
 
-# EDITOR
-################################################################################
+###########################################################################}}}
+# MISC                                                                     {{{
+##############################################################################
 export EDITOR='vim'
 
-
-# LOCAL CONFIG
-################################################################################
 source ~/.zshrc_local
 
-# END LOCAL CONFIG
-################################################################################
 if [[ $TERM == "xterm" ]]; then
         export TERM=xterm-256color
 fi
@@ -130,3 +136,6 @@ source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 # stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
 stty -ixon
 stty stop undef
+
+# vim: textwidth=78
+# vim: foldmethod=marker

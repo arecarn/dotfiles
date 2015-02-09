@@ -1,0 +1,4 @@
+set nocompatible
+
+set runtimepath+=~/.vim/bundle/plugin/
+

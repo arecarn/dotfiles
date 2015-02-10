@@ -1225,34 +1225,28 @@ vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
             \:let @"=old_reg<CR>
 
 
-command! -nargs=* -range=0 -bang Tfunc
-            \ call Tfunc(<count>, <line1>, <line2>, <q-args>, "<bang>")
+command! -nargs=* -range=0 -bang Seq
+            \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
 
-function! Tfunc(count, firstLine, lastLine, cmdInput, bang) abort
-    let rg_expression = '\v`.*`'
-    let rg_cleaned_expression = '\v`\zs.*\ze`'
+function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
+    "anything within backticks
+    let rg_expr = '`\(.\{-1,}\)`'
 
-    let rg_front = '\v^.*\ze'.rg_expression
-    let rg_back = rg_expression.'\zs\v.*'
+    " 1 index if ! is used
+    if a:bang != '!' 
+        let x = 0
+    else
+        let x = 1
+    endif
 
-    let front = matchstr(a:cmdInput, rg_front)
-    let back = matchstr(a:cmdInput, rg_back)
-
-    let x =  matchstr(a:cmdInput, rg_expression)
-    echo x
-
-    let x = matchstr(x, rg_cleaned_expression)
-    echo x
-
-    let l = 0
-    for i in range(0, a:lastLine-a:firstLine)
-        echo "x = ".x
-        echo "l = ".l
-        let fin  = eval(x)
-        call append(i+a:firstLine, front.fin.back)
-        let l = l +1
+    for i in range(0, a:lastLine-a:firstLine) "TODO fails without a range
+        let line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
+        call append(i+a:firstLine, line)
+        let x = x + 1
     endfor
 endfunction
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "FIN                                                                       {{{

@@ -20,7 +20,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 "PLUGINS                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Nebundle{{{2
+"Neobundle{{{2
 if has('vim_starting')
     let s:runtimepath = s:vimpath.'/bundle/neobundle.vim/'
     execute 'set runtimepath+='.s:runtimepath
@@ -42,6 +42,8 @@ NeoBundle 'Shougo/vimproc.vim', {
             \ }
 "vimproc }}}2
 NeoBundle 'Shougo/vimshell.vim' "depends on 'Shougo/vimproc'
+nnoremap <silent> g_ :execute "normal! yypVr".nr2char(getchar())<CR>
+
 
 NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
 
@@ -63,7 +65,7 @@ NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'henrik/vim-qargs'
 NeoBundle 'junegunn/goyo.vim'
-NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl' }
+NeoBundle 'junegunn/vim-oblique', {'depends' : 'junegunn/vim-pseudocl' }
 " NeoBundle 'haya14busa/incsearch.vim'
 NeoBundle 'kana/vim-niceblock'
 NeoBundle 't9md/vim-choosewin'
@@ -152,14 +154,14 @@ NeoBundle 'kmnk/vim-unite-giti'
 NeoBundle 'hewes/unite-gtags'
 "unite }}}2
 "operators {{{2
-NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
+NeoBundle 'rhysd/vim-operator-surround', {'depends' : 'kana/vim-operator-user'}
 " operator mappings
 map <silent>sa <Plug>(operator-surround-append)
 map <silent>sd <Plug>(operator-surround-delete)
 map <silent>sr <Plug>(operator-surround-replace)
 NeoBundle 'tommcdo/vim-exchange'
 " NeoBundle 'tpope/vim-surround'
-NeoBundle 'arecarn/crunch.vim'
+NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'tpope/vim-commentary'
 
 NeoBundle 'tpope/vim-repeat'
@@ -171,12 +173,8 @@ NeoBundle 't9md/vim-textmanip'
 NeoBundle 'vim-scripts/DrawIt'
 "text manipulation }}}2
 
-" NeoBundle 'tmhedberg/matchit'
-
 NeoBundle 'mbbill/undotree'
 NeoBundle 'dhruvasagar/vim-table-mode'
-
-" NeoBundle 'svermeulen/vim-easyclip'
 
 NeoBundle 'vim-scripts/cmdalias.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
@@ -570,6 +568,7 @@ endif
 "vim-quickhl }}}2
 "vim-easymotion {{{2
 if neobundle#is_installed('vim-easymotion')
+    map <Nop> <Plug>(easymotion-prefix) 
     map <leader><leader> <Plug>(easymotion-sn)
 endif
 "vim-easymotion }}}2
@@ -669,7 +668,7 @@ endif
 " undotree }}}2
 " goyo {{{2
 if neobundle#is_installed('goyo.vim')
-    nnoremap cof :<C-U>call SetGoyo(v:count)<CR>
+    nnoremap cof :<C-U>setlocal wrap<CR>:<C-U>call SetGoyo(v:count)<CR>
     function! SetGoyo(num)
         if a:num == 0
             Goyo
@@ -743,8 +742,8 @@ endif
 " Highlight TODO, FIXME, NOTE, etc.
 if has("autocmd")
     if v:version > 701
-        autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\)')
-        autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\)')
+        autocmd Syntax * call matchadd('Todo',  '\v\W\zs<(TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
+        autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
     endif
 endif
 
@@ -968,11 +967,7 @@ nnoremap gj j
 
 xnoremap gr r<space>gvo<esc>R
 
-nnoremap <leader>u :call Underline()<CR>
-function! Underline()
-    let char = nr2char(getchar())
-    execute "normal! yypVr".char
-endfunction
+nnoremap <silent> g_ :execute "normal! yypVr".nr2char(getchar())<CR>
 
 inoremap <C-F> <ESC>gwapa
 
@@ -1009,7 +1004,8 @@ nnoremap Q @q
 xnoremap Q :normal! @q<CR>
 "repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
-nnoremap <C-q> .n
+nnoremap <C-n> n.
+nnoremap <C-p> N.
 
 "navigation in command line
 cnoremap <C-p> <UP>
@@ -1025,12 +1021,12 @@ cnoremap %f find<SPACE>*
 "current file and directory abbreviations
 
 " (requires "set wildcharm = <TAB>)
-cnoremap %o <C-r>=expand('%:p:r:.')<CR><Tab><S-Tab><S-Tab>
+cnoremap %o <C-r>=expand('%:p:r:.')<CR><Tab><S-Tab>
 cnoremap %f <C-r>=expand('%:p:.')<CR>
 cnoremap %d <C-r>=expand('%:h:.')<CR>/
 
 
-nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR>
+nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR><Tab><S-Tab>
 nnoremap <leader>ef :e <C-r>=expand('%:p:.')<CR>
 nnoremap <leader>ed :e <C-r>=expand('%:h:.')<CR>/
 
@@ -1101,12 +1097,12 @@ function! CalculateCursor(x, operator)
     endtry
 endfunction
 
-vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
-vnoremap <silent><c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "+")<CR>:noh<CR>gv
-noremap <silent>g<c-x> :<C-U>call CalculateCursor(v:count1, "*")<CR>:noh<CR>
-vnoremap <silent>g<c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "*")<CR>:noh<CR>gv
-noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
-vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
+" vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
+" vnoremap <silent><c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "+")<CR>:noh<CR>gv
+" noremap <silent>g<c-x> :<C-U>call CalculateCursor(v:count1, "*")<CR>:noh<CR>
+" vnoremap <silent>g<c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "*")<CR>:noh<CR>gv
+" noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
+" vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
 
 nnoremap <leader>m  :call SearchPosition()<CR>
 nnoremap <leader>M  :let @/ = ""<CR>
@@ -1246,6 +1242,43 @@ function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
     endfor
 endfunction
 
+
+" Follow symlinks when opening a file {{{
+" NOTE: this happens with directory symlinks anyway (due to Vim's chdir/getcwd
+" magic when getting filenames).
+" Sources:
+" - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
+" - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
+function! MyFollowSymlink(...)
+    if exists('w:no_resolve_symlink') && w:no_resolve_symlink
+        return
+    endif
+    let fname = a:0 ? a:1 : expand('%')
+    if fname =~ '^\w\+:/'
+        " do not mess with 'fugitive://' etc
+        return
+    endif
+    let fname = simplify(fname)
+
+    let resolvedfile = resolve(fname)
+    if resolvedfile == fname
+        return
+    endif
+    let resolvedfile = fnameescape(resolvedfile)
+    echohl WarningMsg | echomsg 'Resolving symlink' fname '=>' resolvedfile | echohl None
+    " exec 'noautocmd file ' . resolvedfile
+    " XXX: problems with AutojumpLastPosition: line("'\"") is 1 always.
+    exec 'file ' . resolvedfile
+endfunction
+
+command! FollowSymlink call MyFollowSymlink()
+
+command! ToggleFollowSymlink let w:no_resolve_symlink = !get(w:, 'no_resolve_symlink', 0) | echo "w:no_resolve_symlink =>" w:no_resolve_symlink
+
+augroup FOLLOW_SYMLINKS
+    autocmd!
+    autocmd BufReadPost * call MyFollowSymlink(expand('<afile>'))
+augroup END
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

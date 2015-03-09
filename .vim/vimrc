@@ -122,7 +122,6 @@ NeoBundle 'kana/vim-textobj-entire'
 NeoBundle 'kana/vim-textobj-indent'
 NeoBundle 'kana/vim-textobj-line'
 NeoBundle 'mattn/vim-textobj-url'
-NeoBundle 'kana/vim-textobj-lastpat'
 NeoBundle 'glts/vim-textobj-comment'
 NeoBundle 'thinca/vim-textobj-between'
 NeoBundle 'osyo-manga/vim-textobj-multiblock'
@@ -130,7 +129,6 @@ NeoBundle 'osyo-manga/vim-textobj-multiblock'
 "completion  "{{{2
 " NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neocomplete'
-
 NeoBundle 'hrsh7th/vim-neco-calc'
 NeoBundle 'Shougo/neosnippet.vim'
 NeoBundle 'Shougo/neosnippet-snippets'
@@ -568,8 +566,9 @@ endif
 "vim-quickhl }}}2
 "vim-easymotion {{{2
 if neobundle#is_installed('vim-easymotion')
-    map <Nop> <Plug>(easymotion-prefix) 
-    map <leader><leader> <Plug>(easymotion-sn)
+    map <Nop> <Plug>(easymotion-prefix)
+    map e/ <Plug>(easymotion-sn)
+    map e? <Plug>(easymotion-sn)
 endif
 "vim-easymotion }}}2
 "choosewin {{{2
@@ -704,6 +703,14 @@ if neobundle#is_installed('Preserve.vim')
     nnoremap yie :call Preserve("normal! ggyG")<CR>
 endif
 " preserve }}}2
+" moin {{{2
+if neobundle#is_installed('moin.vim')
+    augroup MOIN
+        autocmd!
+        autocmd BufRead,BufNewFile *.moin set filetype=moin
+    augroup END
+endif
+" moin }}}2
 
 
 
@@ -992,6 +999,18 @@ inoremap <END> <C-g>u<END>
 
 noremap Y y$
 
+" visual selection text object {{{3
+xnoremap a/ gn
+onoremap a/ gn
+xnoremap i/ gn
+onoremap i/ gn
+xnoremap i? gN
+onoremap i? gN
+xnoremap a? gN
+onoremap a? gN
+"}}}3
+"=============================================================================}}}2
+
 nnoremap <leader>qa :qa!<Cr>
 nnoremap <leader>q :q!<Cr>
 
@@ -1243,42 +1262,6 @@ function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
 endfunction
 
 
-" Follow symlinks when opening a file {{{
-" NOTE: this happens with directory symlinks anyway (due to Vim's chdir/getcwd
-" magic when getting filenames).
-" Sources:
-" - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
-" - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
-function! MyFollowSymlink(...)
-    if exists('w:no_resolve_symlink') && w:no_resolve_symlink
-        return
-    endif
-    let fname = a:0 ? a:1 : expand('%')
-    if fname =~ '^\w\+:/'
-        " do not mess with 'fugitive://' etc
-        return
-    endif
-    let fname = simplify(fname)
-
-    let resolvedfile = resolve(fname)
-    if resolvedfile == fname
-        return
-    endif
-    let resolvedfile = fnameescape(resolvedfile)
-    echohl WarningMsg | echomsg 'Resolving symlink' fname '=>' resolvedfile | echohl None
-    " exec 'noautocmd file ' . resolvedfile
-    " XXX: problems with AutojumpLastPosition: line("'\"") is 1 always.
-    exec 'file ' . resolvedfile
-endfunction
-
-command! FollowSymlink call MyFollowSymlink()
-
-command! ToggleFollowSymlink let w:no_resolve_symlink = !get(w:, 'no_resolve_symlink', 0) | echo "w:no_resolve_symlink =>" w:no_resolve_symlink
-
-augroup FOLLOW_SYMLINKS
-    autocmd!
-    autocmd BufReadPost * call MyFollowSymlink(expand('<afile>'))
-augroup END
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

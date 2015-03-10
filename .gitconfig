@@ -19,8 +19,11 @@
     ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cred%ad%Creset %an %ae%Cgreen%d %Creset%s' --date=short --max-count=20 --graph
     l = !git log --color -p
 
-    update = add -u
-    up = add -u
+    update = add -u :/
+    up = add -u :/
+
+    upm = submodule update --remote
+    update-submodule = submodule update --remote
 
     exists = ls-files --error-unmatch
 [push]

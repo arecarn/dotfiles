@@ -42,7 +42,6 @@ NeoBundle 'Shougo/vimproc.vim', {
             \ }
 "vimproc }}}2
 NeoBundle 'Shougo/vimshell.vim' "depends on 'Shougo/vimproc'
-nnoremap <silent> g_ :execute "normal! yypVr".nr2char(getchar())<CR>
 
 
 NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
@@ -153,10 +152,6 @@ NeoBundle 'hewes/unite-gtags'
 "unite }}}2
 "operators {{{2
 NeoBundle 'rhysd/vim-operator-surround', {'depends' : 'kana/vim-operator-user'}
-" operator mappings
-map <silent>sa <Plug>(operator-surround-append)
-map <silent>sd <Plug>(operator-surround-delete)
-map <silent>sr <Plug>(operator-surround-replace)
 NeoBundle 'tommcdo/vim-exchange'
 " NeoBundle 'tpope/vim-surround'
 NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
@@ -711,7 +706,13 @@ if neobundle#is_installed('moin.vim')
     augroup END
 endif
 " moin }}}2
-
+" operator-surround {{{2
+if neobundle#is_installed('vim-operator-surround')
+    map <silent>sa <Plug>(operator-surround-append)
+    map <silent>sd <Plug>(operator-surround-delete)
+    map <silent>sr <Plug>(operator-surround-replace)
+endif
+" operator-surround }}}2
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -862,10 +863,6 @@ set formatoptions+=n "recognize ordered lists
 set formatoptions+=j "remove comments leader when joining
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"FOLDING                                                                   {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-"NeatFoldText()"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 set foldtext=CleanFold('_')
 set foldmethod=indent
 set foldcolumn=2
@@ -890,6 +887,17 @@ if has("autocmd")
         autocmd!
         "opens quick fix window on the bottom of all screens
         autocmd FileType qf wincmd J
+
+        " Automatically open, but do not go to (if there are errors) the quickfix /
+        " location list window, or close it when is has become empty.
+        "
+        " Note: Must allow nesting of autocmds to enable any customizations for quickfix
+        " buffers.
+        " Note: Normally, :cwindow jumps to the quickfix window if the command opens it
+        " (but not if it's already open). However, as part of the autocmd, this doesn't
+        " seem to happen.
+        autocmd QuickFixCmdPost [^l]* nested cwindow
+        autocmd QuickFixCmdPost    l* nested lwindow
     augroup END
 
     if s:hasWindows
@@ -1009,7 +1017,6 @@ onoremap i? gN
 xnoremap a? gN
 onoremap a? gN
 "}}}3
-"=============================================================================}}}2
 
 nnoremap <leader>qa :qa!<Cr>
 nnoremap <leader>q :q!<Cr>
@@ -1056,7 +1063,6 @@ command! Psnr call feedkeys(":grep! \<C-R>\<C-W> | Qdo %s/\<C-R>\<C-W>//gc\<LEFT
 
 "accept completion (requires "set wildcharm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
-
 
 
 nnoremap S i<cr><esc>k$

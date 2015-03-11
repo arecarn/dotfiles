@@ -834,6 +834,7 @@ if has("autocmd")
         " seem to happen.
         autocmd QuickFixCmdPost [^l]* nested cwindow
         autocmd QuickFixCmdPost    l* nested lwindow
+        autocmd BufLeave [Quckfix List] cwindow  "reopen quickfix after navigating
     augroup END
 
     if s:hasWindows
@@ -1210,7 +1211,6 @@ catch
 endtry
 
 " Refreshing airline
-" TODO see why this has to be last
 if !has('vim_starting') && g:loaded_airline
     AirlineRefresh
     normal! gtgT

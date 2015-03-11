@@ -1,4 +1,4 @@
-"RYAN CARNEY VIMRC                                                         {{{
+" RYAN CARNEY VIMRC                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
 set fileformats=unix,dos
@@ -6,7 +6,7 @@ set fileformats=unix,dos
 let mapleader="\<Space>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"OPERATING SYSTEM VARIABLES                                                {{{
+" OPERATING SYSTEM VARIABLES                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let s:hasWindows = has("win16") || has("win32") || has("win64")
 if s:hasWindows
@@ -18,9 +18,9 @@ endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"PLUGINS                                                                   {{{
+" PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Neobundle{{{2
+" neobundle {{{2
 if has('vim_starting')
     let s:runtimepath = s:vimpath.'/bundle/neobundle.vim/'
     execute 'set runtimepath+='.s:runtimepath
@@ -28,10 +28,9 @@ endif
 
 call neobundle#begin(expand(s:vimpath.'/bundle'))
 " Let NeoBundle manage NeoBundle
-NeoBundleFetch 'Shougo/neobundle.vim'
+NeoBundleFetch 'Shougo/neobundle.vim' "}}}2
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-"vimproc {{{2
+" vimproc.vim {{{2
 NeoBundle 'Shougo/vimproc.vim', {
             \ 'build' : {
             \     'windows' : 'make -f make_mingw32.mak',
@@ -39,80 +38,9 @@ NeoBundle 'Shougo/vimproc.vim', {
             \     'mac' : 'make -f make_mac.mak',
             \     'unix' : 'make -f make_unix.mak',
             \    },
-            \ }
-"vimproc }}}2
-NeoBundle 'Shougo/vimshell.vim' "depends on 'Shougo/vimproc'
+            \ } "}}}2
 
-
-NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
-
-NeoBundle 'vim-scripts/LanguageTool'
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'dbakker/vim-lint'
-NeoBundle 'junegunn/vader.vim'
-
-NeoBundle 'idanarye/vim-vebugger' "depends on 'Shougo/vimproc'
-
-NeoBundle 'arecarn/mixed-case-operator.vim'
-NeoBundle 'arecarn/spell-utils.vim'
-NeoBundle 'arecarn/go-to-buffer.vim'
-NeoBundle 'arecarn/git-diff-cached-preview.vim'
-NeoBundle 'arecarn/clean-fold.vim'
-NeoBundle 'arecarn/auto-file-loader.vim'
-
-NeoBundle 'AndrewRadev/linediff.vim'
-NeoBundle 'arecarn/frisk.vim'
-NeoBundle 'henrik/vim-qargs'
-NeoBundle 'junegunn/goyo.vim'
-NeoBundle 'junegunn/vim-oblique', {'depends' : 'junegunn/vim-pseudocl' }
-" NeoBundle 'haya14busa/incsearch.vim'
-NeoBundle 'kana/vim-niceblock'
-NeoBundle 't9md/vim-choosewin'
-NeoBundle 't9md/vim-quickhl'
-
-NeoBundle 'Lokaltog/vim-easymotion'
-" NeoBundle 'rhysd/clever-f.vim'
-
-NeoBundle 'tpope/vim-abolish'
-NeoBundle 'tpope/vim-dispatch'
-NeoBundle 'tpope/vim-scriptease'
-NeoBundle 'tpope/vim-speeddating'
-NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
-
-NeoBundle 'tpope/vim-eunuch'
-NeoBundle 'tpope/vim-unimpaired'
-NeoBundle 'thinca/vim-fontzoom'
-NeoBundle 'talek/obvious-resize'
-
-NeoBundle 'TeTrIs.vim'
-
-NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
-
-NeoBundle 'thinca/vim-qfreplace'
-
-NeoBundle 'bling/vim-airline'
-NeoBundle 'edkolev/tmuxline.vim'
-
-NeoBundle 'chreekat/vim-paren-crosshairs'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-" NeoBundle 'oblitum/rainbow' "This slows down scrolling a lot
-
-"colorschemes {{{2
-NeoBundle 'w0ng/vim-hybrid'
-NeoBundle 'junegunn/seoul256.vim'
-NeoBundle 'morhetz/gruvbox'
-NeoBundle 'altercation/vim-colors-solarized'
-"colorschemes }}}2
-"syntax {{{2
-NeoBundle 'lopter/moin.vim'
-NeoBundle 'tpope/vim-markdown'
-"syntax }}}2
-"git {{{2
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'gregsexton/gitv'
-NeoBundle 'int3/vim-extradite'
-"git }}}2
-"text objects {{{2
+" text objects {{{2
 NeoBundle 'kana/vim-textobj-user'
 NeoBundle 'saihoooooooo/vim-textobj-space'
 NeoBundle 'Julian/vim-textobj-variable-segment'
@@ -123,17 +51,9 @@ NeoBundle 'kana/vim-textobj-line'
 NeoBundle 'mattn/vim-textobj-url'
 NeoBundle 'glts/vim-textobj-comment'
 NeoBundle 'thinca/vim-textobj-between'
-NeoBundle 'osyo-manga/vim-textobj-multiblock'
-"text objects }}}2
-"completion  "{{{2
-" NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neocomplete'
-NeoBundle 'hrsh7th/vim-neco-calc'
-NeoBundle 'Shougo/neosnippet.vim'
-NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'Shougo/echodoc.vim'
-"completion  "}}}2
-"unite {{{2
+NeoBundle 'osyo-manga/vim-textobj-multiblock' "}}}2
+
+" unite {{{2
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/unite-ssh'
 NeoBundle 'Shougo/unite-outline'
@@ -148,46 +68,95 @@ NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'kopischke/unite-spell-suggest'
 NeoBundle 'kmnk/vim-unite-giti'
-NeoBundle 'hewes/unite-gtags'
-"unite }}}2
-"operators {{{2
-NeoBundle 'rhysd/vim-operator-surround', {'depends' : 'kana/vim-operator-user'}
-NeoBundle 'tommcdo/vim-exchange'
+NeoBundle 'hewes/unite-gtags' "}}}2
+
+" operators {{{2
+NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
 " NeoBundle 'tpope/vim-surround'
+NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'tpope/vim-commentary'
+NeoBundle 'tpope/vim-repeat' "}}}2
 
-NeoBundle 'tpope/vim-repeat'
-"operators }}}2
-"text manipulation {{{2
-NeoBundle 'godlygeek/tabular'
-NeoBundle 'tommcdo/vim-lion'
-NeoBundle 't9md/vim-textmanip'
-NeoBundle 'vim-scripts/DrawIt'
-"text manipulation }}}2
-
-NeoBundle 'mbbill/undotree'
+" NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'AndrewRadev/linediff.vim'
+NeoBundle 'Lokaltog/vim-easymotion'
+NeoBundle 'Shougo/echodoc.vim'
+NeoBundle 'Shougo/neocomplete'
+NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'Shougo/vimshell.vim' "depends on 'Shougo/vimproc'
+NeoBundle 'TeTrIs.vim'
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
+NeoBundle 'arecarn/auto-file-loader.vim'
+NeoBundle 'arecarn/clean-fold.vim'
+NeoBundle 'arecarn/frisk.vim'
+NeoBundle 'arecarn/git-diff-cached-preview.vim'
+NeoBundle 'arecarn/go-to-buffer.vim'
+NeoBundle 'arecarn/mixed-case-operator.vim'
+NeoBundle 'arecarn/spell-utils.vim'
+NeoBundle 'arecarn/templates'
+NeoBundle 'bling/vim-airline'
+NeoBundle 'chreekat/vim-paren-crosshairs'
+NeoBundle 'dbakker/vim-lint'
 NeoBundle 'dhruvasagar/vim-table-mode'
-
-NeoBundle 'vim-scripts/cmdalias.vim'
+NeoBundle 'edkolev/tmuxline.vim'
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'gregsexton/gitv'
+NeoBundle 'henrik/vim-qargs'
+NeoBundle 'hrsh7th/vim-neco-calc'
+NeoBundle 'idanarye/vim-vebugger' "depends on 'Shougo/vimproc'
+NeoBundle 'int3/vim-extradite'
+NeoBundle 'junegunn/goyo.vim'
+NeoBundle 'junegunn/seoul256.vim'
+NeoBundle 'junegunn/vader.vim'
+NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl' }
+NeoBundle 'justinmk/vim-sneak'
+NeoBundle 'kana/vim-niceblock'
+NeoBundle 'lopter/moin.vim'
+NeoBundle 'mbbill/undotree'
+NeoBundle 'morhetz/gruvbox'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundle 'scrooloose/syntastic'
+NeoBundle 't9md/vim-choosewin'
+NeoBundle 't9md/vim-quickhl'
+NeoBundle 't9md/vim-textmanip'
+NeoBundle 'talek/obvious-resize'
+NeoBundle 'thinca/vim-fontzoom'
+NeoBundle 'thinca/vim-qfreplace'
+NeoBundle 'tommcdo/vim-lion'
+NeoBundle 'tpope/vim-abolish'
+NeoBundle 'tpope/vim-dispatch'
+NeoBundle 'tpope/vim-eunuch'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'tpope/vim-markdown'
+NeoBundle 'tpope/vim-scriptease'
+NeoBundle 'tpope/vim-speeddating'
+NeoBundle 'tpope/vim-unimpaired'
+NeoBundle 'vim-scripts/DrawIt'
+NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 NeoBundle 'vim-scripts/UnconditionalPaste'
-
+NeoBundle 'vim-scripts/cmdalias.vim'
 NeoBundle 'vim-scripts/scons.vim'
+NeoBundle 'w0ng/vim-hybrid'
 
-
-" NeoBundle 'inside/vim-search-pulse' "TODO fix this so it works with vim-oblique
-" let g:vim_search_pulse_mode = 'pattern'
 
 call neobundle#end()
 NeoBundleCheck
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"PLUGINS CONFIG                                                            {{{
+" PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" netrw {{{2
+" set up line numebring and other good stuff
+let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
+" hide .swp .o12 .dbg .lst files in explorer
+let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
+" netrw }}}2
 
-" neocomplcache {{{2
-if neobundle#is_installed('neocomplcache')
+if neobundle#is_installed('neocomplcache') "{{{2
     if !isdirectory(s:vimpath.'/utils_local/neocomplcache')
         call mkdir(s:vimpath.'/utils_local/neocomplcache', "p", 0700)
     endif
@@ -236,11 +205,9 @@ if neobundle#is_installed('neocomplcache')
     " let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
     " let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
     " nnoremap conc :NeoComplCacheToggle<CR>
-endif
+endif "}}}2
 
-"neocomplcache }}}2
-" neocomplete {{{2
-if neobundle#is_installed('neocomplete')
+if neobundle#is_installed('neocomplete') "{{{2
     " Use neocomplete.
     let g:neocomplete#enable_at_startup = 1
 
@@ -300,7 +267,7 @@ if neobundle#is_installed('neocomplete')
     function! s:check_back_space() "{{{
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~ '\s'
-    endfunction"}}}
+    endfunction
 
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#close_popup()
@@ -324,13 +291,9 @@ if neobundle#is_installed('neocomplete')
     " For perlomni.vim setting.
     " https://github.com/c9s/perlomni.vim
     let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-endif
-"neocomplete }}}2
-"neosnippet {{{2
-if neobundle#is_installed('neosnippet-snippets')
+endif "}}}2
 
-
-
+if neobundle#is_installed('neosnippet-snippets') "{{{2
     " imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
     "             \ "\<Plug>(neosnippet_expand_or_jump)"
     "             \: pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -362,17 +325,9 @@ if neobundle#is_installed('neosnippet-snippets')
     endif
 
     let g:neosnippet#snippets_directory=s:vimpath.'/utils/snippets'
-endif
-"neosnippet }}}2
-"netrw {{{2
-"set up line numebring and other good stuff
-let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
-"hide .swp .o12 .dbg .lst files in explorer
-let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
-"netrw }}}2
-" unite.vim {{{2
-if neobundle#is_installed('unite.vim')
+endif "}}}2
 
+if neobundle#is_installed('unite.vim') "{{{2
     let g:unite_data_directory = s:vimpath.'/utils_local/unite/'
     let g:unite_winheight = 10
     let g:unite_source_history_yank_enable = 1
@@ -446,11 +401,9 @@ if neobundle#is_installed('unite.vim')
                     \ unite#do_action('preview') : ":\<C-u>pclose!\<CR>"
     endfunction
     let g:neocomplcache_tags_caching_limit_file_size = 5000000000000000.0
+endif "}}}2
 
-endif
-" unite }}}2
-" vimfiler {{{2
-if neobundle#is_installed('vimfiler.vim')
+if neobundle#is_installed('vimfiler.vim') "{{{2
     " Replace netrw commands with vimfiler
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
@@ -460,10 +413,9 @@ if neobundle#is_installed('vimfiler.vim')
     command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>
     command! -nargs=* Vexplore :VimFilerBufferDir -split  <Args>
     command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
-endif
-"vimfiler }}}2
-"vimshell {{{2
-if neobundle#is_installed('vimshell.vim')
+endif "}}}2
+
+if neobundle#is_installed('vimshell.vim') "{{{2
     nnoremap <TAB>sh :VimShell -popup -toggle<CR><ESC>
 
     let g:vimshell_enable_start_insert = 1
@@ -473,73 +425,55 @@ if neobundle#is_installed('vimshell.vim')
         call mkdir(s:vimpath.'/utils_local/vimshell', "p", 0700)
     endif
     let g:vimshell_data_directory = s:vimpath.'/utils_local/vimshell/'
-endif
-"}}}2
+endif "}}}2
 
-"vimshell }}}2
-"echodoc {{{2
-if neobundle#is_installed('echodoc.vim')
+if neobundle#is_installed('echodoc.vim') "{{{2
     let g:echodoc_enable_at_startup=1
     set cmdheight=2
-endif
+endif "}}}2
 
-"echodoc }}}2
-"oblique {{{2
-if neobundle#is_installed('vim-oblique')
+if neobundle#is_installed('vim-oblique') "{{{2
     let g:oblique#incsearch_highlight_all = 1
-endif
-"oblique }}}2
-"fugitive {{{2
-if neobundle#is_installed('vim-fugitive')
+endif "}}}2
+
+if neobundle#is_installed('vim-fugitive') "{{{2
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
     nnoremap <Leader>gc :Gcommit<CR>
     nmap <Leader>gj <C-W>P<C-N>D
     nmap <Leader>gk <C-W>P<C-P>D
-endif
-"fugitive }}}2
-" frisk {{{2
-if neobundle#is_installed('frisk')
+endif "}}}2
+
+if neobundle#is_installed('frisk.vim') "{{{2
     call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
     command! Rfrisk call ReloadFrisk()
-    "Do the stuff for crunch
+    "Do the stuff for frisk
     function! ReloadFrisk()
-        vs ~/Dropbox/projects/frisk/gc/frisk/plugin/frisk.vim
-        wq
-        vs ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk/debug.vim
-        wq
-        vs ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk.vim
-        wq
         Runtime ~/Dropbox/projects/frisk/gc/frisk/plugin/*.vim
         Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/*.vim
         Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk/*.vim
     endfunction
-endif
+endif "}}}2
 
-"frisk }}}2
-"tabular {{{2
-if neobundle#is_installed('tabular')
+if neobundle#is_installed('tabular') "{{{2
     nnoremap <Leader>a :Tabularize/
     xnoremap <Leader>a :Tabularize/
-endif
-"tabular }}}2
-"vim-indent-guides {{{2
-if neobundle#is_installed('vim-indent-guides')
+endif "}}}2
+
+if neobundle#is_installed('vim-indent-guides') "{{{2
     nmap <silent> coig <Plug>IndentGuidesToggle
     let g:indent_guides_enable_on_vim_startup = 0
     let g:indent_guides_guide_size = 1
-endif
-"vim-indent-guides }}}2
-"syntastic {{{2
-if neobundle#is_installed('syntastic')
+endif "}}}2
+
+if neobundle#is_installed('syntastic') "{{{2
     let g:syntastic_check_on_open = 0
     let g:syntastic_python_checkers = ['python']
     nnoremap cost :SyntasticToggleMode<CR>
-endif
-"syntastic }}}2
-"textmanip {{{2
-if neobundle#is_installed('vim-textmanip')
+endif "}}}2
+
+if neobundle#is_installed('vim-textmanip') "{{{2
     xmap <C-j> <Plug>(textmanip-move-down)
     xmap <C-k> <Plug>(textmanip-move-up)
     xmap <C-h> <Plug>(textmanip-move-left)
@@ -547,40 +481,35 @@ if neobundle#is_installed('vim-textmanip')
 
     " toggle insert/replace with <F10>
     nmap comt <Plug>(textmanip-toggle-mode)
-endif
-"textmanip }}}2
-"vim-quickhl {{{2
-if neobundle#is_installed('vim-quickhl')
+endif "}}}2
+
+if neobundle#is_installed('vim-quickhl') "{{{2
     nmap m <Plug>(quickhl-manual-this)
     nnoremap gm m
     nnoremap gm m
     xmap m <Plug>(quickhl-manual-this)
     nmap M <Plug>(quickhl-manual-reset)
     xmap M <Plug>(quickhl-manual-reset)
-endif
-"vim-quickhl }}}2
-"vim-easymotion {{{2
-if neobundle#is_installed('vim-easymotion')
+endif "}}}2
+
+if neobundle#is_installed('vim-easymotion') "{{{2
     map <Nop> <Plug>(easymotion-prefix)
     map e/ <Plug>(easymotion-sn)
     map e? <Plug>(easymotion-sn)
-endif
-"vim-easymotion }}}2
-"choosewin {{{2
-if neobundle#is_installed('vim-choosewin')
+endif "}}}2
+
+if neobundle#is_installed('vim-choosewin') "{{{2
     nmap <C-w>? <Plug>(choosewin)
     let g:choosewin_overlay_enable = 1
     let g:choosewin_overlay_clear_multibyte = 1
     let g:choosewin_statusline_replace = 0
-endif
-"choosewin }}}2
-" rainbow{{{2
-if neobundle#is_installed('rainbow')
+endif "}}}2
+
+if neobundle#is_installed('rainbow') "{{{2
     let g:rainbow_active = 1
-endif
-" rainbow }}}2
-" cmdalias.vim {{{2
-if neobundle#is_installed('cmdalias.vim')
+endif "}}}2
+
+if neobundle#is_installed('cmdalias.vim') "{{{2
     command! Pwf echo expand('%:p')
     augroup VIMRC_aliases
         au!
@@ -590,38 +519,29 @@ if neobundle#is_installed('cmdalias.vim')
         au VimEnter * Alias tex Texplore
         au VimEnter * Alias vex Vexplore
     augroup END
-endif
-" cmdalias.vim }}}2
-" FormatToWidth {{{2
-if neobundle#is_installed('FormatToWidth')
+endif "}}}2
+
+if neobundle#is_installed('FormatToWidth') "{{{2
     xmap gQ <Plug>FormatToWidth
-endif
-" FormatToWidth }}}2
-" vim-fontzoom {{{2
-if neobundle#is_installed('vim-fontzoom')
+endif "}}}2
+
+if neobundle#is_installed('vim-fontzoom') "{{{2
     let g:fontzoom_no_default_key_mappings = 1
     nnoremap  ]z <Plug>(fontzoom-larger)
     nnoremap  [z <Plug>(fontzoom-smaller)
-endif
-" vim-fontzoom }}}2
-" linediff{{{2
-if neobundle#is_installed('linediff.vim')
+endif "}}}2
+
+if neobundle#is_installed('linediff.vim') "{{{2
     xnoremap <Leader>ld :Linediff<CR>
-endif
-" linediff.vim }}}2
-" languagetool {{{2
-"TODO make system independent 18 Mar 2014
-let g:languagetool_jar = 'C:/bin/LanguageTool/languagetool-commandline.j'
-"}}}2
-" vim-easyclip {{{2
-if neobundle#is_installed('vim-easyclip')
+endif "}}}2
+
+if neobundle#is_installed('vim-easyclip') "{{{2
     let g:EasyClipUseSubstituteDefaults = 1
     let g:EasyClipEnableBlackHoleRedirect = 0
     let g:EasyClipUseCutDefaults = 0
-endif
-" vim-easyclip }}}2
-" vim-textobj-between {{{2
-if neobundle#is_installed('vim-textobj-between')
+endif "}}}2
+
+if neobundle#is_installed('vim-textobj-between') "{{{2
     if neobundle#is_installed('vim-textobj-between')
         let g:textobj_between_no_default_key_mappings = 1
         xmap am <Plug>(textobj-between-a)
@@ -629,39 +549,34 @@ if neobundle#is_installed('vim-textobj-between')
         xmap im <Plug>(textobj-between-i)
         omap im <Plug>(textobj-between-i)
     endif
-endif
-" vim-textobj-between }}}2
-" vim-textobj-comment {{{2
-if neobundle#is_installed('vim-textobj-comment')
+endif "}}}2
+
+if neobundle#is_installed('vim-textobj-comment') "{{{2
     let g:textobj_comment_no_default_key_mappings = 1
     xmap a# <Plug>(textobj-comment-a)
     omap a# <Plug>(textobj-comment-a)
     xmap i# <Plug>(textobj-comment-i)
     omap i# <Plug>(textobj-comment-i)
-endif
-" vim-textobj-comment }}}2
-" vim-airline {{{2
-if neobundle#is_installed('vim-airline')
+endif "}}}2
+
+if neobundle#is_installed('vim-airline') "{{{2
     let g:airline#extensions#tabline#enabled = 1
     let g:airline#extensions#tabline#tab_nr_type = 1
     let g:airline#extensions#tabline#buffer_nr_show = 1
     let g:airline_powerline_fonts = 1
     let g:airline_inactive_collapse = 0
     let g:airline_theme='gruvbox'
-endif
-" vim-airline }}}2
-" vim-table-mode {{{2
-if neobundle#is_installed('vim-table-mode')
+endif "}}}2
+
+if neobundle#is_installed('vim-table-mode') "{{{2
     let g:table_mode_separator = '|'
-endif
-" vim-table-mode }}}2
-" undotree {{{2
-if neobundle#is_installed('undotree')
+endif "}}}2
+
+if neobundle#is_installed('undotree') "{{{2
     nnoremap <TAB>ut :UndotreeToggle<CR>:UndotreeFocus<CR>
-endif
-" undotree }}}2
-" goyo {{{2
-if neobundle#is_installed('goyo.vim')
+endif "}}}2
+
+if neobundle#is_installed('goyo.vim') "{{{2
     nnoremap cof :<C-U>setlocal wrap<CR>:<C-U>call SetGoyo(v:count)<CR>
     function! SetGoyo(num)
         if a:num == 0
@@ -670,53 +585,73 @@ if neobundle#is_installed('goyo.vim')
             execute "Goyo ".string(a:num)
         endif
     endfunction
-endif
-" goyo.vim }}}2
-" scons {{{2
-if neobundle#is_installed('scons.vim')
+endif "}}}2
+
+if neobundle#is_installed('scons.vim') "{{{2
     augroup SCONS
         autocmd!
         autocmd BufNewFile,BufRead SCons*,scons* set filetype=scons
     augroup END
-endif
-" scons }}}2
-" obvious-resize {{{2
-if neobundle#is_installed('obvious-resize')
+endif "}}}2
+
+if neobundle#is_installed('obvious-resize') "{{{2
     "map F9 - F12 (like hjkl) to resize windows
     nnoremap  <silent><F9>  :ObviousResizeLeft<CR>
     nnoremap  <silent><F10> :ObviousResizeDown<CR>
     nnoremap  <silent><F11> :ObviousResizeUp<CR>
     nnoremap  <silent><F12> :ObviousResizeRight<CR>
-endif
-" obvious-resize }}}2
-" preserve {{{2
-if neobundle#is_installed('Preserve.vim')
+endif "}}}2
+
+if neobundle#is_installed('Preserve.vim') "{{{2
     nnoremap <silent><leader>dt :PreserveSave<CR>:%s,\s\+$,,ge<CR>:PreserveRestore<CR>
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>
     nnoremap yie :call Preserve("normal! ggyG")<CR>
-endif
-" preserve }}}2
-" moin {{{2
-if neobundle#is_installed('moin.vim')
+endif "}}}2
+
+if neobundle#is_installed('moin.vim') "{{{2
     augroup MOIN
         autocmd!
         autocmd BufRead,BufNewFile *.moin set filetype=moin
     augroup END
-endif
-" moin }}}2
-" operator-surround {{{2
-if neobundle#is_installed('vim-operator-surround')
+endif "}}}2
+
+if neobundle#is_installed('vim-operator-surround') "{{{2
     map <silent>sa <Plug>(operator-surround-append)
     map <silent>sd <Plug>(operator-surround-delete)
     map <silent>sr <Plug>(operator-surround-replace)
-endif
-" operator-surround }}}2
+endif "}}}2
 
+if neobundle#is_installed('crunch.vim') "{{{2
+    let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
+
+    command! Rcrunch call ReloadCrunch()
+    " Do the stuff for crunch
+    function! ReloadCrunch()
+        Runtime ~/Dropbox/projects/crunch/crunch/plugin/*.vim
+        Runtime ~/Dropbox/projects/crunch/crunch/autoload/*.vim
+        Runtime ~/Dropbox/projects/crunch/crunch/autoload/crunch/*.vim
+    endfunction
+
+    " do crunch tests
+    if s:hasWindows
+        nnoremap <Leader>ct :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal +Vader*<CR>
+        nnoremap <Leader>tc :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal<CR>
+    else
+        nnoremap <Leader>ct :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal +Vader\*<CR>
+        nnoremap <Leader>tc :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal<CR>
+    endif
+endif "}}}2
+
+if neobundle#is_installed('operator-surround') "{{{2
+    map <silent>sa <Plug>(operator-surround-append)
+    map <silent>sd <Plug>(operator-surround-delete)
+    map <silent>sr <Plug>(operator-surround-replace)
+endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"FILE TYPE SETTINGS                                                        {{{
+" FILE TYPE SETTINGS                                                       {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 filetype on
 filetype plugin on
@@ -724,9 +659,8 @@ filetype indent on
 syntax on " allow syntax highlighting
 set encoding=utf-8 "make Vim use UTF-8 by default
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"UI OPTIONS                                                                {{{
+" UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set colorcolumn=79
 set number
@@ -737,7 +671,7 @@ set lazyredraw
 set laststatus=2
 set listchars=trail:·,tab:»·,extends:→,precedes:←
 
-"Maximize Window on Startup
+" Maximize Window on Startup
 if has ("gui_running")
     if has("autocmd") && s:hasWindows
         augroup windowsgui:
@@ -755,7 +689,7 @@ if has("autocmd")
     endif
 endif
 
-"gui settings {{{2
+" gui settings {{{2
 if has ("gui_running")
     "Make GVim more like Terminal Vim
     set guioptions-=T "remove toolbar
@@ -768,7 +702,7 @@ if has ("gui_running")
         set guifont=DejaVu_Sans_Mono_For_Powerline:h10:cANSI
         "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
     elseif has('mac')
-        set guifont=DejaVu\ Sans\ Mono:h12
+        set guifont=DejaVu\ Sans\ Mono\ For\ Powerline:h11
         " set guifont=Monaco:h12
     elseif has('unix') && !has('mac') "linux
         set guifont=DejaVu\ Sans\ Mono\ 10
@@ -780,7 +714,7 @@ let g:gruvbox_italic=0
 set background=dark
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"CURSOR SETTINGS                                                           {{{
+" CURSOR SETTINGS                                                          {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set scrolloff=6 " Keep 3 lines (top/bottom) for scope
 set sidescrolloff=6 " keep 3 lines (side/side) for scope
@@ -803,7 +737,7 @@ endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"UNDO & SWAP                                                               {{{
+" UNDO & SWAP                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set undofile
 let s:undodir = s:vimpath.'/utils_local/undo//'
@@ -822,25 +756,25 @@ set noswapfile
 " name uniqueness in the preserve directory.
 set history=10000
 set backup
-"Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
+" Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
 let myvar = strftime("%y-%m-%d_%H")
 let myvar = "set backupext=_". myvar
 execute myvar
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"BACKUP                                                                    {{{
+" BACKUP                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let s:backupdir = s:vimpath.'/utils_local/backup//'
 execute 'set backupdir='.s:backupdir
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"LINE WRAPPING                                                             {{{
+" LINE WRAPPING                                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nowrap
 set linebreak
 set textwidth=0 "TODO for c make tw=78
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SPELLING - THESAURUS                                                      {{{
+" SPELLING - THESAURUS                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set spell
 set spelllang=en_us
@@ -850,7 +784,7 @@ let &thesaurus=s:vimpath.'/utils/thesaurus/thesaurus.txt'
 nnoremap g<C-s> viw<Esc>a<C-X><C-S><C-p>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"TABS, INDENTING & FORMAT OPTIONS                                          {{{
+" TABS, INDENTING & FORMAT OPTIONS                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set expandtab
 set tabstop=4
@@ -863,6 +797,8 @@ set formatoptions+=n "recognize ordered lists
 set formatoptions+=j "remove comments leader when joining
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" FOLDING                                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set foldtext=CleanFold('_')
 set foldmethod=indent
 set foldcolumn=2
@@ -870,7 +806,7 @@ set foldnestmax=1
 set foldlevelstart=99
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"AUTOCMDS                                                                  {{{
+" AUTOCMDS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
     augroup vimrc
@@ -922,7 +858,7 @@ set cscoperelative
 set cscopetag
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SEARCHING                                                                 {{{
+" SEARCHING                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set wrapscan
 set incsearch
@@ -932,12 +868,12 @@ set smartcase
 set path=**,.,./**
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"GENERAL BEHAVIOR                                                          {{{
+" GENERAL BEHAVIOR                                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set clipboard=unnamedplus,unnamed
 set splitright
 
-"disable dang error{visual}bells for good
+" disable dang error{visual}bells for good
 if has("autocmd")
     augroup noBells
         autocmd!
@@ -957,7 +893,7 @@ set backspace=indent,eol,start
 set tags=tags;/ "the ";/" allows you to look back wards
 set exrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"COMPLETION                                                                {{{
+" COMMAND LINE COMPLETION                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set wildmode=longest,full
 set wildmenu
@@ -966,7 +902,7 @@ set wildcharm=<TAB>
 set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"MAPPINGS & COMMANDS                                                       {{{
+" MAPPINGS & COMMANDS                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set timeout
 set timeoutlen=500
@@ -974,7 +910,7 @@ set updatetime=1000
 
 set grepprg=ack\ -H\ --nocolor\ --nogroup
 
-"Navigation
+" Navigation
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
@@ -989,7 +925,7 @@ inoremap <C-F> <ESC>gwapa
 nnoremap cotw :<C-U>setlocal textwidth=
 nnoremap cocl :<C-U>setlocal conceallevel=
 
-"update diff with a key mapping
+" update diff with a key mapping
 nnoremap du :diffupdate<CR>
 
 nnoremap <silent><C-l> :redraw!<CR><C-l>
@@ -1024,16 +960,16 @@ nnoremap <leader>q :q!<Cr>
 nnoremap <Leader>yf :let @f=expand('%:p')<CR>:echo @f.' ---> yanked into register f'<CR>
 nnoremap <Leader>yd :let @f=expand('%:h')<CR>:echo @f.' ---> yanked into register f'<CR>
 
-"disable Ex mode key and map it to something awesome
+" disable Ex mode key and map it to something awesome
 nnoremap Q @q
-"replay macro for each line of a visual selection
+" replay macro for each line of a visual selection
 xnoremap Q :normal! @q<CR>
-"repeat last command for each line of a visual selection
+" repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
-nnoremap <C-n> n.
-nnoremap <C-p> N.
+nnoremap <C-n> .n
+nnoremap <C-p> .N
 
-"navigation in command line
+" navigation in command line
 cnoremap <C-p> <UP>
 cnoremap <C-n> <DOWN>
 cnoremap <C-h> <LEFT>
@@ -1044,7 +980,7 @@ cnoremap <C-e> <END>
 cnoremap %e e **/*
 cnoremap %f find<SPACE>*
 
-"current file and directory abbreviations
+" current file and directory abbreviations
 
 " (requires "set wildcharm = <TAB>)
 cnoremap %o <C-r>=expand('%:p:r:.')<CR><Tab><S-Tab>
@@ -1059,22 +995,15 @@ nnoremap <leader>ed :e <C-r>=expand('%:h:.')<CR>/
 nnoremap <Leader>gcd :cd! %:h<Cr>:pwd<Cr>
 nnoremap <Leader>cd :lcd! %:h<Cr>:pwd<Cr>
 
-command! Psnr call feedkeys(":grep! \<C-R>\<C-W> | Qdo %s/\<C-R>\<C-W>//gc\<LEFT>\<LEFT>\<LEFT>")
-
-"accept completion (requires "set wildcharm = <TAB>)
+" accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
-
 
 nnoremap S i<cr><esc>k$
 nnoremap gJ ddpkJ
 
-nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
-nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\').'\v\s*#\r#g'<CR>
-xnoremap <silent> <leader>J  :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').'#g'<CR>
-xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').' #g'<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"SCRIPTS                                                                   {{{
+" SCRIPTS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! PrintCscopeOptions()
     echo "g: Definition"
@@ -1089,7 +1018,7 @@ endfunction
 execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
 execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
 
-"TODO Is the word under the cursor a number?
+" TODO Is the word under the cursor a number?
 function! DoNum(operator)
     let line = getline('.')
     let cIndex = getpos('.')[2] -1 "TODO handle virtual edit
@@ -1161,81 +1090,36 @@ endfunction
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 
-"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
-command! Rcrunch call ReloadCrunch()
-"Do the stuff for crunch
-function! ReloadCrunch()
-    vs ~/Dropbox/projects/crunch/crunch/autoload/crunch/debug.vim
-    wq
-    vs ~/Dropbox/projects/crunch/crunch/autoload/crunch.vim
-    wq
-    vs ~/Dropbox/projects/crunch/crunch/plugin/crunch.vim
-    wq
-    Runtime ~/Dropbox/projects/crunch/crunch/plugin/*.vim
-    Runtime ~/Dropbox/projects/crunch/crunch/autoload/*.vim
-    Runtime ~/Dropbox/projects/crunch/crunch/autoload/crunch/*.vim
-endfunction
 
-command! TcrunchS call TestCrunchShell()
-function! TestCrunchShell()
-    if s:hasWindows
-        !runVimTests \Users\arecarn\Dropbox\projects\crunch\crunch\tests
-    else
-        !runVimTests.sh  ~/Dropbox/projects/crunch/crunch/tests
-    endif
-endfunction
-
-command! TcrunchVs call TestCrunchVShell()
-function! TestCrunchVShell()
-    call ReloadCrunch()
-    RunVS runVimTests C:/Users/arecarn/Dropbox/projects/crunch/crunch/tests
-    if s:hasWindows
-        RunVSrunVimTests C:\Users\arecarn\Dropbox\data\code\VimScript\myplugins\crunch\tests
-    else
-        RunVS runVimTests.sh  ~/Dropbox/projects/crunch/crunch/tests
-    endif
-endfunction
-
-"do crunch tests
-if s:hasWindows
-    nnoremap <Leader>ct :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal +Vader*<CR>
-    nnoremap <Leader>tc :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal<CR>
-else
-    nnoremap <Leader>ct :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal +Vader\*<CR>
-    nnoremap <Leader>tc :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal<CR>
-endif
-
-"Crunch Dev Scripts"""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
-
-"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
+" Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""{{{2
 command! -nargs=* VshSend call RunInVimShell('<Args>')
 function! RunInVimShell(cmd)
     VimShellBufferDir -popup
     execute "VimShellSendString " . a:cmd
 endfunction
-"Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
+" Run in VimShell""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}2
 
-"add numbers to the front or end of a line
+" add numbers to the front or end of a line
 cabbrev numend s/$/\=1-line("'<")+line(".")/c
 cabbrev numfront s/^/\=1-line("'<")+line(".")/c
 
-"Details:
-"s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
+" Details:
+" s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
 "            \= : for each match, replace with the result of the following expression:
-"printf("0x%04x", : produce a string using the format "0x%04x", which corresponds to a literal 0x followed by a four digit (or more) hex number, padded with zeros.
-"submatch(0) : The result of the complete match (i.e. the number).
+" printf("0x%04x", : produce a string using the format "0x%04x", which corresponds to a literal 0x followed by a four digit (or more) hex number, padded with zeros.
+" submatch(0) : The result of the complete match (i.e. the number).
 cabbrev tohex s/\d\+/\=printf("0x%x", submatch(0))
-"find the first occurrence of a hex digit and changes it to decimal
+" find the first occurrence of a hex digit and changes it to decimal
 cabbrev todec s/0x\x\+/\=printf("%d", submatch(0))
 cabbrev toasc s/0x\x\+/\=printf("%c", submatch(0))
-"delete the current character and replace it with it's ASCII Decimal value
+" delete the current character and replace it with it's ASCII Decimal value
 nnoremap <Leader>tad xi<C-r>=printf("%d",char2nr("<C-r>""))<CR><ESC>
-"delete the current character and replace it with it's ASCII Hex value
+" delete the current character and replace it with it's ASCII Hex value
 nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
-"noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
+" noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
 
 
-"reverse selection kind of works
+" reverse selection kind of works
 vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
             \:let old_reg=@"<cr>
             \gv"ay
@@ -1267,11 +1151,57 @@ function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
     endfor
 endfunction
 
+nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
+nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\').'\v\s*#\r#g'<CR>
+xnoremap <silent> <leader>J  :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').'#g'<CR>
+xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').' #g'<CR>
 
+command! -nargs=* -range=0 -bang Split
+            \ call Split(<count>, <line1>, <line2>, <q-args>, '<bang>')
+function! Split(count, first_line, last_line, input, bang) abort
+    let input = a:input
+    if input == ''
+        let input = nr2char(getchar())
+    endif
+
+    let selection = selection#new(a:count, a:first_line, a:last_line)
+    if selection.content == ''
+        throw 'nothing there'
+    endif
+
+    let expr_list = split(selection.content, '\n', 1)
+
+    for i in range(len(expr_list))
+        let expr_list[i] = join(split(expr_list[i], input),"\n")
+    endfor
+
+    let expr_lines = join(expr_list, "\n")
+    call selection.over_write(expr_lines)
+endfunction
+
+
+command! -nargs=* -range=0 -bang Join
+            \ call Join(<count>, <line1>, <line2>, <q-args>, '<bang>')
+function! Join(count, first_line, last_line, input, bang) abort
+    let input = a:input
+    if input == ''
+        let input = nr2char(getchar())
+    endif
+
+    let selection = selection#new(a:count, a:first_line, a:last_line)
+    if selection.content == ''
+        throw 'nothing there'
+    endif
+
+    let expr_list = split(selection.content, '\n', 0)
+
+    let expr_lines = join(expr_list, input)
+    call selection.over_write(expr_lines)
+endfunction
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-"FIN                                                                       {{{
+" FIN                                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 try
     source ~/.vimrc_local
@@ -1279,8 +1209,8 @@ try
 catch
 endtry
 
-"Refreshing airline
-"TODO see why this has to be last
+" Refreshing airline
+" TODO see why this has to be last
 if !has('vim_starting') && g:loaded_airline
     AirlineRefresh
     normal! gtgT

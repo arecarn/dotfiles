@@ -16,7 +16,7 @@
     s = status
     ri = rebase -i
 
-    ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cred%ad%Creset %an %ae%Cgreen%d %Creset%s' --date=short --max-count=20 --graph
+    ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cred%ad%Creset %an %ae%Cgreen%d %Creset%s' --date=short --max-count=20
     l = !git log --color -p
 
     update = add -u :/

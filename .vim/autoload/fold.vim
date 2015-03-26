@@ -1,34 +1,13 @@
-function! fold#toggle() abort
-
-    let line = getline('.')
-    let top_level = foldlevel()
-
-    " find the highest fold
-    "find the end of fold
-    let done = 0
-    let i = 1
-    while !done
-        let level = foldlevel(line + i)
-
-        if foldlevel(line + i) < top_level
-            let done = 1
-        endif
-
-        if 
-
-        let i = i + 1
-    endwhile
-    let last_line = i + line
-
-
-endfunction
-
-
-"handle fl = 0 case
-function! g:fold#find_end()
+function! fold#find_end()
+    " maybe don't always skip current level
+    " find end of fold path not last end of of the last fold path
 
     let line = line('.')
-    let fold_level = foldlevel('.')
+    let fold_level = foldlevel(line)
+
+    if fold_level == 0
+        return -1
+    endif
 
     "skip current level
     let i = 1
@@ -40,18 +19,61 @@ function! g:fold#find_end()
     let done = 0
     while !done
 
-        " if line + i > getline('$')
-        "     return -1
-        " endif
 
         let level = foldlevel(line + i)
 
         if level <= fold_level
-           return line + i - 1
+            return line + i - 1
         endif
 
         let i = i + 1
     endwhile
+
+endfunction
+
+function! fold#find_branch_end()
+    let current_line = getline('.')
+    let current_fold_level = foldlevel('.')
+
+    if current_fold_level == 1
+        return fold#find_end()
+    endif
+
+    while 1
+        let line = fold#find_next()
+        if line == -1
+            return fold#find_end()
+        endif
+
+        if foldlevel(line) <= current_fold_level
+            return line - 1
+        endif
+    endwhile
+
+endfunction
+
+function! fold#find_next() abort
+    "handle case fold isn't found
+
+    let view = winsaveview()
+    let old_line = line('.')
+    normal! zj
+    let line = line('.')
+    call winrestview(view)
+    if old_line == line
+        return -1
+    else
+        return line
+    endif
+endfunction
+
+
+function! fold#find_max_level() abort
+    max = 
+endfunction
+
+function! fold#is_start() abort
+    " check to see if this is a start of a fold
 endfunction
 
 

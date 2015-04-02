@@ -75,7 +75,8 @@ NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'kopischke/unite-spell-suggest'
 NeoBundle 'kmnk/vim-unite-giti'
-NeoBundle 'hewes/unite-gtags' "}}}2
+NeoBundle 'hewes/unite-gtags'
+NeoBundle 'naquad/unite-digraphs' "}}}2
 
 " NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
@@ -148,11 +149,6 @@ NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
 NeoBundle 'w0ng/vim-hybrid'
-NeoBundle 'dhruvasagar/vim-dotoo'
-NeoBundle 'lukaszkorecki/workflowish'
-NeoBundle 'vimoutliner/vimoutliner'
-
-
 call neobundle#end()
 NeoBundleCheck
 
@@ -574,8 +570,8 @@ endif "}}}2
 
 if neobundle#is_installed('vim-fontzoom') "{{{2
     let g:fontzoom_no_default_key_mappings = 1
-    nnoremap  ]z <Plug>(fontzoom-larger)
-    nnoremap  [z <Plug>(fontzoom-smaller)
+    " nnoremap  ]z <Plug>(fontzoom-larger)
+    " nnoremap  [z <Plug>(fontzoom-smaller)
 endif "}}}2
 
 if neobundle#is_installed('linediff.vim') "{{{2
@@ -857,7 +853,6 @@ set formatoptions+=j "remove comments leader when joining
 " FOLDING                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set foldmethod=indent
 set foldcolumn=2
 set foldnestmax=1
 set foldlevelstart=99
@@ -867,14 +862,17 @@ set foldtext=CleanFold('_')
 set foldmethod=expr
 set foldexpr=GetPotionFold(v:lnum)
 
+nnoremap <leader>w :w<CR>:so %<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AUTOCMDS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
     augroup vimrc
         autocmd!
-        autocmd BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC
+        autocmd BufWritePost *vimrc* source %
     augroup END
+
 
     augroup AllFiles
         autocmd!
@@ -886,20 +884,31 @@ if has("autocmd")
         "opens quick fix window on the bottom of all screens
         autocmd FileType qf wincmd J
 
-        " Automatically open, but do not go to (if there are errors) the quickfix /
-        " location list window, or close it when is has become empty.
+        " Automatically open, but do not go to (if there are errors) the
+        " quickfix / location list window, or close it when is has become
+        " empty.
         "
-        " Note: Must allow nesting of autocmds to enable any customizations for quickfix
-        " buffers.
-        " Note: Normally, :cwindow jumps to the quickfix window if the command opens it
-        " (but not if it's already open). However, as part of the autocmd, this doesn't
-        " seem to happen.
+        " Note: Must allow nesting of autocmds to enable any customizations for
+        " quickfix buffers.
+        "
+        " Note: Normally, :cwindow jumps to the quickfix window if the command
+        " opens it (but not if it's already open). However, as part of the
+        " autocmd, this doesn't seem to happen.
         autocmd QuickFixCmdPost [^l]* nested cwindow
         autocmd QuickFixCmdPost    l* nested lwindow
-        autocmd FileType qf nnoremap <buffer> <Enter> <Enter><C-w>p
-        autocmd FileType qf nnoremap <buffer> <C-n> j<Enter><C-w>p
-        autocmd FileType qf nnoremap <buffer> <C-p> k<Enter><C-w>p
+        autocmd FileType qf call s:quick_fix_list_settings()
     augroup END
+
+    function! s:quick_fix_list_settings() abort
+        nnoremap <buffer> q  <C-W>q
+        nnoremap <buffer> t  <C-W><CR><C-W>TgT<C-W>j
+        nnoremap <buffer> T  <C-W><CR><C-W>T
+        nnoremap <buffer> o  <CR><C-W>p
+        nnoremap <buffer> S  <C-W><CR><C-W>K
+        nnoremap <buffer> s  <C-W><CR><C-W>K<C-W>b
+        nnoremap <buffer> v  <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
+        nnoremap <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+    endfunction
 
     if s:hasWindows
         augroup TEX
@@ -975,6 +984,15 @@ set updatetime=1000
 
 set grepprg=ack\ -H\ --nocolor\ --nogroup
 
+command! -nargs=+ Grep call s:grep(<q-args>)
+function! s:grep(args) abort
+    execute 'silent grep! ' . a:args
+    redraw!
+    execute "normal! /<C-l>"
+endfunction
+
+
+" Navigation
 " make navigation more intuitive
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
@@ -1047,10 +1065,10 @@ nnoremap <C-p> .N
 nnoremap gJ ddpkJ
 
 " set path to present working directory locally
-nnoremap <Leader>cd :lcd! %:h<CR>:pwd<CR>
+nnoremap cd :lcd! %:h<CR>:pwd<CR>
 
 " set path to present working directory globally
-nnoremap <Leader>gcd :cd! %:h<CR>:pwd<CR>
+nnoremap gcd :cd! %:h<CR>:pwd<CR>
 
 nnoremap <leader>qa :qa!<CR>
 nnoremap <leader>q :q!<CR>
@@ -1076,14 +1094,10 @@ cnoremap [cmdleader]f find<Space>*
 cnoremap [cmdleader]o <C-r>=expand('%:p:r:.')<CR><Tab><S-Tab>
 
 " current file path
-cnoremap [cmdleader]fp <C-r>=expand('%:p:.')<CR>
-" current file name
-cnoremap [cmdleader]fn <C-r>=expand('%:t')<CR>
+cnoremap %f <C-r>=expand('%:p:.')<CR>
 
 " current directory path
-cnoremap [cmdleader]dp <C-r>=expand('%:h:.')<CR>/
-" current directory
-cnoremap [cmdleader]dn <C-r>=expand('%:h')<CR>/
+cnoremap %d <C-r>=expand('%:h:.')<CR>/
 
 
 " accept completion (requires "set wild charm = <TAB>)
@@ -1309,3 +1323,13 @@ set  modeline
 " vim: textwidth=78
 " vim: foldmethod=marker
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+
+
+
+" test  {{{1
+" test 
+    " test {{{2
+    " test
+        " test  {{{3
+        " test
+" test 

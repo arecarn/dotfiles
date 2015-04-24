@@ -1,13 +1,13 @@
 #!/bin/bash
 ############################
-# setup        
+# setup
 # This script creates symlinks from the home directory to any desired dotfiles
 # in ~/dotfiles
 ############################
 
 dir=~/dotfiles                             # dotfiles directory
 olddir=~/dotfiles_old                      # old dotfiles backup directory
-dotfiles=".inputrc .tmux.conf .mutt .gitconfig .zshrc .oh-my-zsh .vim .ctags" # list of files/folders to symlink in homedir
+dotfiles=".inputrc .tmux.conf .mutt .gitconfig .gitignore_global .zshrc .oh-my-zsh .vim .ctags" # list of files/folders to symlink in homedir
 
 ############################
 # Blank Local Files
@@ -25,7 +25,7 @@ echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
 echo "...done"
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
+# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks
 echo "Moving any existing dotfiles from ~ to $olddir"
 for file in $dotfiles; do
     mv ~/$file $olddir/$file
@@ -37,14 +37,14 @@ echo "...done"
 ############################
 # Git Repo Downloads/Updates
 ############################
-function grab 
+function grab
 {
     repo=$1
     location=$2
     echo "For $repo"
     if [ ! -d $location  ]; then # DIRECTORY does not exist
         git clone --recursive $repo "$location"
-    else 
+    else
         cd $location
         git pull --rebase && git submodule update --init --recursive
         echo "in directory $location"
@@ -78,7 +78,7 @@ grab https://github.com/s7anley/zsh-geeknote.git              "$HOME/dotfiles/oh
 grab https://github.com/Shougo/neobundle.vim.git              "$HOME/dotfiles/.vim/bundle/neobundle.vim"
 grab https://github.com/altercation/mutt-colors-solarized.git "$HOME/dotfiles/.mutt/colors/mutt"
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
+# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks
 echo "Moving any existing dotfiles from ~ to $olddir"
 for file in $dotfiles; do
     mv ~/$file $olddir/$file

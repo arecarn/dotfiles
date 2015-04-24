@@ -149,6 +149,12 @@ NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
 NeoBundle 'w0ng/vim-hybrid'
+NeoBundle 'dhruvasagar/vim-dotoo' "trying this out
+NeoBundle 'lukaszkorecki/workflowish' "trying this out
+NeoBundle 'vimoutliner/vimoutliner' "trying this out
+NeoBundle 'mhinz/vim-signify'
+NeoBundle 'Yggdroot/indentLine'
+
 call neobundle#end()
 NeoBundleCheck
 
@@ -232,6 +238,7 @@ if neobundle#is_installed('neocomplete') "{{{2
     let g:neocomplete#sources#syntax#min_keyword_length = 4
     let g:neocomplete#sources#tags#cache_limit_size = 5000000000000000.0
     let g:neocomplete#max_list = 20
+    let g:neocomplete#cursor_hold_i_time = 500 "add a delay (maybe this fixes spell popup
 
     if !isdirectory(s:vimpath.'/utils_local/neocomplete')
         call mkdir(s:vimpath.'/utils_local/neocomplete', "p", 0700)
@@ -263,7 +270,6 @@ if neobundle#is_installed('neocomplete') "{{{2
     endfunction
 
     " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    inoremap <expr><CR>  pumvisible() ? "\<Esc>" : "\<CR>"
     inoremap <expr><C-l> neocomplete#complete_common_string()
 
     " For smart TAB completion.
@@ -353,7 +359,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     let g:unite_source_grep_max_candidates = 1000
     if executable('ack')
         let g:unite_source_grep_command = 'ack'
-        let g:unite_source_grep_default_opts = 
+        let g:unite_source_grep_default_opts =
                     \ '--no-heading --no-color -k -H'
         let g:unite_source_grep_recursive_opt = ''
 
@@ -375,7 +381,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     elseif executable('ack-grep')
         " Use ack in unite grep source.
         let g:unite_source_grep_command = 'ack-grep'
-        let g:unite_source_grep_default_opts =  
+        let g:unite_source_grep_default_opts =
                     \ '-i --no-heading --no-color -k -H'
         let g:unite_source_grep_recursive_opt = ''
     endif "}}}3
@@ -430,6 +436,7 @@ if neobundle#is_installed('unite.vim') "{{{2
                     \ empty(filter(range(1, winnr('$')),
                     \ 'getwinvar(v:val, "&previewwindow") != 0')) ?
                     \ unite#do_action('preview') : ":\<C-u>pclose!\<CR>"
+        nnoremap <silent><buffer> O :<C-U>call unite#do_action('persist_open')<CR>
     endfunction
     let g:neocomplcache_tags_caching_limit_file_size = 5000000000000000.0
 endif "}}}2
@@ -510,8 +517,17 @@ if neobundle#is_installed('vim-textmanip') "{{{2
     xmap <C-h> <Plug>(textmanip-move-left)
     xmap <C-l> <Plug>(textmanip-move-right)
 
-    " toggle insert/replace with <FAA>
-    nmap comt <Plug>(textmanip-toggle-mode)
+
+    xmap g<C-j> <Plug>(textmanip-duplicate-down)
+    xmap g<C-k> <Plug>(textmanip-duplicate-up)
+    xmap g<C-h> <Plug>(textmanip-duplicate-left)
+    xmap g<C-l> <Plug>(textmanip-duplicate-right)
+
+    xmap gb<C-j> <Plug>(textmanip-blank-below)
+    xmap gb<C-k> <Plug>(textmanip-blank-above)
+
+    " toggle insert/replace with
+    nmap cotm <Plug>(textmanip-toggle-mode)
 endif "}}}2
 
 if neobundle#is_installed('vim-quickhl') "{{{2
@@ -525,8 +541,8 @@ endif "}}}2
 
 if neobundle#is_installed('vim-easymotion') "{{{2
     map <Nop> <Plug>(easymotion-prefix)
-    map e/ <Plug>(easymotion-sn)
-    map e? <Plug>(easymotion-sn)
+    map g/ <Plug>(easymotion-sn)
+    map g? <Plug>(easymotion-sn)
 
     let g:EasyMotion_smartcase = 1
     let g:EasyMotion_do_mapping = 0
@@ -555,12 +571,12 @@ endif "}}}2
 if neobundle#is_installed('cmdalias.vim') "{{{2
     command! Pwf echo expand('%:p')
     augroup VIMRC_aliases
-        au!
-        au VimEnter * Alias pwf Pwf
-        au VimEnter * Alias ex Explore
-        au VimEnter * Alias sex Sexplore
-        au VimEnter * Alias tex Texplore
-        au VimEnter * Alias vex Vexplore
+        autocmd!
+        autocmd VimEnter * Alias pwf Pwf
+        autocmd VimEnter * Alias ex Explore
+        autocmd VimEnter * Alias sex Sexplore
+        autocmd VimEnter * Alias tex Texplore
+        autocmd VimEnter * Alias vex Vexplore
     augroup END
 endif "}}}2
 
@@ -570,8 +586,8 @@ endif "}}}2
 
 if neobundle#is_installed('vim-fontzoom') "{{{2
     let g:fontzoom_no_default_key_mappings = 1
-    " nnoremap  ]z <Plug>(fontzoom-larger)
-    " nnoremap  [z <Plug>(fontzoom-smaller)
+    nnoremap  z+ <Plug>(fontzoom-larger)
+    nnoremap  z- <Plug>(fontzoom-smaller)
 endif "}}}2
 
 if neobundle#is_installed('linediff.vim') "{{{2
@@ -704,8 +720,34 @@ if neobundle#is_installed('vim-surround') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('spell-utils.vim') "{{{2
-    nmap <C-s>n <Plug>(normal-spell-fix-forward)
-    nmap <C-s>p <Plug>(normal-spell-fix-backward)
+    nmap ]gs <Plug>(normal-spell-fix-forward)
+    nmap [gs <Plug>(normal-spell-fix-backward)
+    imap <C-s> <Plug>(insert-spell-fix-backward)
+    imap <C-l> <Plug>(insert-spell-fix-forward)
+endif "}}}2
+
+if neobundle#is_installed('indentLine') "{{{2
+    let g:indentLine_char = '┊'
+    let g:indentLine_enabled = 0
+    if has("autocmd")
+        augroup indentLine
+            autocmd!
+            "Workaround for issue #59
+            autocmd BufRead,BufEnter,BufNewFile * IndentLinesReset 
+        augroup END
+    endif
+    nnoremap coil :<C-u>IndentLinesToggle<CR>
+endif "}}}2
+
+if neobundle#is_installed('clean-fold.vim') "{{{2
+    nmap <CR> <Plug>(fold-open)
+    nmap <BS> <Plug>(fold-close)
+    nmap <C-CR> <Plug>(fold-close)
+    set foldmethod=expr
+    set foldtext=fold#cleanest_fold_text()
+    set foldexpr=fold#get_clean_fold_expr(v:lnum)
+else
+    set foldmethod=indent
 endif "}}}2
 
 
@@ -736,6 +778,7 @@ set listchars=trail:·,tab:»·,extends:→,precedes:←
 if has ("gui_running")
     if has("autocmd") && s:hasWindows
         augroup windowsgui:
+            autocmd!
             autocmd GUIEnter * simalt ~x " maximize in windows
         augroup END
     else
@@ -856,11 +899,8 @@ set formatoptions+=j "remove comments leader when joining
 set foldcolumn=2
 set foldnestmax=1
 set foldlevelstart=99
-set foldtext=CleanFold('_')
 
 
-set foldmethod=expr
-set foldexpr=GetPotionFold(v:lnum)
 
 nnoremap <leader>w :w<CR>:so %<CR>
 
@@ -1002,8 +1042,13 @@ nnoremap gj j
 " replace selection with spaces and enter replace mode
 xnoremap gr r<space>gvo<esc>R
 
+"go to the next number
+nnoremap <silent> g<C-a> /\d\+<CR>
+"go to the previous number
+nnoremap <silent> g<C-x> ?\d\+<CR>
+
 " list spelling corrections
-nnoremap <C-s><C-s> viw<Esc>a<C-X><C-S><C-p>
+nnoremap <C-s><C-s> viw<Esc>a<C-e><C-x><C-s>
 
 " underline current selection with character of choice
 nnoremap <silent> g_ :execute "normal! yypVr".nr2char(getchar())<CR>
@@ -1012,11 +1057,25 @@ nnoremap <silent> g_ :execute "normal! yypVr".nr2char(getchar())<CR>
 inoremap <C-F> <ESC>gwapa
 
 " think of "co" as "change option"
-nnoremap cotw :<C-U>setlocal textwidth=
+nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>
+nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
+nnoremap cotw :<C-U>set textwidth=
 nnoremap cocl :<C-U>setlocal conceallevel=
+nnoremap cosw :<C-U>set shiftwidth=
+nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
+function! s:scratch_toggle() abort
+    if match(&buftype, '\C\v'.'nofile') != -1
+        set buftype-=nofile
+    else
+        set buftype+=nofile
+    endif
+endfunction
 
 " update diff with a key mapping
 nnoremap du :diffupdate<CR>
+
+" reselect pasted or last changed text
+nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
 " redraw even harder
 nnoremap <silent><C-l> :redraw!<CR><C-l>
@@ -1323,13 +1382,3 @@ set  modeline
 " vim: textwidth=78
 " vim: foldmethod=marker
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-
-
-
-" test  {{{1
-" test 
-    " test {{{2
-    " test
-        " test  {{{3
-        " test
-" test 

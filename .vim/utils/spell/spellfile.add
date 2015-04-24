@@ -43,6 +43,18 @@ DSP
 Elektra
 EMC
 EOL
+F1
+F10
+F11
+F12
+F2
+F3
+F4
+F5
+F6
+F7
+F8
+F9
 Fagan
 FC
 FlyPort
@@ -51,6 +63,7 @@ Freescale
 FW
 FWCS
 gauge
+GitHub
 Glottertal
 gmail
 GPIO
@@ -90,6 +103,7 @@ Mosher
 MSP
 MSP430
 MSP430G2553
+nack
 Napa
 Nytec
 okay
@@ -110,6 +124,7 @@ prework
 PSoC
 que/!
 RCD
+RCDs
 Rebase
 reddit
 Refactor

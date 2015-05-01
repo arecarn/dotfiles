@@ -1361,6 +1361,31 @@ function! TSIndent(line)
     return strlen(matchstr(a:line,'\v^\s+'))
 endfunction
 
+nnoremap <Plug>(diff-get) :<C-U>call Diff_do(v:count, 'diffget')<CR>
+nnoremap <Plug>(diff-put) :<C-U>call Diff_do(v:count, 'diffput')<CR>
+
+function! Diff_do(count, diffcmd)
+    let g:buffer = a:count
+    let buffer = a:count
+
+    if buffer == 0
+        let buffer = ''
+    endif
+
+    echomsg buffer
+    echomsg a:diffcmd
+    execute a:diffcmd . ' ' . buffer
+
+    if a:diffcmd == 'diffput'
+        call repeat#set("\<Plug>(diff-put)", a:count)
+    else
+        call repeat#set("\<Plug>(diff-get)", a:count)
+    endif
+endfunction
+
+nmap do <Plug>(diff-get)
+nmap dp <Plug>(diff-put)
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FIN                                                                      {{{

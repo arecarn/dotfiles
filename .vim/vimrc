@@ -153,7 +153,6 @@ NeoBundle 'dhruvasagar/vim-dotoo' "trying this out
 NeoBundle 'lukaszkorecki/workflowish' "trying this out
 NeoBundle 'vimoutliner/vimoutliner' "trying this out
 NeoBundle 'mhinz/vim-signify'
-NeoBundle 'Yggdroot/indentLine'
 
 call neobundle#end()
 NeoBundleCheck
@@ -502,7 +501,9 @@ endif "}}}2
 if neobundle#is_installed('vim-indent-guides') "{{{2
     nmap <silent> coig <Plug>IndentGuidesToggle
     let g:indent_guides_enable_on_vim_startup = 0
+    let g:indent_guides_default_mapping = 0
     let g:indent_guides_guide_size = 1
+    let g:indent_guides_start_level = 2
 endif "}}}2
 
 if neobundle#is_installed('syntastic') "{{{2
@@ -726,19 +727,6 @@ if neobundle#is_installed('spell-utils.vim') "{{{2
     imap <C-l> <Plug>(insert-spell-fix-forward)
 endif "}}}2
 
-if neobundle#is_installed('indentLine') "{{{2
-    let g:indentLine_char = '┊'
-    let g:indentLine_enabled = 0
-    if has("autocmd")
-        augroup indentLine
-            autocmd!
-            "Workaround for issue #59
-            autocmd BufRead,BufEnter,BufNewFile * IndentLinesReset 
-        augroup END
-    endif
-    nnoremap coil :<C-u>IndentLinesToggle<CR>
-endif "}}}2
-
 if neobundle#is_installed('clean-fold.vim') "{{{2
     nmap <CR> <Plug>(fold-open)
     nmap <BS> <Plug>(fold-close)
@@ -788,8 +776,11 @@ endif
 " Highlight TODO, FIXME, NOTE, etc.
 if has("autocmd")
     if v:version > 701
-        autocmd Syntax * call matchadd('Todo',  '\v\W\zs<(TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
-        autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
+        augroup todo
+            autocmd!
+            autocmd Syntax * call matchadd('Debug',  '\v\W\zs<(TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
+            autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
+        augroup END
     endif
 endif
 
@@ -968,9 +959,6 @@ if has("autocmd")
 endif
 
 
-set cscoperelative
-set cscopetag
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SEARCHING                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1004,8 +992,29 @@ set autoread
 set updatetime=5000  "milliseconds
 set confirm
 set backspace=indent,eol,start
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" Tags
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"tags
 set tags=tags;/ "the ";/" allows you to look back wards
+set cscoperelative
+
 set exrc
+
+function! PrintCscopeOptions()
+    echo "g: Definition"
+    echo "c: Functions calling this function"
+    echo "d: Functions called by this function"
+    echo "f: This file"
+    echo "i: Files #including this file"
+    echo "s: This C symbol"
+    echo "t: This text string"
+    echo "e: This egrep pattern"
+endfunction
+execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
+execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " COMMAND LINE COMPLETION                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1167,18 +1176,6 @@ cnoremap <C-y> <SPACE><BS><TAB>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! PrintCscopeOptions()
-    echo "g: Definition"
-    echo "c: Functions calling this function"
-    echo "d: Functions called by this function"
-    echo "f: This file"
-    echo "i: Files #including this file"
-    echo "s: This C symbol"
-    echo "t: This text string"
-    echo "e: This egrep pattern"
-endfunction
-execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
 
 " TODO Is the word under the cursor a number?
 function! DoNum(operator)

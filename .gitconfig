@@ -1,6 +1,6 @@
 [core]
     editor = vim
-    excludesfile = ~/.global_gitignore
+    excludesfile = ~/.gitignore_global
 [diff]
     tool = vimdiff
 [difftool]
@@ -8,25 +8,37 @@
 [alias]
     d = diff --color
     dc = diff --color --cached
+
     dt = difftool
     dtc = difftool --cached
 
     mt = mergetool
 
     b = branch
-    c = commit
+    cm = commit
     co = checkout
     s = status
     ri = rebase -i
     rh = reset HEAD
 
-    ls = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cred%ad%Creset %an %ae%Cgreen%d %Creset%s' --date=short --max-count=20
-    l = !git log --color -p
+    a = add
+    at = add -u :/
+
+    rh = reset HEAD
+
+    r = rebase
+    ri = rebase --interactive
+
+    l = !git --no-pager log --pretty=format:'%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
+    ll = !git log --color -p
 
     up = add -u :/
 
-    upm = submodule update --remote
-    update-submodule = submodule update --remote
+    bk = tag MY_BACKUP
+    ubk = tag -d MY_BACKUP
+
+    smup = submodule update
+    smupR = submodule update --remote
 
     exists = ls-files --error-unmatch
 [push]

@@ -97,6 +97,7 @@ NeoBundle 'arecarn/mixed-case-operator.vim'
 NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
 NeoBundle 'arecarn/spell-utils.vim'
 NeoBundle 'arecarn/templates'
+NeoBundle 'arecarn/diff-utils.vim'
 NeoBundle 'bling/vim-airline'
 NeoBundle 'chreekat/vim-paren-crosshairs'
 NeoBundle 'chrisbra/vim-diff-enhanced'
@@ -1234,13 +1235,20 @@ function! SearchPosition()
     execute "let @/ .= '\\%".col."c'"
 endfunction
 
-xnoremap g* :<C-U>call AddToSearch()<CR>
-function! AddToSearch()
+nnoremap g** :<C-U>call AddToSearch('n')<CR>
+xnoremap g* :<C-U>call AddToSearch('x')<CR>
+function! AddToSearch(mode)
     let save_reg = @@
     if @/ != ''
         let @/ .= '\|'
     endif
-    normal! gvy
+    if a:mode == 'x'
+        normal! gvy
+    elseif a:mode == 'n'
+        normal! yiw
+    else
+        let @@ = save_reg
+    endif
     let @/ .= @@
     let @@ = save_reg
 endfunction
@@ -1358,30 +1366,6 @@ function! TSIndent(line)
     return strlen(matchstr(a:line,'\v^\s+'))
 endfunction
 
-nnoremap <Plug>(diff-get) :<C-U>call Diff_do(v:count, 'diffget')<CR>
-nnoremap <Plug>(diff-put) :<C-U>call Diff_do(v:count, 'diffput')<CR>
-
-function! Diff_do(count, diffcmd)
-    let g:buffer = a:count
-    let buffer = a:count
-
-    if buffer == 0
-        let buffer = ''
-    endif
-
-    echomsg buffer
-    echomsg a:diffcmd
-    execute a:diffcmd . ' ' . buffer
-
-    if a:diffcmd == 'diffput'
-        call repeat#set("\<Plug>(diff-put)", a:count)
-    else
-        call repeat#set("\<Plug>(diff-get)", a:count)
-    endif
-endfunction
-
-nmap do <Plug>(diff-get)
-nmap dp <Plug>(diff-put)
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

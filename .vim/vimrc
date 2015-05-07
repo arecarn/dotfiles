@@ -154,6 +154,8 @@ NeoBundle 'dhruvasagar/vim-dotoo' "trying this out
 NeoBundle 'lukaszkorecki/workflowish' "trying this out
 NeoBundle 'vimoutliner/vimoutliner' "trying this out
 NeoBundle 'mhinz/vim-signify'
+NeoBundle 'qstrahl/vim-matchmaker'
+NeoBundle 'AndrewRadev/gapply.vim'
 
 call neobundle#end()
 NeoBundleCheck
@@ -729,15 +731,17 @@ if neobundle#is_installed('spell-utils.vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('clean-fold.vim') "{{{2
-    nmap <CR> <Plug>(fold-open)
-    nmap <BS> <Plug>(fold-close)
-    nmap <C-CR> <Plug>(fold-close)
     set foldmethod=expr
     set foldtext=fold#cleanest_fold_text()
     set foldexpr=fold#get_clean_fold_expr(v:lnum)
 else
     set foldmethod=indent
 endif "}}}2
+
+if neobundle#is_installed('vim-matchmaker') "{{{2
+    let g:matchmaker_enable_startup = 1
+endif "}}}2
+
 
 
 
@@ -996,7 +1000,7 @@ set backspace=indent,eol,start
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" Tags
+" TAGS                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "tags
 set tags=tags;/ "the ";/" allows you to look back wards

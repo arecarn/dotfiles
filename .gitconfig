@@ -12,6 +12,7 @@
     dt = difftool
     dtc = difftool --cached
 
+    m = merge
     mt = mergetool
 
     b = branch
@@ -24,21 +25,23 @@
     a = add
     at = add -u :/
 
-    rh = reset HEAD
+    rs = reset
+    rsh = reset HEAD
 
-    r = rebase
-    ri = rebase --interactive
+    rb = rebase
+    rbi = rebase --interactive
 
-    l = !git --no-pager log --pretty=format:'%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
+    l = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
     ll = !git log --color -p
 
     up = add -u :/
 
     bk = tag MY_BACKUP
-    ubk = tag -d MY_BACKUP
+    ubk = checkout MY_BACKUP
+    dbk = tag -d MY_BACKUP 
 
     smup = submodule update
-    smupR = submodule update --remote
+    smupr = submodule update --remote
 
     exists = ls-files --error-unmatch
 [push]

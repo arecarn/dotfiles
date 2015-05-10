@@ -6,8 +6,8 @@ set fileformats=unix,dos
 let mapleader="\<Space>"
 nnoremap [show] <Nop>
 xnoremap [show] <Nop>
-nmap <Space><Space> [show]
-xmap <Space><Space> [show]
+nmap go [show]
+xmap go [show]
 
 cnoremap [cmdleader] <Nop>
 cmap <C-j> [cmdleader]
@@ -81,23 +81,23 @@ NeoBundle 'naquad/unite-digraphs' "}}}2
 " NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'
-NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-repeat' "}}}2
 
 " NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'AndrewRadev/linediff.vim'
+NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'arecarn/auto-file-loader.vim'
 NeoBundle 'arecarn/clean-fold.vim'
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'arecarn/git-diff-cached-preview.vim'
 NeoBundle 'arecarn/go-to-buffer.vim'
 NeoBundle 'arecarn/mixed-case-operator.vim'
-NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
 NeoBundle 'arecarn/spell-utils.vim'
-NeoBundle 'arecarn/templates'
 NeoBundle 'arecarn/diff-utils.vim'
+NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
+NeoBundle 'arecarn/templates'
 NeoBundle 'bling/vim-airline'
 NeoBundle 'chreekat/vim-paren-crosshairs'
 NeoBundle 'chrisbra/vim-diff-enhanced'
@@ -156,6 +156,9 @@ NeoBundle 'vimoutliner/vimoutliner' "trying this out
 NeoBundle 'mhinz/vim-signify'
 NeoBundle 'qstrahl/vim-matchmaker'
 NeoBundle 'AndrewRadev/gapply.vim'
+NeoBundle 'tomtom/tassert_vim'
+NeoBundle 'Decho'
+
 
 call neobundle#end()
 NeoBundleCheck
@@ -1130,6 +1133,8 @@ xnoremap . :normal! .<CR>
 nnoremap <C-n> .n
 " repeat last command then go to the previouse search position
 nnoremap <C-p> .N
+" repeat last command-line command
+nnoremap g. @:
 
 " split line here
 " nnoremap S i<cr><esc>k$
@@ -1311,11 +1316,19 @@ function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
         let x = 1
     endif
 
+    let @a = ''
+    let r = ''
     for i in range(0, a:lastLine-a:firstLine) "TODO fails without a range
-        let line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
-        call append(i+a:firstLine, line)
+        let l:line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
+        echomsg l:line
+        " call append(i+a:firstLine, line)
+        " l
+        let r = r.l:line."\n"
+        echomsg r
         let x = x + 1
     endfor
+    call setreg('a', r,  'b')
+    normal! "aP
 endfunction
 
 nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>

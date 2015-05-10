@@ -32,7 +32,6 @@ source $ZSH/oh-my-zsh.sh
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
-setopt autocd
 
 ###########################################################################}}}
 # THE FOLLOWING LINES WERE ADDED BY COMPINSTALL                            {{{
@@ -46,6 +45,8 @@ compinit
 ##############################################################################
 setopt histignoredups
 setopt autonamedirs
+setopt globcomplete
+setopt autocd
 
 ###########################################################################}}}
 # KEY BINDINGS                                                             {{{

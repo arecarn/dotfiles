@@ -8,8 +8,8 @@ ZSH=$HOME/.oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 # ZSH_THEME="af-magic"
-ZSH_THEME="simple"
-# ZSH_THEME="terminalparty"
+ZSH_THEME="terminalparty"
+# ZSH_THEME="simple"
 
 COMPLETION_WAITING_DOTS="true"
 
@@ -18,7 +18,7 @@ COMPLETION_WAITING_DOTS="true"
 # much faster.
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-plugins=(git vi-mode geeknote)
+plugins=(vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -84,6 +84,7 @@ bindkey '^E' _expand_alias
 alias pslevel='pstree -s $$'
 alias tmux='tmux -2'
 alias e='vim'
+alias g='git'
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias nfind='find . -name '
 alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'

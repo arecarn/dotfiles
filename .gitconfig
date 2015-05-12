@@ -18,7 +18,8 @@
     b = branch
     cm = commit
     co = checkout
-    s = status
+    s  = status
+    f = fetch
 
     a = add
     at = add -u :/

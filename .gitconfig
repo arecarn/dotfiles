@@ -19,8 +19,6 @@
     cm = commit
     co = checkout
     s = status
-    ri = rebase -i
-    rh = reset HEAD
 
     a = add
     at = add -u :/
@@ -31,7 +29,7 @@
     rb = rebase
     rbi = rebase --interactive
 
-    l = !git --no-pager log --pretty=tformat:'%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
+    l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
     ll = !git log --color -p
 
     up = add -u :/

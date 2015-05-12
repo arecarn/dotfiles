@@ -150,16 +150,11 @@ NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
 NeoBundle 'w0ng/vim-hybrid'
-NeoBundle 'dhruvasagar/vim-dotoo' "trying this out
-NeoBundle 'lukaszkorecki/workflowish' "trying this out
-NeoBundle 'vimoutliner/vimoutliner' "trying this out
 NeoBundle 'mhinz/vim-signify'
 NeoBundle 'qstrahl/vim-matchmaker'
 NeoBundle 'AndrewRadev/gapply.vim'
 NeoBundle 'tomtom/tassert_vim'
 NeoBundle 'Decho'
-
-
 call neobundle#end()
 NeoBundleCheck
 
@@ -966,6 +961,12 @@ if has("autocmd")
     endif
 endif
 
+"for the case that a commit starts with 'vim:' (a valid start to a modeline)
+"this will be interpreted as
+augroup git
+    autocmd!
+    autocmd FileType gitrebase setlocal nomodeline
+augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SEARCHING                                                                {{{
@@ -1065,7 +1066,7 @@ nnoremap <silent> g<C-a> /\d\+<CR>
 nnoremap <silent> g<C-x> ?\d\+<CR>
 
 " list spelling corrections
-nnoremap <C-s><C-s> viw<Esc>a<C-e><C-x><C-s>
+nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
 
 " underline current selection with character of choice
 nnoremap <silent> g_ :execute "normal! yypVr".nr2char(getchar())<CR>
@@ -1169,7 +1170,7 @@ cnoremap [cmdleader]f find<Space>*
 "TODO use wildmenumode()?
 " alternate file
 " (requires "set wildcharm = <TAB>)
-cnoremap [cmdleader]o <C-r>=expand('%:p:r:.')<CR><Tab><S-Tab>
+cnoremap [cmdleader]o <C-r>=expand('%:p:r:.')<CR>.
 
 " current file path
 cnoremap %f <C-r>=expand('%:p:.')<CR>
@@ -1401,7 +1402,7 @@ if !has('vim_starting') && g:loaded_airline
 endif "}}}2
 
 
-set  modeline
+set modeline
 " vim: textwidth=78
 " vim: foldmethod=marker
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

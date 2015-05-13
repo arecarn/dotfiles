@@ -155,6 +155,7 @@ NeoBundle 'qstrahl/vim-matchmaker'
 NeoBundle 'AndrewRadev/gapply.vim'
 NeoBundle 'tomtom/tassert_vim'
 NeoBundle 'Decho'
+NeoBundle 'lyuts/vim-rtags'
 call neobundle#end()
 NeoBundleCheck
 
@@ -412,7 +413,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [show]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
     nnoremap [show]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [show]rg :<C-u>Unite register -vertical<CR>
-    nnoremap [show]b  :<C-u>Unite buffer<CR>
+    nnoremap [show]b  :<C-u>Unite buffer -start-insert<CR>
     nnoremap [show]o  :<C-u>Unite outline line -vertical<CR>
     nnoremap [show]l  :<C-u>Unite line -start-insert<CR>
     nnoremap [show]h  :<C-u>Unite help -start-insert<CR>
@@ -426,7 +427,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     xnoremap [show]p  dk:<C-u>Unite history/yank<CR>
     nnoremap [show]ps :<C-u>Unite process -start-insert<CR>
     nnoremap [show]ps :<C-u>Unite process -start-insert<CR>
-    nnoremap [show]up :<C-u>Unite neobundle/update<CR>
+    nnoremap [show]up :<C-u>Unite neobundle/update -tab<CR>
     nnoremap [show]t  :<C-u>UniteWithCursorWord tag<CR>
 
     " toggle the preview window when I press the "p" key.
@@ -739,10 +740,6 @@ endif "}}}2
 if neobundle#is_installed('vim-matchmaker') "{{{2
     let g:matchmaker_enable_startup = 1
 endif "}}}2
-
-
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FILE TYPE SETTINGS                                                       {{{

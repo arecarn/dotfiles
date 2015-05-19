@@ -156,6 +156,8 @@ NeoBundle 'AndrewRadev/gapply.vim'
 NeoBundle 'tomtom/tassert_vim'
 NeoBundle 'Decho'
 NeoBundle 'lyuts/vim-rtags'
+NeoBundle 'sickill/vim-monokai'
+NeoBundle 'mhinz/vim-sayonara'
 call neobundle#end()
 NeoBundleCheck
 
@@ -195,8 +197,6 @@ if neobundle#is_installed('neocomplcache') "{{{2
     endif
     let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-    " imap <C-l>  <Plug>(neocomplcache_start_unite_complete)
-    " imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
 
     " Recommended key-mappings.
     " <CR>: close popup and save indent.
@@ -404,8 +404,8 @@ if neobundle#is_installed('unite.vim') "{{{2
 
     xnoremap [show]g  y:<C-u>Unite -no-empty -no-resize -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
     nnoremap [show]g  :<C-u>Unite -no-empty -no-resize -no-quit grep:.<CR>
-    nnoremap [show]gw :<C-u>UniteWithCursorWord -no-empty -no-resize -no-quit grep<CR>
     nnoremap [show]f  :<C-u>Unite file_rec/async file_mru -start-insert -input=<CR>
+    nnoremap [show]gw :<C-u>UniteWithCursorWord -no-empty -no-resize -no-quit grep:.<CR>
     nnoremap [show]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
     nnoremap [show]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [show]rg :<C-u>Unite register -vertical<CR>
@@ -460,6 +460,7 @@ if neobundle#is_installed('vimshell.vim') "{{{2
         call mkdir(s:vim_path.'/utils_local/vimshell', "P", 0700)
     endif
     let g:vimshell_data_directory = s:vim_path.'/utils_local/vimshell/'
+    let g:vimshell_editor_command = 'gvim'
 endif "}}}2
 
 if neobundle#is_installed('echodoc.vim') "{{{2
@@ -546,18 +547,6 @@ if neobundle#is_installed('vim-easymotion') "{{{2
     let g:EasyMotion_smartcase = 1
     let g:EasyMotion_do_mapping = 0
 
-    " A work around for issue #203
-    augroup EASY_MOTION
-        autocmd!
-        autocmd BufWritePost * call EasyMotion#highlight#init()
-        autocmd BufWritePost * call ResetColors()
-    augroup END
-
-    function! ResetColors()
-        if exists("G:colors_name")
-            execute 'colorscheme '.g:colors_name
-        endif
-    endfunction
 endif "}}}2
 
 if neobundle#is_installed('vim-choosewin') "{{{2
@@ -591,12 +580,6 @@ endif "}}}2
 
 if neobundle#is_installed('linediff.vim') "{{{2
     xnoremap <Leader>ld :Linediff<CR>
-endif "}}}2
-
-if neobundle#is_installed('vim-easyclip') "{{{2
-    let g:EasyClipUseSubstituteDefaults = 1
-    let g:EasyClipEnableBlackHoleRedirect = 0
-    let g:EasyClipUseCutDefaults = 0
 endif "}}}2
 
 if neobundle#is_installed('vim-textobj-between') "{{{2
@@ -702,8 +685,8 @@ if neobundle#is_installed('golden-ratio') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vim-surround') "{{{2
-    let g:surround_58 = "\1Surround\1\r\1\1"
     " custom surround using :
+    let g:surround_58 = "\1Surround\1\r\1\1"
 endif "}}}2
 
 if neobundle#is_installed('clean-fold.vim') "{{{2
@@ -782,7 +765,6 @@ if has ("gui_running")
 endif
 
 colorscheme gruvbox
-let g:gruvbox_italic=0
 set background=dark
 "}}}2
 
@@ -846,7 +828,6 @@ set spelllang=en_us
 let &spellfile=s:vim_path.'/utils/spell/spellfile.add'
 let &thesaurus=s:vim_path.'/utils/thesaurus/thesaurus.txt'
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -863,14 +844,9 @@ set formatoptions+=j "remove comments leader when joining
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FOLDING                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 set foldcolumn=2
 set foldnestmax=1
 set foldlevelstart=99
-
-
-
-nnoremap <leader>w :w<CR>:so %<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AUTOCMDS                                                                 {{{
@@ -972,7 +948,6 @@ set shortmess+=a
 set autowriteall
 set autoread
 
-set updatetime=5000  "milliseconds
 set confirm
 set backspace=indent,eol,start
 
@@ -1011,7 +986,8 @@ set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
 " MAPPINGS & COMMANDS                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set timeout
-set timeoutlen=500
+set timeoutlen=3000 ttimeoutlen=500
+
 set updatetime=1000
 
 set grepprg=ack\ -H\ --nocolor\ --nogroup

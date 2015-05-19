@@ -1,5 +1,4 @@
 [core]
-    editor = vim
     excludesfile = ~/.gitignore_global
 [diff]
     tool = vimdiff
@@ -29,6 +28,8 @@
 
     rb = rebase
     rbi = rebase --interactive
+    rbc = rebase --continue
+    rbc = rebase --abort
 
     rl = !git --no-pager reflog --max-count=20
 

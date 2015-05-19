@@ -89,9 +89,7 @@ alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias nfind='find . -name '
 alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    alias open='xdg-open'
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" || "$OSTYPE" == "freebsd"*  ]]; then
     alias open='xdg-open'
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "cygwin" ]]; then

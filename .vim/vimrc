@@ -90,6 +90,7 @@ NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'arecarn/auto-file-loader.vim'
 NeoBundle 'arecarn/clean-fold.vim'
+NeoBundle 'arecarn/fold-cycle.vim'
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'arecarn/git-diff-cached-preview.vim'
 NeoBundle 'arecarn/go-to-buffer.vim'
@@ -404,8 +405,8 @@ if neobundle#is_installed('unite.vim') "{{{2
 
     xnoremap [show]g  y:<C-u>Unite -no-empty -no-resize -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
     nnoremap [show]g  :<C-u>Unite -no-empty -no-resize -no-quit grep:.<CR>
-    nnoremap [show]f  :<C-u>Unite file_rec/async file_mru -start-insert -input=<CR>
     nnoremap [show]gw :<C-u>UniteWithCursorWord -no-empty -no-resize -no-quit grep:.<CR>
+    nnoremap [show]f  :<C-u>Unite file_rec/async -start-insert -input=<CR>
     nnoremap [show]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
     nnoremap [show]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [show]rg :<C-u>Unite register -vertical<CR>
@@ -425,6 +426,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [show]ps :<C-u>Unite process -start-insert<CR>
     nnoremap [show]up :<C-u>Unite neobundle/update -tab<CR>
     nnoremap [show]t  :<C-u>UniteWithCursorWord tag<CR>
+    nnoremap [show]ur :<C-u>UniteResume<CR>
 
     " toggle the preview window when I press the "p" key.
     autocmd FileType unite call s:unite_my_settings()
@@ -645,6 +647,7 @@ endif "}}}2
 
 if neobundle#is_installed('Preserve.vim') "{{{2
     nnoremap <silent><leader>dt :PreserveSave<CR>:%s,\s\+$,,ge<CR>:PreserveRestore<CR>
+    command! -range=% Trail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>
@@ -691,14 +694,18 @@ endif "}}}2
 
 if neobundle#is_installed('clean-fold.vim') "{{{2
     set foldmethod=expr
-    set foldtext=fold#cleanest_fold_text()
-    set foldexpr=fold#get_clean_fold_expr(v:lnum)
+    set foldtext=clean_fold#fold_text_minimal()
+    set foldexpr=clean_fold#fold_expr(v:lnum)
 else
     set foldmethod=indent
 endif "}}}2
 
 if neobundle#is_installed('vim-matchmaker') "{{{2
-    let g:matchmaker_enable_startup = 1
+    nnoremap comm :MatchmakerToggle<CR>
+    augroup match_maker
+        autocmd!
+        autocmd Syntax,BufNewFile,BufEnter,BufRead * highlight clear Matchmaker | highlight Matchmaker term=underline cterm=reverse  gui=reverse
+    augroup END
 endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -713,7 +720,10 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set colorcolumn=79
+augroup colorcolumn
+    autocmd!
+    autocmd BufNewFile,BufRead * let &colorcolumn=&textwidth + 1
+augroup END
 set number
 set relativenumber
 set showcmd
@@ -838,7 +848,10 @@ set softtabstop=4
 set smarttab
 
 set autoindent
-set formatoptions+=n "recognize ordered lists
+"these are buffer local let make them everywhere
+set formatoptions+=n "recognize lists
+set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
+
 set formatoptions+=j "remove comments leader when joining
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -985,8 +998,8 @@ set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set timeout
-set timeoutlen=3000 ttimeoutlen=500
+set ttimeout
+set ttimeoutlen=100
 
 set updatetime=1000
 
@@ -999,6 +1012,17 @@ function! s:grep(args) abort
     execute "normal! /<C-l>"
 endfunction
 
+
+nnoremap zy "zy
+xnoremap zy "zy
+nnoremap zY "zY
+xnoremap zY "zY
+nnoremap zyy "zyy
+
+nnoremap zp "zp
+xnoremap zp "zp
+nnoremap zP "zP
+xnoremap zP "zP
 
 " Navigation
 " make navigation more intuitive
@@ -1017,12 +1041,14 @@ nnoremap <silent> g<C-x> ?\d\+<CR>
 
 " list spelling corrections
 nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
+nnoremap [<C-s> [s<C-s>
+nnoremap ]<C-s> ]s<C-s>
 
 " underline current selection with character of choice
 nnoremap <silent> _ :execute "normal! yypVr".nr2char(getchar())<CR>
 
 " format while in insert mode
-inoremap <C-F> <ESC>gwapa
+inoremap <C-F> <ESC>gw{a
 
 " think of "co" as "change option"
 nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>

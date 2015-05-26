@@ -38,6 +38,10 @@
 
     up = add -u :/
 
+    push-su = push --set-upstream origin HEAD
+
+    rso = remote show origin
+
     bk = tag MY_BACKUP
     ubk = checkout MY_BACKUP
     dbk = tag -d MY_BACKUP 

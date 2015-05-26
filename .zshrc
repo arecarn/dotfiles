@@ -45,7 +45,6 @@ compinit
 ##############################################################################
 setopt histignoredups
 setopt autonamedirs
-setopt globcomplete
 setopt autocd
 
 ###########################################################################}}}

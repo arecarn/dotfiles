@@ -15,13 +15,16 @@
     mt = mergetool
 
     b = branch
+    bud = push origin --delete # branch upstream delete
+    buc = push origin --set-upstream HEAD # branch upstream create
+
     cm = commit
     co = checkout
     s  = status
     f = fetch
 
     a = add
-    at = add -u :/
+    at = add -u :/ #add tracked
 
     rs = reset
     rsh = reset HEAD
@@ -34,22 +37,18 @@
     rl = !git --no-pager reflog --max-count=20
 
     l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
-    ll = !git log --color -p
+    ll = !git log --color -p #long log
 
-    up = add -u :/
+    rmso = remote show origin
 
-    push-su = push --set-upstream origin HEAD
-
-    rso = remote show origin
-
-    bk = tag MY_BACKUP
-    ubk = checkout MY_BACKUP
-    dbk = tag -d MY_BACKUP 
+    bk = tag MY_BACKUP # backup tag
+    bkco = checkout MY_BACKUP
+    bkd = tag -d MY_BACKUP # delete backup tag
 
     smup = submodule update
     smupr = submodule update --remote
 
-    exists = ls-files --error-unmatch
+    exists = ls-files --error-unmatch # does a exist?
 [push]
     default = simple
 [user]

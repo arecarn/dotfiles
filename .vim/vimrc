@@ -159,6 +159,8 @@ NeoBundle 'Decho'
 NeoBundle 'lyuts/vim-rtags'
 NeoBundle 'sickill/vim-monokai'
 NeoBundle 'mhinz/vim-sayonara'
+NeoBundle 'airblade/vim-rooter'
+NeoBundle 'wesQ3/vim-windowswap'
 call neobundle#end()
 NeoBundleCheck
 
@@ -358,7 +360,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     if executable('ack')
         let g:unite_source_grep_command = 'ack'
         let g:unite_source_grep_default_opts =
-                    \ '--no-heading --no-color -k -H'
+                    \ '--no-heading --no-color -k -H -i'
         let g:unite_source_grep_recursive_opt = ''
 
     elseif executable('ag')
@@ -403,9 +405,9 @@ if neobundle#is_installed('unite.vim') "{{{2
                 \   ['ipython', 'VimShellInteractive ipython --colors=NoColor'],
                 \ ]
 
-    xnoremap [show]g  y:<C-u>Unite -no-empty -no-resize -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
-    nnoremap [show]g  :<C-u>Unite -no-empty -no-resize -no-quit grep:.<CR>
-    nnoremap [show]gw :<C-u>UniteWithCursorWord -no-empty -no-resize -no-quit grep:.<CR>
+    xnoremap [show]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
+    nnoremap [show]g  :<C-u>Unite -no-quit grep:.<CR>
+    nnoremap [show]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
     nnoremap [show]f  :<C-u>Unite file_rec/async -start-insert -input=<CR>
     nnoremap [show]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
     nnoremap [show]r  :<C-u>Unite file_mru -start-insert<CR>
@@ -418,15 +420,15 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [show]ss :<C-u>UniteSessionSave<Space>
     nnoremap [show]i  :<C-u>Unite menu:interpreters -auto-resize<CR>
     nnoremap [show]hc :<C-u>Unite cmdmatch history/command<CR>
-    nnoremap [show]ms :<C-u>Unite output:message<CR>
     nnoremap [show]hs :<C-u>Unite history/search<CR>
     nnoremap [show]p  :<C-u>Unite history/yank<CR>
     xnoremap [show]p  dk:<C-u>Unite history/yank<CR>
     nnoremap [show]ps :<C-u>Unite process -start-insert<CR>
-    nnoremap [show]ps :<C-u>Unite process -start-insert<CR>
     nnoremap [show]up :<C-u>Unite neobundle/update -tab<CR>
     nnoremap [show]t  :<C-u>UniteWithCursorWord tag<CR>
     nnoremap [show]ur :<C-u>UniteResume<CR>
+
+    command! Messages Unite output:message
 
     " toggle the preview window when I press the "p" key.
     autocmd FileType unite call s:unite_my_settings()
@@ -435,7 +437,7 @@ if neobundle#is_installed('unite.vim') "{{{2
                     \ empty(filter(range(1, winnr('$')),
                     \ 'getwinvar(v:val, "&previewwindow") != 0')) ?
                     \ unite#do_action('preview') : ":\<C-u>pclose!\<CR>"
-        nnoremap <silent><buffer> O :<C-U>call unite#do_action('persist_open')<CR>
+        nnoremap <silent><buffer><expr> O unite#do_action('persist_open')
     endfunction
     let g:neocomplcache_tags_caching_limit_file_size = 5000000000000000.0
 endif "}}}2
@@ -708,6 +710,13 @@ if neobundle#is_installed('vim-matchmaker') "{{{2
     augroup END
 endif "}}}2
 
+if neobundle#is_installed('vim-rooter') "{{{2
+    let g:rooter_disable_map = 1
+    let g:rooter_use_lcd = 0
+    map <silent> cdp <Plug>RooterChangeToRootDirectory
+endif "}}}2
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FILE TYPE SETTINGS                                                       {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -722,7 +731,7 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup colorcolumn
     autocmd!
-    autocmd BufNewFile,BufRead * let &colorcolumn=&textwidth + 1
+    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
 augroup END
 set number
 set relativenumber
@@ -783,7 +792,7 @@ set background=dark
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set scrolloff=6 " Keep 3 lines (top/bottom) for scope
 set sidescrolloff=6 " keep 3 lines (side/side) for scope
-set sidescroll=1
+set sidescroll=3
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
     set mouse=a
@@ -792,7 +801,7 @@ endif
 set ttyfast
 set ttymouse=xterm2
 
-set cursorline
+" set cursorline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -829,6 +838,9 @@ execute 'set backupdir='.s:backupdir
 set nowrap
 set linebreak
 set textwidth=0 "TODO for c make tw=78
+if v:version >= 704 && has("patch338")
+    set breakindent
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS                                                     {{{
@@ -1012,17 +1024,8 @@ function! s:grep(args) abort
     execute "normal! /<C-l>"
 endfunction
 
-
-nnoremap zy "zy
-xnoremap zy "zy
-nnoremap zY "zY
-xnoremap zY "zY
-nnoremap zyy "zyy
-
-nnoremap zp "zp
-xnoremap zp "zp
-nnoremap zP "zP
-xnoremap zP "zP
+" paste without overriding register
+xnoremap <expr> gp 'pgv"'.v:register.'y'
 
 " Navigation
 " make navigation more intuitive
@@ -1120,10 +1123,8 @@ nnoremap g. @:
 nnoremap gJ ddpkJ
 
 " set path to present working directory locally
-nnoremap cd :lcd! %:h<CR>:pwd<CR>
-
-" set path to present working directory globally
-nnoremap gcd :cd! %:h<CR>:pwd<CR>
+nnoremap cdl :lcd! %:h<CR>:pwd<CR>
+nnoremap cd :cd! %:h<CR>:pwd<CR>
 
 nnoremap <leader>qa :qa!<CR>
 nnoremap <leader>q :q!<CR>
@@ -1140,13 +1141,13 @@ cnoremap <C-e> <END>
 
 "TODO use genotype()
 " find files easier
-cnoremap [cmdleader]* **/*
-cnoremap [cmdleader]f find<Space>*
+cnoremap %* **/*
+cnoremap %f find<Space>*
 
 "TODO use wildmenumode()?
 " alternate file
 " (requires "set wildcharm = <TAB>)
-cnoremap [cmdleader]o <C-r>=expand('%:p:r:.')<CR>.
+cnoremap %o <C-r>=expand('%:p:r:.')<CR>.
 
 " current file path
 cnoremap %f <C-r>=expand('%:p:.')<CR>

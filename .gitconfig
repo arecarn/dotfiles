@@ -37,7 +37,7 @@
     rl = !git --no-pager reflog --max-count=20
 
     l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
-    ll = !git log --color -p #long log
+    ll = !git log --color #long log
 
     rmso = remote show origin
 

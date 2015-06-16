@@ -23,7 +23,6 @@ else
     let s:vim_path = $HOME."/.vim"
 endif
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -90,7 +89,7 @@ NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'arecarn/auto-file-loader.vim'
 NeoBundle 'arecarn/clean-fold.vim'
-NeoBundle 'arecarn/fold-cycle.vim'
+NeoBundle 'arecarn/fold-cycle.vim',  {'rev' : 'topics/global_fold_cycling'}
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'arecarn/git-diff-cached-preview.vim'
 NeoBundle 'arecarn/go-to-buffer.vim'
@@ -413,12 +412,11 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [show]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [show]rg :<C-u>Unite register -vertical<CR>
     nnoremap [show]b  :<C-u>Unite buffer -start-insert<CR>
-    nnoremap [show]o  :<C-u>Unite outline line -vertical<CR>
+    nnoremap [show]o  :<C-u>Unite outline<CR>
     nnoremap [show]l  :<C-u>Unite line -start-insert<CR>
     nnoremap [show]h  :<C-u>Unite help -start-insert<CR>
-    nnoremap [show]s  :<C-u>Unite session -auto-resize<CR>
-    nnoremap [show]ss :<C-u>UniteSessionSave<Space>
-    nnoremap [show]i  :<C-u>Unite menu:interpreters -auto-resize<CR>
+    nnoremap [show]s  :<C-u>Unite -input=session<CR>
+    nnoremap [show]i  :<C-u>Unite menu:interpreters<CR>
     nnoremap [show]hc :<C-u>Unite cmdmatch history/command<CR>
     nnoremap [show]hs :<C-u>Unite history/search<CR>
     nnoremap [show]p  :<C-u>Unite history/yank<CR>
@@ -429,6 +427,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [show]ur :<C-u>UniteResume<CR>
 
     command! Messages Unite output:message
+    command! Digraphs Unite digraphs
 
     " toggle the preview window when I press the "p" key.
     autocmd FileType unite call s:unite_my_settings()
@@ -455,7 +454,7 @@ if neobundle#is_installed('vimfiler.vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vimshell.vim') "{{{2
-    nnoremap [show]sh :VimShell -popup -toggle<CR>
+    nnoremap <silent> [show]sh :<C-u>topleft 15split<CR>:VimShell<CR>
 
     let g:vimshell_enable_start_insert = 1
     let g:vimshell_vimshrc_path = s:vim_path.'/utils/vimshell/vimshellrc'
@@ -611,6 +610,10 @@ if neobundle#is_installed('vim-airline') "{{{2
     let g:airline_powerline_fonts = 1
     let g:airline_inactive_collapse = 0
     let g:airline_theme='gruvbox'
+
+    if !has('vim_starting') && g:loaded_airline
+        AirlineRefresh "refresh  when it starts looking wonky
+    endif
 endif "}}}2
 
 if neobundle#is_installed('vim-table-mode') "{{{2
@@ -716,6 +719,17 @@ if neobundle#is_installed('vim-rooter') "{{{2
     map <silent> cdp <Plug>RooterChangeToRootDirectory
 endif "}}}2
 
+if neobundle#is_installed('vim-unite-giti') "{{{2
+    nnoremap [show]git :<C-u>Unite giti -start-insert<CR>
+endif "}}}2
+
+if neobundle#is_installed('fold-cycle.vim')
+   let g:fold_cycle_default_mapping = 0
+   nmap zo <Plug>(fold-cycle-open)
+   nmap zc <Plug>(fold-cycle-close)
+   nmap zr <Plug>(fold-cycle-open-global)
+   nmap zm <Plug>(fold-cycle-close-global)
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FILE TYPE SETTINGS                                                       {{{
@@ -736,10 +750,10 @@ augroup END
 set number
 set relativenumber
 set showcmd
-set list
 set lazyredraw
 set laststatus=2
-set listchars=trail:·,tab:»·,extends:→,precedes:←
+set list
+set listchars=trail:·,tab:»·,extends:▶,precedes:◀
 
 " Maximize Window on Startup
 if has ("gui_running")
@@ -1129,8 +1143,6 @@ nnoremap cd :cd! %:h<CR>:pwd<CR>
 nnoremap <leader>qa :qa!<CR>
 nnoremap <leader>q :q!<CR>
 
-
-
 " navigation in command line
 cnoremap <C-p> <UP>
 cnoremap <C-n> <DOWN>
@@ -1142,7 +1154,7 @@ cnoremap <C-e> <END>
 "TODO use genotype()
 " find files easier
 cnoremap %* **/*
-cnoremap %f find<Space>*
+cnoremap %f* find<Space>*
 
 "TODO use wildmenumode()?
 " alternate file
@@ -1150,10 +1162,16 @@ cnoremap %f find<Space>*
 cnoremap %o <C-r>=expand('%:p:r:.')<CR>.
 
 " current file path
-cnoremap %f <C-r>=expand('%:p:.')<CR>
+cnoremap %f <C-r>=expand('%:t')<CR>
+
+" current file path
+cnoremap %fp <C-r>=expand('%:p')<CR>
 
 " current directory path
-cnoremap %d <C-r>=expand('%:h:.')<CR>/
+cnoremap %d <C-r>=expand('%:h')<CR>/
+
+" current directory path
+cnoremap %dp <C-r>=expand('%:p:h')<CR>/
 
 
 " accept completion (requires "set wild charm = <TAB>)
@@ -1300,7 +1318,6 @@ function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
         let l:line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
         echomsg l:line
         " call append(i+a:firstLine, line)
-        " l
         let r = r.l:line."\n"
         echomsg r
         let x = x + 1
@@ -1369,12 +1386,6 @@ try
     source ./.vimrc_local
 catch
 endtry
-
-" Refreshing airline
-if !has('vim_starting') && g:loaded_airline
-    AirlineRefresh
-    normal! gtgT
-endif "}}}2
 
 
 set modeline

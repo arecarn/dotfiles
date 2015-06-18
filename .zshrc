@@ -81,7 +81,6 @@ bindkey '^E' _expand_alias
 # ALIASES                                                                  {{{
 ##############################################################################
 alias pslevel='pstree -s $$'
-alias tmux='tmux -2'
 alias e='vim'
 alias g='git'
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
@@ -98,9 +97,12 @@ elif [[ "$OSTYPE" == "win32" ]]; then
 else
 fi
 
-# geeknote aliases/templates
-##################
-alias gnc='geeknote create -c " " -tg "@" -t ""'
+function untilfail()
+{
+    while "$@";
+    do :
+    done
+}
 
 ###########################################################################}}}
 # PATH                                                                     {{{

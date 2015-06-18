@@ -160,6 +160,7 @@ NeoBundle 'sickill/vim-monokai'
 NeoBundle 'mhinz/vim-sayonara'
 NeoBundle 'airblade/vim-rooter'
 NeoBundle 'wesQ3/vim-windowswap'
+NeoBundle 'dyng/ctrlsf.vim'
 call neobundle#end()
 NeoBundleCheck
 
@@ -745,7 +746,7 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup colorcolumn
     autocmd!
-    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
+    " autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
 augroup END
 set number
 set relativenumber
@@ -837,9 +838,8 @@ set noswapfile
 set history=10000
 set backup
 " Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
-let myvar = strftime("%y-%m-%d_%H")
-let myvar = "set backupext=_". myvar
-execute myvar
+let backupext = "_" . strftime("%y-%m-%d_%H")
+execute "set backupext=" . backupext
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1062,7 +1062,12 @@ nnoremap [<C-s> [s<C-s>
 nnoremap ]<C-s> ]s<C-s>
 
 " underline current selection with character of choice
-nnoremap <silent> _ :execute "normal! yypVr".nr2char(getchar())<CR>
+nnoremap <silent> _ :call <SID>under_line()<CR>
+function! s:under_line() abort
+    let char = escape(nr2char(getchar()), '\')
+    normal! yyp
+    execute ':s#\m\S.*\S\|\S#\=repeat(''' . char . ''',strlen(submatch(0)))#g'
+endfunction
 
 " format while in insert mode
 inoremap <C-F> <ESC>gw{a
@@ -1173,11 +1178,8 @@ cnoremap %d <C-r>=expand('%:h')<CR>/
 " current directory path
 cnoremap %dp <C-r>=expand('%:p:h')<CR>/
 
-
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{
@@ -1257,7 +1259,6 @@ function! AddToSearch(mode)
     let @/ .= @@
     let @@ = save_reg
 endfunction
-
 
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
@@ -1354,7 +1355,6 @@ function! Split(count, first_line, last_line, input, bang) abort
     call selection.over_write(expr_lines)
 endfunction
 
-
 command! -nargs=* -range=0 -bang Join
             \ call Join(<count>, <line1>, <line2>, <q-args>, '<bang>')
 function! Join(count, first_line, last_line, input, bang) abort
@@ -1386,7 +1386,6 @@ try
     source ./.vimrc_local
 catch
 endtry
-
 
 set modeline
 " vim: textwidth=78

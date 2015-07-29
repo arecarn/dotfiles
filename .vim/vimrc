@@ -24,6 +24,24 @@ else
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" COMMAND LINE COMPLETION                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set wildmode=longest,full
+set wildmenu
+set completeopt=menuone,menu,preview
+set wildcharm=<TAB>
+
+
+
+" File Searching "
+""""""""""""""""""
+" ignored files
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.r43,*.s43,*.d43,*.pm
+" lower priority files suffixes
+set suffixes-=.h
+set suffixes+=.git,.hg,.svn,.lst,.i
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " neobundle {{{2
@@ -161,6 +179,7 @@ NeoBundle 'mhinz/vim-sayonara'
 NeoBundle 'airblade/vim-rooter'
 NeoBundle 'wesQ3/vim-windowswap'
 NeoBundle 'dyng/ctrlsf.vim'
+NeoBundle 'ludovicchabant/vim-gutentags'
 call neobundle#end()
 NeoBundleCheck
 
@@ -232,6 +251,7 @@ if neobundle#is_installed('neocomplete') "{{{2
         " autocmd BufRead * NeoCompleteLock
         autocmd FileType gitcommit let g:neocomplete#enable_auto_close_preview = 0
     augroup END
+
     nnoremap conc :NeoCompleteToggle<CR>
 
     let g:neocomplete#disable_auto_complete = 0
@@ -242,7 +262,6 @@ if neobundle#is_installed('neocomplete') "{{{2
     let g:neocomplete#sources#syntax#min_keyword_length = 4
     let g:neocomplete#sources#tags#cache_limit_size = 5000000000000000.0
     let g:neocomplete#max_list = 20
-    let g:neocomplete#cursor_hold_i_time = 500 "add a delay (maybe this fixes spell popup
 
     if !isdirectory(s:vim_path.'/utils_local/neocomplete')
         call mkdir(s:vim_path.'/utils_local/neocomplete', "p", 0700)
@@ -262,8 +281,8 @@ if neobundle#is_installed('neocomplete') "{{{2
     endif
     let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
-    " Plugin key-mappings.
-    inoremap <expr><C-g>     neocomplete#undo_completion()
+    " Plugin key-mappings
+    inoremap <expr><C-g> neocomplete#undo_completion()
 
     " Recommended key-mappings.
     " <CR>: close popup and save indent.
@@ -306,23 +325,12 @@ if neobundle#is_installed('neocomplete') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('neosnippet-snippets') "{{{2
-    " imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    "             \ "\<Plug>(neosnippet_expand_or_jump)"
-    "             \: pumvisible() ? "\<C-n>" : "\<TAB>"
-
-    " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-    "         \ <SID>check_back_space() ? "\<TAB>" :
-    "         \ neocomplete#start_manual_complete()
-    "   function! s:check_back_space() "{{{
-    "     let col = col('.') - 1
-    "     return !col || getline('.')[col - 1]  =~ '\s'
-    "   endfunction"}}}
-
     imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
                 \ "\<Plug>(neosnippet_expand_or_jump)":
                 \  pumvisible() ? "\<C-n>" :
                 \ <SID>check_back_space() ? "\<TAB>" :
                 \ neocomplete#start_manual_complete()
+
     function! s:check_back_space() "{{{
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~ '\s'
@@ -349,10 +357,14 @@ if neobundle#is_installed('unite.vim') "{{{2
     call unite#filters#sorter_default#use(['sorter_rank'])
     call unite#custom#source('file_rec,file_rec/async', 'max_candidates', 0)
     call unite#custom#profile('files', 'filters', 'sorter_rank')
+
     call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
                 \ 'ignore_pattern', join([
-                \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$'
+                \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$',
                 \ ], '\|'))
+    call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
+                \ 'ignore_globs', split(&wildignore . ',' .
+                \ substitute(&suffixes, '\.', '*.', 'g'), ','))
 
 
     " grep source settings "{{{3
@@ -426,6 +438,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [show]up :<C-u>Unite neobundle/update -tab<CR>
     nnoremap [show]t  :<C-u>UniteWithCursorWord tag<CR>
     nnoremap [show]ur :<C-u>UniteResume<CR>
+    nnoremap <C-s>    :<C-u>Unite spell_suggest<CR>
 
     command! Messages Unite output:message
     command! Digraphs Unite digraphs
@@ -440,6 +453,7 @@ if neobundle#is_installed('unite.vim') "{{{2
         nnoremap <silent><buffer><expr> O unite#do_action('persist_open')
     endfunction
     let g:neocomplcache_tags_caching_limit_file_size = 5000000000000000.0
+
 endif "}}}2
 
 if neobundle#is_installed('vimfiler.vim') "{{{2
@@ -653,7 +667,7 @@ endif "}}}2
 
 if neobundle#is_installed('Preserve.vim') "{{{2
     nnoremap <silent><leader>dt :PreserveSave<CR>:%s,\s\+$,,ge<CR>:PreserveRestore<CR>
-    command! -range=% Trail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
+    command! -range=% DelTrail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>
@@ -725,11 +739,11 @@ if neobundle#is_installed('vim-unite-giti') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('fold-cycle.vim')
-   let g:fold_cycle_default_mapping = 0
-   nmap zo <Plug>(fold-cycle-open)
-   nmap zc <Plug>(fold-cycle-close)
-   nmap zr <Plug>(fold-cycle-open-global)
-   nmap zm <Plug>(fold-cycle-close-global)
+   " let g:fold_cycle_default_mapping = 0
+   " nmap zo <Plug>(fold-cycle-open)
+   " nmap zc <Plug>(fold-cycle-close)
+   " nmap zr <Plug>(fold-cycle-open-global)
+   " nmap zm <Plug>(fold-cycle-close-global)
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -746,7 +760,7 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup colorcolumn
     autocmd!
-    " autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
+    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
 augroup END
 set number
 set relativenumber
@@ -884,7 +898,7 @@ set formatoptions+=j "remove comments leader when joining
 " FOLDING                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set foldcolumn=2
-set foldnestmax=1
+set foldnestmax=3
 set foldlevelstart=99
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -965,7 +979,9 @@ set incsearch
 set ignorecase
 set smartcase
 
-set path=**,.,./**
+set path=
+set path+=** "relative to the current directory search reversibly
+set path+=./** "relative to the current file search recursively
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                         {{{
@@ -990,13 +1006,14 @@ set autoread
 set confirm
 set backspace=indent,eol,start
 
+set virtualedit+=all
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TAGS                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"tags
 set tags=tags;/ "the ";/" allows you to look back wards
 set cscoperelative
+set cscopequickfix=s-,c-,d-,i-,t-,e-
 
 set exrc
 
@@ -1012,15 +1029,6 @@ function! PrintCscopeOptions()
 endfunction
 execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
 execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" COMMAND LINE COMPLETION                                                  {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wildmode=longest,full
-set wildmenu
-set completeopt=menuone,menu,preview
-set wildcharm=<TAB>
-set wildignore=*.o,*.obj,*.pyc,*~,*.git,*.hg*,*.svn,*.DS_Store
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1057,9 +1065,9 @@ nnoremap <silent> g<C-a> /\d\+<CR>
 nnoremap <silent> g<C-x> ?\d\+<CR>
 
 " list spelling corrections
-nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
-nnoremap [<C-s> [s<C-s>
-nnoremap ]<C-s> ]s<C-s>
+" nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
+smap [<C-s> [s<C-s>
+smap ]<C-s> ]s<C-s>
 
 " underline current selection with character of choice
 nnoremap <silent> _ :call <SID>under_line()<CR>
@@ -1129,9 +1137,9 @@ xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
 " repeat last command then go to the next search position
-nnoremap <C-n> .n
+nnoremap <C-n> n.
 " repeat last command then go to the previouse search position
-nnoremap <C-p> .N
+nnoremap <C-p> N.
 " repeat last command-line command
 nnoremap g. @:
 
@@ -1140,6 +1148,14 @@ nnoremap g. @:
 
 " join to front
 nnoremap gJ ddpkJ
+" IDEA
+" join command that takes two args 
+" <leader>j<a1><a2>
+"
+" e.g. <leader>jjh joins down and to the left
+" e.g. <leader>jkl joins up and to the right
+
+
 
 " set path to present working directory locally
 nnoremap cdl :lcd! %:h<CR>:pwd<CR>
@@ -1166,20 +1182,40 @@ cnoremap %f* find<Space>*
 " (requires "set wildcharm = <TAB>)
 cnoremap %o <C-r>=expand('%:p:r:.')<CR>.
 
-" current file path
-cnoremap %f <C-r>=expand('%:t')<CR>
+" filename (trail)       (foo.txt)
+nnoremap <leader>yfn :let @+=expand("%:t")<CR>:let @*=expand("%:t")<CR>
+cnoremap %fn <C-r>=expand('%:t')<CR>
 
-" current file path
-cnoremap %fp <C-r>=expand('%:p')<CR>
+" copy current file name (relative/absolute) to system clipboard
+" relative path  (src/foo.txt)
+nnoremap <leader>yfp :let @+=expand("%")<CR>:let @*=expand("%")<CR>
+cnoremap %fp <C-r>=expand('%')<CR>
+
+" absolute path  (/something/src/foo.txt)
+nnoremap <leader>yfP :let @+=expand("%:p")<CR>:let @*=expand("%:p")<CR>
+cnoremap %fP <C-r>=expand('%:p')<CR>
+
+" directory name (heade) (/something/src)
+nnoremap <leader>ydp :let @+=expand("%:h")<CR>:let @*=expand("%:h")<CR>
+cnoremap %dp <C-r>=expand('%:h')<CR>/
 
 " current directory path
-cnoremap %d <C-r>=expand('%:h')<CR>/
+" directory name (heade) (/something/src)
+nnoremap <leader>ydP :let @+=expand("%:p:h")<CR>:let @*=expand("%:p:h")<CR>
+cnoremap %dP <C-r>=expand('%:p:h')<CR>/
 
-" current directory path
-cnoremap %dp <C-r>=expand('%:p:h')<CR>/
+" current working directory
+nnoremap <leader>ypwd :let @+=getcwd()<CR>:let @*=getcwd()<CR>
+cnoremap %pwd <C-r>=getcwd()<CR>
 
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
+
+
+
+
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{
@@ -1377,6 +1413,8 @@ endfunction
 function! TSIndent(line)
     return strlen(matchstr(a:line,'\v^\s+'))
 endfunction
+
+command! -nargs=* Hex echo printf("0x%X",eval(<q-args>))
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FIN                                                                      {{{

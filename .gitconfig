@@ -15,6 +15,7 @@
     mt = mergetool
 
     b = branch
+    bl = branch -a # branch list
     bud = push origin --delete # branch upstream delete
     buc = push origin --set-upstream HEAD # branch upstream create
 
@@ -37,8 +38,9 @@
     rl = !git --no-pager reflog --max-count=20
 
     l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
-    lp = !git log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short
-    ll = !git log --color #long log
+    ll = log                --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short
+    lg = log --decorate
+    lgd = log --decorate -p
 
     rmso = remote show origin
 
@@ -48,6 +50,8 @@
 
     smup = submodule update
     smupr = submodule update --remote
+
+    cln = clean --force --interactive -d
 
     exists = ls-files --error-unmatch # does a exist?
 [push]

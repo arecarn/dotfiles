@@ -31,8 +31,6 @@ set wildmenu
 set completeopt=menuone,menu,preview
 set wildcharm=<TAB>
 
-
-
 " File Searching "
 """"""""""""""""""
 " ignored files
@@ -1210,12 +1208,6 @@ cnoremap %pwd <C-r>=getcwd()<CR>
 
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
-
-
-
-
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{

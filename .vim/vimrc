@@ -2,6 +2,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
 set fileformats=unix,dos
+set encoding=utf-8 "make Vim use UTF-8 by default
 
 let mapleader="\<Space>"
 nnoremap [show] <Nop>
@@ -31,13 +32,675 @@ set wildmenu
 set completeopt=menuone,menu,preview
 set wildcharm=<TAB>
 
-" File Searching "
-""""""""""""""""""
+" File Searching
 " ignored files
 set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.r43,*.s43,*.d43,*.pm
 " lower priority files suffixes
 set suffixes-=.h
 set suffixes+=.git,.hg,.svn,.lst,.i
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" CURSOR SETTINGS                                                          {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set scrolloff=6 " Keep 3 lines (top/bottom) for scope
+set sidescrolloff=6 " keep 3 lines (side/side) for scope
+set sidescroll=3
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+    set mouse=a
+endif
+
+set ttyfast
+set ttymouse=xterm2
+
+" set cursorline
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" UNDO & SWAP                                                              {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set undofile
+let s:undodir = s:vim_path.'/utils_local/undo//'
+execute 'set undodir='.s:undodir
+set undolevels=20000
+set undoreload=20000
+
+
+" let s:swap=s:vim_path.'/utils_local/swap//'
+set noswapfile
+" execute 'set directory='.s:swap
+" ^ Here be magic! Quoth the help: (from godlygeek)
+" For Unix and Win32, if a directory ends in two path separators "//" or "\\",
+" the swap file name will be built from the complete path to the file with all
+" path separators substituted to percent '%' signs.  This will ensure file
+" name uniqueness in the preserve directory.
+set history=10000
+set backup
+" Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
+let backupext = "_" . strftime("%y-%m-%d_%H")
+execute "set backupext=" . backupext
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" BACKUP                                                                   {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:backupdir = s:vim_path.'/utils_local/backup//'
+execute 'set backupdir='.s:backupdir
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" LINE WRAPPING                                                            {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set nowrap
+set linebreak
+set textwidth=0 "TODO for c make tw=78
+if v:version >= 704 && has("patch338")
+    set breakindent
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" SPELLING - THESAURUS                                                     {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set spell
+set spelllang=en_us
+let &spellfile=s:vim_path.'/utils/spell/spellfile.add'
+let &thesaurus=s:vim_path.'/utils/thesaurus/thesaurus.txt'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" TABS, INDENTING & FORMAT OPTIONS                                         {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set smarttab
+
+set autoindent
+"these are buffer local let make them everywhere
+set formatoptions+=n "recognize lists
+set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
+
+set formatoptions+=j "remove comments leader when joining
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" FOLDING                                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set foldcolumn=2
+set foldnestmax=3
+set foldlevelstart=99
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" AUTOCMDS                                                                 {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if has("autocmd")
+    augroup vimrc
+        autocmd!
+        autocmd BufWritePost *vimrc* source %
+    augroup END
+
+
+    augroup AllFiles
+        autocmd!
+        autocmd FocusLost * silent! wall
+    augroup END
+
+    augroup QuickFix
+        autocmd!
+        "opens quick fix window on the bottom of all screens
+        autocmd FileType qf wincmd J
+
+        " Automatically open, but do not go to (if there are errors) the
+        " quickfix / location list window, or close it when is has become
+        " empty.
+        "
+        " Note: Must allow nesting of autocmds to enable any customizations for
+        " quickfix buffers.
+        "
+        " Note: Normally, :cwindow jumps to the quickfix window if the command
+        " opens it (but not if it's already open). However, as part of the
+        " autocmd, this doesn't seem to happen.
+        autocmd QuickFixCmdPost [^l]* nested cwindow
+        autocmd QuickFixCmdPost    l* nested lwindow
+        autocmd FileType qf call s:quick_fix_list_settings()
+    augroup END
+
+    function! s:quick_fix_list_settings() abort
+        nnoremap <buffer> q  <C-W>q
+        nnoremap <buffer> t  <C-W><CR><C-W>TgT<C-W>j
+        nnoremap <buffer> T  <C-W><CR><C-W>T
+        nnoremap <buffer> o  <CR><C-W>p
+        nnoremap <buffer> S  <C-W><CR><C-W>K
+        nnoremap <buffer> s  <C-W><CR><C-W>K<C-W>b
+        nnoremap <buffer> v  <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
+        nnoremap <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
+    endfunction
+
+    if s:has_windows
+        augroup TEX
+            autocmd!
+            autocmd BufEnter *.tex setf tex
+            "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
+            autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
+            autocmd BufEnter *.tex setlocal concealcursor=
+        augroup END
+    else
+        augroup TEX
+            autocmd!
+            autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
+            autocmd BufEnter *.tex setlocal concealcursor=
+        augroup END
+    endif
+endif
+
+"for the case that a commit starts with 'vim:' (a valid start to a modeline)
+"this will be interpreted as
+augroup git
+    autocmd!
+    autocmd FileType gitrebase setlocal nomodeline
+augroup END
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" SEARCHING                                                                {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set wrapscan
+set incsearch
+set ignorecase
+set smartcase
+
+set path=
+set path+=** "relative to the current directory search reversibly
+set path+=./** "relative to the current file search recursively
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" TAGS                                                                     {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set tags=tags;/ "the ";/" allows you to look back wards
+set cscoperelative
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+
+set exrc
+
+function! PrintCscopeOptions()
+    echo "g: Definition"
+    echo "c: Functions calling this function"
+    echo "d: Functions called by this function"
+    echo "f: This file"
+    echo "i: Files #including this file"
+    echo "s: This C symbol"
+    echo "t: This text string"
+    echo "e: This egrep pattern"
+endfunction
+execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
+execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" GENERAL BEHAVIOR                                                         {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syntax on " allow syntax highlighting
+set clipboard=unnamedplus,unnamed
+set splitright
+
+" disable dang error{visual}bells for good
+if has("autocmd")
+    augroup noBells
+        autocmd!
+        autocmd GUIEnter * set vb t_vb=
+        autocmd VimEnter * set vb t_vb=
+    augroup END
+endif
+
+set switchbuf=usetab
+set shortmess+=a
+set autowriteall
+set autoread
+
+set confirm
+set backspace=indent,eol,start
+
+set virtualedit+=all
+
+try
+    source ~/.vimrc_local
+    source ./.vimrc_local
+catch
+endtry
+
+set modeline
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" UI OPTIONS                                                               {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+augroup colorcolumn
+    autocmd!
+    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
+augroup END
+set number
+set relativenumber
+set showcmd
+set lazyredraw
+set laststatus=2
+set list
+set listchars=trail:·,tab:»·,extends:▶,precedes:◀
+
+" Maximize Window on Startup
+if has ("gui_running")
+    if has("autocmd") && s:has_windows
+        augroup windowsgui:
+            autocmd!
+            autocmd GUIEnter * simalt ~x " maximize in windows
+        augroup END
+    else
+    endif
+endif
+
+" Highlight TODO, FIXME, NOTE, etc.
+if has("autocmd")
+    if v:version > 701
+        augroup todo
+            autocmd!
+            autocmd Syntax * call matchadd('Debug',  '\v\W\zs<(TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
+            autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
+        augroup END
+    endif
+endif
+
+" gui settings {{{2
+if has ("gui_running")
+    "Make GVim more like Terminal Vim
+    set guioptions-=T "remove toolbar
+    set guioptions-=r "remove right-hand scroll bar
+    set guioptions-=l "remove right-hand scroll bar
+    set guioptions=c "makes dialogs boxes appear like they do in console vim
+
+    "Set Font
+    if s:has_windows
+        set guifont=DejaVu_Sans_Mono_For_Powerline:h10:cANSI
+        "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
+    elseif has('mac')
+        set guifont=DejaVu\ Sans\ Mono\ For\ Powerline:h11
+        " set guifont=Monaco:h12
+    elseif has('unix') && !has('mac') "linux
+        set guifont=DejaVu\ Sans\ Mono\ 10
+    endif
+endif
+
+set background=dark
+"}}}2
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" MAPPINGS & COMMANDS                                                      {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set ttimeout
+set ttimeoutlen=100
+
+set updatetime=1000
+
+set grepprg=ack\ -H\ --nocolor\ --nogroup
+
+command! -nargs=+ Grep call s:grep(<q-args>)
+function! s:grep(args) abort
+    execute 'silent grep! ' . a:args
+    redraw!
+    execute "normal! /<C-l>"
+endfunction
+
+" paste without overriding register
+xnoremap <expr> gp 'pgv"'.v:register.'y'
+
+" Navigation
+" make navigation more intuitive
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+nnoremap gk k
+nnoremap gj j
+
+" replace selection with spaces and enter replace mode
+xnoremap gr r<space>gvo<esc>R
+
+"go to the next number
+nnoremap <silent> g<C-a> /\d\+<CR>
+"go to the previous number
+nnoremap <silent> g<C-x> ?\d\+<CR>
+
+" list spelling corrections
+" nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
+smap [<C-s> [s<C-s>
+smap ]<C-s> ]s<C-s>
+
+" underline current selection with character of choice
+nnoremap <silent> _ :call <SID>under_line()<CR>
+function! s:under_line() abort
+    let char = escape(nr2char(getchar()), '\')
+    normal! yyp
+    execute ':s#\m\S.*\S\|\S#\=repeat(''' . char . ''',strlen(submatch(0)))#g'
+endfunction
+
+" format while in insert mode
+inoremap <C-F> <ESC>gw{a
+
+" think of "co" as "change option"
+nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>
+nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
+nnoremap cotw :<C-U>set textwidth=
+nnoremap cocl :<C-U>setlocal conceallevel=
+nnoremap cosw :<C-U>set shiftwidth=
+nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
+function! s:scratch_toggle() abort
+    if match(&buftype, '\C\v'.'nofile') != -1
+        set buftype-=nofile
+    else
+        set buftype+=nofile
+    endif
+endfunction
+
+" update diff with a key mapping
+nnoremap du :diffupdate<CR>
+
+" reselect pasted or last changed text
+nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'
+
+" redraw even harder
+nnoremap <silent><C-l> :redraw!<CR><C-l>
+
+" open my vimrc
+nnoremap [show]rc :e $MYVIMRC<CR>
+
+nnoremap <C-W>d :bd<CR>
+
+" make more undoes possible after leaving insert mode
+inoremap <C-u> <C-g>u<C-u>
+inoremap <C-w> <C-g>u<C-w>
+inoremap <BS> <C-g>u<BS>
+inoremap <Del> <C-g>u<Del>
+inoremap <END> <C-g>u<END>
+
+" yank to end of line, kinda like D or C
+noremap Y y$
+
+
+" visual selection text object
+xnoremap a/ gn
+onoremap a/ gn
+xnoremap i/ gn
+onoremap i/ gn
+xnoremap i? gN
+onoremap i? gN
+xnoremap a? gN
+onoremap a? gN
+
+" disable Ex mode key and use it to repeat the last q macro (love this)
+nnoremap Q @q
+" replay q macro for each line of a visual selection
+xnoremap Q :normal! @q<CR>
+" repeat last command for each line of a visual selection
+xnoremap . :normal! .<CR>
+" repeat last command then go to the next search position
+nnoremap <C-n> n.
+" repeat last command then go to the previouse search position
+nnoremap <C-p> N.
+" repeat last command-line command
+nnoremap g. @:
+
+" split line here
+" nnoremap S i<cr><esc>k$
+
+" join to front
+nnoremap gJ ddpkJ
+" IDEA
+" join command that takes two args
+" <leader>j<a1><a2>
+"
+" e.g. <leader>jjh joins down and to the left
+" e.g. <leader>jkl joins up and to the right
+
+
+
+" set path to present working directory locally
+nnoremap cdl :lcd! %:h<CR>:pwd<CR>
+nnoremap cd :cd! %:h<CR>:pwd<CR>
+
+nnoremap <leader>qa :qa!<CR>
+nnoremap <leader>q :q!<CR>
+
+" navigation in command line
+cnoremap <C-p> <UP>
+cnoremap <C-n> <DOWN>
+cnoremap <C-h> <LEFT>
+cnoremap <C-l> <RIGHT>
+cnoremap <C-a> <HOME>
+cnoremap <C-e> <END>
+
+"TODO use genotype()
+" find files easier
+cnoremap %* **/*
+cnoremap %f* find<Space>*
+
+"TODO use wildmenumode()?
+" alternate file
+" (requires "set wildcharm = <TAB>)
+cnoremap %o <C-r>=expand('%:p:r:.')<CR>.
+
+" filename (trail)       (foo.txt)
+nnoremap <leader>yfn :let @+=expand("%:t")<CR>:let @*=expand("%:t")<CR>
+cnoremap %fn <C-r>=expand('%:t')<CR>
+
+" copy current file name (relative/absolute) to system clipboard
+" relative path  (src/foo.txt)
+nnoremap <leader>yfp :let @+=expand("%")<CR>:let @*=expand("%")<CR>
+cnoremap %fp <C-r>=expand('%')<CR>
+
+" absolute path  (/something/src/foo.txt)
+nnoremap <leader>yfP :let @+=expand("%:p")<CR>:let @*=expand("%:p")<CR>
+cnoremap %fP <C-r>=expand('%:p')<CR>
+
+" directory name (heade) (/something/src)
+nnoremap <leader>ydp :let @+=expand("%:h")<CR>:let @*=expand("%:h")<CR>
+cnoremap %dp <C-r>=expand('%:h')<CR>/
+
+" current directory path
+" directory name (heade) (/something/src)
+nnoremap <leader>ydP :let @+=expand("%:p:h")<CR>:let @*=expand("%:p:h")<CR>
+cnoremap %dP <C-r>=expand('%:p:h')<CR>/
+
+" current working directory
+nnoremap <leader>ypwd :let @+=getcwd()<CR>:let @*=getcwd()<CR>
+cnoremap %pwd <C-r>=getcwd()<CR>
+
+" accept completion (requires "set wild charm = <TAB>)
+cnoremap <C-y> <SPACE><BS><TAB>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" SCRIPTS                                                                  {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" TODO Is the word under the cursor a number?
+function! DoNum(operator)
+    let line = getline('.')
+    let cIndex = getpos('.')[2] -1 "TODO handle virtual edit
+    echom cIndex
+    execute "let rLine = line[".cIndex.":]"
+    echom "relavant line =".rLine
+    " let rLine = substitute(rLine, '\(\d\+\|0x\x\+\)', '\=submatch(0)*10','')
+    execute "let rLine = substitute(rLine, \"\(\d\+\|0x\x\+\)\", \"\=submatch(0)*10\",\"\")"
+    echom rLine
+    let cIndex -= 1
+    execute "let line = line[:".cIndex."].rLine"
+    echom line
+    call setline('.', line)
+endfunction
+
+function! CalculateCursor(x, operator)
+    let p = @/
+    try
+        silent exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
+        exe "normal \<C-O>"
+    catch /^Vim\%((\a\+)\)\=:E486/
+        try
+            silent exe "normal /\\%#.\\{-}\\zs\\d\\+/b\<CR>"
+            exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
+            exe "normal \<C-O>"
+        catch /^Vim\%((\a\+)\)\=:E486/
+        endtry
+    finally
+        let @/ = p
+    endtry
+endfunction
+
+" vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
+" vnoremap <silent><c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "+")<CR>:noh<CR>gv
+" noremap <silent>g<c-x> :<C-U>call CalculateCursor(v:count1, "*")<CR>:noh<CR>
+" vnoremap <silent>g<c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "*")<CR>:noh<CR>gv
+" noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
+" vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
+
+nnoremap <leader>m  :call SearchPosition()<CR>
+nnoremap <leader>M  :let @/ = ""<CR>
+function! SearchPosition()
+    if @/ !~ '\v(\\\%\d+[lc](\\\|)?)+'
+        let @/ = ''
+        " echo "pattern didn't match = ".@/
+    else
+        let @/ .= '\|'
+        " echo "added bar = ".@/
+    endif
+
+    let line = getpos('.')[1]
+    let col = getpos('.')[2]
+    execute "let @/ .= '\\%".line."l'"
+    execute "let @/ .= '\\%".col."c'"
+endfunction
+
+nnoremap g** :<C-U>call AddToSearch('n')<CR>
+xnoremap g* :<C-U>call AddToSearch('x')<CR>
+function! AddToSearch(mode)
+    let save_reg = @@
+    if @/ != ''
+        let @/ .= '\|'
+    endif
+    if a:mode == 'x'
+        normal! gvy
+    elseif a:mode == 'n'
+        normal! yiw
+    else
+        let @@ = save_reg
+    endif
+    let @/ .= @@
+    let @@ = save_reg
+endfunction
+
+command!  PreviewTagToggle call PreviewWordToggle()
+nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
+
+command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{2
+function! RunInVimShell(cmd)
+    VimShellBufferDir -popup
+    execute "VimShellSendString " . a:cmd
+endfunction "}}}2
+
+" add numbers to the front or end of a line
+cabbrev numend s/$/\=1-line("'<")+line(".")/c
+cabbrev numfront s/^/\=1-line("'<")+line(".")/c
+
+" Details:
+" s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
+"            \= : for each match, replace with the result of the following expression:
+" printf("0x%04x", : produce a string using the format "0x%04x", which corresponds to a literal 0x followed by a four digit (or more) hex number, padded with zeros.
+" submatch(0) : The result of the complete match (i.e. the number).
+cabbrev tohex s/\d\+/\=printf("0x%x", submatch(0))
+" find the first occurrence of a hex digit and changes it to decimal
+cabbrev todec s/0x\x\+/\=printf("%d", submatch(0))
+cabbrev toasc s/0x\x\+/\=printf("%c", submatch(0))
+" delete the current character and replace it with it's ASCII Decimal value
+nnoremap <Leader>tad xi<C-r>=printf("%d",char2nr("<C-r>""))<CR><ESC>
+" delete the current character and replace it with it's ASCII Hex value
+nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
+" noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
+
+" reverse selection kind of works
+vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
+            \:let old_reg=@"<cr>
+            \gv"ay
+            \:let @a=substitute(@a, '.\(.*\)\@=',
+            \ '\=@a[strlen(submatch(1))]', 'g')<CR>
+            \gvc<C-R>a<Esc>
+            \:let @a=old_reg_a<CR>
+            \:let @"=old_reg<CR>
+
+
+command! -nargs=* -range=0 -bang Seq
+            \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
+
+function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
+    "anything within backticks
+    let rg_expr = '`\(.\{-1,}\)`'
+
+    " 1 index if ! is used
+    if a:bang != '!'
+        let x = 0
+    else
+        let x = 1
+    endif
+
+    let @a = ''
+    let r = ''
+    for i in range(0, a:lastLine-a:firstLine) "TODO fails without a range
+        let l:line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
+        echomsg l:line
+        " call append(i+a:firstLine, line)
+        let r = r.l:line."\n"
+        echomsg r
+        let x = x + 1
+    endfor
+    call setreg('a', r,  'b')
+    normal! "aP
+endfunction
+
+nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
+nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\').'\v\s*#\r#g'<CR>
+xnoremap <silent> <leader>J  :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').'#g'<CR>
+xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').' #g'<CR>
+
+command! -nargs=* -range=0 -bang Split
+            \ call Split(<count>, <line1>, <line2>, <q-args>, '<bang>')
+function! Split(count, first_line, last_line, input, bang) abort
+    let input = a:input
+    if input == ''
+        let input = nr2char(getchar())
+    endif
+
+    let selection = selection#new(a:count, a:first_line, a:last_line)
+    if selection.content == ''
+        throw 'nothing there'
+    endif
+
+    let expr_list = split(selection.content, '\n', 1)
+
+    for i in range(len(expr_list))
+        let expr_list[i] = join(split(expr_list[i], input),"\n")
+    endfor
+
+    let expr_lines = join(expr_list, "\n")
+    call selection.over_write(expr_lines)
+endfunction
+
+command! -nargs=* -range=0 -bang Join
+            \ call Join(<count>, <line1>, <line2>, <q-args>, '<bang>')
+function! Join(count, first_line, last_line, input, bang) abort
+    let input = a:input
+    if input == ''
+        let input = nr2char(getchar())
+    endif
+
+    let selection = selection#new(a:count, a:first_line, a:last_line)
+    if selection.content == ''
+        throw 'nothing there'
+    endif
+
+    let expr_list = split(selection.content, '\n', 0)
+
+    let expr_lines = join(expr_list, input)
+    call selection.over_write(expr_lines)
+endfunction
+
+function! TSIndent(line)
+    return strlen(matchstr(a:line,'\v^\s+'))
+endfunction
+
+command! -nargs=* Hex echo printf("0x%X",eval(<q-args>))
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
@@ -73,7 +736,8 @@ NeoBundle 'kana/vim-textobj-line'
 NeoBundle 'mattn/vim-textobj-url'
 NeoBundle 'glts/vim-textobj-comment'
 NeoBundle 'thinca/vim-textobj-between'
-NeoBundle 'osyo-manga/vim-textobj-multiblock' "}}}2
+NeoBundle 'osyo-manga/vim-textobj-multiblock'
+"}}}2
 
 " unite {{{2
 NeoBundle 'Shougo/unite.vim'
@@ -180,6 +844,7 @@ NeoBundle 'dyng/ctrlsf.vim'
 NeoBundle 'ludovicchabant/vim-gutentags'
 call neobundle#end()
 NeoBundleCheck
+filetype plugin indent on
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
@@ -744,680 +1409,13 @@ if neobundle#is_installed('fold-cycle.vim')
    " nmap zm <Plug>(fold-cycle-close-global)
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" FILE TYPE SETTINGS                                                       {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-filetype on
-filetype plugin on
-filetype indent on
-syntax on " allow syntax highlighting
-set encoding=utf-8 "make Vim use UTF-8 by default
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" UI OPTIONS                                                               {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-augroup colorcolumn
-    autocmd!
-    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
-augroup END
-set number
-set relativenumber
-set showcmd
-set lazyredraw
-set laststatus=2
-set list
-set listchars=trail:·,tab:»·,extends:▶,precedes:◀
-
-" Maximize Window on Startup
-if has ("gui_running")
-    if has("autocmd") && s:has_windows
-        augroup windowsgui:
-            autocmd!
-            autocmd GUIEnter * simalt ~x " maximize in windows
-        augroup END
-    else
-    endif
+if neobundle#is_installed('gruvbox')
+    colorscheme gruvbox
 endif
-
-" Highlight TODO, FIXME, NOTE, etc.
-if has("autocmd")
-    if v:version > 701
-        augroup todo
-            autocmd!
-            autocmd Syntax * call matchadd('Debug',  '\v\W\zs<(TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
-            autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
-        augroup END
-    endif
-endif
-
-" gui settings {{{2
-if has ("gui_running")
-    "Make GVim more like Terminal Vim
-    set guioptions-=T "remove toolbar
-    set guioptions-=r "remove right-hand scroll bar
-    set guioptions-=l "remove right-hand scroll bar
-    set guioptions=c "makes dialogs boxes appear like they do in console vim
-
-    "Set Font
-    if s:has_windows
-        set guifont=DejaVu_Sans_Mono_For_Powerline:h10:cANSI
-        "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
-    elseif has('mac')
-        set guifont=DejaVu\ Sans\ Mono\ For\ Powerline:h11
-        " set guifont=Monaco:h12
-    elseif has('unix') && !has('mac') "linux
-        set guifont=DejaVu\ Sans\ Mono\ 10
-    endif
-endif
-
-colorscheme gruvbox
-set background=dark
-"}}}2
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" CURSOR SETTINGS                                                          {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set scrolloff=6 " Keep 3 lines (top/bottom) for scope
-set sidescrolloff=6 " keep 3 lines (side/side) for scope
-set sidescroll=3
-" In many terminal emulators the mouse works just fine, thus enable it.
-if has('mouse')
-    set mouse=a
-endif
-
-set ttyfast
-set ttymouse=xterm2
-
-" set cursorline
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" UNDO & SWAP                                                              {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set undofile
-let s:undodir = s:vim_path.'/utils_local/undo//'
-execute 'set undodir='.s:undodir
-set undolevels=20000
-set undoreload=20000
-
-
-" let s:swap=s:vim_path.'/utils_local/swap//'
-set noswapfile
-" execute 'set directory='.s:swap
-" ^ Here be magic! Quoth the help: (from godlygeek)
-" For Unix and Win32, if a directory ends in two path separators "//" or "\\",
-" the swap file name will be built from the complete path to the file with all
-" path separators substituted to percent '%' signs.  This will ensure file
-" name uniqueness in the preserve directory.
-set history=10000
-set backup
-" Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
-let backupext = "_" . strftime("%y-%m-%d_%H")
-execute "set backupext=" . backupext
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" BACKUP                                                                   {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:backupdir = s:vim_path.'/utils_local/backup//'
-execute 'set backupdir='.s:backupdir
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" LINE WRAPPING                                                            {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set nowrap
-set linebreak
-set textwidth=0 "TODO for c make tw=78
-if v:version >= 704 && has("patch338")
-    set breakindent
-endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SPELLING - THESAURUS                                                     {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set spell
-set spelllang=en_us
-let &spellfile=s:vim_path.'/utils/spell/spellfile.add'
-let &thesaurus=s:vim_path.'/utils/thesaurus/thesaurus.txt'
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" TABS, INDENTING & FORMAT OPTIONS                                         {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set expandtab
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set smarttab
-
-set autoindent
-"these are buffer local let make them everywhere
-set formatoptions+=n "recognize lists
-set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
-
-set formatoptions+=j "remove comments leader when joining
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" FOLDING                                                                  {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set foldcolumn=2
-set foldnestmax=3
-set foldlevelstart=99
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" AUTOCMDS                                                                 {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has("autocmd")
-    augroup vimrc
-        autocmd!
-        autocmd BufWritePost *vimrc* source %
-    augroup END
-
-
-    augroup AllFiles
-        autocmd!
-        autocmd FocusLost * silent! wall
-    augroup END
-
-    augroup QuickFix
-        autocmd!
-        "opens quick fix window on the bottom of all screens
-        autocmd FileType qf wincmd J
-
-        " Automatically open, but do not go to (if there are errors) the
-        " quickfix / location list window, or close it when is has become
-        " empty.
-        "
-        " Note: Must allow nesting of autocmds to enable any customizations for
-        " quickfix buffers.
-        "
-        " Note: Normally, :cwindow jumps to the quickfix window if the command
-        " opens it (but not if it's already open). However, as part of the
-        " autocmd, this doesn't seem to happen.
-        autocmd QuickFixCmdPost [^l]* nested cwindow
-        autocmd QuickFixCmdPost    l* nested lwindow
-        autocmd FileType qf call s:quick_fix_list_settings()
-    augroup END
-
-    function! s:quick_fix_list_settings() abort
-        nnoremap <buffer> q  <C-W>q
-        nnoremap <buffer> t  <C-W><CR><C-W>TgT<C-W>j
-        nnoremap <buffer> T  <C-W><CR><C-W>T
-        nnoremap <buffer> o  <CR><C-W>p
-        nnoremap <buffer> S  <C-W><CR><C-W>K
-        nnoremap <buffer> s  <C-W><CR><C-W>K<C-W>b
-        nnoremap <buffer> v  <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
-        nnoremap <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
-    endfunction
-
-    if s:has_windows
-        augroup TEX
-            autocmd!
-            autocmd BufEnter *.tex setf tex
-            "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
-            autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
-            autocmd BufEnter *.tex setlocal concealcursor=
-        augroup END
-    else
-        augroup TEX
-            autocmd!
-            autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
-            autocmd BufEnter *.tex setlocal concealcursor=
-        augroup END
-    endif
-endif
-
-"for the case that a commit starts with 'vim:' (a valid start to a modeline)
-"this will be interpreted as
-augroup git
-    autocmd!
-    autocmd FileType gitrebase setlocal nomodeline
-augroup END
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SEARCHING                                                                {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wrapscan
-set incsearch
-set ignorecase
-set smartcase
-
-set path=
-set path+=** "relative to the current directory search reversibly
-set path+=./** "relative to the current file search recursively
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" GENERAL BEHAVIOR                                                         {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set clipboard=unnamedplus,unnamed
-set splitright
-
-" disable dang error{visual}bells for good
-if has("autocmd")
-    augroup noBells
-        autocmd!
-        autocmd GUIEnter * set vb t_vb=
-        autocmd VimEnter * set vb t_vb=
-    augroup END
-endif
-
-set switchbuf=usetab
-set shortmess+=a
-set autowriteall
-set autoread
-
-set confirm
-set backspace=indent,eol,start
-
-set virtualedit+=all
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" TAGS                                                                     {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set tags=tags;/ "the ";/" allows you to look back wards
-set cscoperelative
-set cscopequickfix=s-,c-,d-,i-,t-,e-
-
-set exrc
-
-function! PrintCscopeOptions()
-    echo "g: Definition"
-    echo "c: Functions calling this function"
-    echo "d: Functions called by this function"
-    echo "f: This file"
-    echo "i: Files #including this file"
-    echo "s: This C symbol"
-    echo "t: This text string"
-    echo "e: This egrep pattern"
-endfunction
-execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" MAPPINGS & COMMANDS                                                      {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set ttimeout
-set ttimeoutlen=100
-
-set updatetime=1000
-
-set grepprg=ack\ -H\ --nocolor\ --nogroup
-
-command! -nargs=+ Grep call s:grep(<q-args>)
-function! s:grep(args) abort
-    execute 'silent grep! ' . a:args
-    redraw!
-    execute "normal! /<C-l>"
-endfunction
-
-" paste without overriding register
-xnoremap <expr> gp 'pgv"'.v:register.'y'
-
-" Navigation
-" make navigation more intuitive
-nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
-nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
-nnoremap gk k
-nnoremap gj j
-
-" replace selection with spaces and enter replace mode
-xnoremap gr r<space>gvo<esc>R
-
-"go to the next number
-nnoremap <silent> g<C-a> /\d\+<CR>
-"go to the previous number
-nnoremap <silent> g<C-x> ?\d\+<CR>
-
-" list spelling corrections
-" nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
-smap [<C-s> [s<C-s>
-smap ]<C-s> ]s<C-s>
-
-" underline current selection with character of choice
-nnoremap <silent> _ :call <SID>under_line()<CR>
-function! s:under_line() abort
-    let char = escape(nr2char(getchar()), '\')
-    normal! yyp
-    execute ':s#\m\S.*\S\|\S#\=repeat(''' . char . ''',strlen(submatch(0)))#g'
-endfunction
-
-" format while in insert mode
-inoremap <C-F> <ESC>gw{a
-
-" think of "co" as "change option"
-nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>
-nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
-nnoremap cotw :<C-U>set textwidth=
-nnoremap cocl :<C-U>setlocal conceallevel=
-nnoremap cosw :<C-U>set shiftwidth=
-nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
-function! s:scratch_toggle() abort
-    if match(&buftype, '\C\v'.'nofile') != -1
-        set buftype-=nofile
-    else
-        set buftype+=nofile
-    endif
-endfunction
-
-" update diff with a key mapping
-nnoremap du :diffupdate<CR>
-
-" reselect pasted or last changed text
-nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'
-
-" redraw even harder
-nnoremap <silent><C-l> :redraw!<CR><C-l>
-
-" open my vimrc
-nnoremap [show]rc :e $MYVIMRC<CR>
-
-nnoremap <C-W>d :bd<CR>
-
-" make more undoes possible after leaving insert mode
-inoremap <C-u> <C-g>u<C-u>
-inoremap <C-w> <C-g>u<C-w>
-inoremap <BS> <C-g>u<BS>
-inoremap <Del> <C-g>u<Del>
-inoremap <END> <C-g>u<END>
-
-" yank to end of line, kinda like D or C
-noremap Y y$
-
-
-" visual selection text object
-xnoremap a/ gn
-onoremap a/ gn
-xnoremap i/ gn
-onoremap i/ gn
-xnoremap i? gN
-onoremap i? gN
-xnoremap a? gN
-onoremap a? gN
-
-" disable Ex mode key and use it to repeat the last q macro (love this)
-nnoremap Q @q
-" replay q macro for each line of a visual selection
-xnoremap Q :normal! @q<CR>
-" repeat last command for each line of a visual selection
-xnoremap . :normal! .<CR>
-" repeat last command then go to the next search position
-nnoremap <C-n> n.
-" repeat last command then go to the previouse search position
-nnoremap <C-p> N.
-" repeat last command-line command
-nnoremap g. @:
-
-" split line here
-" nnoremap S i<cr><esc>k$
-
-" join to front
-nnoremap gJ ddpkJ
-" IDEA
-" join command that takes two args 
-" <leader>j<a1><a2>
-"
-" e.g. <leader>jjh joins down and to the left
-" e.g. <leader>jkl joins up and to the right
-
-
-
-" set path to present working directory locally
-nnoremap cdl :lcd! %:h<CR>:pwd<CR>
-nnoremap cd :cd! %:h<CR>:pwd<CR>
-
-nnoremap <leader>qa :qa!<CR>
-nnoremap <leader>q :q!<CR>
-
-" navigation in command line
-cnoremap <C-p> <UP>
-cnoremap <C-n> <DOWN>
-cnoremap <C-h> <LEFT>
-cnoremap <C-l> <RIGHT>
-cnoremap <C-a> <HOME>
-cnoremap <C-e> <END>
-
-"TODO use genotype()
-" find files easier
-cnoremap %* **/*
-cnoremap %f* find<Space>*
-
-"TODO use wildmenumode()?
-" alternate file
-" (requires "set wildcharm = <TAB>)
-cnoremap %o <C-r>=expand('%:p:r:.')<CR>.
-
-" filename (trail)       (foo.txt)
-nnoremap <leader>yfn :let @+=expand("%:t")<CR>:let @*=expand("%:t")<CR>
-cnoremap %fn <C-r>=expand('%:t')<CR>
-
-" copy current file name (relative/absolute) to system clipboard
-" relative path  (src/foo.txt)
-nnoremap <leader>yfp :let @+=expand("%")<CR>:let @*=expand("%")<CR>
-cnoremap %fp <C-r>=expand('%')<CR>
-
-" absolute path  (/something/src/foo.txt)
-nnoremap <leader>yfP :let @+=expand("%:p")<CR>:let @*=expand("%:p")<CR>
-cnoremap %fP <C-r>=expand('%:p')<CR>
-
-" directory name (heade) (/something/src)
-nnoremap <leader>ydp :let @+=expand("%:h")<CR>:let @*=expand("%:h")<CR>
-cnoremap %dp <C-r>=expand('%:h')<CR>/
-
-" current directory path
-" directory name (heade) (/something/src)
-nnoremap <leader>ydP :let @+=expand("%:p:h")<CR>:let @*=expand("%:p:h")<CR>
-cnoremap %dP <C-r>=expand('%:p:h')<CR>/
-
-" current working directory
-nnoremap <leader>ypwd :let @+=getcwd()<CR>:let @*=getcwd()<CR>
-cnoremap %pwd <C-r>=getcwd()<CR>
-
-" accept completion (requires "set wild charm = <TAB>)
-cnoremap <C-y> <SPACE><BS><TAB>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SCRIPTS                                                                  {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" TODO Is the word under the cursor a number?
-function! DoNum(operator)
-    let line = getline('.')
-    let cIndex = getpos('.')[2] -1 "TODO handle virtual edit
-    echom cIndex
-    execute "let rLine = line[".cIndex.":]"
-    echom "relavant line =".rLine
-    " let rLine = substitute(rLine, '\(\d\+\|0x\x\+\)', '\=submatch(0)*10','')
-    execute "let rLine = substitute(rLine, \"\(\d\+\|0x\x\+\)\", \"\=submatch(0)*10\",\"\")"
-    echom rLine
-    let cIndex -= 1
-    execute "let line = line[:".cIndex."].rLine"
-    echom line
-    call setline('.', line)
-endfunction
-
-function! CalculateCursor(x, operator)
-    let p = @/
-    try
-        silent exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
-        exe "normal \<C-O>"
-    catch /^Vim\%((\a\+)\)\=:E486/
-        try
-            silent exe "normal /\\%#.\\{-}\\zs\\d\\+/b\<CR>"
-            exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
-            exe "normal \<C-O>"
-        catch /^Vim\%((\a\+)\)\=:E486/
-        endtry
-    finally
-        let @/ = p
-    endtry
-endfunction
-
-" vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
-" vnoremap <silent><c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "+")<CR>:noh<CR>gv
-" noremap <silent>g<c-x> :<C-U>call CalculateCursor(v:count1, "*")<CR>:noh<CR>
-" vnoremap <silent>g<c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "*")<CR>:noh<CR>gv
-" noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
-" vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
-
-nnoremap <leader>m  :call SearchPosition()<CR>
-nnoremap <leader>M  :let @/ = ""<CR>
-function! SearchPosition()
-    if @/ !~ '\v(\\\%\d+[lc](\\\|)?)+'
-        let @/ = ''
-        " echo "pattern didn't match = ".@/
-    else
-        let @/ .= '\|'
-        " echo "added bar = ".@/
-    endif
-
-    let line = getpos('.')[1]
-    let col = getpos('.')[2]
-    execute "let @/ .= '\\%".line."l'"
-    execute "let @/ .= '\\%".col."c'"
-endfunction
-
-nnoremap g** :<C-U>call AddToSearch('n')<CR>
-xnoremap g* :<C-U>call AddToSearch('x')<CR>
-function! AddToSearch(mode)
-    let save_reg = @@
-    if @/ != ''
-        let @/ .= '\|'
-    endif
-    if a:mode == 'x'
-        normal! gvy
-    elseif a:mode == 'n'
-        normal! yiw
-    else
-        let @@ = save_reg
-    endif
-    let @/ .= @@
-    let @@ = save_reg
-endfunction
-
-command!  PreviewTagToggle call PreviewWordToggle()
-nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
-
-command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{2
-function! RunInVimShell(cmd)
-    VimShellBufferDir -popup
-    execute "VimShellSendString " . a:cmd
-endfunction "}}}2
-
-" add numbers to the front or end of a line
-cabbrev numend s/$/\=1-line("'<")+line(".")/c
-cabbrev numfront s/^/\=1-line("'<")+line(".")/c
-
-" Details:
-" s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
-"            \= : for each match, replace with the result of the following expression:
-" printf("0x%04x", : produce a string using the format "0x%04x", which corresponds to a literal 0x followed by a four digit (or more) hex number, padded with zeros.
-" submatch(0) : The result of the complete match (i.e. the number).
-cabbrev tohex s/\d\+/\=printf("0x%x", submatch(0))
-" find the first occurrence of a hex digit and changes it to decimal
-cabbrev todec s/0x\x\+/\=printf("%d", submatch(0))
-cabbrev toasc s/0x\x\+/\=printf("%c", submatch(0))
-" delete the current character and replace it with it's ASCII Decimal value
-nnoremap <Leader>tad xi<C-r>=printf("%d",char2nr("<C-r>""))<CR><ESC>
-" delete the current character and replace it with it's ASCII Hex value
-nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
-" noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
-
-" reverse selection kind of works
-vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
-            \:let old_reg=@"<cr>
-            \gv"ay
-            \:let @a=substitute(@a, '.\(.*\)\@=',
-            \ '\=@a[strlen(submatch(1))]', 'g')<CR>
-            \gvc<C-R>a<Esc>
-            \:let @a=old_reg_a<CR>
-            \:let @"=old_reg<CR>
-
-
-command! -nargs=* -range=0 -bang Seq
-            \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
-
-function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
-    "anything within backticks
-    let rg_expr = '`\(.\{-1,}\)`'
-
-    " 1 index if ! is used
-    if a:bang != '!'
-        let x = 0
-    else
-        let x = 1
-    endif
-
-    let @a = ''
-    let r = ''
-    for i in range(0, a:lastLine-a:firstLine) "TODO fails without a range
-        let l:line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
-        echomsg l:line
-        " call append(i+a:firstLine, line)
-        let r = r.l:line."\n"
-        echomsg r
-        let x = x + 1
-    endfor
-    call setreg('a', r,  'b')
-    normal! "aP
-endfunction
-
-nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
-nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\').'\v\s*#\r#g'<CR>
-xnoremap <silent> <leader>J  :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').'#g'<CR>
-xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').' #g'<CR>
-
-command! -nargs=* -range=0 -bang Split
-            \ call Split(<count>, <line1>, <line2>, <q-args>, '<bang>')
-function! Split(count, first_line, last_line, input, bang) abort
-    let input = a:input
-    if input == ''
-        let input = nr2char(getchar())
-    endif
-
-    let selection = selection#new(a:count, a:first_line, a:last_line)
-    if selection.content == ''
-        throw 'nothing there'
-    endif
-
-    let expr_list = split(selection.content, '\n', 1)
-
-    for i in range(len(expr_list))
-        let expr_list[i] = join(split(expr_list[i], input),"\n")
-    endfor
-
-    let expr_lines = join(expr_list, "\n")
-    call selection.over_write(expr_lines)
-endfunction
-
-command! -nargs=* -range=0 -bang Join
-            \ call Join(<count>, <line1>, <line2>, <q-args>, '<bang>')
-function! Join(count, first_line, last_line, input, bang) abort
-    let input = a:input
-    if input == ''
-        let input = nr2char(getchar())
-    endif
-
-    let selection = selection#new(a:count, a:first_line, a:last_line)
-    if selection.content == ''
-        throw 'nothing there'
-    endif
-
-    let expr_list = split(selection.content, '\n', 0)
-
-    let expr_lines = join(expr_list, input)
-    call selection.over_write(expr_lines)
-endfunction
-
-function! TSIndent(line)
-    return strlen(matchstr(a:line,'\v^\s+'))
-endfunction
-
-command! -nargs=* Hex echo printf("0x%X",eval(<q-args>))
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FIN                                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-try
-    source ~/.vimrc_local
-    source ./.vimrc_local
-catch
-endtry
-
-set modeline
 " vim: textwidth=78
 " vim: foldmethod=marker
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

@@ -1,17 +1,22 @@
-from os.path import join
-from os.path import expanduser
-from os import name
+"""
+Sets up the dotfiles in this repository
+
+Requires python 3
+"""
+
 import os
 import datetime
 
 # ============================================================================
-HOME = expanduser("~")
-dotfiles_dir = join(HOME, "dotfiles")
+
+HOME = os.path.expanduser("~")
+
+DOTFILES_DIR = os.path.join(HOME, "dotfiles")
 
 def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
     return datetime.datetime.now().strftime(fmt).format(fname=fname)
 
-dotfiles_old_dir = join(HOME, time_stamped("dotfiles_old"))
+DOTFILES_OLD_DIR = os.path.join(HOME, time_stamped("dotfiles_old"))
 
 DOTFILES = [
     ".inputrc",
@@ -26,50 +31,50 @@ DOTFILES = [
 ]
 
 BLANK_FILES = [
-    join(HOME, ".zshrc_local"),
-    join(HOME, join(".vim", "vimrc_local")),
-    join(HOME, ".Trash"),
-    join(HOME, ".gitconfig_local"),
+    os.path.join(HOME, ".zshrc_local"),
+    os.path.join(HOME, os.path.join(".vim", "vimrc_local")),
+    os.path.join(HOME, ".Trash"),
+    os.path.join(HOME, ".gitconfig_local"),
 ]
 
 ALIASES = [
-    (join(HOME, '.vim'), join(HOME, 'vimfiles')),
-    (join(HOME, ".vim", "vimrc"), join(HOME, ".vimrc")),
+    (os.path.join(HOME, '.vim'), os.path.join(HOME, 'vimfiles')),
+    (os.path.join(HOME, ".vim", "vimrc"), os.path.join(HOME, ".vimrc")),
 ]
 
 # ============================================================================
 
-print("Creating {0} for backup of any existing dotfiles in {1}".format(dotfiles_old_dir, HOME))
-os.mkdir(dotfiles_old_dir)
-
-print("Moving any existing dotfiles from {0} to {1}".format(dotfiles_dir, dotfiles_old_dir))
+print("Backing up old dotfiles into {0}".format(DOTFILES_OLD_DIR))
+os.mkdir(DOTFILES_OLD_DIR)
 for dotfile in DOTFILES:
-    source = join(HOME, dotfile)
-    target = join(dotfiles_old_dir, dotfile)
+    source = os.path.join(HOME, dotfile)
+    target = os.path.join(DOTFILES_OLD_DIR, dotfile)
     try:
+        print("Moving {0} into {1}".format(source, target))
         os.rename(source, target)
     except:
+        print("Move failed"))
         pass
 
-    print("Symlinking new dotfiles any existing dotfiles from {1} to {0}".format(dotfiles_dir, dotfiles_old_dir))
-    source = join(dotfiles_dir, dotfile)
-    target = join(HOME, dotfile)
+
+print("Symlinking new dotfiles into {0}".format(HOME))
+for dotfile in DOTFILES:
+    source = os.path.join(DOTFILES_DIR, dotfile)
+    target = os.path.join(HOME, dotfile)
     print("Creating symlink {0}".format(target))
     os.symlink(source, target)
 
+
+print("Creating blank local config files")
 for blank_file in BLANK_FILES:
-    print("Creating blank local config file: {0} if needed".format(blank_file))
+    print("Creating config file: {0}".format(blank_file))
     open(blank_file, "w")
 
 
+print("Creating file aliases")
 for alias in ALIASES:
     source = alias[1]
-    target = join(dotfiles_old_dir, os.path.basename(alias[1]))
-    try:
-        os.rename(source, target)
-    except:
-        pass
-
+    target = os.path.join(DOTFILES_OLD_DIR, os.path.basename(alias[1]))
     os.symlink(alias[0], alias[1])
 
 print("All Done")

@@ -1,17 +1,8 @@
-" RYAN CARNEY VIMRC                                                        {{{
+" -                                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
 set fileformats=unix,dos
 set encoding=utf-8 "make Vim use UTF-8 by default
-
-let mapleader="\<Space>"
-nnoremap [show] <Nop>
-xnoremap [show] <Nop>
-nmap go [show]
-xmap go [show]
-
-cnoremap [cmdleader] <Nop>
-cmap <C-j> [cmdleader]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " OPERATING SYSTEM VARIABLES                                               {{{
@@ -329,6 +320,15 @@ set ttimeoutlen=100
 
 set updatetime=1000
 
+let mapleader="\<Space>"
+nnoremap [myleader] <Nop>
+xnoremap [myleader] <Nop>
+nmap go [myleader]
+xmap go [myleader]
+
+cnoremap [cmdleader] <Nop>
+cmap <C-j> [cmdleader]
+
 set grepprg=ack\ -H\ --nocolor\ --nogroup
 
 command! -nargs=+ Grep call s:grep(<q-args>)
@@ -397,7 +397,7 @@ nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'
 nnoremap <silent><C-l> :redraw!<CR><C-l>
 
 " open my vimrc
-nnoremap [show]rc :e $MYVIMRC<CR>
+nnoremap [myleader]rc :e $MYVIMRC<CR>
 
 nnoremap <C-W>d :bd<CR>
 
@@ -410,7 +410,6 @@ inoremap <END> <C-g>u<END>
 
 " yank to end of line, kinda like D or C
 noremap Y y$
-
 
 " visual selection text object
 xnoremap a/ gn
@@ -464,41 +463,30 @@ cnoremap <C-l> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
-"TODO use genotype()
 " find files easier
-cnoremap %* **/*
-cnoremap %f* find<Space>*
+cnoremap <expr>%* (getcmdtype()==':' ? "**/*" : "%*")
+cnoremap <expr>%f* (getcmdtype()==':' ? "find<Space>*" : "%f*")
+cnoremap <expr>%o (getcmdtype()==':' ? "<C-r>=expand('%:p:r:.')<CR>." : "%o")
 
-"TODO use wildmenumode()?
-" alternate file
-" (requires "set wildcharm = <TAB>)
-cnoremap %o <C-r>=expand('%:p:r:.')<CR>.
 
-" filename (trail)       (foo.txt)
-nnoremap <leader>yfn :let @+=expand("%:t")<CR>:let @*=expand("%:t")<CR>
-cnoremap %fn <C-r>=expand('%:t')<CR>
-
-" copy current file name (relative/absolute) to system clipboard
-" relative path  (src/foo.txt)
-nnoremap <leader>yfp :let @+=expand("%")<CR>:let @*=expand("%")<CR>
-cnoremap %fp <C-r>=expand('%')<CR>
-
-" absolute path  (/something/src/foo.txt)
-nnoremap <leader>yfP :let @+=expand("%:p")<CR>:let @*=expand("%:p")<CR>
-cnoremap %fP <C-r>=expand('%:p')<CR>
-
-" directory name (heade) (/something/src)
-nnoremap <leader>ydp :let @+=expand("%:h")<CR>:let @*=expand("%:h")<CR>
-cnoremap %dp <C-r>=expand('%:h')<CR>/
-
-" current directory path
-" directory name (heade) (/something/src)
-nnoremap <leader>ydP :let @+=expand("%:p:h")<CR>:let @*=expand("%:p:h")<CR>
-cnoremap %dP <C-r>=expand('%:p:h')<CR>/
-
-" current working directory
-nnoremap <leader>ypwd :let @+=getcwd()<CR>:let @*=getcwd()<CR>
-cnoremap %pwd <C-r>=getcwd()<CR>
+" fn filename (trail) (foo.txt)
+" fp absolute path  (/something/src/foo.txt)
+" fP relative path  (src/foo.txt)
+" dp current directory name (head) (/something/src)
+" dP directory name (head) (/something/src)
+" pwd current working directory
+let maps = [
+            \ {"str" : "fn",  "func" : "expand('%:t')"},
+            \ {"str" : "fp",  "func" : "expand('%:p')"},
+            \ {"str" : "fP",  "func" : "expand('%')"},
+            \ {"str" : "dp",  "func" : "expand('%:p:h')"},
+            \ {"str" : "dP",  "func" : "expand('%:h')"},
+            \ {"str" : "pwd", "func" : "getcwd()"}
+            \ ]
+for map in maps
+    execute "nnoremap <silent> <Leader>y".map.str." :let @+=".map.func."\<CR>:let @+=".map.func."\<CR>"
+    execute "cnoremap %".map.str." \<C-r>=".map.func."\<CR>"
+endfor
 
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
@@ -786,16 +774,15 @@ NeoBundle 'dhruvasagar/vim-table-mode'
 NeoBundle 'edkolev/tmuxline.vim'
 NeoBundle 'godlygeek/tabular'
 NeoBundle 'gregsexton/gitv'
-NeoBundle 'henrik/vim-qargs'
+" NeoBundle 'henrik/vim-qargs'
 NeoBundle 'hrsh7th/vim-neco-calc'
 NeoBundle 'idanarye/vim-vebugger' "depends on 'Shougo/vimproc'
 NeoBundle 'int3/vim-extradite'
 NeoBundle 'junegunn/goyo.vim'
-NeoBundle 'junegunn/seoul256.vim'
 NeoBundle 'junegunn/vader.vim'
 NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl' }
 NeoBundle 'kana/vim-niceblock'
-NeoBundle 'Lokaltog/vim-easymotion'
+" NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'lopter/moin.vim'
 NeoBundle 'mbbill/undotree'
 NeoBundle 'morhetz/gruvbox'
@@ -807,17 +794,16 @@ NeoBundle 'Shougo/neocomplete'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'Shougo/neosnippet.vim'
 NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'Shougo/vimshell.vim' "depends on 'Shougo/vimproc'
+NeoBundle 'Shougo/vimshell.vim', {'depends' : 'Shougo/vimproc'}
 NeoBundle 't9md/vim-choosewin'
 NeoBundle 't9md/vim-quickhl'
 NeoBundle 't9md/vim-textmanip'
 NeoBundle 'talek/obvious-resize'
-NeoBundle 'TeTrIs.vim'
-NeoBundle 'thinca/vim-fontzoom'
+" NeoBundle 'TeTrIs.vim'
 NeoBundle 'thinca/vim-qfreplace'
-NeoBundle 'tommcdo/vim-lion'
+" NeoBundle 'tommcdo/vim-lion'
 NeoBundle 'tpope/vim-abolish'
-NeoBundle 'tpope/vim-dispatch'
+" NeoBundle 'tpope/vim-dispatch'
 NeoBundle 'tpope/vim-eunuch'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'tpope/vim-markdown'
@@ -825,19 +811,19 @@ NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'vim-scripts/cmdalias.vim'
-NeoBundle 'vim-scripts/DrawIt'
+" NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
-NeoBundle 'w0ng/vim-hybrid'
+" NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'mhinz/vim-signify'
 NeoBundle 'qstrahl/vim-matchmaker'
-NeoBundle 'AndrewRadev/gapply.vim'
-NeoBundle 'tomtom/tassert_vim'
-NeoBundle 'Decho'
-NeoBundle 'lyuts/vim-rtags'
-NeoBundle 'sickill/vim-monokai'
-NeoBundle 'mhinz/vim-sayonara'
+" NeoBundle 'AndrewRadev/gapply.vim'
+" NeoBundle 'tomtom/tassert_vim'
+" NeoBundle 'Decho'
+" NeoBundle 'lyuts/vim-rtags'
+" NeoBundle 'sickill/vim-monokai'
+" NeoBundle 'mhinz/vim-sayonara'
 NeoBundle 'airblade/vim-rooter'
 NeoBundle 'wesQ3/vim-windowswap'
 NeoBundle 'dyng/ctrlsf.vim'
@@ -1080,27 +1066,27 @@ if neobundle#is_installed('unite.vim') "{{{2
                 \   ['ipython', 'VimShellInteractive ipython --colors=NoColor'],
                 \ ]
 
-    xnoremap [show]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
-    nnoremap [show]g  :<C-u>Unite -no-quit grep:.<CR>
-    nnoremap [show]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
-    nnoremap [show]f  :<C-u>Unite file_rec/async -start-insert -input=<CR>
-    nnoremap [show]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
-    nnoremap [show]r  :<C-u>Unite file_mru -start-insert<CR>
-    nnoremap [show]rg :<C-u>Unite register -vertical<CR>
-    nnoremap [show]b  :<C-u>Unite buffer -start-insert<CR>
-    nnoremap [show]o  :<C-u>Unite outline<CR>
-    nnoremap [show]l  :<C-u>Unite line -start-insert<CR>
-    nnoremap [show]h  :<C-u>Unite help -start-insert<CR>
-    nnoremap [show]s  :<C-u>Unite -input=session<CR>
-    nnoremap [show]i  :<C-u>Unite menu:interpreters<CR>
-    nnoremap [show]hc :<C-u>Unite cmdmatch history/command<CR>
-    nnoremap [show]hs :<C-u>Unite history/search<CR>
-    nnoremap [show]p  :<C-u>Unite history/yank<CR>
-    xnoremap [show]p  dk:<C-u>Unite history/yank<CR>
-    nnoremap [show]ps :<C-u>Unite process -start-insert<CR>
-    nnoremap [show]up :<C-u>Unite neobundle/update -tab<CR>
-    nnoremap [show]t  :<C-u>UniteWithCursorWord tag<CR>
-    nnoremap [show]ur :<C-u>UniteResume<CR>
+    xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
+    nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
+    nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
+    nnoremap [myleader]f  :<C-u>Unite file_rec/async -start-insert -input=<CR>
+    nnoremap [myleader]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
+    nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
+    nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
+    nnoremap [myleader]b  :<C-u>Unite buffer -start-insert<CR>
+    nnoremap [myleader]o  :<C-u>Unite outline<CR>
+    nnoremap [myleader]l  :<C-u>Unite line -start-insert<CR>
+    nnoremap [myleader]h  :<C-u>Unite help -start-insert<CR>
+    nnoremap [myleader]s  :<C-u>Unite -input=session<CR>
+    nnoremap [myleader]i  :<C-u>Unite menu:interpreters<CR>
+    nnoremap [myleader]hc :<C-u>Unite cmdmatch history/command<CR>
+    nnoremap [myleader]hs :<C-u>Unite history/search<CR>
+    nnoremap [myleader]p  :<C-u>Unite history/yank<CR>
+    xnoremap [myleader]p  dk:<C-u>Unite history/yank<CR>
+    nnoremap [myleader]ps :<C-u>Unite process -start-insert<CR>
+    nnoremap [myleader]up :<C-u>Unite neobundle/update -tab<CR>
+    nnoremap [myleader]t  :<C-u>UniteWithCursorWord tag<CR>
+    nnoremap [myleader]ur :<C-u>UniteResume<CR>
     nnoremap <C-s>    :<C-u>Unite spell_suggest<CR>
 
     command! Messages Unite output:message
@@ -1132,7 +1118,7 @@ if neobundle#is_installed('vimfiler.vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vimshell.vim') "{{{2
-    nnoremap <silent> [show]sh :<C-u>topleft 15split<CR>:VimShell<CR>
+    nnoremap <silent> [myleader]sh :<C-u>topleft 15split<CR>:VimShell<CR>
 
     let g:vimshell_enable_start_insert = 1
     let g:vimshell_vimshrc_path = s:vim_path.'/utils/vimshell/vimshellrc'
@@ -1198,7 +1184,6 @@ if neobundle#is_installed('vim-textmanip') "{{{2
     xmap <C-h> <Plug>(textmanip-move-left)
     xmap <C-l> <Plug>(textmanip-move-right)
 
-
     xmap g<C-j> <Plug>(textmanip-duplicate-down)
     xmap g<C-k> <Plug>(textmanip-duplicate-up)
     xmap g<C-h> <Plug>(textmanip-duplicate-left)
@@ -1227,7 +1212,6 @@ if neobundle#is_installed('vim-easymotion') "{{{2
 
     let g:EasyMotion_smartcase = 1
     let g:EasyMotion_do_mapping = 0
-
 endif "}}}2
 
 if neobundle#is_installed('vim-choosewin') "{{{2
@@ -1251,12 +1235,6 @@ endif "}}}2
 
 if neobundle#is_installed('FormatToWidth') "{{{2
     xmap gQ <Plug>FormatToWidth
-endif "}}}2
-
-if neobundle#is_installed('vim-fontzoom') "{{{2
-    let g:fontzoom_no_default_key_mappings = 1
-    nnoremap  z+ <Plug>(fontzoom-larger)
-    nnoremap  z- <Plug>(fontzoom-smaller)
 endif "}}}2
 
 if neobundle#is_installed('linediff.vim') "{{{2
@@ -1299,7 +1277,7 @@ if neobundle#is_installed('vim-table-mode') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('undotree') "{{{2
-    nnoremap [show]ut :UndotreeToggle<CR>:UndotreeFocus<CR>
+    nnoremap [myleader]ut :UndotreeToggle<CR>:UndotreeFocus<CR>
 endif "}}}2
 
 if neobundle#is_installed('goyo.vim') "{{{2
@@ -1398,13 +1376,13 @@ if neobundle#is_installed('vim-rooter') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vim-unite-giti') "{{{2
-    nnoremap [show]git :<C-u>Unite giti -start-insert<CR>
+    nnoremap [myleader]git :<C-u>Unite giti -start-insert<CR>
 endif "}}}2
 
 if neobundle#is_installed('fold-cycle.vim')
-   " let g:fold_cycle_default_mapping = 0
-   " nmap zo <Plug>(fold-cycle-open)
-   " nmap zc <Plug>(fold-cycle-close)
+   let g:fold_cycle_default_mapping = 0
+   nmap zo <Plug>(fold-cycle-open)
+   nmap zc <Plug>(fold-cycle-close)
    " nmap zr <Plug>(fold-cycle-open-global)
    " nmap zm <Plug>(fold-cycle-close-global)
 endif
@@ -1414,7 +1392,7 @@ if neobundle#is_installed('gruvbox')
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" FIN                                                                      {{{
+" -                                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim: textwidth=78
 " vim: foldmethod=marker

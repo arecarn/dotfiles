@@ -1,13 +1,8 @@
-# ZSHRC                                                                    {{{
+# -                                                                        {{{
 ##############################################################################
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# ZSH_THEME="af-magic"
 ZSH_THEME="terminalparty"
 # ZSH_THEME="simple"
 
@@ -23,10 +18,6 @@ plugins=(vi-mode)
 source $ZSH/oh-my-zsh.sh
 
 ###########################################################################}}}
-# USER CONFIGURATION                                                       {{{
-##############################################################################
-
-###########################################################################}}}
 # LINES CONFIGURED BY ZSH-NEWUSER-INSTALL                                  {{{
 ##############################################################################
 HISTFILE=~/.histfile
@@ -34,32 +25,26 @@ HISTSIZE=10000
 SAVEHIST=10000
 
 ###########################################################################}}}
-# THE FOLLOWING LINES WERE ADDED BY COMPINSTALL                            {{{
-##############################################################################
-zstyle :compinstall filename '~/.zshrc'
-autoload -Uz compinit
-compinit
-
-###########################################################################}}}
 # General Settings                                                         {{{
 ##############################################################################
-setopt histignoredups
-setopt autonamedirs
+setopt histignoredups # ignore duplicates in history
+setopt autonamedirs #
 setopt autocd
 
 ###########################################################################}}}
 # KEY BINDINGS                                                             {{{
 ##############################################################################
-# vi like settings
-bindkey -v
+bindkey -v # vi like settings
 export KEYTIMEOUT=1
 
 # ctrl-p ctrl-n history navigation
-bindkey '^P' up-history
-bindkey '^N' down-history
+bindkey '^P' history-beginning-search-backward
+bindkey '^N' history-beginning-search-forward
+
 # backspace and ^h working even after returning from command mode
 bindkey '^?' backward-delete-char
 bindkey '^H' backward-delete-char
+
 # ctrl-w removed word backwards
 bindkey '^W' backward-kill-word
 
@@ -68,17 +53,13 @@ bindkey '^R' history-incremental-search-backward
 # s starts searching history backward
 bindkey '^S' history-incremental-search-forward
 
-bindkey '^P' history-beginning-search-backward
-bindkey '^N' history-beginning-search-forward
-
 bindkey -M vicmd '^P' history-beginning-search-backward
 bindkey -M vicmd '^N' history-beginning-search-forward
 
 bindkey '^E' _expand_alias
 
-
 ###########################################################################}}}
-# ALIASES                                                                  {{{
+# ALIASES AND SMALL SCRIPTS                                                {{{
 ##############################################################################
 alias pslevel='pstree -s $$'
 alias e='vim'
@@ -97,6 +78,7 @@ elif [[ "$OSTYPE" == "win32" ]]; then
 else
 fi
 
+# run a command untill it fails
 function untilfail()
 {
     while "$@";
@@ -139,5 +121,8 @@ source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 stty -ixon
 stty stop undef
 
+# -                                                                        {{{
+##############################################################################
 # vim: textwidth=78
 # vim: foldmethod=marker
+###########################################################################}}}

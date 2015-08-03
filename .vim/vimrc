@@ -694,9 +694,14 @@ command! -nargs=* Hex echo printf("0x%X",eval(<q-args>))
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " neobundle {{{2
+
+let s:neobundle_path = s:vim_path.'/bundle/neobundle.vim'
+if !isdirectory(s:neobundle_path)
+    execute '!git clone https://github.com/Shougo/neobundle.vim '
+        \ . s:neobundle_path
+endif
 if has('vim_starting')
-    let s:runtimepath = s:vim_path.'/bundle/neobundle.vim/'
-    execute 'set runtimepath+='.s:runtimepath
+    execute 'set runtimepath+='.s:neobundle_path.'/'
 endif
 
 call neobundle#begin(expand(s:vim_path.'/bundle'))
@@ -1265,7 +1270,10 @@ if neobundle#is_installed('vim-airline') "{{{2
     let g:airline#extensions#tabline#buffer_nr_show = 1
     let g:airline_powerline_fonts = 1
     let g:airline_inactive_collapse = 0
-    let g:airline_theme='gruvbox'
+
+    if neobundle#is_installed('gruvbox') "{{{3
+        let g:airline_theme='gruvbox'
+    endif "}}}3
 
     if !has('vim_starting') && g:loaded_airline
         AirlineRefresh "refresh  when it starts looking wonky

@@ -1,21 +1,13 @@
 # -                                                                        {{{
 ##############################################################################
-# Path to your oh-my-zsh configuration.
-ZSH=$HOME/.oh-my-zsh
+source ~/antigen.zsh
 
-ZSH_THEME="terminalparty"
-# ZSH_THEME="simple"
-
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment following line if you want to disable marking untracked files under
-# VCS as dirty. This makes repository status check for large repositories much,
-# much faster.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-plugins=(vi-mode)
-
-source $ZSH/oh-my-zsh.sh
+antigen bundle git
+antigen use oh-my-zsh
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle command-not-found
+antigen theme terminalparty
+antigen apply
 
 ###########################################################################}}}
 # LINES CONFIGURED BY ZSH-NEWUSER-INSTALL                                  {{{

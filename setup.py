@@ -53,7 +53,7 @@ for dotfile in DOTFILES:
         print("Moving {0} into {1}".format(source, target))
         os.rename(source, target)
     except:
-        print("Move failed"))
+        print("Move failed")
         pass
 
 

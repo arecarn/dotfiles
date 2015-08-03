@@ -1,6 +1,6 @@
 # -                                                                        {{{
 ##############################################################################
-source ~/antigen.zsh
+source ~/antigen/antigen.zsh
 
 antigen bundle git
 antigen use oh-my-zsh

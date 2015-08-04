@@ -23,9 +23,8 @@ DOTFILES = [
     ".tmux.conf",
     ".mutt",
     ".gitconfig",
-    # ".gitignore_global",
+    ".gitignore_global",
     ".zshrc",
-    ".oh-my-zsh",
     ".vim",
     ".ctags",
 ]
@@ -75,6 +74,9 @@ print("Creating file aliases")
 for alias in ALIASES:
     source = alias[1]
     target = os.path.join(DOTFILES_OLD_DIR, os.path.basename(alias[1]))
-    os.symlink(alias[0], alias[1])
+    try:
+        os.symlink(alias[0], alias[1])
+    except:
+        pass
 
 print("All Done")

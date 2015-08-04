@@ -14,14 +14,20 @@ fi
 )
 
 source $antigen_file
-antigen bundle git
-antigen use oh-my-zsh
-antigen theme terminalparty
-antigen bundle command-not-found
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle zsh-users/zsh-history-substring-search
-antigen bundle tarruda/zsh-autosuggestions
 
+antigen use oh-my-zsh
+antigen theme flazz
+antigen bundle command-not-found
+antigen bundle git
+antigen bundle tarruda/zsh-autosuggestions
+antigen bundle tmux
+antigen bundle vi-mode
+antigen bundle z
+antigen bundle zsh-users/zsh-completions src
+antigen bundle zsh-users/zsh-history-substring-search
+antigen bundle zsh-users/zsh-syntax-highlighting
+
+antigen apply
 
 # autosuggestions config
 # Enable autosuggestions automatically
@@ -29,7 +35,6 @@ zle-line-init() {
     zle autosuggest-start
 }
 zle -N zle-line-init
-antigen apply
 
 ###########################################################################}}}
 # LINES CONFIGURED BY ZSH-NEWUSER-INSTALL                                  {{{

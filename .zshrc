@@ -1,6 +1,19 @@
 # -                                                                        {{{
 ##############################################################################
-source ~/antigen/antigen.zsh
+antigen_dir=~/antigen
+antigen_file=~/antigen/antigen.zsh
+
+(
+if ! [[ -e $antigen_file ]]; then
+    git clone https://github.com/zsh-users/antigen $antigen_dir
+else
+    cd $antigen_dir
+    git pull
+    cd -
+fi
+)
+
+source $antigen_file
 
 antigen bundle git
 antigen use oh-my-zsh

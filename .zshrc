@@ -1,33 +1,39 @@
 # -                                                                        {{{
 ##############################################################################
-antigen_dir=~/antigen
-antigen_file=~/antigen/antigen.zsh
+zgen_dir=~/zgen
+zgen_file=~/zgen/zgen.zsh
 
 (
-if ! [[ -e $antigen_file ]]; then
-    git clone https://github.com/zsh-users/antigen $antigen_dir
-else
-    cd $antigen_dir
-    git pull
-    cd -
+if ! [[ -e $zgen_file ]]; then
+    git clone https://github.com/tarjoilija/zgen $zgen_dir
 fi
 )
+source $zgen_file
 
-source $antigen_file
+# check if there's no init script
+if ! zgen saved; then
+    echo "Creating a zgen save"
 
-antigen use oh-my-zsh
-antigen theme flazz
-antigen bundle command-not-found
-antigen bundle git
-antigen bundle tarruda/zsh-autosuggestions
-antigen bundle tmux
-antigen bundle vi-mode
-antigen bundle z
-antigen bundle zsh-users/zsh-completions src
-antigen bundle zsh-users/zsh-history-substring-search
-antigen bundle zsh-users/zsh-syntax-highlighting
+    zgen oh-my-zsh
 
-antigen apply
+    #plugins
+    zgen load bundle command-not-found
+    zgen load bundle git
+    zgen load bundle tmux
+    zgen load bundle z
+    zgen load bundle zsh-users/zsh-completions src
+    # start maintain ordering
+    zgen load zsh-users/zsh-syntax-highlighting
+    zgen load zsh-users/zsh-history-substring-search
+    zgen load tarruda/zsh-autosuggestions
+    # end maintain ordering
+
+    # theme
+    zgen oh-my-zsh themes/robbyrussell
+
+    # save all to init script
+    zgen save
+fi
 
 # autosuggestions config
 # Enable autosuggestions automatically
@@ -35,6 +41,7 @@ zle-line-init() {
     zle autosuggest-start
 }
 zle -N zle-line-init
+
 
 ###########################################################################}}}
 # LINES CONFIGURED BY ZSH-NEWUSER-INSTALL                                  {{{
@@ -57,11 +64,20 @@ bindkey -v # vi like settings
 export KEYTIMEOUT=1
 
 # ctrl-p ctrl-n history navigation
-bindkey '^P' history-beginning-search-backward
-bindkey '^N' history-beginning-search-forward
+# bindkey '^P' history-beginning-search-backward
+# bindkey '^N' history-beginning-search-forward
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
+
+# bindkey -M vicmd '^P' history-beginning-search-backward
+# bindkey -M vicmd '^N' history-beginning-search-forward
+
+# bind k and j for VI mode
+bindkey -M vicmd '^P' history-substring-search-up
+bindkey -M vicmd '^N' history-substring-search-down
 
 # Accept suggestions without leaving insert mode
-bindkey '^f' vi-forward-blank-word
+bindkey '^F' vi-forward-blank-word
 
 # backspace and ^h working even after returning from command mode
 bindkey '^?' backward-delete-char
@@ -75,10 +91,10 @@ bindkey '^R' history-incremental-search-backward
 # s starts searching history backward
 bindkey '^S' history-incremental-search-forward
 
-bindkey -M vicmd '^P' history-beginning-search-backward
-bindkey -M vicmd '^N' history-beginning-search-forward
 
 bindkey '^E' _expand_alias
+
+
 
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{

@@ -14,12 +14,21 @@ fi
 )
 
 source $antigen_file
-
 antigen bundle git
 antigen use oh-my-zsh
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle command-not-found
 antigen theme terminalparty
+antigen bundle command-not-found
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zsh-history-substring-search
+antigen bundle tarruda/zsh-autosuggestions
+
+
+# autosuggestions config
+# Enable autosuggestions automatically
+zle-line-init() {
+    zle autosuggest-start
+}
+zle -N zle-line-init
 antigen apply
 
 ###########################################################################}}}
@@ -45,6 +54,9 @@ export KEYTIMEOUT=1
 # ctrl-p ctrl-n history navigation
 bindkey '^P' history-beginning-search-backward
 bindkey '^N' history-beginning-search-forward
+
+# Accept suggestions without leaving insert mode
+bindkey '^f' vi-forward-blank-word
 
 # backspace and ^h working even after returning from command mode
 bindkey '^?' backward-delete-char

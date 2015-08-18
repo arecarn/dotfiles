@@ -364,6 +364,8 @@ endfunction
 " format while in insert mode
 inoremap <C-F> <ESC>gw{a
 
+nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
+
 " think of "co" as "change option"
 nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>
 nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
@@ -427,12 +429,30 @@ nnoremap <C-p> N.
 nnoremap g. @:
 
 " split line here
-nnoremap S i<cr><esc>k$
+function! s:split()
+    s/\v(.{-})(\s*)(%#)(\s*)(.*)/\1\r\3\5
+    call histdel("/", -1)
+    normal! ==
+endfunction
+nnoremap <silent> S :call <SID>split()<CR>
 
+
+" split line here
+function! s:split_up()
+    s/\v(.{-})(\s*)(%#)(\s*)(.*)/\3\5\r\1
+    call histdel("/", -1)
+    normal! k==
+endfunction
+nnoremap <silent> gS :call <SID>split_up()<CR>
+
+" split line here
+function! s:join_front()
+    s/\v(.*)\n(.*)/\2 \1
+    call histdel("/", -1)
+    normal! ==
+endfunction
 " join to front
-nnoremap gJ ddpkJ
-
-
+nnoremap gJ :call <SID>join_front()<CR>
 
 " set path to present working directory locally
 nnoremap cdl :lcd! %:h<CR>:pwd<CR>
@@ -452,7 +472,7 @@ cnoremap <C-e> <END>
 " find files easier
 nnoremap <leader>e :e **/*
 nnoremap <leader>f :find *
-nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR>.
+nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
 
 
 " fn filename (trail) (foo.txt)
@@ -752,6 +772,7 @@ NeoBundle 'hewes/unite-gtags'
 NeoBundle 'naquad/unite-digraphs' "}}}2
 
 " NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
+NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-commentary'
@@ -763,7 +784,7 @@ NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'arecarn/auto-file-loader.vim'
 NeoBundle 'arecarn/clean-fold.vim'
-NeoBundle 'arecarn/fold-cycle.vim',  {'rev' : 'topics/global_fold_cycling'}
+NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'arecarn/git-diff-cached-preview.vim'
 NeoBundle 'arecarn/go-to-buffer.vim'
@@ -1014,10 +1035,12 @@ if neobundle#is_installed('unite.vim') "{{{2
     let g:unite_split_rule = 'botright'
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
     call unite#filters#sorter_default#use(['sorter_rank'])
-    call unite#custom#source('file_rec,file_rec/async', 'max_candidates', 0)
+    call unite#custom#source('file_rec/git,file_rec,file_rec/async', 'max_candidates', 0)
     call unite#custom#profile('files', 'filters', 'sorter_rank')
+    let s:unite_sources = 'file_rec/git,file_rec,file_rec/async,file_mru,file,grep'
+    let s:unite_ignores = &wildignore.','.substitute(&suffixes, '\.', '*.', 'g')
     call unite#custom#source(
-                \ 'file_rec,file_rec/async,file_mru,file,grep',
+                \ s:unite_sources,
                 \ 'ignore_pattern',
                 \ join(
                 \     [
@@ -1025,19 +1048,24 @@ if neobundle#is_installed('unite.vim') "{{{2
                 \      '\.hg.*',
                 \      '\.svn.*',
                 \      '\.Trash*',
-                \      '\.ini*',
-                \      '\.dbx*',
-                \      '\.cache*'
+                \      '*.ini',
+                \      '*.dbx',
+                \      '*.cache',
+                \      'tags.*',
                 \     ],
                 \     '\|'
                 \ ))
     call unite#custom#source(
-                \ 'file_rec,file_rec/async,file_mru,file,grep',
+                \ s:unite_sources,
                 \ 'ignore_globs',
-                \ split(
-                \     &wildignore.','.substitute(&suffixes, '\.', '*.', 'g'),
-                \     ','
-                \ ))
+                \ split(s:unite_ignores, ',')
+                \ )
+
+    let g:unite_source_grep_command = 'grep'
+    let g:unite_source_grep_default_opts = '-nH --exclude={' .
+                \ s:unite_ignores .
+                \ '} --exclude-dir={.git,.hg,.svn}'
+
 
     let g:unite_source_grep_max_candidates = 1000
 
@@ -1063,11 +1091,10 @@ if neobundle#is_installed('unite.vim') "{{{2
     xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
     nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
     nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
-    nnoremap [myleader]f  :<C-u>Unite file_rec/async -start-insert -input=<CR>
-    nnoremap [myleader]fg :<C-u>Unite file file_rec/git -start-insert -input=<CR>
+    nnoremap [myleader]ff :<C-u>Unite file_rec/git file_rec/async -start-insert -unique -input=<CR>
     nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
-    nnoremap [myleader]b  :<C-u>Unite buffer -start-insert<CR>
+    nnoremap [myleader]b  :<C-u>Unite buffer:! -start-insert<CR>
     nnoremap [myleader]o  :<C-u>Unite outline<CR>
     nnoremap [myleader]l  :<C-u>Unite line -start-insert<CR>
     nnoremap [myleader]h  :<C-u>Unite help -start-insert<CR>
@@ -1112,7 +1139,8 @@ if neobundle#is_installed('vimfiler.vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vimshell.vim') "{{{2
-    nnoremap <silent> [myleader]sh :<C-u>topleft 15split<CR>:VimShell<CR>
+    nnoremap <silent> [myleader]sh
+                \ :<C-u>topleft 15split<CR>:<C-u>VimShellCurrentDir<CR>
 
     let g:vimshell_enable_start_insert = 1
     let g:vimshell_vimshrc_path = s:vim_path.'/utils/vimshell/vimshellrc'
@@ -1253,7 +1281,6 @@ if neobundle#is_installed('vim-textobj-comment') "{{{2
     omap i# <Plug>(textobj-comment-i)
 endif "}}}2
 
-
 if neobundle#is_installed('vim-table-mode') "{{{2
     let g:table_mode_separator = '|'
 endif "}}}2
@@ -1352,6 +1379,7 @@ if neobundle#is_installed('vim-matchmaker') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vim-rooter') "{{{2
+    let g:rooter_manual_only = 1
     let g:rooter_disable_map = 1
     let g:rooter_use_lcd = 0
     map <silent> cdp <Plug>RooterChangeToRootDirectory
@@ -1361,17 +1389,21 @@ if neobundle#is_installed('vim-unite-giti') "{{{2
     nnoremap [myleader]git :<C-u>Unite giti -start-insert<CR>
 endif "}}}2
 
-if neobundle#is_installed('fold-cycle.vim')
+if neobundle#is_installed('fold-cycle.vim') "{{{2
    let g:fold_cycle_default_mapping = 0
    nmap zo <Plug>(fold-cycle-open)
    nmap zc <Plug>(fold-cycle-close)
    " nmap zr <Plug>(fold-cycle-open-global)
    " nmap zm <Plug>(fold-cycle-close-global)
-endif
+endif "}}}2
 
-if neobundle#is_installed('gruvbox')
+if neobundle#is_installed('vim-operator-replace') "{{{2
+    map g" <Plug>(operator-replace)
+endif "}}}2
+
+if neobundle#is_installed('gruvbox') "{{{2
     colorscheme gruvbox
-endif
+endif "}}}2
 
 if neobundle#is_installed('vim-airline') "{{{2
     let g:airline#extensions#tabline#enabled = 1

@@ -188,3 +188,5 @@ vimrc
 grep
 plugisn
 zsh
+struct
+vimshell

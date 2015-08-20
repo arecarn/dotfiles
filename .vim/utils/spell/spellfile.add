@@ -186,3 +186,5 @@ accessor
 gitignore
 vimrc
 grep
+plugisn
+zsh

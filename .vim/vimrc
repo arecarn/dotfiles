@@ -362,7 +362,7 @@ function! s:under_line() abort
 endfunction
 
 " format while in insert mode
-inoremap <C-F> <ESC>gw{a
+inoremap <C-F> <ESC>gw{zea
 
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
 
@@ -478,6 +478,9 @@ nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
 " fn filename (trail) (foo.txt)
 " fp absolute path  (/something/src/foo.txt)
 " fP relative path  (src/foo.txt)
+" ofn filename (trail)
+" ofp absolute path
+" ofP relative path
 " dp current directory name (head) (/something/src)
 " dP directory name (head) (/something/src)
 " pwd current working directory
@@ -485,6 +488,9 @@ let maps = [
             \ {"str" : "fn",  "func" : "expand('%:t')"},
             \ {"str" : "fp",  "func" : "expand('%:p')"},
             \ {"str" : "fP",  "func" : "expand('%')"},
+            \ {"str" : "ofn", "func" : "expand('%:t:r') . '.'"},
+            \ {"str" : "ofp", "func" : "expand('%:p:r:.') . '.'"},
+            \ {"str" : "ofP", "func" : "expand('%<') . '.'"},
             \ {"str" : "dp",  "func" : "expand('%:p:h')"},
             \ {"str" : "dP",  "func" : "expand('%:h')"},
             \ {"str" : "pwd", "func" : "getcwd()"}
@@ -1091,7 +1097,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
     nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
     nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
-    nnoremap [myleader]ff :<C-u>Unite file_rec/git file_rec/async -start-insert -unique -input=<CR>
+    nnoremap [myleader]f :<C-u>Unite file_rec/git file_rec/async -start-insert -unique -input=<CR>
     nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
     nnoremap [myleader]b  :<C-u>Unite buffer:! -start-insert<CR>

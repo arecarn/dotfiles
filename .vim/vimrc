@@ -25,10 +25,9 @@ set wildcharm=<TAB>
 
 " File Searching
 " ignored files
-set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.r43,*.s43,*.d43,*.pm
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,HEAD
 " lower priority files suffixes
-set suffixes-=.h
-set suffixes+=.git,.hg,.svn,.lst,.i
+set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn,.lst,.i,.map
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " CURSOR SETTINGS                                                          {{{
@@ -204,8 +203,6 @@ set tags=tags;/ "the ";/" allows you to look back wards
 set cscoperelative
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 
-set exrc
-
 function! PrintCscopeOptions()
     echo "g: Definition"
     echo "c: Functions calling this function"
@@ -244,11 +241,6 @@ set backspace=indent,eol,start
 
 set virtualedit+=all
 
-try
-    source ~/.vimrc_local
-    source ./.vimrc_local
-catch
-endtry
 
 set modeline
 
@@ -435,16 +427,10 @@ nnoremap <C-p> N.
 nnoremap g. @:
 
 " split line here
-" nnoremap S i<cr><esc>k$
+nnoremap S i<cr><esc>k$
 
 " join to front
 nnoremap gJ ddpkJ
-" IDEA
-" join command that takes two args
-" <leader>j<a1><a2>
-"
-" e.g. <leader>jjh joins down and to the left
-" e.g. <leader>jkl joins up and to the right
 
 
 
@@ -464,9 +450,9 @@ cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
 " find files easier
-cnoremap <expr>%* (getcmdtype()==':' ? "**/*" : "%*")
-cnoremap <expr>%f* (getcmdtype()==':' ? "find<Space>*" : "%f*")
-cnoremap <expr>%o (getcmdtype()==':' ? "<C-r>=expand('%:p:r:.')<CR>." : "%o")
+nnoremap <leader>e :e **/*
+nnoremap <leader>f :find *
+nnoremap <leader>eo :e <C-r>=expand('%:p:r:.')<CR>.
 
 
 " fn filename (trail) (foo.txt)
@@ -484,7 +470,10 @@ let maps = [
             \ {"str" : "pwd", "func" : "getcwd()"}
             \ ]
 for map in maps
-    execute "nnoremap <silent> <Leader>y".map.str." :let @+=".map.func."\<CR>:let @+=".map.func."\<CR>"
+    execute "nnoremap <silent> <Leader>y".map.str.
+                \ " :let @*=".map.func.
+                \ "\<CR>:let @+=".map.func.
+                \ "\<CR>:let @\"=".map.func."\<CR>"
     execute "cnoremap %".map.str." \<C-r>=".map.func."\<CR>"
 endfor
 
@@ -569,6 +558,7 @@ function! AddToSearch(mode)
     let @/ .= @@
     let @@ = save_reg
 endfunction
+
 
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
@@ -689,6 +679,17 @@ function! TSIndent(line)
 endfunction
 
 command! -nargs=* Hex echo printf("0x%X",eval(<q-args>))
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
+" BEFORE PLUGINS                                                           {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if filereadable('.vimrc_project')
+    source .vimrc_project
+endif
+
+if filereadable(glob('~/.vimrc_local', 1))
+    source ~/.vimrc_local
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
@@ -1015,46 +1016,30 @@ if neobundle#is_installed('unite.vim') "{{{2
     call unite#filters#sorter_default#use(['sorter_rank'])
     call unite#custom#source('file_rec,file_rec/async', 'max_candidates', 0)
     call unite#custom#profile('files', 'filters', 'sorter_rank')
+    call unite#custom#source(
+                \ 'file_rec,file_rec/async,file_mru,file,grep',
+                \ 'ignore_pattern',
+                \ join(
+                \     [
+                \      '\.git.*',
+                \      '\.hg.*',
+                \      '\.svn.*',
+                \      '\.Trash*',
+                \      '\.ini*',
+                \      '\.dbx*',
+                \      '\.cache*'
+                \     ],
+                \     '\|'
+                \ ))
+    call unite#custom#source(
+                \ 'file_rec,file_rec/async,file_mru,file,grep',
+                \ 'ignore_globs',
+                \ split(
+                \     &wildignore.','.substitute(&suffixes, '\.', '*.', 'g'),
+                \     ','
+                \ ))
 
-    call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
-                \ 'ignore_pattern', join([
-                \ '\.git',  '\.Trash', '\.ini$' ,'\.dbx$', '\.cache$',
-                \ ], '\|'))
-    call unite#custom#source('file_rec,file_rec/async,file_mru,file,grep',
-                \ 'ignore_globs', split(&wildignore . ',' .
-                \ substitute(&suffixes, '\.', '*.', 'g'), ','))
-
-
-    " grep source settings "{{{3
     let g:unite_source_grep_max_candidates = 1000
-    if executable('ack')
-        let g:unite_source_grep_command = 'ack'
-        let g:unite_source_grep_default_opts =
-                    \ '--no-heading --no-color -k -H -i'
-        let g:unite_source_grep_recursive_opt = ''
-
-    elseif executable('ag')
-        " Use ag in unite grep source.
-        let g:unite_source_grep_command = 'ag'
-        let g:unite_source_grep_default_opts =
-                    \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
-                    \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
-
-        let g:unite_source_grep_recursive_opt = ''
-    elseif executable('pt')
-        " Use pt in unite grep source.
-        " https://github.com/monochromegane/the_platinum_searcher
-        let g:unite_source_grep_command = 'pt'
-        let g:unite_source_grep_default_opts = '--nogroup --nocolor'
-        let g:unite_source_grep_recursive_opt = ''
-
-    elseif executable('ack-grep')
-        " Use ack in unite grep source.
-        let g:unite_source_grep_command = 'ack-grep'
-        let g:unite_source_grep_default_opts =
-                    \ '-i --no-heading --no-color -k -H'
-        let g:unite_source_grep_recursive_opt = ''
-    endif "}}}3
 
     autocmd FileType unite call s:unite_settings()
     function! s:unite_settings()
@@ -1268,21 +1253,6 @@ if neobundle#is_installed('vim-textobj-comment') "{{{2
     omap i# <Plug>(textobj-comment-i)
 endif "}}}2
 
-if neobundle#is_installed('vim-airline') "{{{2
-    let g:airline#extensions#tabline#enabled = 1
-    let g:airline#extensions#tabline#tab_nr_type = 1
-    let g:airline#extensions#tabline#buffer_nr_show = 1
-    let g:airline_powerline_fonts = 1
-    let g:airline_inactive_collapse = 0
-
-    if neobundle#is_installed('gruvbox') "{{{3
-        let g:airline_theme='gruvbox'
-    endif "}}}3
-
-    if !has('vim_starting') && g:loaded_airline
-        AirlineRefresh "refresh  when it starts looking wonky
-    endif
-endif "}}}2
 
 if neobundle#is_installed('vim-table-mode') "{{{2
     let g:table_mode_separator = '|'
@@ -1402,6 +1372,22 @@ endif
 if neobundle#is_installed('gruvbox')
     colorscheme gruvbox
 endif
+
+if neobundle#is_installed('vim-airline') "{{{2
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#tab_nr_type = 1
+    let g:airline#extensions#tabline#buffer_nr_show = 1
+    let g:airline_powerline_fonts = 1
+    let g:airline_inactive_collapse = 0
+
+    if neobundle#is_installed('gruvbox') "{{{3
+        let g:airline_theme='gruvbox'
+    endif "}}}3
+
+    if !has('vim_starting') && g:loaded_airline
+        AirlineRefresh "refresh  when it starts looking wonky
+    endif
+endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " -                                                                        {{{

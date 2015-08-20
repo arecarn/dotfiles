@@ -182,3 +182,7 @@ k
 refactor
 pullup
 pulldown
+accessor
+gitignore
+vimrc
+grep

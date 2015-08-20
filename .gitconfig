@@ -38,9 +38,9 @@
     rl = !git --no-pager reflog --max-count=20
 
     l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
-    ll = log                --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short
+    ll =                log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short
     lg = log --decorate
-    lgd = log --decorate -p
+    lgd = log --decorate -p --max-count=1
 
     rmso = remote show origin
 

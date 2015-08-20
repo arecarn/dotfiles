@@ -1,3 +1,5 @@
-.vimrc
-tags
+.vimrc_project
+tags*
 cscope.out
+*.log
+

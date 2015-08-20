@@ -17,67 +17,52 @@ if ! zgen saved; then
     zgen oh-my-zsh
 
     #plugins
-    zgen load bundle command-not-found
-    zgen load bundle git
-    zgen load bundle tmux
-    zgen load bundle z
-    zgen load bundle zsh-users/zsh-completions src
-    # start maintain ordering
-    zgen load zsh-users/zsh-syntax-highlighting
-    zgen load zsh-users/zsh-history-substring-search
-    zgen load tarruda/zsh-autosuggestions
-    # end maintain ordering
-
+    zgen oh-my-zsh command-not-found
+    zgen oh-my-zsh git
+    zgen oh-my-zsh tmux
     # theme
     zgen oh-my-zsh themes/robbyrussell
+    zgen load rupa/z
+    zgen load zsh-users/zsh-completions src
+
 
     # save all to init script
     zgen save
 fi
 
-# autosuggestions config
-# Enable autosuggestions automatically
-zle-line-init() {
-    zle autosuggest-start
-}
-zle -N zle-line-init
-
-
 ###########################################################################}}}
-# LINES CONFIGURED BY ZSH-NEWUSER-INSTALL                                  {{{
+# HISTORY                                                                  {{{
 ##############################################################################
-HISTFILE=~/.histfile
+HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
 ###########################################################################}}}
-# General Settings                                                         {{{
+# GENERAL SETTINGS                                                         {{{
 ##############################################################################
 setopt histignoredups # ignore duplicates in history
-setopt autonamedirs #
+setopt autonamedirs # allow special ~dirs for shortcuts
 setopt autocd
+
+# gives you more extensive tab completion TODO(look into this)
+autoload -U compinit
+compinit
+
+# Tab completion from both ends
+setopt completeinword
+
+# Tab completion should be case-insensitive.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 ###########################################################################}}}
 # KEY BINDINGS                                                             {{{
 ##############################################################################
-bindkey -v # vi like settings
-export KEYTIMEOUT=1
+# vi like settings
+bindkey -v 
 
-# ctrl-p ctrl-n history navigation
-# bindkey '^P' history-beginning-search-backward
-# bindkey '^N' history-beginning-search-forward
-bindkey '^P' history-substring-search-up
-bindkey '^N' history-substring-search-down
-
-# bindkey -M vicmd '^P' history-beginning-search-backward
-# bindkey -M vicmd '^N' history-beginning-search-forward
-
-# bind k and j for VI mode
-bindkey -M vicmd '^P' history-substring-search-up
-bindkey -M vicmd '^N' history-substring-search-down
-
-# Accept suggestions without leaving insert mode
-bindkey '^F' vi-forward-blank-word
+#using already typed text search through history
+bindkey '^P' history-beginning-search-backward
+bindkey '^N' history-beginning-search-forward
 
 # backspace and ^h working even after returning from command mode
 bindkey '^?' backward-delete-char
@@ -86,14 +71,14 @@ bindkey '^H' backward-delete-char
 # ctrl-w removed word backwards
 bindkey '^W' backward-kill-word
 
-#starts searching history backward
+#starts searching history backward/forward
 bindkey '^R' history-incremental-search-backward
-# s starts searching history backward
 bindkey '^S' history-incremental-search-forward
 
-
+# expand aliases
 bindkey '^E' _expand_alias
 
+export KEYTIMEOUT=1
 
 
 ###########################################################################}}}

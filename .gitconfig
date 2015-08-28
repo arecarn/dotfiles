@@ -16,8 +16,10 @@
 
     b = branch
     bl = branch --all --verbose # branch list
-    bud = push origin --delete # branch upstream delete
-    buc = push origin --set-upstream HEAD # branch upstream create
+    bd = branch -D # branch delete
+    bdu = push origin --delete # branch delete upstream
+    bc = checkout -b #branch create
+    bcu = push origin --set-upstream HEAD # branch create upstream
 
     cm = commit
     co = checkout

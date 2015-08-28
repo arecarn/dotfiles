@@ -15,17 +15,19 @@
     mt = mergetool
 
     b = branch
-    bl = branch -a # branch list
+    bl = branch --all --verbose # branch list
     bud = push origin --delete # branch upstream delete
     buc = push origin --set-upstream HEAD # branch upstream create
 
     cm = commit
     co = checkout
-    s  = status
+    sh = show
+    st = stash
+    s = status --short --branch
     f = fetch
 
     a = add
-    at = add -u :/ #add tracked
+    at = add --update :/ #add tracked
 
     rs = reset
     rsh = reset HEAD
@@ -37,10 +39,12 @@
 
     rl = !git --no-pager reflog --max-count=20
 
-    l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short --max-count=10
-    ll =                log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(yellow)%d%Creset' --date=short
-    lg = log --decorate
-    lgd = log --decorate -p --max-count=1
+    l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --date=short --max-count=10
+    ll =                log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --date=short
+    lla =               log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --date=short --date-order --graph --all
+    lg =  log --decorate
+    lga = log --decorate --date-order --graph --all
+
 
     rmso = remote show origin
 

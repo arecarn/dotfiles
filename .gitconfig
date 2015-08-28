@@ -26,6 +26,7 @@
     sh = show
     st = stash
     s = status --short --branch
+    sl = status
     f = fetch
 
     a = add

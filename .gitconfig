@@ -6,31 +6,33 @@
     prompt = false
 [alias]
     d = diff --color
-    dc = diff --color --cached
+    ds = diff --color --cached # Diff Staged
 
     dt = difftool
-    dtc = difftool --cached
+    dts = difftool --cached # Diff Tool Staged
 
     m = merge
     mt = mergetool
 
     b = branch
-    bl = branch --all --verbose # branch list
-    bd = branch -D # branch delete
-    bdu = push origin --delete # branch delete upstream
-    bc = checkout -b #branch create
-    bcu = push origin --set-upstream HEAD # branch create upstream
+    bl = branch --all --verbose # Branch List
+    bd = branch -D # Branch Delete
+    bdu = push origin --delete # Branch Delete Upstream
+    bc = checkout -b # Branch Create
+    bcu = push origin --set-upstream HEAD # Branch Create Upstream
 
     cm = commit
     co = checkout
-    sh = show
+    sh = show --decorate
     st = stash
     s = status --short --branch
-    sl = status
+    ss = status
     f = fetch
 
     a = add
-    at = add --update :/ #add tracked
+    aa = add -A # Add All
+    am = add --update :/ # Add Modified files
+    as = update-index --again # Add Staged files that need to be updated: files that need to be updated
 
     rs = reset
     rsh = reset HEAD
@@ -48,7 +50,6 @@
     lg =  log --decorate
     lga = log --decorate --date-order --graph --all
 
-
     rmso = remote show origin
 
     bk = tag MY_BACKUP # backup tag
@@ -60,7 +61,7 @@
 
     cln = clean --force --interactive -d
 
-    exists = ls-files --error-unmatch # does a exist?
+    exists = ls-files --error-unmatch # does a file  exist in the repository?
 [push]
     default = simple
 [user]

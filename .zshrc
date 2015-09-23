@@ -16,11 +16,10 @@ if ! zgen saved; then
 
     zgen oh-my-zsh
 
-    #plugins
+    zgen oh-my-zsh per-directiory-history #TODO look into configuring this
     zgen oh-my-zsh command-not-found
     zgen oh-my-zsh git
     zgen oh-my-zsh tmux
-    # theme
     zgen oh-my-zsh themes/robbyrussell
     zgen load rupa/z
     zgen load zsh-users/zsh-completions src
@@ -86,7 +85,17 @@ export KEYTIMEOUT=1
 ##############################################################################
 alias pslevel='pstree -s $$'
 alias e='vim'
+alias gp='grep -P'
+
 alias g='git'
+# Git Files
+alias -g  gf='`git status --porcelain | sed -ne "s/^..//p"`'
+# Git Modified Files
+alias -g  gmf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//p"`'
+# Git Untracked Files
+alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
+#TODO handle Git Unmerged Files
+
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias nfind='find . -name '
 alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'

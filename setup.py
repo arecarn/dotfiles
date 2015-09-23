@@ -51,9 +51,8 @@ for dotfile in DOTFILES:
     try:
         print("Moving {0} into {1}".format(source, target))
         os.rename(source, target)
-    except:
-        print("Move failed")
-        pass
+    except Exception as exception_message:
+        print(exception_message)
 
 
 print("Symlinking new dotfiles into {0}".format(HOME))
@@ -67,7 +66,10 @@ for dotfile in DOTFILES:
 print("Creating blank local config files")
 for blank_file in BLANK_FILES:
     print("Creating config file: {0}".format(blank_file))
-    open(blank_file, "w")
+    try:
+        open(blank_file, "w")
+    except Exception as exception_message:
+        print(exception_message)
 
 
 print("Creating file aliases")
@@ -76,7 +78,7 @@ for alias in ALIASES:
     target = os.path.join(DOTFILES_OLD_DIR, os.path.basename(alias[1]))
     try:
         os.symlink(alias[0], alias[1])
-    except:
-        pass
+    except Exception as exception_message:
+        print(exception_message)
 
 print("All Done")

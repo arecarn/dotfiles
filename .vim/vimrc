@@ -16,18 +16,22 @@ else
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" COMMAND LINE COMPLETION                                                  {{{
+" COMMAND LINE                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wildmode=longest,full
+set wildmode=full
 set wildmenu
-set completeopt=menuone,menu,preview
 set wildcharm=<TAB>
 
 " File Searching
 " ignored files
-set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,HEAD
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,HEAD,*.lst,*.i,*.map,tags*,cscope.out
 " lower priority files suffixes
-set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn,.lst,.i,.map
+set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn
+
+set path=
+set path+=.  " To search relative to the directory of the current file
+set path+=,, " To search in the current directory
+set path+=** "relative to the current directory search recursively
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " CURSOR SETTINGS                                                          {{{
@@ -192,14 +196,10 @@ set incsearch
 set ignorecase
 set smartcase
 
-set path=
-set path+=** "relative to the current directory search reversibly
-set path+=./** "relative to the current file search recursively
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TAGS                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set tags=tags;/ "the ";/" allows you to look back wards
+set tags=tags;/ "search backwards for the tags
 set cscoperelative
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 
@@ -923,10 +923,6 @@ if neobundle#is_installed('neocomplcache') "{{{2
     " let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
     " nnoremap conc :NeoComplCacheToggle<CR>
 endif "}}}2
-
-set path=
-set path+=** "relative to the current directory search recursively
-" set path+=./** "relative to the current file search recursively
 
 if neobundle#is_installed('neocomplete') "{{{2
     " Use neocomplete.

@@ -31,7 +31,7 @@
 
     a = add
     aa = add -A # Add All
-    am = add --update :/ # Add Modified files
+    amd = add --update :/ # Add Modified files
     as = update-index --again # Add Staged files that need to be updated: files that need to be updated
 
     rs = reset

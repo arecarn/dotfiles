@@ -25,7 +25,7 @@
     co = checkout
     sh = show --decorate
     st = stash
-    s = status --short --branch
+    s =  status --short --branch
     ss = status
     f = fetch
 
@@ -37,24 +37,22 @@
     rs = reset
     rsh = reset HEAD
 
-    rb = rebase
+    rb =  rebase
     rbi = rebase --interactive
     rbc = rebase --continue
-    rbc = rebase --abort
+    rba = rebase --abort
 
-    rl = !git --no-pager reflog --max-count=20
+    rl =  !git --no-pager reflog --max-count=20
+    rll = reflog
 
-    l = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --date=short --max-count=10
-    ll =                log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --date=short
-    lla =               log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --date=short --date-order --graph --all
-    lg =  log --decorate
-    lga = log --decorate --date-order --graph --all
+    l =  !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short --max-count=10
+    lu = !git --no-pager log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short --graph --left-right @{upstream}...HEAD
+    ll =                 log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short
+    lla =                log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short --graph --date-order --all
+    lg =  log --decorate --boundary
+    lga = log --decorate --boundary --graph --date-order --all
 
     rmso = remote show origin
-
-    bk = tag MY_BACKUP # backup tag
-    bkco = checkout MY_BACKUP
-    bkd = tag -d MY_BACKUP # delete backup tag
 
     smup = submodule update
     smupr = submodule update --remote
@@ -74,3 +72,10 @@
     tool = vimdiff
 [mergetool]
     prompt = false
+
+# HELP
+# https://www.kernel.org/pub/software/scm/git/docs/gitrevisions.html
+# <rev>^! = <revision>^..<revision> = or the between a commit and it's parent
+# @ = HEAD
+# @{u} = shorthand for <upstream-branch>
+

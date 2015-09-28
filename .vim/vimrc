@@ -706,8 +706,8 @@ endfunction
 
 command! -nargs=* Num echomsg s:number_info(<q-args>)
 command! -nargs=* Char echomsg s:char_info(<q-args>)
-command! -nargs=* S2H echomsg s:str_to_hex(<q-args>)
-command! -nargs=* H2S echomsg s:hex_to_str(<q-args>)
+command! -nargs=* Str2hex echomsg s:str_to_hex(<q-args>)
+command! -nargs=* Hex2str echomsg s:hex_to_str(<q-args>)
 function! s:hex_to_str(hex_str)
     let separator = nr2char(getchar())
     let hex_str = substitute(a:hex_str, separator, "", "ge")

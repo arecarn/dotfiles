@@ -29,21 +29,30 @@ DOTFILES = [
     ".ctags",
 ]
 
-BLANK_FILES = [
+LOCAL_CONFIG_FILES = [
     os.path.join(HOME, ".zshrc_local"),
-    os.path.join(HOME, os.path.join(".vim", "vimrc_local")),
-    os.path.join(HOME, ".Trash"),
+    os.path.join(HOME, ".vimrc_local"),
     os.path.join(HOME, ".gitconfig_local"),
 ]
 
+DIRECTORIES = [
+    os.path.join(HOME, ".Trash"),
+]
+
 ALIASES = [
-    (os.path.join(HOME, '.vim'), os.path.join(HOME, 'vimfiles')),
-    (os.path.join(HOME, ".vim", "vimrc"), os.path.join(HOME, ".vimrc")),
+        {
+            "source" : os.path.join(HOME, '.vim'),
+            "target" : os.path.join(HOME, 'vimfiles'),
+        },
+        {
+            "source" : os.path.join(HOME, ".vim", "vimrc"),
+            "target": os.path.join(HOME, ".vimrc"),
+        },
 ]
 
 # ============================================================================
 
-print("Backing up old dotfiles into {0}".format(DOTFILES_OLD_DIR))
+print("Backing Up Old Dotfiles Into {0}".format(DOTFILES_OLD_DIR))
 os.mkdir(DOTFILES_OLD_DIR)
 for dotfile in DOTFILES:
     source = os.path.join(HOME, dotfile)
@@ -54,31 +63,48 @@ for dotfile in DOTFILES:
     except Exception as exception_message:
         print(exception_message)
 
+print("\n")
 
-print("Symlinking new dotfiles into {0}".format(HOME))
+print("Symbolic Linking New Dotfiles Into {0}".format(HOME))
 for dotfile in DOTFILES:
     source = os.path.join(DOTFILES_DIR, dotfile)
     target = os.path.join(HOME, dotfile)
     print("Creating symlink {0}".format(target))
     os.symlink(source, target)
 
+print("\n")
 
-print("Creating blank local config files")
-for blank_file in BLANK_FILES:
-    print("Creating config file: {0}".format(blank_file))
+print("Creating Local Config Files")
+for local_config_file in LOCAL_CONFIG_FILES:
+    print("Creating config file if it doesn't already exist: {0}".format(local_config_file))
     try:
-        open(blank_file, "w")
+        with open(local_config_file, "a+") as file:
+            pass
     except Exception as exception_message:
         print(exception_message)
 
+print("\n")
 
-print("Creating file aliases")
+print("Creating Directories")
+for directory in DIRECTORIES:
+    print("Creating Directory: {0}".format(directory))
+    try:
+        os.makedirs(directory)
+    except Exception as exception_message:
+        print(exception_message)
+
+print("\n")
+
+print("Creating File Aliases with Symbolic Links")
 for alias in ALIASES:
-    source = alias[1]
-    target = os.path.join(DOTFILES_OLD_DIR, os.path.basename(alias[1]))
+    source = alias["source"]
+    target = alias["target"]
+    print("Aliasing {source} to {target}".format(source=source, target=target))
     try:
-        os.symlink(alias[0], alias[1])
+        os.symlink(source, target)
     except Exception as exception_message:
         print(exception_message)
 
-print("All Done")
+print("\n")
+
+print("FIN")

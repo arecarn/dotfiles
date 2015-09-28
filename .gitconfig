@@ -64,7 +64,6 @@
     default = simple
 [user]
     name = Ryan Carney
-    email = arecarn@gmail.com
 [include]
     path = ~/.gitconfig_local
 [merge]

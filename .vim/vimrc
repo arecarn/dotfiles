@@ -704,10 +704,66 @@ function! TSIndent(line)
     return strlen(matchstr(a:line,'\v^\s+'))
 endfunction
 
+command! -nargs=* Bin echomsg s:bin_info(<q-args>)
 command! -nargs=* Num echomsg s:number_info(<q-args>)
 command! -nargs=* Char echomsg s:char_info(<q-args>)
 command! -nargs=* Str2hex echomsg s:str_to_hex(<q-args>)
 command! -nargs=* Hex2str echomsg s:hex_to_str(<q-args>)
+
+function! s:bin2hex(bin)
+    let x = {
+                \ "0000" : "0",
+                \ "0001" : "1",
+                \ "0010" : "2",
+                \ "0011" : "3",
+                \ "0100" : "4",
+                \ "0101" : "5",
+                \ "0110" : "6",
+                \ "0111" : "7",
+                \ "1000" : "8",
+                \ "1001" : "9",
+                \ "1010" : "a",
+                \ "1011" : "b",
+                \ "1100" : "c",
+                \ "1101" : "d",
+                \ "1110" : "e",
+                \ "1111" : "f"
+                \ }
+    let result = ""
+    let number = split(a:bin, '....\zs')
+    for char in number
+        let result .= x[char]
+    endfor
+    return result
+endfunction
+
+function! s:hex2bin(number)
+    let x = {
+                \ "0" : "0000",
+                \ "1" : "0001",
+                \ "2" : "0010",
+                \ "3" : "0011",
+                \ "4" : "0100",
+                \ "5" : "0101",
+                \ "6" : "0110",
+                \ "7" : "0111",
+                \ "8" : "1000",
+                \ "9" : "1001",
+                \ "a" : "1010",
+                \ "b" : "1011",
+                \ "c" : "1100",
+                \ "d" : "1101",
+                \ "e" : "1110",
+                \ "f" : "1111"
+                \ }
+    let result = ""
+    let number = split(a:number, '.\zs')
+    for char in number
+        let result .= x[char]
+    endfor
+    return result
+endfunction
+
 function! s:hex_to_str(hex_str)
     let separator = nr2char(getchar())
     let hex_str = substitute(a:hex_str, separator, "", "ge")
@@ -739,13 +795,26 @@ function! s:str_to_hex(str)
     return  toupper(hex_str)
 endfunction
 
+function! s:bin_info(bin)
+    let hex = s:bin2hex(a:bin)
+    let number = eval("0x" . hex)
+    let char = nr2char(number)
+    let bin = a:bin
+    return printf("%d, 0x%02x, '%s' 0b%s", number, number, char, bin)
+endfunction
+
 function! s:char_info(char) abort
-    return printf("%d, 0x%02x, '%s'", char2nr(a:char), char2nr(a:char), a:char)
+    let number = char2nr(a:char)
+    let char = a:char
+    let bin = s:hex2bin(printf("%02x", number))
+    return printf("%d, 0x%02x, '%s', 0b%s", number, number, char, bin)
 endfunction
 
 function! s:number_info(number) abort
     let number = eval(a:number)
-    return printf("%d, 0x%02x, '%s'", number, number, nr2char(number))
+    let char = nr2char(number)
+    let bin = s:Hex2bin(printf("%02x", number))
+    return printf("%d, 0x%02x, '%s', 0b%s", number, number, char, bin)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

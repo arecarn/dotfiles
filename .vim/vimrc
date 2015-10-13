@@ -330,9 +330,6 @@ function! s:grep(args) abort
     execute "normal! /<C-l>"
 endfunction
 
-" paste without overriding register
-xnoremap <expr> gp 'pgv"'.v:register.'y'
-
 " Navigation
 " make navigation more intuitive
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
@@ -349,9 +346,9 @@ nnoremap <silent> g<C-a> /\d\+<CR>
 nnoremap <silent> g<C-x> ?\d\+<CR>
 
 " list spelling corrections
-nnoremap <C-s> viW<Esc>a<C-x><C-s><C-p>
-map [<C-s> [s<C-s>
-map ]<C-s> ]s<C-s>
+nnoremap sl viW<Esc>a<C-x><C-s><C-p>
+map [sl [ssl
+map ]sl ]ssl
 
 " underline current selection with character of choice
 nnoremap <silent> _ :call <SID>under_line()<CR>
@@ -361,7 +358,7 @@ function! s:under_line() abort
     execute ':s#\m\S.*\S\|\S#\=repeat(''' . char . ''',strlen(submatch(0)))#g'
 endfunction
 
-" format while in insert mode
+" format wile in insert mode
 inoremap <C-F> <ESC>gw{zea
 
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
@@ -443,7 +440,7 @@ function! s:split_up()
     call histdel("/", -1)
     normal! k==
 endfunction
-nnoremap <silent> gS :call <SID>split_up()<CR>
+nnoremap <silent> <C-s> :call <SID>split_up()<CR>
 
 " split line here
 function! s:join_front()
@@ -452,7 +449,7 @@ function! s:join_front()
     normal! ==
 endfunction
 " join to front
-nnoremap gJ :call <SID>join_front()<CR>
+nnoremap <C-j> :call <SID>join_front()<CR>
 
 " set path to present working directory locally
 nnoremap cdl :lcd! %:h<CR>:pwd<CR>
@@ -509,7 +506,6 @@ cnoremap <C-y> <SPACE><BS><TAB>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " TODO Is the word under the cursor a number?
 function! DoNum(operator)
     let line = getline('.')
@@ -813,7 +809,7 @@ endfunction
 function! s:number_info(number) abort
     let number = eval(a:number)
     let char = nr2char(number)
-    let bin = s:Hex2bin(printf("%02x", number))
+    let bin = s:hex2bin(printf("%02x", number))
     return printf("%d, 0x%02x, '%s', 0b%s", number, number, char, bin)
 endfunction
 
@@ -903,6 +899,7 @@ NeoBundle 'arecarn/auto-file-loader.vim'
 NeoBundle 'arecarn/clean-fold.vim'
 NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
 NeoBundle 'arecarn/frisk.vim'
+NeoBundle 'freitass/todo.txt-vim'
 
 NeoBundle 'diffchanges.vim'
 NeoBundle 'arecarn/git-diff-cached-preview.vim'
@@ -920,6 +917,7 @@ NeoBundle 'dhruvasagar/vim-table-mode'
 NeoBundle 'edkolev/tmuxline.vim'
 NeoBundle 'godlygeek/tabular'
 NeoBundle 'gregsexton/gitv'
+NeoBundle 'cohama/agit.vim'
 " NeoBundle 'henrik/vim-qargs'
 NeoBundle 'hrsh7th/vim-neco-calc'
 NeoBundle 'idanarye/vim-vebugger', {'depends' : 'shougo/vimproc.vim'}
@@ -1262,6 +1260,12 @@ endif "}}}2
 if neobundle#is_installed('vimshell.vim') "{{{2
     nnoremap <silent> [myleader]sh
                 \ :<C-u>topleft 15split<CR>:<C-u>VimShellCurrentDir<CR>
+
+    nnoremap <silent> [myleader]shv
+                \ :<C-u>vsplit<CR>:<C-u>VimShellCurrentDir<CR>
+
+    nnoremap <silent> [myleader]shs
+                \ :<C-u>split<CR>:<C-u>VimShellCurrentDir<CR>
 
     let g:vimshell_enable_start_insert = 1
     let g:vimshell_vimshrc_path = s:vim_path.'/utils/vimshell/vimshellrc'

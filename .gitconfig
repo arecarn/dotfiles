@@ -71,10 +71,3 @@
     tool = vimdiff
 [mergetool]
     prompt = false
-
-# HELP
-# https://www.kernel.org/pub/software/scm/git/docs/gitrevisions.html
-# <rev>^! = <revision>^..<revision> = or the between a commit and it's parent
-# @ = HEAD
-# @{u} = shorthand for <upstream-branch>
-

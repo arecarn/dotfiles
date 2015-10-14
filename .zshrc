@@ -86,6 +86,7 @@ export KEYTIMEOUT=1
 alias pslevel='pstree -s $$'
 alias e='vim'
 alias gp='grep -P'
+alias findbig='du -hsx *(D) | sort -rh | head -10'
 
 alias g='git'
 # Git Files
@@ -128,7 +129,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     export PATH=":/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    #for home brew
+    #for Homebrew
     export MANPATH="/usr/local/man"
     export PATH="/usr/local/bin:$PATH"
 elif [[ "$OSTYPE" == "cygwin" ]]; then

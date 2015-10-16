@@ -1,7 +1,7 @@
 """
 Sets up the dotfiles in this repository
 
-Requires python 3
+Requires python 3 on Windows
 """
 
 import os
@@ -19,14 +19,14 @@ def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
 DOTFILES_OLD_DIR = os.path.join(HOME, time_stamped("dotfiles_old"))
 
 DOTFILES = [
-    ".inputrc",
-    ".tmux.conf",
-    ".mutt",
+    ".ctags",
     ".gitconfig",
     ".gitignore_global",
-    ".zshrc",
+    ".inputrc",
+    ".mutt",
+    ".tmux",
     ".vim",
-    ".ctags",
+    ".zshrc",
 ]
 
 LOCAL_CONFIG_FILES = [
@@ -47,6 +47,10 @@ ALIASES = [
         {
             "source" : os.path.join(HOME, ".vim", "vimrc"),
             "target": os.path.join(HOME, ".vimrc"),
+        },
+        {
+            "source" : os.path.join(HOME, ".tmux", ".tmux.conf"),
+            "target": os.path.join(HOME, ".tmux.conf"),
         },
 ]
 

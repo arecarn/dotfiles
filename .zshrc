@@ -57,7 +57,7 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 # KEY BINDINGS                                                             {{{
 ##############################################################################
 # vi like settings
-bindkey -v 
+bindkey -v
 
 #using already typed text search through history
 bindkey '^P' history-beginning-search-backward
@@ -86,7 +86,7 @@ export KEYTIMEOUT=1
 alias pslevel='pstree -s $$'
 alias e='vim'
 alias gp='grep -P'
-alias findbig='du -hsx *(D) | sort -rh | head -10'
+alias find-big='du -hsx *(D) | sort -rh | head -50'
 
 alias g='git'
 # Git Files
@@ -96,6 +96,10 @@ alias -g  gmf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//
 # Git Untracked Files
 alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files
+
+alias l=' ls --color -p'
+alias ll='ls --color -plah'
+alias l1='ls --color -p1a'
 
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias nfind='find . -name '
@@ -111,13 +115,31 @@ elif [[ "$OSTYPE" == "win32" ]]; then
 else
 fi
 
-# run a command untill it fails
+# run a command until it fails
 function untilfail()
 {
     while "$@";
     do :
     done
 }
+
+# find string inclusive
+function fin()
+{
+    local input=$(sed 's/ /|/g' <<< "$@")
+    ls -t | grep -iP "$input";
+}
+
+# find string exclusive
+function fex()
+{
+    local input="$@"
+    input=$(sed 's/ /| grep -iP /g' <<< "$input");
+    input=$(sed 's/^/grep -iP /g' <<< $input);
+    local cmd='ls -t | '$input
+    eval $cmd
+}
+
 
 ###########################################################################}}}
 # PATH                                                                     {{{

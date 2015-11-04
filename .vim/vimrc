@@ -313,6 +313,7 @@ set ttimeoutlen=100
 set updatetime=1000
 
 let mapleader="\<Space>"
+
 nnoremap [myleader] <Nop>
 xnoremap [myleader] <Nop>
 nmap go [myleader]
@@ -628,7 +629,7 @@ vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
 command! -nargs=* -range=0 -bang Seq
             \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
 
-function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
+function! Seq(count, first_line, last_line, cmdInput, bang) abort
     "anything within backticks
     let rg_expr = '`\(.\{-1,}\)`'
 
@@ -641,16 +642,36 @@ function! Seq(count, firstLine, lastLine, cmdInput, bang) abort
 
     let @a = ''
     let r = ''
-    for i in range(0, a:lastLine-a:firstLine) "TODO fails without a range
+    for i in range(0, a:last_line-a:first_line) "TODO fails without a range
         let l:line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
         echomsg l:line
-        " call append(i+a:firstLine, line)
+        " call append(i+a:first_line, line)
         let r = r.l:line."\n"
         echomsg r
         let x = x + 1
     endfor
     call setreg('a', r,  'b')
     normal! "aP
+endfunction
+
+command! -nargs=* -range=0 -bang Renumber
+            \ call Renumber(<line1>, <line2>, "<bang>")
+function! Renumber(first_line, last_line, bang) abort
+    let num_expr = '\v\C^.{-}\zs\d+\ze'
+    " 0 index if ! is used
+    if a:bang != '!'
+        let s:renumber_index = 1
+    else
+        let s:renumber_index = 0
+    endif
+
+    execute a:first_line.','.a:last_line.'s#'.num_expr.'#\=s:renumber()#'
+endfunction
+
+function! s:renumber() abort
+    let old_renumber_index = s:renumber_index
+    let s:renumber_index = s:renumber_index + 1
+    return old_renumber_index
 endfunction
 
 nnoremap <silent> <leader>S  :execute ':s#\V'.escape(nr2char(getchar()), '\').'#\r#g'<CR>
@@ -876,6 +897,7 @@ NeoBundle 'Shougo/unite-ssh'
 NeoBundle 'Shougo/unite-outline'
 NeoBundle 'Shougo/unite-session'
 NeoBundle 'Shougo/neomru.vim'
+NeoBundle 'Shougo/neoyank.vim'
 NeoBundle 'tsukkee/unite-help'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'kmnk/unite-command'
@@ -932,6 +954,7 @@ NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'}
 NeoBundle 'kana/vim-niceblock'
 " NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'lopter/moin.vim'
+NeoBundle 'confluencewiki.vim'
 NeoBundle 'mbbill/undotree'
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'nathanaelkane/vim-indent-guides'
@@ -959,7 +982,7 @@ NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'vim-scripts/cmdalias.vim'
-" NeoBundle 'vim-scripts/DrawIt'
+NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
@@ -1315,6 +1338,11 @@ if neobundle#is_installed('tabular') "{{{2
     xnoremap <Leader>a :Tabularize/
 endif "}}}2
 
+
+if neobundle#is_installed('vim-table-mode') "{{{2
+        let g:table_mode_corner = '|'
+endif "}}}2
+
 if neobundle#is_installed('vim-indent-guides') "{{{2
     nmap <silent> coig <Plug>IndentGuidesToggle
     let g:indent_guides_enable_on_vim_startup = 0
@@ -1457,6 +1485,13 @@ if neobundle#is_installed('moin.vim') "{{{2
     augroup MOIN
         autocmd!
         autocmd BufNewFile,BufRead *.moin set filetype=moin
+    augroup END
+endif "}}}2
+
+if neobundle#is_installed('confluencewiki.vim') "{{{2
+    augroup MOIN
+        autocmd!
+        autocmd BufNewFile,BufRead *.jira set filetype=confluencewiki
     augroup END
 endif "}}}2
 

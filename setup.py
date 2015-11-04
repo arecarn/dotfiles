@@ -5,13 +5,14 @@ Requires python 3 on Windows
 """
 
 import os
+import shutil
 import datetime
 
 # ============================================================================
 
-HOME = os.path.expanduser("~")
+HOME = os.path.relpath(os.path.expanduser("~"))
 
-DOTFILES_DIR = os.path.join(HOME, "dotfiles")
+DOTFILES_DIR = "dotfiles"
 
 def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
     return datetime.datetime.now().strftime(fmt).format(fname=fname)
@@ -63,7 +64,7 @@ for dotfile in DOTFILES:
     target = os.path.join(DOTFILES_OLD_DIR, dotfile)
     try:
         print("Moving {0} into {1}".format(source, target))
-        os.rename(source, target)
+        shutil.move(source, target)
     except Exception as exception_message:
         print(exception_message)
 
@@ -73,7 +74,7 @@ print("Symbolic Linking New Dotfiles Into {0}".format(HOME))
 for dotfile in DOTFILES:
     source = os.path.join(DOTFILES_DIR, dotfile)
     target = os.path.join(HOME, dotfile)
-    print("Creating symlink {0}".format(target))
+    print("Creating symbolic link {0} That links to {1}".format(target, source))
     os.symlink(source, target)
 
 print("\n")

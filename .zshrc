@@ -145,10 +145,14 @@ function fex()
 # PATH                                                                     {{{
 ##############################################################################
 
-export PATH="$PATH:$HOME/dotfiles/mybin/scripts"
+export PATH="$PATH:$HOME/dotfiles/tools/scripts"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    export PATH=":/usr/bin/X11:/usr/X11R6/bin:/usr/games:/opt/kde3/bin:/usr/lib/qt3/bin:$PATH"
+    export PATH="$PATH:/usr/bin/X11"
+    export PATH="$PATH:/usr/X11R6/bin"
+    export PATH="$PATH:/usr/games"
+    export PATH="$PATH:/opt/kde3/bin"
+    export PATH="$PATH:/usr/lib/qt3/bin"
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     #for Homebrew

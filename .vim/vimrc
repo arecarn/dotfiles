@@ -1447,7 +1447,9 @@ if neobundle#is_installed('undotree') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('goyo.vim') "{{{2
-    nnoremap cof :<C-U>setlocal wrap<CR>:<C-U>call SetGoyo(v:count)<CR>
+    nnoremap cof :<C-U>setlocal wrap<CR>
+                \ :setlocal nolist<CR>
+                \ :call SetGoyo(v:count)<CR>
     function! SetGoyo(num)
         if a:num == 0
             Goyo
@@ -1473,6 +1475,8 @@ if neobundle#is_installed('obvious-resize') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('Preserve.vim') "{{{2
+    command! -range=% Dlead :PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
+    nnoremap <silent><leader>dl :Dlead<CR>
     command! -range=% Dtrail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
     nnoremap <silent><leader>dt :Dtrail<CR>
     nnoremap =ae :call Preserve("normal! gg=G")<CR>

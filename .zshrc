@@ -97,9 +97,9 @@ alias -g  gmf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//
 alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files
 
-alias l=' ls -p'
-alias ll='ls -plah'
-alias l1='ls -p1a'
+alias l='  ls -pa'
+alias l1=' ls -pa1'
+alias la=' ls -palh'
 
 alias tsh='~/dotfiles/mybin/scripts/trash.sh'
 alias nfind='find . -name '

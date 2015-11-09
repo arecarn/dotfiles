@@ -17,20 +17,9 @@ DOTFILES_DIR = "dotfiles"
 def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
     return datetime.datetime.now().strftime(fmt).format(fname=fname)
 
-DOTFILES_OLD_DIR = os.path.join(HOME, time_stamped("dotfiles_old"))
+BACKUP_DIR = os.path.join(HOME, time_stamped(DOTFILES_DIR))
 
-DOTFILES = [
-    ".ctags",
-    ".gitconfig",
-    ".gitignore_global",
-    ".inputrc",
-    ".mutt",
-    ".tmux",
-    ".vim",
-    ".zshrc",
-]
-
-LOCAL_CONFIG_FILES = [
+FILES = [
     os.path.join(HOME, ".zshrc_local"),
     os.path.join(HOME, ".vimrc_local"),
     os.path.join(HOME, ".gitconfig_local"),
@@ -40,76 +29,129 @@ DIRECTORIES = [
     os.path.join(HOME, ".Trash"),
 ]
 
-ALIASES = [
+DOTFILES = [
         {
-            "source" : os.path.join(HOME, '.vim'),
-            "target" : os.path.join(HOME, 'vimfiles'),
+            "source" : ".ctags",
+            "name" : ".ctags",
+            "location" : HOME,
         },
         {
-            "source" : os.path.join(HOME, ".vim", "vimrc"),
-            "target": os.path.join(HOME, ".vimrc"),
+            "source" : ".gitconfig",
+            "name" : ".gitconfig",
+            "location" : HOME,
         },
         {
-            "source" : os.path.join(HOME, ".tmux", ".tmux.conf"),
-            "target": os.path.join(HOME, ".tmux.conf"),
+            "source" : ".gitignore_global",
+            "name" : ".gitignore_global",
+            "location" : HOME,
+        },
+        {
+            "source" : ".inputrc",
+            "name" : ".inputrc",
+            "location" : HOME,
+        },
+        {
+            "source" : ".mutt",
+            "name" : ".mutt",
+            "location" : HOME,
+        },
+        {
+            "source" : ".tmux",
+            "name" : ".tmux",
+            "location" : HOME,
+        },
+        {
+            "source" : ".vim",
+            "name" : ".vim",
+            "location" : HOME,
+        },
+        {
+            "source" : '.vim',
+            "name" : "vimfiles",
+            "location" : HOME,
+        },
+        {
+            "source" : ".zshrc",
+            "name" : ".zshrc",
+            "location" : HOME,
+        },
+        {
+            "source" : os.path.join(".vim", "vimrc"),
+            "name" : ".vimrc",
+            "location" : HOME,
+        },
+        {
+            "source" : os.path.join(".tmux", ".tmux.conf"),
+            "name" : ".tmux.conf",
+            "location" : HOME,
         },
 ]
 
-# ============================================================================
+def backup(dotfiles, backup_dir):
+    print("Backing Up Old Dotfiles Into {0}".format(backup_dir))
+    os.mkdir(backup_dir)
 
-print("Backing Up Old Dotfiles Into {0}".format(DOTFILES_OLD_DIR))
-os.mkdir(DOTFILES_OLD_DIR)
-for dotfile in DOTFILES:
-    source = os.path.join(HOME, dotfile)
-    target = os.path.join(DOTFILES_OLD_DIR, dotfile)
-    try:
-        print("Moving {0} into {1}".format(source, target))
-        shutil.move(source, target)
-    except Exception as exception_message:
-        print(exception_message)
+    for dotfile in dotfiles:
+        target = os.path.join(dotfile["location"], dotfile["name"])
+        dest = os.path.join(backup_dir, dotfile["name"])
 
-print("\n")
+        try:
+            print("Moving {target} into {dest}".format(target=target, dest=dest))
+            shutil.move(target, dest)
+        except Exception as exception_message:
+            print(exception_message)
 
-print("Symbolic Linking New Dotfiles Into {0}".format(HOME))
-for dotfile in DOTFILES:
-    source = os.path.join(DOTFILES_DIR, dotfile)
-    target = os.path.join(HOME, dotfile)
-    print("Creating symbolic link {0} That links to {1}".format(target, source))
-    os.symlink(source, target)
 
-print("\n")
+def symlink_files(dotfiles, dotfiles_dir):
+    print("Symbolic Linking Files")
 
-print("Creating Local Config Files")
-for local_config_file in LOCAL_CONFIG_FILES:
-    print("Creating config file if it doesn't already exist: {0}".format(local_config_file))
-    try:
-        with open(local_config_file, "a+") as file:
-            pass
-    except Exception as exception_message:
-        print(exception_message)
+    for dotfile in dotfiles:
+        source = os.path.join(dotfiles_dir, dotfile["source"])
+        dest = os.path.join(dotfile["location"], dotfile["name"])
+        print("Creating link {dest} pointing to {source}".format(source=source, dest=dest))
 
-print("\n")
+        try:
+            os.symlink(source, dest)
+        except Exception as exception_message:
+            print(exception_message)
 
-print("Creating Directories")
-for directory in DIRECTORIES:
-    print("Creating Directory: {0}".format(directory))
-    try:
-        os.makedirs(directory)
-    except Exception as exception_message:
-        print(exception_message)
 
-print("\n")
+def create_files(config_files):
+    print("Creating Local Config Files")
 
-print("Creating File Aliases with Symbolic Links")
-for alias in ALIASES:
-    source = alias["source"]
-    target = alias["target"]
-    print("Aliasing {source} to {target}".format(source=source, target=target))
-    try:
-        os.symlink(source, target)
-    except Exception as exception_message:
-        print(exception_message)
+    for config_file in config_files:
+        print("Creating config file if it doesn't already exist: {0}".format(config_file))
 
-print("\n")
+        try:
+            with open(config_file, "a+") as file:
+                pass
+        except Exception as exception_message:
+            print(exception_message)
 
-print("FIN")
+
+def create_directories(directories):
+    print("Creating Directories")
+
+    for directory in directories:
+        print("Creating Directory: {0}".format(directory))
+
+        try:
+            os.makedirs(directory)
+        except Exception as exception_message:
+            print(exception_message)
+
+
+if __name__ == '__main__':
+    backup(DOTFILES, BACKUP_DIR)
+    print("\n")
+
+    symlink_files(DOTFILES, DOTFILES_DIR)
+    print("\n")
+
+    create_files(FILES)
+    print("\n")
+
+    create_directories(DIRECTORIES)
+    print("\n")
+
+    print("FIN")

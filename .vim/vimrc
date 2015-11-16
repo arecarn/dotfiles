@@ -679,6 +679,8 @@ nnoremap <silent> <leader>gS :execute ':s#\s*\V'.escape(nr2char(getchar()), '\')
 xnoremap <silent> <leader>J  :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').'#g'<CR>
 xnoremap <silent> <leader>gJ :<C-U>execute '''<,''>:s#\n#'.escape(nr2char(getchar()), '\').' #g'<CR>
 
+" TODO use the syntax Join/<pattern>/ & Split/<pattern>/ if empty use last
+" search for split?
 command! -nargs=* -range=0 -bang Split
             \ call Split(<count>, <line1>, <line2>, <q-args>, '<bang>')
 function! Split(count, first_line, last_line, input, bang) abort
@@ -893,22 +895,22 @@ NeoBundle 'osyo-manga/vim-textobj-multiblock'
 
 " unite {{{2
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/unite-ssh'
-NeoBundle 'Shougo/unite-outline'
-NeoBundle 'Shougo/unite-session'
-NeoBundle 'Shougo/neomru.vim'
-NeoBundle 'Shougo/neoyank.vim'
-NeoBundle 'tsukkee/unite-help'
-NeoBundle 'ujihisa/unite-colorscheme'
-NeoBundle 'kmnk/unite-command'
-NeoBundle 'majkinetor/unite-cmdmatch'
-NeoBundle 'voi/unite-ctags'
-NeoBundle 'tsukkee/unite-tag'
-NeoBundle 'thinca/vim-unite-history'
-NeoBundle 'kopischke/unite-spell-suggest'
-NeoBundle 'kmnk/vim-unite-giti'
-NeoBundle 'hewes/unite-gtags'
-NeoBundle 'naquad/unite-digraphs' "}}}2
+NeoBundle 'Shougo/unite-ssh' , {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'Shougo/unite-outline', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'Shougo/unite-session', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'Shougo/neomru.vim', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'Shougo/neoyank.vim', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'tsukkee/unite-help', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'ujihisa/unite-colorscheme', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'kmnk/unite-command', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'majkinetor/unite-cmdmatch', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'voi/unite-ctags', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'tsukkee/unite-tag', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'thinca/vim-unite-history', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'kopischke/unite-spell-suggest', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'kmnk/vim-unite-giti', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'hewes/unite-gtags', {'depends' : 'Shougo/unite.vim'}
+NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
 
 " NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
@@ -1026,7 +1028,7 @@ if neobundle#is_installed('neocomplcache') "{{{2
     let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
     let g:neocomplcache_enable_auto_delimiter = 1
     let g:neocomplcache_max_list = 100
-
+    let g:neocomplcache_tags_caching_limit_file_size = 5000000000000000.0
     let g:neocomplcache_dictionary_filetype_lists = {
                 \ 'default' : '',
                 \ 'vimshell' : s:vim_path.'/.vimshell_hist',
@@ -1068,7 +1070,6 @@ if neobundle#is_installed('neocomplete') "{{{2
 
     augroup NEOCOMPLETE
         autocmd!
-        " autocmd BufRead * NeoCompleteLock
         autocmd FileType gitcommit let g:neocomplete#enable_auto_close_preview = 0
     augroup END
 
@@ -1239,25 +1240,58 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
     nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
     nnoremap [myleader]f :<C-u>Unite file_rec/git file_rec/async -start-insert -unique -input=<CR>
-    nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
     nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
     nnoremap [myleader]b  :<C-u>Unite buffer:! -start-insert<CR>
-    nnoremap [myleader]o  :<C-u>Unite outline<CR>
-    nnoremap [myleader]l  :<C-u>Unite line -start-insert<CR>
-    nnoremap [myleader]h  :<C-u>Unite help -start-insert<CR>
-    nnoremap [myleader]s  :<C-u>Unite -input=session<CR>
     nnoremap [myleader]i  :<C-u>Unite menu:interpreters<CR>
-    nnoremap [myleader]hc :<C-u>Unite cmdmatch history/command<CR>
-    nnoremap [myleader]hs :<C-u>Unite history/search<CR>
-    nnoremap [myleader]p  :<C-u>Unite history/yank<CR>
-    xnoremap [myleader]p  dk:<C-u>Unite history/yank<CR>
+    nnoremap [myleader]l  :<C-u>Unite line -start-insert<CR>
     nnoremap [myleader]ps :<C-u>Unite process -start-insert<CR>
-    nnoremap [myleader]up :<C-u>Unite neobundle/update -tab<CR>
-    nnoremap [myleader]t  :<C-u>UniteWithCursorWord tag<CR>
     nnoremap [myleader]ur :<C-u>UniteResume<CR>
-    nnoremap [myleader]gs  :<C-u>Unite spell_suggest<CR>
     command! Messages Unite output:message
-    command! Digraphs Unite digraphs
+
+    if neobundle#is_installed('neomru.vim')
+        nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
+    endif
+
+    if neobundle#is_installed('unite-outline')
+        nnoremap [myleader]o  :<C-u>Unite outline<CR>
+    endif
+
+    if neobundle#is_installed('unite-help')
+        nnoremap [myleader]h  :<C-u>Unite help -start-insert<CR>
+    endif
+
+    if neobundle#is_installed('unite-session')
+        nnoremap [myleader]s  :<C-u>Unite -input=session<CR>
+    endif
+
+    if neobundle#is_installed('unite-cmdmatch')
+        nnoremap [myleader]hc :<C-u>Unite cmdmatch history/command<CR>
+    endif
+
+    nnoremap [myleader]hs :<C-u>Unite history/search<CR>
+
+    if neobundle#is_installed('neoyank.vim')
+        nnoremap [myleader]p  :<C-u>Unite history/yank<CR>
+        xnoremap [myleader]p  dk:<C-u>Unite history/yank<CR>
+    endif
+
+    if neobundle#is_installed('neobundle.vim')
+        nnoremap [myleader]up :<C-u>Unite neobundle/update -tab<CR>
+    endif
+
+    if neobundle#is_installed('unite-tag')
+        nnoremap [myleader]t  :<C-u>UniteWithCursorWord tag<CR>
+    endif
+
+
+    if neobundle#is_installed('unite-spell-suggest')
+        nnoremap [myleader]gs  :<C-u>Unite spell_suggest<CR>
+    endif
+
+
+    if neobundle#is_installed('unite-digraphs')
+        command! Digraphs Unite digraphs
+    endif
 
     " toggle the preview window when I press the "p" key.
     autocmd FileType unite call s:unite_my_settings()
@@ -1268,12 +1302,10 @@ if neobundle#is_installed('unite.vim') "{{{2
                     \ unite#do_action('preview') : ":\<C-u>pclose!\<CR>"
         nnoremap <silent><buffer><expr> O unite#do_action('persist_open')
     endfunction
-    let g:neocomplcache_tags_caching_limit_file_size = 5000000000000000.0
-
 endif "}}}2
 
 if neobundle#is_installed('vimfiler.vim') "{{{2
-    " Replace entry commands with Vim filer
+    " Replace entry commands with Vimfiler
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
     let g:vimfiler_as_default_explorer = 1

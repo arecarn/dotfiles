@@ -38,7 +38,7 @@
     rsh = reset HEAD
 
     rb =  rebase
-    rbi = rebase --interactive
+    rbi = rebase --interactive --autosquash
     rbc = rebase --continue
     rba = rebase --abort
 

@@ -430,32 +430,6 @@ nnoremap <C-p> N.
 " repeat last command-line command
 nnoremap g. @:
 
-" split line here
-function! s:split()
-    s/\v(.{-})(\s*)(%#)(\s*)(.*)/\1\r\3\5
-    call histdel("/", -1)
-    normal! ==
-endfunction
-nnoremap <silent> S :call <SID>split()<CR>
-
-
-" split line here
-function! s:split_up()
-    s/\v(.{-})(\s*)(%#)(\s*)(.*)/\3\5\r\1
-    call histdel("/", -1)
-    normal! k==
-endfunction
-nnoremap <silent> <C-s> :call <SID>split_up()<CR>
-
-" split line here
-function! s:join_front()
-    s/\v(.*)\n(.*)/\2 \1
-    call histdel("/", -1)
-    normal! ==
-endfunction
-" join to front
-nnoremap <C-j> :call <SID>join_front()<CR>
-
 " set path to present working directory locally
 nnoremap cdl :lcd! %:h<CR>:pwd<CR>
 nnoremap cd :cd! %:h<CR>:pwd<CR>
@@ -590,11 +564,6 @@ endfunction
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 
-command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{2
-function! RunInVimShell(cmd)
-    VimShellBufferDir -popup
-    execute "VimShellSendString " . a:cmd
-endfunction "}}}2
 
 " add numbers to the front or end of a line
 cabbrev numend s/$/\=1-line("'<")+line(".")/c
@@ -920,6 +889,8 @@ NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-repeat' "}}}2
 
 " NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'arecarn/split-join.vim'
+NeoBundle 'osyo-manga/vim-anzu'
 NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
@@ -1146,11 +1117,20 @@ if neobundle#is_installed('neocomplete') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('neosnippet-snippets') "{{{2
-    imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-                \ "\<Plug>(neosnippet_expand_or_jump)":
-                \  pumvisible() ? "\<C-n>" :
-                \ <SID>check_back_space() ? "\<TAB>" :
-                \ neocomplete#start_manual_complete()
+    imap <expr><TAB>
+                \ pumvisible() ? "\<C-n>" :
+                \ (
+                \     neosnippet#expandable_or_jumpable() ?
+                \     "\<Plug>(neosnippet_expand_or_jump)" :
+                \     (
+                \         <SID>check_back_space() ? "\<TAB>" :
+                \         neocomplete#start_manual_complete()
+                \     )
+                \ )
+
+    imap <C-k> <Plug>(neosnippet_expand_or_jump)
+    smap <C-k> <Plug>(neosnippet_expand_or_jump)
+    xmap <C-k> <Plug>(neosnippet_expand_target)
 
     function! s:check_back_space() "{{{
         let col = col('.') - 1
@@ -1339,6 +1319,12 @@ endif "}}}2
 if neobundle#is_installed('echodoc.vim') "{{{2
     let g:echodoc_enable_at_startup=1
     set cmdheight=2
+
+command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{2
+function! RunInVimShell(cmd)
+    VimShellBufferDir -popup
+    execute "VimShellSendString " . a:cmd
+endfunction "}}}2
 endif "}}}2
 
 if neobundle#is_installed('vim-oblique') "{{{2
@@ -1370,6 +1356,11 @@ if neobundle#is_installed('tabular') "{{{2
     xnoremap <Leader>a :Tabularize/
 endif "}}}2
 
+if neobundle#is_installed('vim-anzu') "{{{2
+    if neobundle#is_installed('unite.vim')
+        nnoremap [myleader]/ :<C-u>Unite anzu<CR>
+    endif
+endif
 
 if neobundle#is_installed('vim-table-mode') "{{{2
         let g:table_mode_corner = '|'
@@ -1479,10 +1470,12 @@ if neobundle#is_installed('undotree') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('goyo.vim') "{{{2
-    nnoremap cof :<C-U>setlocal wrap<CR>
-                \ :setlocal nolist<CR>
-                \ :call SetGoyo(v:count)<CR>
+    nnoremap cof :<C-u>call SetGoyo(v:count)<CR>
+
     function! SetGoyo(num)
+        setlocal wrap
+        setlocal nolist
+
         if a:num == 0
             Goyo
         else

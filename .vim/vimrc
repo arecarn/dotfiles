@@ -1472,15 +1472,28 @@ endif "}}}2
 if neobundle#is_installed('goyo.vim') "{{{2
     nnoremap cof :<C-u>call SetGoyo(v:count)<CR>
 
-    function! SetGoyo(num)
-        setlocal wrap
-        setlocal nolist
+    function! s:goyo_enter()
+        let b:wrap_cache = &wrap
+        let b:list_cache = &list
+        let &wrap = 1
+        let &list = 0
+    endfunction
 
+    function! s:goyo_leave()
+        let &wrap = b:wrap_cache
+        let &list = b:list_cache
+    endfunction
+
+    autocmd! User GoyoEnter nested call <SID>goyo_enter()
+    autocmd! User GoyoLeave nested call <SID>goyo_leave()
+    function! SetGoyo(num)
         if a:num == 0
             Goyo
         else
             execute "Goyo ".string(a:num)
         endif
+
+
     endfunction
 endif "}}}2
 

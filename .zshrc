@@ -39,16 +39,15 @@ SAVEHIST=10000
 ###########################################################################}}}
 # GENERAL SETTINGS                                                         {{{
 ##############################################################################
-setopt histignoredups # ignore duplicates in history
-setopt autonamedirs # allow special ~dirs for shortcuts
-setopt autocd
+setopt hist_ignore_dups # ignore duplicates in history
+setopt auto_name_dirs # allow special ~dirs for shortcuts
+setopt auto_cd # just by writing a path
+setopt glob_complete # open completion on globs
+setopt complete_in_word # Tab completion from both ends
 
 # gives you more extensive tab completion TODO(look into this)
 autoload -U compinit
 compinit
-
-# Tab completion from both ends
-setopt completeinword
 
 # Tab completion should be case-insensitive.
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'

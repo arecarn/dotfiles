@@ -22,12 +22,16 @@
     bcu = push origin --set-upstream HEAD # Branch Create Upstream
 
     cm = commit
+    cmm = commit --message
+    cmfu = commit --fixup
+
+    f = fetch
     co = checkout
     sh = show --decorate
     st = stash
+
     s =  status --short --branch
     ss = status
-    f = fetch
 
     a = add
     aa = add -A # Add All

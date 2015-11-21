@@ -83,7 +83,7 @@ execute 'set backupdir='.s:backupdir
 set nowrap
 set linebreak
 set textwidth=0 "TODO for c make tw=78
-if v:version >= 704 && has("patch338")
+if exists('+breakindent')
     set breakindent
 endif
 
@@ -397,12 +397,13 @@ nnoremap [myleader]rc :e $MYVIMRC<CR>
 
 nnoremap <C-W>d :bd<CR>
 
-" make more undoes possible after leaving insert mode
+" make more undos possible after leaving insert mode
 inoremap <C-u> <C-g>u<C-u>
 inoremap <C-w> <C-g>u<C-w>
 inoremap <BS> <C-g>u<BS>
 inoremap <Del> <C-g>u<Del>
-inoremap <END> <C-g>u<END>
+inoremap <End> <C-g>u<End>
+inoremap <Space> <C-g>u<Space>
 
 " yank to end of line, kinda like D or C
 noremap Y y$
@@ -888,6 +889,8 @@ NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-repeat' "}}}2
 
+NeoBundle 'junegunn/fzf', { 'base': '~/.fzf', 'build': './install --all' }
+
 " NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'arecarn/split-join.vim'
 NeoBundle 'osyo-manga/vim-anzu'
@@ -1156,8 +1159,9 @@ if neobundle#is_installed('unite.vim') "{{{2
     let g:unite_split_rule = 'botright'
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
     call unite#filters#sorter_default#use(['sorter_rank'])
-    call unite#custom#source('file_rec/git,file_rec,file_rec/async', 'max_candidates', 0)
+    call unite#custom#source('file_rec/async', 'max_candidates', 0)
     call unite#custom#profile('files', 'filters', 'sorter_rank')
+
     let s:unite_sources = 'file_rec/git,file_rec,file_rec/async,file_mru,file,grep'
     call unite#custom#source(
                 \ s:unite_sources,
@@ -1194,6 +1198,10 @@ if neobundle#is_installed('unite.vim') "{{{2
     " -P perl regex-----------------------------+|
     " -R Recursive-------------------------------+
 
+    " Using ag as recursive command.
+    let g:unite_source_rec_async_command =
+                \ ['ag', '--follow', '--nocolor', '--nogroup',
+                \  '--hidden', '-g', '']
     augroup unite
         autocmd!
         autocmd FileType unite call s:unite_settings()

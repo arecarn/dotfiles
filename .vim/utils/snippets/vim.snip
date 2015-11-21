@@ -1,0 +1,14 @@
+snippet     echomsg
+alias       log
+options     head
+    echomsg string(${1:TARGET})
+
+snippet     for
+abbr        for () {}
+    for (${1:int} ${2:i} = ${3:0}; $2 < ${4}; $2++) {
+        ${0:#:TARGET}
+    }
+
+snippet     decho
+abbr        Decho
+    Decho '${1:var} = <'.$1.'>'${0}

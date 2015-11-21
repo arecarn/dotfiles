@@ -889,7 +889,10 @@ NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-repeat' "}}}2
 
-NeoBundle 'junegunn/fzf', {'base': '~/.fzf'}
+NeoBundle 'junegunn/fzf', {
+            \ 'base' : '~/.fzf',
+            \ 'build' : './install --key-bindings --completion'
+            \ }
 
 " NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'arecarn/split-join.vim'

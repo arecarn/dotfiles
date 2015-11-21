@@ -133,16 +133,32 @@ bindkey -M vicmd '\ed'   kill-word                         # Alt-d
 
 export KEYTIMEOUT=1
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{
 ##############################################################################
-alias pslevel='pstree -s $$'
-alias e='vim'
-alias gp='grep -P'
-alias find-big='du -hsx *(D) | sort -rh | head -50'
 
-alias g='git'
+alias so="source"
+alias soz="source ~/dotfiles/.zshrc"
+
+alias e="$EDITOR"
+alias ez="$EDITOR ~/dotfiles/.zshrc"
+alias eg="$EDITOR ~/dotfiles/.gitconfig"
+alias ev="$EDITOR ~/dotfiles/.vim/vimrc"
+alias et="$EDITOR ~/dotfiles/.tmux.conf"
+
+alias mk="mkdir"
+alias rd="rmdir"
+
+alias gp="grep -P"
+
+alias py="python"
+
+# disk usage sorted
+alias dus="du -hsx *(D) | sort -rh"
+
+alias g="git"
 # Git Files
 alias -g  gf='`git status --porcelain | sed -ne "s/^..//p"`'
 # Git Modified Files
@@ -151,23 +167,60 @@ alias -g  gmf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//
 alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files
 
-alias l='  ls -pa'
-alias l1=' ls -pa1'
-alias la=' ls -palh'
+alias l=" pwd; ls -pa"
+alias ll="pwd; ls -palh"
 
-alias tsh='~/dotfiles/mybin/scripts/trash.sh'
-alias nfind='find . -name '
-alias minivim='vim -u ~/dotfiles/vim/.vimrc_minimal'
+alias tsh="~/dotfiles/mybin/scripts/trash.sh"
+alias nfind="find . -name "
+alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"
 
 if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" || "$OSTYPE" == "freebsd"*  ]]; then
-    alias open='xdg-open'
+    alias open="xdg-open"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "cygwin" ]]; then
-    alias open='cygstart'
+    alias open="cygstart"
 elif [[ "$OSTYPE" == "win32" ]]; then
-    alias open='start'
+    alias open="start"
 else
 fi
+
+# GLOBAL ABBERVIATIONS {{{2
+typeset -Ag abbreviations
+abbreviations=(
+"Ia"    "| awk"
+"Ig"    "| grep -P"
+"Igv"   "| grep -Pv" #inverse match
+"Ip"    "| $PAGER"
+"Im"    "| more"
+"Ih"    "| head"
+"It"    "| tail"
+"Is"    "| sort"
+"Ist"   "| sed"
+"Iv"    "| vim -R -"
+"Iw"    "| wc"
+"Ix"    "| xargs"
+"HEAD^" "HEAD\\^"
+)
+
+magic-abbrev-expand() {
+    local MATCH
+    LBUFFER=${LBUFFER%%(#m)[_a-zA-Z0-9^]#}
+    LBUFFER+=${abbreviations[$MATCH]:-$MATCH}
+    zle self-insert
+    viins-new-undo-seq
+}
+
+no-magic-abbrev-expand() {
+    LBUFFER+=' '
+}
+
+zle -N magic-abbrev-expand
+zle -N no-magic-abbrev-expand
+bindkey " " magic-abbrev-expand
+bindkey "^x " no-magic-abbrev-expand
+bindkey -M isearch " " self-insert
+# }}}2
+
 
 # run a command until it fails
 function untilfail()

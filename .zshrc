@@ -58,23 +58,78 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 # vi like settings
 bindkey -v
 
-#using already typed text search through history
-bindkey '^P' history-beginning-search-backward
-bindkey '^N' history-beginning-search-forward
-
-# backspace and ^h working even after returning from command mode
-bindkey '^?' backward-delete-char
-bindkey '^H' backward-delete-char
-
-# ctrl-w removed word backwards
-bindkey '^W' backward-kill-word
-
-#starts searching history backward/forward
-bindkey '^R' history-incremental-search-backward
-bindkey '^S' history-incremental-search-forward
 
 # expand aliases
 bindkey '^E' _expand_alias
+
+# VI MODE KEYBINDINGS (ins mode)
+bindkey -M viins '^A'    beginning-of-line
+bindkey -M viins '^E'    end-of-line
+bindkey -M viins '^K'    kill-line
+bindkey -M viins '^R'    history-incremental-pattern-search-backward
+bindkey -M viins '^S'    history-incremental-pattern-search-forward
+bindkey -M viins '^P' history-beginning-search-backward
+bindkey -M viins '^N' history-beginning-search-forward
+bindkey -M viins '^Y'    yank
+
+viins-new-undo-seq() {
+    # escape and re-enter to make a new undo sequence
+    zle vi-cmd-mode
+    zle vi-add-next
+}
+
+backward-kill-word-and-new-undo-seq() {
+    zle backward-kill-word
+    viins-new-undo-seq
+}
+zle -N backward-kill-word-and-new-undo-seq
+
+backward-kill-line-and-new-undo-seq() {
+    zle backward-kill-line
+    viins-new-undo-seq
+}
+zle -N backward-kill-line-and-new-undo-seq
+
+backward-delete-char-and-new-undo-seq() {
+    zle backward-delete-char
+    viins-new-undo-seq
+}
+zle -N backward-delete-char-and-new-undo-seq
+
+bindkey -M viins '^_'    undo
+bindkey -M viins '^W'    backward-kill-word-and-new-undo-seq
+bindkey -M viins '^U'    backward-kill-line-and-new-undo-seq
+bindkey -M viins '^H'    backward-delete-char-and-new-undo-seq
+bindkey -M viins '^?'    backward-delete-char-and-new-undo-seq
+
+
+
+bindkey -M viins '^X^R'  redisplay
+bindkey -M viins '\eOH'  beginning-of-line # Home
+bindkey -M viins '\eOF'  end-of-line       # End
+bindkey -M viins '\e[2~' overwrite-mode    # Insert
+bindkey -M viins '\ef'   forward-word      # Alt-f
+bindkey -M viins '\eb'   backward-word     # Alt-b
+bindkey -M viins '\ed'   kill-word         # Alt-d
+
+
+# VI MODE KEYBINDINGS (cmd mode)
+bindkey -M vicmd '^A'    beginning-of-line
+bindkey -M vicmd '^E'    end-of-line
+bindkey -M vicmd '^P'    history-beginning-search-backward
+bindkey -M vicmd '^N'    history-beginning-search-forward
+bindkey -M vicmd '^K'    kill-line
+bindkey -M vicmd '^Y'    yank
+bindkey -M vicmd '^W'    backward-kill-word
+bindkey -M vicmd '^U'    backward-kill-line
+bindkey -M vicmd '/'     history-incremental-pattern-search-backward
+bindkey -M vicmd '?'     history-incremental-pattern-search-forward
+bindkey -M vicmd '^_'    undo
+bindkey -M vicmd u       undo
+bindkey -M vicmd '^R'    redo
+bindkey -M vicmd '\ef'   forward-word                      # Alt-f
+bindkey -M vicmd '\eb'   backward-word                     # Alt-b
+bindkey -M vicmd '\ed'   kill-word                         # Alt-d
 
 export KEYTIMEOUT=1
 

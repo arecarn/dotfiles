@@ -143,7 +143,7 @@ alias so="source"
 alias soz="source ~/dotfiles/.zshrc"
 
 alias e="$EDITOR"
-alias ez="$EDITOR ~/dotfiles/.zshrc"
+alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"
 alias eg="$EDITOR ~/dotfiles/.gitconfig"
 alias ev="$EDITOR ~/dotfiles/.vim/vimrc"
 alias et="$EDITOR ~/dotfiles/.tmux.conf"
@@ -292,5 +292,3 @@ stty stop undef
 # vim: textwidth=78
 # vim: foldmethod=marker
 ###########################################################################}}}
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

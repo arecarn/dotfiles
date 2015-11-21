@@ -35,6 +35,8 @@ DOTFILES = [
             "name" : ".ctags",
             "location" : HOME,
         },
+
+
         {
             "source" : ".gitconfig",
             "name" : ".gitconfig",
@@ -45,6 +47,8 @@ DOTFILES = [
             "name" : ".gitignore_global",
             "location" : HOME,
         },
+
+
         {
             "source" : ".inputrc",
             "name" : ".inputrc",
@@ -55,24 +59,24 @@ DOTFILES = [
             "name" : ".mutt",
             "location" : HOME,
         },
+
+
+        # Tmux
         {
             "source" : ".tmux",
             "name" : ".tmux",
             "location" : HOME,
         },
         {
+            "source" : os.path.join(".tmux", ".tmux.conf"),
+            "name" : ".tmux.conf",
+            "location" : HOME,
+        },
+
+        # Vim
+        {
             "source" : ".vim",
             "name" : ".vim",
-            "location" : HOME,
-        },
-        {
-            "source" : '.vim',
-            "name" : "vimfiles",
-            "location" : HOME,
-        },
-        {
-            "source" : ".zshrc",
-            "name" : ".zshrc",
             "location" : HOME,
         },
         {
@@ -81,8 +85,20 @@ DOTFILES = [
             "location" : HOME,
         },
         {
-            "source" : os.path.join(".tmux", ".tmux.conf"),
-            "name" : ".tmux.conf",
+            "source" : '.vim',
+            "name" : "vimfiles",
+            "location" : HOME,
+        },
+
+        # Z-Shell
+        {
+            "source" : ".zsh",
+            "name" : ".zsh",
+            "location" : HOME,
+        },
+        {
+            "source" : os.path.join(".zsh", ".zshrc"),
+            "name" : ".zshrc",
             "location" : HOME,
         },
 ]

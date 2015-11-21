@@ -1,7 +1,7 @@
 # -                                                                        {{{
 ##############################################################################
-zgen_dir=~/zgen
-zgen_file=~/zgen/zgen.zsh
+zgen_dir=~/.zsh/zgen
+zgen_file=~/.zsh/zgen/zgen.zsh
 
 (
 if ! [[ -e $zgen_file ]]; then
@@ -133,7 +133,7 @@ bindkey -M vicmd '\ed'   kill-word                         # Alt-d
 
 export KEYTIMEOUT=1
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.zsh/fzf.zsh ] && source ~/.zsh/fzf.zsh
 
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{
@@ -292,3 +292,5 @@ stty stop undef
 # vim: textwidth=78
 # vim: foldmethod=marker
 ###########################################################################}}}
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

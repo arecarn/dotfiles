@@ -891,7 +891,7 @@ NeoBundle 'tpope/vim-repeat' "}}}2
 
 NeoBundle 'junegunn/fzf', {
             \ 'base' : '~/.fzf',
-            \ 'build' : './install --key-bindings --completion'
+            \ 'build' : './install --all'
             \ }
 
 " NeoBundle 'Shougo/neocomplcache'

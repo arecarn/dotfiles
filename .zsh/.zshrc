@@ -133,7 +133,7 @@ bindkey -M vicmd '\ed'   kill-word                         # Alt-d
 
 export KEYTIMEOUT=1
 
-[ -f ~/.zsh/fzf.zsh ] && source ~/.zsh/fzf.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{

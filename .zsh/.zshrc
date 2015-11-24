@@ -42,8 +42,19 @@ SAVEHIST=10000
 setopt hist_ignore_dups # ignore duplicates in history
 setopt auto_name_dirs # allow special ~dirs for shortcuts
 setopt auto_cd # just by writing a path
+
+# Completion
 setopt glob_complete # open completion on globs
 setopt complete_in_word # Tab completion from both ends
+
+# show ... when doing a rm *
+setopt rm_star_wait
+
+# List completion
+setopt auto_list
+setopt auto_param_slash
+setopt auto_param_keys # List like "ls -F"
+setopt list_types # Compact completion
 
 # gives you more extensive tab completion TODO(look into this)
 autoload -U compinit
@@ -59,15 +70,13 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 bindkey -v
 
 
-# expand aliases
-bindkey '^E' _expand_alias
 
 # VI MODE KEYBINDINGS (ins mode)
 bindkey -M viins '^A'    beginning-of-line
 bindkey -M viins '^E'    end-of-line
 bindkey -M viins '^K'    kill-line
-bindkey -M viins '^R'    history-incremental-pattern-search-backward
-bindkey -M viins '^S'    history-incremental-pattern-search-forward
+# bindkey -M viins '^R'    history-incremental-pattern-search-backward
+# bindkey -M viins '^S'    history-incremental-pattern-search-forward
 bindkey -M viins '^P' history-beginning-search-backward
 bindkey -M viins '^N' history-beginning-search-forward
 bindkey -M viins '^Y'    yank
@@ -101,6 +110,7 @@ bindkey -M viins '^W'    backward-kill-word-and-new-undo-seq
 bindkey -M viins '^U'    backward-kill-line-and-new-undo-seq
 bindkey -M viins '^H'    backward-delete-char-and-new-undo-seq
 bindkey -M viins '^?'    backward-delete-char-and-new-undo-seq
+bindkey -M viins '^X'    _expand_alias
 
 
 
@@ -140,7 +150,7 @@ export KEYTIMEOUT=1
 ##############################################################################
 
 alias so="source"
-alias soz="source ~/dotfiles/.zshrc"
+alias soz="source ~/dotfiles/.zsh/.zshrc"
 
 alias e="$EDITOR"
 alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"

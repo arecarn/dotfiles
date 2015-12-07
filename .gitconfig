@@ -56,6 +56,8 @@
     lg =  log --decorate --boundary
     lga = log --decorate --boundary --graph --date-order --all
 
+    rm = remote
+    rms = remote show
     rmso = remote show origin
 
     smup = submodule update
@@ -75,3 +77,5 @@
     tool = vimdiff
 [mergetool]
     prompt = false
+[fetch]
+	prune = true

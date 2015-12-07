@@ -8,10 +8,15 @@ import os
 import shutil
 import datetime
 
+import setup_config
+
 # ============================================================================
 
-HOME = os.path.relpath(os.path.expanduser("~"))
+FILES = setup_config.FILES
+DIRECTORIES = setup_config.DIRECTORIES
+DOTFILES = setup_config.DOTFILES
 
+HOME = os.path.relpath(os.path.expanduser("~"))
 DOTFILES_DIR = "dotfiles"
 
 def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
@@ -19,89 +24,14 @@ def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
 
 BACKUP_DIR = os.path.join(HOME, time_stamped(DOTFILES_DIR))
 
-FILES = [
-    os.path.join(HOME, ".zshrc_local"),
-    os.path.join(HOME, ".vimrc_local"),
-    os.path.join(HOME, ".gitconfig_local"),
-]
 
-DIRECTORIES = [
-    os.path.join(HOME, ".Trash"),
-]
-
-DOTFILES = [
-        {
-            "source" : ".ctags",
-            "name" : ".ctags",
-            "location" : HOME,
-        },
+def resolve_abs_path(path):
+    return os.path.abspath(os.path.expanduser(path))
 
 
-        {
-            "source" : ".gitconfig",
-            "name" : ".gitconfig",
-            "location" : HOME,
-        },
-        {
-            "source" : ".gitignore_global",
-            "name" : ".gitignore_global",
-            "location" : HOME,
-        },
+def resolve_path(path):
+    return os.path.join(*(path.split('/')))
 
-
-        {
-            "source" : ".inputrc",
-            "name" : ".inputrc",
-            "location" : HOME,
-        },
-        {
-            "source" : ".mutt",
-            "name" : ".mutt",
-            "location" : HOME,
-        },
-
-
-        # Tmux
-        {
-            "source" : ".tmux",
-            "name" : ".tmux",
-            "location" : HOME,
-        },
-        {
-            "source" : os.path.join(".tmux", ".tmux.conf"),
-            "name" : ".tmux.conf",
-            "location" : HOME,
-        },
-
-        # Vim
-        {
-            "source" : ".vim",
-            "name" : ".vim",
-            "location" : HOME,
-        },
-        {
-            "source" : os.path.join(".vim", "vimrc"),
-            "name" : ".vimrc",
-            "location" : HOME,
-        },
-        {
-            "source" : '.vim',
-            "name" : "vimfiles",
-            "location" : HOME,
-        },
-
-        # Z-Shell
-        {
-            "source" : ".zsh",
-            "name" : ".zsh",
-            "location" : HOME,
-        },
-        {
-            "source" : os.path.join(".zsh", ".zshrc"),
-            "name" : ".zshrc",
-            "location" : HOME,
-        },
-]
 
 def backup(dotfiles, backup_dir):
     print("Backing Up Old Dotfiles Into {0}".format(backup_dir))
@@ -109,6 +39,7 @@ def backup(dotfiles, backup_dir):
 
     for dotfile in dotfiles:
         target = os.path.join(dotfile["location"], dotfile["name"])
+        target = resolve_abs_path(target)
         dest = os.path.join(backup_dir, dotfile["name"])
 
         try:
@@ -122,8 +53,10 @@ def symlink_files(dotfiles, dotfiles_dir):
     print("Symbolic Linking Files")
 
     for dotfile in dotfiles:
-        source = os.path.join(dotfiles_dir, dotfile["source"])
+        source_name = resolve_path(dotfile["source"])
+        source = os.path.join(dotfiles_dir, source_name)
         dest = os.path.join(dotfile["location"], dotfile["name"])
+        dest = resolve_abs_path(dest)
         print("Creating link {dest} pointing to {source}".format(source=source, dest=dest))
 
         try:
@@ -136,6 +69,7 @@ def create_files(config_files):
     print("Creating Local Config Files")
 
     for config_file in config_files:
+        config_file = resolve_abs_path(config_file)
         print("Creating config file if it doesn't already exist: {0}".format(config_file))
 
         try:
@@ -149,6 +83,7 @@ def create_directories(directories):
     print("Creating Directories")
 
     for directory in directories:
+        directory = resolve_abs_path(directory)
         print("Creating Directory: {0}".format(directory))
 
         try:

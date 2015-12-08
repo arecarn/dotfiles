@@ -30,7 +30,7 @@ def resolve_abs_path(path):
 
 
 def resolve_path(path):
-    return os.path.join(*(path.split('/')))
+    return os.path.join(*(path.split("/")))
 
 
 def backup(dotfiles, backup_dir):
@@ -92,7 +92,7 @@ def create_directories(directories):
             print(exception_message)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     backup(DOTFILES, BACKUP_DIR)
     print("\n")
 

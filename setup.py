@@ -4,13 +4,23 @@ Sets up the dotfiles in this repository
 Requires python 3 on Windows
 """
 
+import sys
 import os
 import shutil
 import datetime
-
-import setup_config
+import importlib.machinery
 
 # ============================================================================
+
+def resolve_abs_path(path):
+    return os.path.abspath(os.path.expanduser(path))
+
+# TODO add option to override this path with a custom one
+
+# http://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
+setup_config_location = resolve_abs_path("~/dotfiles/setup_config.py")
+loader = importlib.machinery.SourceFileLoader('setup_config', setup_config_location)
+setup_config = loader.load_module()
 
 FILES = setup_config.FILES
 DIRECTORIES = setup_config.DIRECTORIES
@@ -19,14 +29,12 @@ DOTFILES = setup_config.DOTFILES
 HOME = os.path.relpath(os.path.expanduser("~"))
 DOTFILES_DIR = "dotfiles"
 
+
 def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):
     return datetime.datetime.now().strftime(fmt).format(fname=fname)
 
+
 BACKUP_DIR = os.path.join(HOME, time_stamped(DOTFILES_DIR))
-
-
-def resolve_abs_path(path):
-    return os.path.abspath(os.path.expanduser(path))
 
 
 def resolve_path(path):

@@ -1,5 +1,7 @@
 # -                                                                        {{{
 ##############################################################################
+export EDITOR='vim'
+
 zgen_dir=~/.zsh/zgen
 zgen_file=~/.zsh/zgen/zgen.zsh
 
@@ -21,6 +23,7 @@ if ! zgen saved; then
     zgen oh-my-zsh git
     zgen oh-my-zsh tmux
     zgen oh-my-zsh themes/robbyrussell
+    zgen oh-my-zsh plugins/ssh-agent
     zgen load rupa/z
     zgen load zsh-users/zsh-completions src
 
@@ -29,6 +32,7 @@ if ! zgen saved; then
     zgen save
 fi
 
+zstyle :omz:plugins:ssh-agent agent-forwarding on
 ###########################################################################}}}
 # HISTORY                                                                  {{{
 ##############################################################################
@@ -156,7 +160,7 @@ alias e="$EDITOR"
 alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"
 alias eg="$EDITOR ~/dotfiles/.gitconfig"
 alias ev="$EDITOR ~/dotfiles/.vim/vimrc"
-alias et="$EDITOR ~/dotfiles/.tmux.conf"
+alias et="$EDITOR ~/dotfiles/.tmux/.tmux.conf"
 
 alias mk="mkdir"
 alias rd="rmdir"

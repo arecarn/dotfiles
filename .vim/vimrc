@@ -960,6 +960,7 @@ NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-unimpaired'
+NeoBundle 'jreybert/vimagit'
 NeoBundle 'vim-scripts/cmdalias.vim'
 NeoBundle 'vim-scripts/DrawIt'
 NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
@@ -1348,6 +1349,67 @@ if neobundle#is_installed('vim-fugitive') "{{{2
     nnoremap <Leader>gc :Gcommit<CR>
     nmap <Leader>gj <C-W>P<C-N>D
     nmap <Leader>gk <C-W>P<C-P>D
+
+  " Jump to last known cursor position on BufReadPost {{{
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  " NOTE: read viminfo/marks, but removed: causes issues with jumplist sync
+  " across Vim instances
+    " \   rviminfo |
+  " NOTE: removed for SVN commit messages: && fnamemodify(bufname('%'), ':t') != 'svn-commit.tmp'
+  " ref: :h last-position-jump
+  fun! AutojumpLastPosition()
+    if ! exists('b:autojumped_init')
+      let b:autojumped_init = 1
+      if &ft != 'gitcommit' && &ft != 'diff' && ! &diff && line("'\"") <= line("$") && line("'\"") > 0
+        " NOTE: `zv` is ignored with foldlevel in modeline.
+        exe 'normal! g`"zv'
+      endif
+    endif
+  endfun
+
+ " Follow symlinks when opening a file {{{
+  " NOTE: this happens with directory symlinks anyway (due to Vim's chdir/getcwd
+  "       magic when getting filenames).
+  " Sources:
+  "  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
+  "  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
+  function! MyFollowSymlink(...)
+    if exists('w:no_resolve_symlink') && w:no_resolve_symlink
+      return
+    endif
+    if &ft == 'help'
+      return
+    endif
+    let fname = a:0 ? a:1 : expand('%')
+    if fname =~ '^\w\+:/'
+      " Do not mess with 'fugitive://' etc.
+      return
+    endif
+    let fname = simplify(fname)
+
+    let resolvedfile = resolve(fname)
+    if resolvedfile == fname
+      return
+    endif
+    let resolvedfile = fnameescape(resolvedfile)
+    let sshm = &shm
+    set shortmess+=A  " silence ATTENTION message about swap file (would get displayed twice)
+    redraw  " Redraw now, to avoid hit-enter prompt.
+    exec 'file ' . resolvedfile
+    let &shm=sshm
+
+    call AutojumpLastPosition()
+    unlet! b:git_dir
+    call fugitive#detect(resolvedfile)
+
+    if &modifiable
+      " Only display a note when editing a file, especially not for `:help`.
+      redraw  " Redraw now, to avoid hit-enter prompt.
+      echomsg 'Resolved symlink: =>' resolvedfile
+    endif
+  endfunction
+  command! -bar FollowSymlink call MyFollowSymlink()
 endif "}}}2
 
 if neobundle#is_installed('frisk.vim') "{{{2

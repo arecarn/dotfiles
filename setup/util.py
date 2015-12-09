@@ -26,6 +26,6 @@ def dynamic_import(path, module_name):
     # TODO add option to override this path with a custom one
     # TODO add compatibility for python 3.3 through 3.5
     # http://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
-    setup_config_location = resolve_abs_path("~/dotfiles/setup_config.py")
-    loader = importlib.machinery.SourceFileLoader('setup_config', setup_config_location)
+    setup_config_location = resolve_abs_path(path)
+    loader = importlib.machinery.SourceFileLoader(module_name, setup_config_location)
     return loader.load_module()

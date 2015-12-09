@@ -1,15 +1,6 @@
-
-FILES = [
-    "~/.zshrc_local",
-    "~/.vimrc_local",
-    "~/.gitconfig_local",
-]
-
-DIRECTORIES = [
-    "~/.Trash",
-]
-
 DOTFILES_DIR = "dotfiles"
+
+DOTFILES_LOCATION = "~"
 
 DOTFILES = [
         {
@@ -82,4 +73,14 @@ DOTFILES = [
             "name" : ".zshrc",
             "location" : "~",
         },
+]
+
+FILES = [
+    "~/.zshrc_local",
+    "~/.vimrc_local",
+    "~/.gitconfig_local",
+]
+
+DIRECTORIES = [
+    "~/.Trash",
 ]

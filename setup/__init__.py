@@ -8,33 +8,14 @@ import sys
 import os
 import shutil
 
-import importlib.machinery
-
-import datetime
-
 from setup.util import resolve_abs_path
 from setup.util import resolve_path
 from setup.util import time_stamped
-
 # ============================================================================
-# TODO add option to override this path with a custom one
-# TODO add compatibility for python 3.3 through 3.5
-# http://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
-setup_config_location = resolve_abs_path("~/dotfiles/setup_config.py")
-loader = importlib.machinery.SourceFileLoader('setup_config', setup_config_location)
-setup_config = loader.load_module()
+def backup(dotfiles, dotfiles_dir, dotfiles_location):
+    location = os.path.expanduser(dotfiles_location)
+    backup_dir = os.path.join(location, time_stamped(dotfiles_dir))
 
-DOTFILES_DIR = setup_config.DOTFILES_DIR
-FILES = setup_config.FILES
-DIRECTORIES = setup_config.DIRECTORIES
-DOTFILES = setup_config.DOTFILES
-
-HOME = os.path.relpath(os.path.expanduser("~"))
-BACKUP_DIR = os.path.join(HOME, time_stamped(DOTFILES_DIR))
-
-
-# ============================================================================
-def backup(dotfiles, backup_dir):
     print("Backing Up Old Dotfiles Into {0}".format(backup_dir))
     os.mkdir(backup_dir)
 

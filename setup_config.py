@@ -1,3 +1,4 @@
+
 FILES = [
     "~/.zshrc_local",
     "~/.vimrc_local",
@@ -7,6 +8,8 @@ FILES = [
 DIRECTORIES = [
     "~/.Trash",
 ]
+
+DOTFILES_DIR = "dotfiles"
 
 DOTFILES = [
         {

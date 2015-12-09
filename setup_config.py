@@ -1,77 +1,68 @@
-DOTFILES_DIR = "dotfiles"
+# TODO need a way to source another file, a base config could be used and this
+# could help with some defaults?
 
-DOTFILES_LOCATION = "~"
+# TODO if not specified default to ~/dotfiles?
+DOTFILES_DIRECTORY = "~/dotfiles"
 
+# TODO if source isn't specified use name by default?
 DOTFILES = [
         {
             "source" : ".ctags",
-            "name" : ".ctags",
-            "location" : "~",
+            "location" : "~/.ctags",
         },
 
         {
             "source" : ".gitconfig",
-            "name" : ".gitconfig",
-            "location" : "~",
+            "location" : "~/.gitconfig",
         },
 
         {
             "source" : ".gitignore_global",
-            "name" : ".gitignore_global",
-            "location" : "~",
+            "location" : "~/.gitignore_global",
         },
 
         {
             "source" : ".inputrc",
-            "name" : ".inputrc",
-            "location" : "~",
+            "location" : "~/.inputrc",
         },
 
         {
             "source" : ".mutt",
-            "name" : ".mutt",
-            "location" : "~",
+            "location" : "~/.mutt",
         },
 
 
         # Tmux
         {
             "source" : ".tmux",
-            "name" : ".tmux",
-            "location" : "~",
+            "location" : "~/.tmux",
         },
         {
             "source" : ".tmux/.tmux.conf",
-            "name" : ".tmux.conf",
-            "location" : "~",
+            "location" : "~/.tmux.conf",
         },
 
         # Vim
         {
             "source" : ".vim",
-            "name" : ".vim",
-            "location" : "~",
+            "location" : "~/.vim",
         },
         {
             "source" : ".vim/vimrc",
-            "name" : ".vimrc",
-            "location" : "~",
+            "location" : "~/.vimrc",
         },
         {
             "source" : '.vim',
-            "name" : "vimfiles",
-            "location" : "~",
+            "location" : "~/vimfiles",
         },
 
         # Z-Shell
         {   "source" : ".zsh",
-            "name" : ".zsh",
-            "location" : "~",
+            "location" : "~/.zsh",
         },
         {
             "source" : ".zsh/.zshrc",
-            "name" : ".zshrc",
-            "location" : "~",
+            "location" : "~/.zshrc",
         },
 ]
 

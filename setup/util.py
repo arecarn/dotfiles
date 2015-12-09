@@ -4,12 +4,18 @@ import datetime
 import importlib.machinery
 # ============================================================================
 
+#TODO rename resolve_path_absolute
 def resolve_abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
 def resolve_path(path):
     return os.path.join(*(path.split("/")))
+
+
+def get_absolute_dirname(path):
+        directory_name = os.path.dirname(path)
+        return resolve_abs_path(directory_name)
 
 
 def time_stamped(fname, fmt="{fname}_%Y-%m-%d-%H-%M-%S"):

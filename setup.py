@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 
 import setup
@@ -20,11 +22,12 @@ if __name__ == "__main__":
 
     setup.backup(
             setup_config.DOTFILES,
-            setup_config.DOTFILES_DIR,
-            setup_config.DOTFILES_LOCATION)
+            setup_config.DOTFILES_DIRECTORY)
     print("\n")
 
-    setup.symlink_files(setup_config.DOTFILES, setup_config.DOTFILES_DIR)
+    setup.symlink_files(
+            setup_config.DOTFILES,
+            setup_config.DOTFILES_DIRECTORY)
     print("\n")
 
     setup.create_files(setup_config.FILES)

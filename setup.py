@@ -14,9 +14,7 @@ parser.add_argument(
 args = parser.parse_args()
 # ============================================================================
 
-setup_config = dynamic_import(args.file, "setup_config")
-
-#TODO use the path of the setup_config file
+setup_config = dynamic_import(args.file, "")
 
 if __name__ == "__main__":
 

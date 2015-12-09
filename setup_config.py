@@ -1,6 +1,8 @@
 # TODO need a way to source another file, a base config could be used and this
 # could help with some defaults?
 
+# TODO allow missing options
+
 # TODO if not specified default to ~/dotfiles?
 DOTFILES_DIRECTORY = "~/dotfiles"
 

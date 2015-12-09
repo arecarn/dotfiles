@@ -1193,19 +1193,33 @@ if neobundle#is_installed('unite.vim') "{{{2
 
     let s:unite_grep_excludes = substitute(s:unite_ignore_globs, '^\|,', ' --exclude=', 'g')
     let g:unite_grep_excludes  = s:unite_grep_excludes
-    let g:unite_source_grep_command = 'grep'
-    let g:unite_source_grep_default_opts = '-InHPR ' . ' --exclude-dir={.git,.hg,.svn}'
-    "                                        |||||
-    " -I ignore binary files-----------------+||||
-    " -n print line numbers-------------------+|||
-    " -H print filename with match--------------||
-    " -P perl regex-----------------------------+|
-    " -R Recursive-------------------------------+
 
-    " Using ag as recursive command.
-    let g:unite_source_rec_async_command =
-                \ ['ag', '--follow', '--nocolor', '--nogroup',
-                \  '--hidden', '-g', '']
+    if executable('ag')
+        " Use ag (the silver searcher)
+        " https://github.com/ggreer/the_silver_searcher
+        let g:unite_source_grep_command = 'ag'
+        let g:unite_source_grep_default_opts =
+                    \ '-i --vimgrep --hidden --ignore ' .
+                    \ '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+        let g:unite_source_grep_recursive_opt = ''
+    elseif executable('grep')
+        let g:unite_source_grep_command = 'grep'
+        let g:unite_source_grep_default_opts = '-InHPR ' . '--exclude-dir={.git,.hg,.svn}'
+        "                                        |||||
+        " -I ignore binary files-----------------+||||
+        " -n print line numbers-------------------+|||
+        " -H print filename with match--------------||
+        " -P Perl Regex-----------------------------+|
+        " -R Recursive-------------------------------+
+    endif
+
+    if executable('ag')
+        " Using ag as recursive command.
+        let g:unite_source_rec_async_command =
+                    \ ['ag', '--follow', '--nocolor', '--nogroup',
+                    \  '--hidden', '-g', '']
+    endif
+
     augroup unite
         autocmd!
         autocmd FileType unite call s:unite_settings()

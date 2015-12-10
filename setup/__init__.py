@@ -43,16 +43,19 @@ def symlink_files(dotfiles, dotfiles_directory):
 
     for dotfile in dotfiles:
 
-        dotfiles_location = get_absolute_dirname(dotfiles_directory)
+        dest = resolve_abs_path(dotfile["location"])
+
+        dotfile_location_directory = os.path.dirname(dest)
 
         source_name = resolve_path(dotfile["source"])
         source_path = os.path.join(dotfiles_directory, source_name)
         source_path_absolute =  resolve_abs_path(source_path)
+
+        # get a relative path to the source from the destination location of
+        # the dotfile, this way we will have a relative symlink
         source_path_relative = os.path.relpath(
                 source_path_absolute,
-                start=dotfiles_location)
-
-        dest = resolve_abs_path(dotfile["location"])
+                start=dotfile_location_directory)
 
         print("Creating link {dest} pointing to {source}".format(
             source=source_path_relative,

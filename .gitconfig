@@ -33,7 +33,7 @@
     sts = stash --patch --stat
     stl = stash list
 
-    s =  status --short --branch
+    s =!git status --short --branch && git --no-pager stash list
     ss = status
 
     a = add

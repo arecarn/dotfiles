@@ -18,21 +18,19 @@ if ! zgen saved; then
 
     zgen oh-my-zsh
 
-    zgen oh-my-zsh per-directiory-history #TODO look into configuring this
-    zgen oh-my-zsh command-not-found
-    zgen oh-my-zsh git
-    zgen oh-my-zsh tmux
-    zgen oh-my-zsh themes/robbyrussell
+    zgen oh-my-zsh plugins/command-not-found
+    zgen oh-my-zsh plugins/tmux
     zgen oh-my-zsh plugins/ssh-agent
+    zgen oh-my-zsh themes/bureau
+
     zgen load rupa/z
     zgen load zsh-users/zsh-completions src
 
-
-    # save all to init script
     zgen save
 fi
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
+
 ###########################################################################}}}
 # HISTORY                                                                  {{{
 ##############################################################################

@@ -27,8 +27,11 @@
 
     f = fetch
     co = checkout
-    sh = show --decorate
+    sh = show --decorate --stat
+
     st = stash
+    sts = stash --patch --stat
+    stl = stash list
 
     s =  status --short --branch
     ss = status

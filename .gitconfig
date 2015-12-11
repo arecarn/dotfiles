@@ -30,11 +30,16 @@
     sh = show --decorate --stat
 
     st = stash
-    sts = stash --patch --stat
+    sts = stash show --patch --stat
     stl = stash list
+    stp = stash pop
+    std = stash drop
 
-    s =!git status --short --branch && git --no-pager stash list
-    ss = status
+    # I want relative file path in status, I need to cd explicitly to current dir
+    # before calling other commands, as commands run by git with "!" are run
+    # at the root of the repository. (GIT_PREFIX is empty at repository root).
+    s = "!f() { test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git status --short --branch; git --no-pager stash list; true; }; f"
+    ss = "!f() { test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git status; printf '\n'; git --no-pager stash list --name-status; true; }; f"
 
     a = add
     aa = add -A # Add All

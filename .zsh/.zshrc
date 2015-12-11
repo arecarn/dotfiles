@@ -71,8 +71,6 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 # vi like settings
 bindkey -v
 
-
-
 # VI MODE KEYBINDINGS (ins mode)
 bindkey -M viins '^A'    beginning-of-line
 bindkey -M viins '^E'    end-of-line
@@ -83,35 +81,29 @@ bindkey -M viins '^P' history-beginning-search-backward
 bindkey -M viins '^N' history-beginning-search-forward
 bindkey -M viins '^Y'    yank
 
-viins-new-undo-seq() {
-    # escape and re-enter to make a new undo sequence
-    zle vi-cmd-mode
-    zle vi-add-next
-}
-
-backward-kill-word-and-new-undo-seq() {
+backward-kill-word-and-split-undo() {
     zle backward-kill-word
-    viins-new-undo-seq
+    zle split-undo
 }
-zle -N backward-kill-word-and-new-undo-seq
+zle -N backward-kill-word-and-split-undo
 
-backward-kill-line-and-new-undo-seq() {
+backward-kill-line-and-split-undo() {
     zle backward-kill-line
-    viins-new-undo-seq
+    zle split-undo
 }
-zle -N backward-kill-line-and-new-undo-seq
+zle -N backward-kill-line-and-split-undo
 
-backward-delete-char-and-new-undo-seq() {
+backward-delete-char-and-split-undo() {
     zle backward-delete-char
-    viins-new-undo-seq
+    zle split-undo
 }
-zle -N backward-delete-char-and-new-undo-seq
+zle -N backward-delete-char-and-split-undo
 
 bindkey -M viins '^_'    undo
-bindkey -M viins '^W'    backward-kill-word-and-new-undo-seq
-bindkey -M viins '^U'    backward-kill-line-and-new-undo-seq
-bindkey -M viins '^H'    backward-delete-char-and-new-undo-seq
-bindkey -M viins '^?'    backward-delete-char-and-new-undo-seq
+bindkey -M viins '^W'    backward-kill-word-and-split-undo
+bindkey -M viins '^U'    backward-kill-line-and-split-undo
+bindkey -M viins '^H'    backward-delete-char-and-split-undo
+bindkey -M viins '^?'    backward-delete-char-and-split-undo
 bindkey -M viins '^X'    _expand_alias
 
 
@@ -199,37 +191,47 @@ fi
 # GLOBAL ABBERVIATIONS {{{2
 typeset -Ag abbreviations
 abbreviations=(
+"\\h"   "HEAD__CURSOR__"
 "Ia"    "| awk"
 "Ig"    "| grep -P"
 "Igv"   "| grep -Pv" #inverse match
-"Ip"    "| $PAGER"
-"Im"    "| more"
 "Ih"    "| head"
-"It"    "| tail"
+"Ic"    "Hello__CURSOR__! How are you" # cursor example
+"Im"    "| more"
+"Ip"    "| $PAGER"
 "Is"    "| sort"
 "Ist"   "| sed"
+"It"    "| tail"
 "Iv"    "| vim -R -"
 "Iw"    "| wc"
 "Ix"    "| xargs"
-"HEAD^" "HEAD\\^"
 )
 
 magic-abbrev-expand() {
     local MATCH
-    LBUFFER=${LBUFFER%%(#m)[_a-zA-Z0-9^]#}
-    LBUFFER+=${abbreviations[$MATCH]:-$MATCH}
-    zle self-insert
-    viins-new-undo-seq
+    LBUFFER=${LBUFFER%%(#m)[_a-zA-Z0-9\\]#}
+    command=${abbreviations[$MATCH]}
+    LBUFFER+=${command:-$MATCH}
+
+    if [[ "${command}" =~ "__CURSOR__" ]]
+    then
+        RBUFFER=${LBUFFER[(ws:__CURSOR__:)2]}
+        LBUFFER=${LBUFFER[(ws:__CURSOR__:)1]}
+    else
+        zle self-insert
+    fi
+    zle split-undo
 }
 
 no-magic-abbrev-expand() {
     LBUFFER+=' '
+    zle split-undo
 }
 
 zle -N magic-abbrev-expand
 zle -N no-magic-abbrev-expand
 bindkey " " magic-abbrev-expand
-bindkey "^x " no-magic-abbrev-expand
+bindkey "^ " no-magic-abbrev-expand
 bindkey -M isearch " " self-insert
 # }}}2
 

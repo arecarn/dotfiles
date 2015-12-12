@@ -995,7 +995,7 @@ let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
 
 if neobundle#is_installed('neocomplcache') "{{{2
     if !isdirectory(s:vim_path.'/utils_local/neocomplcache')
-        call mkdir(s:vim_path.'/utils_local/neocomplcache', "p", 0700)
+        call mkdir(s:vim_path.'/utils_local/neocomplcache', "p", 0755)
     endif
     let g:neocomplcache_temporary_dir = s:vim_path.'/utils_local/neocomplcache'
     let g:neocomplcache_enable_at_startup = 1
@@ -1063,7 +1063,7 @@ if neobundle#is_installed('neocomplete') "{{{2
     let g:neocomplete#max_list = 20
 
     if !isdirectory(s:vim_path.'/utils_local/neocomplete')
-        call mkdir(s:vim_path.'/utils_local/neocomplete', "p", 0700)
+        call mkdir(s:vim_path.'/utils_local/neocomplete', "p", 755)
     endif
     let g:neocomplete#data_directory = s:vim_path.'/utils_local/neocomplete/'
 
@@ -1336,7 +1336,7 @@ if neobundle#is_installed('vimshell.vim') "{{{2
     let g:vimshell_vimshrc_path = s:vim_path.'/utils/vimshell/vimshellrc'
 
     if !isdirectory(s:vim_path.'/utils_local/vimshell')
-        call mkdir(s:vim_path.'/utils_local/vimshell', "P", 0700)
+        call mkdir(s:vim_path.'/utils_local/vimshell', "p", 0755)
     endif
     let g:vimshell_data_directory = s:vim_path.'/utils_local/vimshell/'
     let g:vimshell_editor_command = 'gvim'

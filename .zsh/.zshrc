@@ -44,6 +44,7 @@ SAVEHIST=10000
 setopt hist_ignore_dups # ignore duplicates in history
 setopt auto_name_dirs # allow special ~dirs for shortcuts
 setopt auto_cd # just by writing a path
+setopt print_exit_value #print non-zero exit codes
 
 # Completion
 setopt glob_complete # open completion on globs

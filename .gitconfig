@@ -1,5 +1,5 @@
 [core]
-    excludesfile = ~/.gitignore_global
+    excludesfile = ~/dotfiles/.gitfiles/gitignore_global
 [diff]
     tool = vimdiff
 [difftool]
@@ -36,8 +36,8 @@
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
     stl = !git stash-list-pretty
 
-    s =  "!~/dotfiles/.gitfiles/status_short.sh"
-    ss = "!~/dotfiles/.gitfiles/status_long.sh"
+    s =  "!~/dotfiles/.gitfiles/alias/status_short.sh"
+    ss = "!~/dotfiles/.gitfiles/alias/status_long.sh"
 
     a = add
     aa = add -A # Add All

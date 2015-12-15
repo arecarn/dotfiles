@@ -34,12 +34,10 @@
     stp = stash pop
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
+    stl = stash-list-pretty
 
-    # I want relative file path in status, I need to cd explicitly to current dir
-    # before calling other commands, as commands run by git with "!" are run
-    # at the root of the repository. (GIT_PREFIX is empty at repository root).
-    s =  "!f() { test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git status --short --branch; git --no-pager stash-list-pretty; true; }; f"
-    ss = "!f() { test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git status; printf '\n'; git --no-pager stash-list-pretty --name-status; true; }; f"
+    s =  "!~/dotfiles/.gitfiles/status_short.sh"
+    ss = "!~/dotfiles/.gitfiles/status_long.sh"
 
     a = add
     aa = add -A # Add All

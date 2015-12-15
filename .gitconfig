@@ -34,7 +34,7 @@
     stp = stash pop
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
-    stl = stash-list-pretty
+    stl = !git stash-list-pretty
 
     s =  "!~/dotfiles/.gitfiles/status_short.sh"
     ss = "!~/dotfiles/.gitfiles/status_long.sh"

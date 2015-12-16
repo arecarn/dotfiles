@@ -59,7 +59,7 @@
     l =   !git --no-pager log-pretty --max-count=10
     lu =  !git --no-pager log-pretty --graph --left-right @{upstream}...HEAD
     ll =  !git log-pretty
-    lla = !git log-pretty --graph --date-order --all
+    lla = !git log-pretty --graph --all
 
     lg =  log --decorate --boundary
     lga = !git lg --graph --date-order --all

@@ -19,11 +19,6 @@ DOTFILES = [
         },
 
         {
-            "source" : ".gitignore_global",
-            "location" : "~/.gitignore_global",
-        },
-
-        {
             "source" : ".inputrc",
             "location" : "~/.inputrc",
         },

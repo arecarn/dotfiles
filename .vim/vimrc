@@ -889,7 +889,7 @@ NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-repeat' "}}}2
 
-NeoBundle 'junegunn/fzf', {
+NeoBundleFetch 'junegunn/fzf', {
             \ 'base' : '~/.fzf',
             \ 'build' : './install --all'
             \ }

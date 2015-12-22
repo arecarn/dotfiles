@@ -16,7 +16,8 @@
 
     b = branch
     bl = branch --all --verbose # Branch List
-    bd = branch -D # Branch Delete
+    bd = branch -d # Branch Delete
+    bD = branch -D # Branch Delete
     bdu = push origin --delete # Branch Delete Upstream
     bc = checkout -b # Branch Create
     bcu = push origin --set-upstream HEAD # Branch Create Upstream
@@ -24,6 +25,9 @@
     cm = commit
     cmm = commit --message
     cmfu = commit --fixup
+
+    clonee = "!f() { git clone --recursive \"$@\" && git smup; }; f"
+    pulll = "!f() { git pull --ff --ff-only \"$@\" && git smup; }; f"
 
     f = fetch
     co = checkout
@@ -69,8 +73,8 @@
     rmso = remote show origin
 
     sm = submodule
-    smup = submodule update --init
-    smupr = submodule update --init --remote
+    smu = submodule update --init --recursive
+    smur = submodule update --init --recursive --remote
 
     cln = clean --force --interactive -d
 

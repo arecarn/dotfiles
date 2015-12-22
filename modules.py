@@ -1,6 +1,9 @@
 MODULES = [
-
-        # mutt colors?
+        {
+            "url" : "https://github.com/altercation/mutt-colors-solarized",
+            "directory" : "~/dotfiles/.mutt/colors/mutt",
+            "rev" : "master",
+        },
 
         {
             "url" : "https://github.com/junegunn/fzf",

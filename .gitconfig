@@ -68,8 +68,9 @@
     rms = remote show
     rmso = remote show origin
 
-    smup = submodule update
-    smupr = submodule update --remote
+    sm = submodule
+    smup = submodule update --init
+    smupr = submodule update --init --remote
 
     cln = clean --force --interactive -d
 

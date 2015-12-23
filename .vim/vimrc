@@ -8,6 +8,7 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 " OPERATING SYSTEM VARIABLES                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let s:has_windows = has("win16") || has("win32") || has("win64")
+
 if s:has_windows
     let s:vim_path = $HOME."/vimfiles"
 else
@@ -38,6 +39,7 @@ set path+=** "relative to the current directory search recursively
 set scrolloff=6 " Keep lines (top/bottom) for scope
 set sidescrolloff=6 " keep lines (side/side) for scope
 set sidescroll=3
+
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
     set mouse=a
@@ -46,7 +48,6 @@ endif
 set ttyfast
 set ttymouse=xterm2
 
-" set cursorline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -70,6 +71,7 @@ set backup
 " Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
 let backupext = "_" . strftime("%y-%m-%d_%H")
 execute "set backupext=" . backupext
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -107,7 +109,6 @@ set autoindent
 "these are buffer local let make them everywhere
 set formatoptions+=n "recognize lists
 set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
-
 set formatoptions+=j "remove comments leader when joining
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -214,6 +215,7 @@ function! PrintCscopeOptions()
 endfunction
 execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
 execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -231,16 +233,10 @@ if has("autocmd")
 endif
 
 set switchbuf=usetab
-set shortmess+=a
 set autowriteall
 set autoread
-
-set confirm
 set backspace=indent,eol,start
-
 set virtualedit+=all
-
-
 set modeline
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -250,6 +246,10 @@ augroup colorcolumn
     autocmd!
     autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
 augroup END
+
+set background=dark
+set confirm
+set shortmess+=a
 set number
 set relativenumber
 set showcmd
@@ -257,6 +257,7 @@ set lazyredraw
 set laststatus=2
 set list
 set listchars=trail:·,tab:»·,extends:▶,precedes:◀
+" set cursorline
 
 " Maximize Window on Startup
 if has ("gui_running")
@@ -298,17 +299,13 @@ if has ("gui_running")
     elseif has('unix') && !has('mac') "linux
         set guifont=DejaVu\ Sans\ Mono\ 10
     endif
-endif
-
-set background=dark
-"}}}2
+endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                      {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set ttimeout
 set ttimeoutlen=100
-
 set updatetime=1000
 
 let mapleader="\<Space>"
@@ -440,8 +437,8 @@ nnoremap <leader>q :q!<CR>
 " navigation in command line
 cnoremap <C-p> <UP>
 cnoremap <C-n> <DOWN>
-cnoremap <C-h> <LEFT>
-cnoremap <C-l> <RIGHT>
+cnoremap <C-b> <LEFT>
+cnoremap <C-f> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
@@ -454,8 +451,8 @@ nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
 " fn filename (trail) (foo.txt)
 " fp absolute path  (/something/src/foo.txt)
 " fP relative path  (src/foo.txt)
-" ofn filename (trail)
-" ofp absolute path
+" ofn file name filename (trail)
+" ofp other absolute path
 " ofP relative path
 " dp current directory name (head) (/something/src)
 " dP directory name (head) (/something/src)

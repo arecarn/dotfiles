@@ -48,6 +48,7 @@ setopt print_exit_value #print non-zero exit codes
 
 # Completion
 setopt glob_complete # open completion on globs
+setopt glob_dots # do not require a leading `.' in filename to be matched
 setopt complete_in_word # Tab completion from both ends
 
 # show ... when doing a rm *
@@ -174,6 +175,9 @@ alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 
 alias l=" pwd; ls -pa"
 alias ll="pwd; ls -palh"
+
+alias ld="pwd; ls -pad *(/D)"
+alias lld="pwd; ls -padlh *(/D)"
 
 alias tsh="~/dotfiles/mybin/scripts/trash.sh"
 alias nfind="find . -name "

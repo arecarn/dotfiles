@@ -10,7 +10,6 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 let s:has_windows = has("win16") || has("win32") || has("win64")
 if s:has_windows
     let s:vim_path = $HOME."/vimfiles"
-    cd $HOME "start in home directory, this is just here for convince
 else
     let s:vim_path = $HOME."/.vim"
 endif
@@ -882,7 +881,6 @@ NeoBundle 'kmnk/vim-unite-giti', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'hewes/unite-gtags', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
 
-" NeoBundle 'rhysd/vim-operator-surround' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'

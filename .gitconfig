@@ -26,8 +26,8 @@
     cmm = commit --message
     cmfu = commit --fixup
 
-    clonee = "!f() { git clone --recursive \"$@\" && git smup; }; f"
-    pulll = "!f() { git pull --ff --ff-only \"$@\" && git smup; }; f"
+    clonee = "!f() { git clone --recursive \"$@\" && git smu; }; f"
+    pulll = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
 
     f = fetch
     co = checkout
@@ -73,8 +73,12 @@
     rmso = remote show origin
 
     sm = submodule
-    smu = submodule update --init --recursive
-    smur = submodule update --init --recursive --remote
+    smu = !git submodule update --init --recursive
+    smur = !git smu --remote && git smco
+    smco = "!git submodule foreach -q --recursive \
+        'git checkout \
+        $(git config -f $toplevel/.gitmodules submodule.$name.branch)'"
+
 
     cln = clean --force --interactive -d
 

@@ -1,0 +1,8 @@
+---
+- hosts: all
+  vars:
+    osx: true
+  # gather_facts: false
+  roles:
+      - homebrew
+      - pip

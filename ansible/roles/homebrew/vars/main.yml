@@ -1,0 +1,38 @@
+---
+
+homebrew_taps:
+  - caskroom/cask
+  - caskroom/versions
+  - homebrew/dupes
+
+homebrew_packages:
+  - {name: 'ack', options: ''}
+  - {name: 'ag', options: ''}
+  - {name: 'curl', options: ''}
+  - {name: 'git', options: ''}
+  - {name: 'htop', options: ''}
+  - {name: 'python', options: ''}
+  - {name: 'python3', options: ''}
+  - {name: 'tmux', options: ''}
+  - {name: 'tree', options: ''}
+  - {name: 'vim', options: 'with-lua'}
+  - {name: 'wget', options: ''}
+  - {name: 'zsh', options: ''}
+  - {name: 'hg', options: ''}
+  - {name: 'sdl', options: ''}
+  - {name: 'sdl_image', options: ''}
+  - {name: 'sdl_mixer', options: ''}
+  - {name: 'sdl_ttf', options: ''}
+  - {name: 'portmidi', options: ''}
+
+homebrew_cask_packages:
+  - appcleaner
+  - dash
+  - dropbox
+  - firefox
+  - google-chrome
+  - iterm2
+  - spectacle
+  - transmission
+  - vlc
+  - xquartz

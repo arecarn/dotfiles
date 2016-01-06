@@ -55,13 +55,13 @@ setopt glob_complete # open completion on globs
 setopt glob_dots # do not require a leading `.' in filename to be matched
 setopt complete_in_word # Tab completion from both ends
 
-# show ... when doing a rm *
+# add a wait / confirmation when doing a rm *
 setopt rm_star_wait
 
-# List completion
+# completion
 setopt auto_list
 setopt auto_param_slash
-setopt auto_param_keys # List like "ls -F"
+setopt auto_param_keys # List files like "ls -F"
 setopt list_types # Compact completion
 
 # gives you more extensive tab completion TODO(look into this)
@@ -142,9 +142,9 @@ bindkey -M vicmd '?'     history-incremental-pattern-search-forward
 bindkey -M vicmd '^_'    undo
 bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
-bindkey -M vicmd '\ef'   forward-word                      # Alt-f
-bindkey -M vicmd '\eb'   backward-word                     # Alt-b
-bindkey -M vicmd '\ed'   kill-word                         # Alt-d
+bindkey -M vicmd '\ef'   forward-word   # Alt-f
+bindkey -M vicmd '\eb'   backward-word  # Alt-b
+bindkey -M vicmd '\ed'   kill-word      # Alt-d
 
 export KEYTIMEOUT=1
 
@@ -177,11 +177,11 @@ alias dus="du -hsxc *(D) | sort -rh"
 
 alias g="git"
 # Git Files
-alias -g  gf='`git status --porcelain | sed -ne "s/^..//p"`'
+alias -g gf='`git status --porcelain | sed -ne "s/^..//p"`'
 # Git Modified Files
 alias -g gmdf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//p"`'
 # Git Untracked Files
-alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
+alias -g guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files
 
 alias l="pwd; ls -paF"

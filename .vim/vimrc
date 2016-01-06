@@ -1586,6 +1586,13 @@ if neobundle#is_installed('scons.vim') "{{{2
     augroup END
 endif "}}}2
 
+if neobundle#is_installed('todo.txt-vim') "{{{2
+    augroup TODO_TXT
+        autocmd!
+        autocmd BufNewFile,BufRead todo* set filetype=todo.txt
+    augroup END
+endif "}}}2
+
 if neobundle#is_installed('obvious-resize') "{{{2
     "map F9 - F12 (like hjkl) to resize windows
     nnoremap  <silent><F9>  :ObviousResizeLeft<CR>

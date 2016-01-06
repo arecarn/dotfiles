@@ -183,6 +183,12 @@ alias ll="pwd; ls -palh"
 alias ld="pwd; ls -pad *(/D)"
 alias lld="pwd; ls -padlh *(/D)"
 
+if exits tree ; then
+    alias t="pwd; tree -a"
+    alias tt="t -ph"
+    alias td="t -d"
+    alias ttd="tt -d"
+fi
 alias tsh="~/dotfiles/mybin/scripts/trash.sh"
 alias nfind="find . -name "
 alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"

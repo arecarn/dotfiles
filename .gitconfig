@@ -50,9 +50,10 @@
     sl = "!~/dotfiles/.gitfiles/alias/status_long.sh"
 
     a = add
-    aa = add -A # Add All
-    amd = add --update :/ # Add Modified files
     as = update-index --again # Add Staged files that need to be updated: files that need to be updated
+    # run these two as external commands so they operate at the toplevel dir (this is the default in v2.0.0+
+    aa = !git add -A
+    amd = !git add --update :/
 
     rs = reset
     rsh = reset HEAD

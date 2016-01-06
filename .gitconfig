@@ -72,7 +72,7 @@
     lla = !git log-pretty --graph --all
 
     lg =  log --decorate --boundary
-    lga = !git lg --graph --date-order --all
+    lga = !git lg --graph --all
 
     rm = remote
     rms = remote show

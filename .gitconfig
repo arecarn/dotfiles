@@ -15,7 +15,7 @@
     mt = mergetool
 
     b = branch
-    bl = branch --all --verbose # Branch List
+    ba = branch --all --verbose # Branch All
     bd = branch -d # Branch Delete
     bD = branch -D # Branch Delete
     bdu = push origin --delete # Branch Delete Upstream

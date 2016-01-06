@@ -25,6 +25,7 @@
     cm = commit
     cmm = commit --message
     cmfu = commit --fixup
+    cma = commit --amend
 
 
     f = fetch

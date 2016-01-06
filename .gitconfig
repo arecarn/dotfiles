@@ -26,8 +26,6 @@
     cmm = commit --message
     cmfu = commit --fixup
 
-    clonee = "!f() { git clone --recursive \"$@\" && git smu; }; f"
-    pulll = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
 
     f = fetch
     co = checkout
@@ -79,6 +77,10 @@
         'git checkout \
         $(git config -f $toplevel/.gitmodules submodule.$name.branch)'"
 
+    # CLONe repo and its submodules and make sure they are initialized/updated
+    clo = "!f() { git clone --recursive \"$@\" && git smu; }; f"
+    # PULl only if a fast forward is possible, then  make sure submodules are updated
+    pul = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
 
     cln = clean --force --interactive -d
 

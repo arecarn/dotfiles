@@ -105,14 +105,20 @@ backward-delete-char-and-split-undo() {
 }
 zle -N backward-delete-char-and-split-undo
 
+insert-next-word() {
+    zle insert-last-word 1
+}
+zle -N insert-next-word
+
 bindkey -M viins '^_'    undo
 bindkey -M viins '^W'    backward-kill-word-and-split-undo
 bindkey -M viins '^U'    backward-kill-line-and-split-undo
 bindkey -M viins '^H'    backward-delete-char-and-split-undo
 bindkey -M viins '^?'    backward-delete-char-and-split-undo
 bindkey -M viins '^X'    _expand_alias
-
-
+bindkey -M viins '^K'    insert-last-word
+bindkey -M viins '^J'    insert-next-word
+bindkey -M viins '^O'    copy-prev-shell-word
 
 bindkey -M viins '^X^R'  redisplay
 bindkey -M viins '\eOH'  beginning-of-line # Home

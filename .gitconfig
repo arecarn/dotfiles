@@ -37,7 +37,7 @@
 
     f = fetch
     co = checkout
-    sh = show --decorate --stat
+    sh = show --decorate --stat --patch
 
     st = stash
     sts = stash show --patch --stat

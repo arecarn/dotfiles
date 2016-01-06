@@ -27,6 +27,13 @@
     cmfu = commit --fixup
     cma = commit --amend
 
+    # execute an arbitrary command in the top level directory e.g.
+    # $ git exec pwd
+    exec = "!f() {\
+                GIT_TOP=\"${GIT_DIR%%/.git/modules/*}\"; \
+                [ \".$GIT_TOP\" != \".$GIT_DIR\" ] && cd \"$GIT_TOP\"; \
+                exec \"$@\"; \
+            }; f"
 
     f = fetch
     co = checkout

@@ -172,8 +172,9 @@ alias gp="grep -P"
 
 alias py="python"
 
+alias du="du -hc"
 # disk usage sorted
-alias dus="du -hsx *(D) | sort -rh"
+alias dus="du -hsxc *(D) | sort -rh"
 
 alias g="git"
 # Git Files

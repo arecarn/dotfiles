@@ -177,11 +177,11 @@ alias -g  gmf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//
 alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files
 
-alias l=" pwd; ls -pa"
-alias ll="pwd; ls -palh"
+alias l="pwd; ls -paF"
+alias ll="l -lh"
+alias ld="pwd; ls -paFd *(/D)"
+alias lld="ld -lh *(/D)"
 
-alias ld="pwd; ls -pad *(/D)"
-alias lld="pwd; ls -padlh *(/D)"
 
 if exits tree ; then
     alias t="pwd; tree -a"

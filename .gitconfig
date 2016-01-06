@@ -94,6 +94,11 @@
     rms = remote show
     rmso = remote show origin
 
+    # Worktrees were added in v2.6.0
+    wta = worktree add
+    wtp = worktree prune
+    wtl = worktree list # added in v2.7.0
+
     sm = submodule
     # SubModule Update
     smu = !git submodule update --init --recursive

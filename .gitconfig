@@ -1,9 +1,12 @@
 [core]
     excludesfile = ~/dotfiles/.gitfiles/gitignore_global
+
 [diff]
     tool = vimdiff
+
 [difftool]
     prompt = false
+
 [alias]
     d = diff --color
     ds = diff --color --cached # Diff Staged
@@ -50,29 +53,41 @@
     sl = "!~/dotfiles/.gitfiles/alias/status_long.sh"
 
     a = add
-    as = update-index --again # Add Staged files that need to be updated: files that need to be updated
-    # run these two as external commands so they operate at the toplevel dir (this is the default in v2.0.0+
+    # Add Staged files that need to be updated: files that need to be updated
+    as = update-index --again
+
+    # run these two as external commands so they operate at the toplevel dir
+    # (this is the default in v2.0.0+)
+    # Add All
     aa = !git add -A
+    # Add Modified files
     amd = !git add --update :/
 
     rs = reset
     rsh = reset HEAD
 
-    rb =  rebase
+    rb = rebase
     rbi = rebase --interactive --autosquash
     rbc = rebase --continue
     rba = rebase --abort
 
     rl =  !git --no-pager reflog --max-count=20
+    # RefLog Long
     rll = reflog
 
     log-pretty = log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short
-    l =   !git --no-pager log-pretty --max-count=10
-    lu =  !git --no-pager log-pretty --graph --left-right @{upstream}...HEAD
-    ll =  !git log-pretty
+    # Log short
+    l = !git --no-pager log-pretty --max-count=10
+    # Log of differences with Upstream
+    lu = !git --no-pager log-pretty --graph --left-right @{upstream}...HEAD
+    # Log Long
+    ll = !git log-pretty
+    # Log Long with All branches and refs
     lla = !git log-pretty --graph --all
 
-    lg =  log --decorate --boundary
+    # better LoG
+    lg =  log --decorate --boundary --stat
+    # better LoG with All branches and refs
     lga = !git lg --graph --all
 
     rm = remote
@@ -80,30 +95,51 @@
     rmso = remote show origin
 
     sm = submodule
+    # SubModule Update
     smu = !git submodule update --init --recursive
-    smur = !git smu --remote && git smco
+    # For submodules that track a remote branch (added v1.8.2) check them out
+    # in the branch that they track rather than a detached head state.
+    # SubModule CheckOut
     smco = "!git submodule foreach -q --recursive \
         'git checkout \
         $(git config -f $toplevel/.gitmodules submodule.$name.branch)'"
+    # SubModule Update Remote
+    smur = !git smu --remote && git smco
 
-    # CLONe repo and its submodules and make sure they are initialized/updated
+    # better CLONe repo and its submodules and make sure they are
+    # initialized/updated
     clo = "!f() { git clone --recursive \"$@\" && git smu; }; f"
-    # PULl only if a fast forward is possible, then  make sure submodules are updated
+    # better PULl only if a fast forward is possible, then  make sure
+    # submodules are updated
     pul = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
 
     cln = clean --force --interactive -d
 
-    exists = ls-files --error-unmatch # does a file  exist in the repository?
+    # check if a file  exist in the repository?
+    exists = ls-files --error-unmatch
+
 [push]
+    # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
+    # only pushes current branch to the one that git pull would pull from only
+    # if the names match.  The old default before v2.0 was `matching` option
+    # means git will push all of your local branches to matching one in the
+    # remote. For these older version of git the `current` mode is most similar
+    # it pushes to or creates-then-pushes-to same-named branches on the remote
+    # repo for you if they don't exist already
     default = simple
+
 [user]
     name = Ryan Carney
+
 [include]
     path = ~/.gitconfig_local
+
 [merge]
     conflictstyle = diff3
     tool = vimdiff
+
 [mergetool]
     prompt = false
+
 [fetch]
     prune = true

@@ -85,7 +85,6 @@ bindkey -M viins '^K'    kill-line
 # bindkey -M viins '^S'    history-incremental-pattern-search-forward
 bindkey -M viins '^P' history-beginning-search-backward
 bindkey -M viins '^N' history-beginning-search-forward
-bindkey -M viins '^Y'    yank
 
 backward-kill-word-and-split-undo() {
     zle backward-kill-word

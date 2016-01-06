@@ -166,6 +166,7 @@ alias et="$EDITOR ~/dotfiles/.tmux/.tmux.conf"
 
 alias mk="mkdir"
 alias rd="rmdir"
+alias rmf="rm -rf"
 
 alias gp="grep -P"
 

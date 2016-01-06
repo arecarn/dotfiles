@@ -900,7 +900,7 @@ NeoBundle 'arecarn/clean-fold.vim'
 NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'dbeniamine/todo.txt-vim'
-
+NeoBundle 'stephpy/vim-yaml' "and alternative yaml sicne the built in one is slow
 NeoBundle 'diffchanges.vim'
 NeoBundle 'arecarn/git-diff-cached-preview.vim'
 NeoBundle 'arecarn/go-to-buffer.vim'

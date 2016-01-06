@@ -180,7 +180,7 @@ alias g="git"
 # Git Files
 alias -g  gf='`git status --porcelain | sed -ne "s/^..//p"`'
 # Git Modified Files
-alias -g  gmf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//p"`'
+alias -g gmdf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//p"`'
 # Git Untracked Files
 alias -g  guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files

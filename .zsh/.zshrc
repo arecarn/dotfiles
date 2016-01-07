@@ -1,4 +1,5 @@
-# -                                                                        {{{
+##############################################################################
+# ENVIRONMENT                                                              {{{
 ##############################################################################
 export EDITOR='vim'
 
@@ -7,6 +8,30 @@ export LANG='en_US.UTF-8'
 # improved less option
 export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
+# configure path
+export PATH="$PATH:$HOME/dotfiles/tools/scripts"
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    export PATH="$PATH:/usr/bin/X11"
+    export PATH="$PATH:/usr/X11R6/bin"
+    export PATH="$PATH:/usr/games"
+    export PATH="$PATH:/opt/kde3/bin"
+    export PATH="$PATH:/usr/lib/qt3/bin"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    #for homebrew
+    export MANPATH="/usr/local/man"
+    export PATH="/usr/local/bin:$PATH"
+elif [[ "$OSTYPE" == "win32" ]]; then
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+fi
+
+if [[ $TERM == "xterm" ]]; then
+        export TERM=xterm-256color
+fi
+
+###########################################################################}}}
+# PLUGINS                                                                  {{{
+##############################################################################
 zgen_dir=~/.zsh/zgen
 zgen_file=~/.zsh/zgen/zgen.zsh
 
@@ -50,9 +75,6 @@ setopt hist_ignore_dups # ignore duplicates in history
 setopt auto_name_dirs # allow special ~dirs for shortcuts
 setopt auto_cd # just by writing a path
 setopt print_exit_value #print non-zero exit codes
-exits() {
-    command -v "$1" >/dev/null 2>&1
-}
 
 
 # Completion
@@ -159,6 +181,11 @@ export KEYTIMEOUT=1
 # ALIASES AND SMALL SCRIPTS                                                {{{
 ##############################################################################
 
+# check if a command exits
+exits() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 alias so="source"
 alias soz="source ~/dotfiles/.zsh/.zshrc"
 alias sot="tmux source-file ~/dotfiles/.tmux/.tmux.conf"
@@ -197,7 +224,6 @@ alias ll="l -lh"
 alias ld="pwd; ls -paFd *(/D)"
 alias lld="ld -lh *(/D)"
 
-
 if exits tree ; then
     alias t="pwd; tree -a"
     alias tt="t -ph"
@@ -210,12 +236,10 @@ alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"
 
 if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" || "$OSTYPE" == "freebsd"*  ]]; then
     alias open="xdg-open"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "cygwin" ]]; then
     alias open="cygstart"
 elif [[ "$OSTYPE" == "win32" ]]; then
     alias open="start"
-else
 fi
 
 # GLOBAL ABBERVIATIONS {{{2
@@ -291,46 +315,18 @@ function fex()
     eval $cmd
 }
 
-
-###########################################################################}}}
-# PATH                                                                     {{{
-##############################################################################
-
-export PATH="$PATH:$HOME/dotfiles/tools/scripts"
-
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    export PATH="$PATH:/usr/bin/X11"
-    export PATH="$PATH:/usr/X11R6/bin"
-    export PATH="$PATH:/usr/games"
-    export PATH="$PATH:/opt/kde3/bin"
-    export PATH="$PATH:/usr/lib/qt3/bin"
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    #for Homebrew
-    export MANPATH="/usr/local/man"
-    export PATH="/usr/local/bin:$PATH"
-elif [[ "$OSTYPE" == "cygwin" ]]; then
-elif [[ "$OSTYPE" == "win32" ]]; then
-else
-fi
-
 ###########################################################################}}}
 # MISC                                                                     {{{
 ##############################################################################
-export EDITOR='vim'
-
-source ~/.zshrc_local
-
-if [[ $TERM == "xterm" ]]; then
-        export TERM=xterm-256color
-fi
-
 source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 
 # stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
 stty -ixon
 stty stop undef
 
+source ~/.zshrc_local
+
+###########################################################################}}}
 # -                                                                        {{{
 ##############################################################################
 # vim: textwidth=78

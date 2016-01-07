@@ -181,6 +181,8 @@ alias du="du -hc"
 # disk usage sorted
 alias dus="du -hsxc *(D) | sort -rh"
 
+alias p="$PAGER"
+
 alias g="git"
 # Git Files
 alias -g gf='`git status --porcelain | sed -ne "s/^..//p"`'

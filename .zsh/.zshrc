@@ -2,6 +2,11 @@
 ##############################################################################
 export EDITOR='vim'
 
+export LANG='en_US.UTF-8'
+
+# improved less option
+export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
+
 zgen_dir=~/.zsh/zgen
 zgen_file=~/.zsh/zgen/zgen.zsh
 

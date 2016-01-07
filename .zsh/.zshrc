@@ -156,6 +156,7 @@ export KEYTIMEOUT=1
 
 alias so="source"
 alias soz="source ~/dotfiles/.zsh/.zshrc"
+alias sot="tmux source-file ~/dotfiles/.tmux/.tmux.conf"
 
 alias e="$EDITOR"
 alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"

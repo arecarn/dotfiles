@@ -1,4 +1,5 @@
-##############################################################################
+# -                                                                        {{{
+###########################################################################}}}
 # ENVIRONMENT                                                              {{{
 ##############################################################################
 export EDITOR='vim'
@@ -62,45 +63,41 @@ fi
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 
 ###########################################################################}}}
-# HISTORY                                                                  {{{
+# HISTORY OPTIONS                                                          {{{
 ##############################################################################
 setopt share_history  # adds history incrementally and share
+setopt hist_ignore_dups # ignore duplicates in history
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
 ###########################################################################}}}
-# GENERAL SETTINGS                                                         {{{
+# COMPLETION OPTIONS                                                       {{{
 ##############################################################################
-setopt hist_ignore_dups # ignore duplicates in history
-setopt auto_name_dirs # allow special ~dirs for shortcuts
-setopt auto_cd # just by writing a path
-setopt print_exit_value #print non-zero exit codes
-setopt interactivecomments # pound sign in interactive prompt
-# Display CPU usage stats for commands taking more than REPORTTIME seconds
-REPORTTIME=10
-
-
 # Completion
 setopt glob_complete # open completion on globs
 setopt glob_dots # do not require a leading `.' in filename to be matched
 setopt complete_in_word # Tab completion from both ends
-
-# add a wait / confirmation when doing a rm *
-setopt rm_star_wait
-
-# completion
 setopt auto_list
 setopt auto_param_slash
 setopt auto_param_keys # List files like "ls -F"
 setopt list_types # Compact completion
-
 # gives you more extensive tab completion TODO(look into this)
 autoload -U compinit
 compinit
-
 # Tab completion should be case-insensitive.
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+###########################################################################}}}
+# GENERAL OPTIONS                                                          {{{
+##############################################################################
+setopt auto_name_dirs # allow special ~dirs for shortcuts
+setopt auto_cd # just by writing a path
+setopt print_exit_value #print non-zero exit codes
+setopt rm_star_wait # add a wait / confirmation when doing a rm *
+setopt interactivecomments # pound sign in interactive prompt
+# Display CPU usage stats for commands taking more than REPORTTIME seconds
+REPORTTIME=10
 
 ###########################################################################}}}
 # KEY BINDINGS                                                             {{{

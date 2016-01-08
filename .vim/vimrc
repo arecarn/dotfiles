@@ -482,46 +482,6 @@ cnoremap <C-y> <SPACE><BS><TAB>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" TODO Is the word under the cursor a number?
-function! DoNum(operator)
-    let line = getline('.')
-    let cIndex = getpos('.')[2] -1 "TODO handle virtual edit
-    echom cIndex
-    execute "let rLine = line[".cIndex.":]"
-    echom "relavant line =".rLine
-    " let rLine = substitute(rLine, '\(\d\+\|0x\x\+\)', '\=submatch(0)*10','')
-    execute "let rLine = substitute(rLine, \"\(\d\+\|0x\x\+\)\", \"\=submatch(0)*10\",\"\")"
-    echom rLine
-    let cIndex -= 1
-    execute "let line = line[:".cIndex."].rLine"
-    echom line
-    call setline('.', line)
-endfunction
-
-function! CalculateCursor(x, operator)
-    let p = @/
-    try
-        silent exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
-        exe "normal \<C-O>"
-    catch /^Vim\%((\a\+)\)\=:E486/
-        try
-            silent exe "normal /\\%#.\\{-}\\zs\\d\\+/b\<CR>"
-            exe "s%-\\?\d*\\%#\\d\\+%\\=submatch(0) " . a:operator . " a:x%"
-            exe "normal \<C-O>"
-        catch /^Vim\%((\a\+)\)\=:E486/
-        endtry
-    finally
-        let @/ = p
-    endtry
-endfunction
-
-" vnoremap <silent><c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "-")<CR>:noh<CR>gv
-" vnoremap <silent><c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "+")<CR>:noh<CR>gv
-" noremap <silent>g<c-x> :<C-U>call CalculateCursor(v:count1, "*")<CR>:noh<CR>
-" vnoremap <silent>g<c-x> :<C-U>'<,'>call CalculateCursor(v:count1, "*")<CR>:noh<CR>gv
-" noremap <silent>g<c-a> :<C-U>call CalculateCursor(v:count1, "/")<CR>:noh<CR>
-" vnoremap <silent>g<c-a> :<C-U>'<,'>call CalculateCursor(v:count1, "/")<CR>:noh<CR>gv
-
 nnoremap <leader>m  :call SearchPosition()<CR>
 nnoremap <leader>M  :let @/ = ""<CR>
 function! SearchPosition()
@@ -557,10 +517,8 @@ function! AddToSearch(mode)
     let @@ = save_reg
 endfunction
 
-
 command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
-
 
 " add numbers to the front or end of a line
 cabbrev numend s/$/\=1-line("'<")+line(".")/c

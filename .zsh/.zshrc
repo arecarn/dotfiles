@@ -64,6 +64,7 @@ zstyle :omz:plugins:ssh-agent agent-forwarding on
 ###########################################################################}}}
 # HISTORY                                                                  {{{
 ##############################################################################
+setopt share_history  # adds history incrementally and share
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
@@ -75,6 +76,9 @@ setopt hist_ignore_dups # ignore duplicates in history
 setopt auto_name_dirs # allow special ~dirs for shortcuts
 setopt auto_cd # just by writing a path
 setopt print_exit_value #print non-zero exit codes
+setopt interactivecomments # pound sign in interactive prompt
+# Display CPU usage stats for commands taking more than REPORTTIME seconds
+REPORTTIME=10
 
 
 # Completion

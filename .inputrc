@@ -1,11 +1,16 @@
 set editing-mode vi
-
 set keymap vi
 
-"\C-e": alias-expand-line
+set keymap vi-command
+"gg": beginning-of-history
+"G": end-of-history
 
+set keymap vi-insert
+"\C-x": alias-expand-line
 "\C-p": history-search-backward
 "\C-n": history-search-forward
+"\t": menu-complete
+"\C-w": backward-kill-word
 
 set show-all-if-ambiguous on
 set completion-ignore-case on

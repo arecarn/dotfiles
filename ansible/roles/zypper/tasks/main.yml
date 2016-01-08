@@ -1,0 +1,8 @@
+- name: zypper install general packages
+  zypper: name={{item}} state=latest disable_recommends=no
+  with_items: zypper_packages
+
+- name: zypper install specific packages for openSUSE 13.1
+  zypper: name={{item}} state=present disable_recommends=no
+  with_items: zypper_packages_13_1
+  when: system == 'open suse 13.1'

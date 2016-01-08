@@ -5,4 +5,4 @@
 - name: Install Python Packages For OSX
   pip: name={{item}}
   with_items: pip_modules_osx
-  when: osx
+  when: system == 'osx'

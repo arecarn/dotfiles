@@ -1,0 +1,7 @@
+---
+- hosts: all
+  vars:
+    system: 'open suse 13.1'
+  roles:
+    - zypper
+    - pip

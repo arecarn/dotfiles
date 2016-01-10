@@ -156,9 +156,8 @@ bindkey -M viins '^X^R'  redisplay
 bindkey -M viins '\eOH'  beginning-of-line # Home
 bindkey -M viins '\eOF'  end-of-line       # End
 bindkey -M viins '\e[2~' overwrite-mode    # Insert
-bindkey -M viins '\ef'   forward-word      # Alt-f
-bindkey -M viins '\eb'   backward-word     # Alt-b
-bindkey -M viins '\ed'   kill-word         # Alt-d
+bindkey -M viins '^F'    forward-character
+bindkey -M viins '^B'    back-character
 
 
 # VI MODE KEYBINDINGS (cmd mode)
@@ -175,9 +174,8 @@ bindkey -M vicmd '?'     history-incremental-pattern-search-forward
 bindkey -M vicmd '^_'    undo
 bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
-bindkey -M vicmd '\ef'   forward-word   # Alt-f
-bindkey -M vicmd '\eb'   backward-word  # Alt-b
-bindkey -M vicmd '\ed'   kill-word      # Alt-d
+bindkey -M vicmd '^F'    forward-character
+bindkey -M vicmd '^B'    back-character
 
 export KEYTIMEOUT=1
 
@@ -282,16 +280,16 @@ magic-abbrev-expand() {
     fi
     zle split-undo
 }
+zle -N magic-abbrev-expand
 
 no-magic-abbrev-expand() {
     LBUFFER+=' '
     zle split-undo
 }
-
-zle -N magic-abbrev-expand
 zle -N no-magic-abbrev-expand
-bindkey " " magic-abbrev-expand
-bindkey "^ " no-magic-abbrev-expand
+
+bindkey -M viins " " magic-abbrev-expand
+bindkey -M viins "^ " no-magic-abbrev-expand
 bindkey -M isearch " " self-insert
 # }}}2
 

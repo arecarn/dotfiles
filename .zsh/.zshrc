@@ -33,32 +33,37 @@ fi
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
-zgen_dir=~/.zsh/zgen
-zgen_file=~/.zsh/zgen/zgen.zsh
+zplug_file=~/.zplug/zplug
 
 (
-if ! [[ -e $zgen_file ]]; then
-    git clone https://github.com/tarjoilija/zgen $zgen_dir
+if ! [[ -e $zplug_file ]]; then
+    curl -fLo ~/.zplug/zplug --create-dirs https://git.io/zplug
 fi
 )
-source $zgen_file
 
-# check if there's no init script
-if ! zgen saved; then
-    echo "Creating a zgen save"
+source $zplug_file
 
-    zgen oh-my-zsh
+zplug "plugins/command-not-found", from:oh-my-zsh
+zplug "plugins/tmux", from:oh-my-zsh
+zplug "plugins/ssh-agent", from:oh-my-zsh
+zplug "themes/bureau", from:oh-my-zsh
 
-    zgen oh-my-zsh plugins/command-not-found
-    zgen oh-my-zsh plugins/tmux
-    zgen oh-my-zsh plugins/ssh-agent
-    zgen oh-my-zsh themes/bureau
+zplug "rupa/z"
+zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-syntax-highlighting"
 
-    zgen load rupa/z
-    zgen load zsh-users/zsh-completions src
-
-    zgen save
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
 fi
+
+# Then, source plugins and add commands to $PATH
+zplug load --verbose
+# let zplug manage itself
+zplug update --self
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 

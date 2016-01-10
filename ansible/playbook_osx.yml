@@ -1,8 +1,13 @@
 ---
 - hosts: all
+  connection: local
+  gather_facts: false
+  vars_prompt:
+     - name: "username"
+       prompt: "USERNAME"
   vars:
     system: 'osx'
-  # gather_facts: false
   roles:
-      - homebrew
       - pip
+      - homebrew
+      - set-default-shell-osx

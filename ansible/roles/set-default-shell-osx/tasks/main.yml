@@ -1,0 +1,5 @@
+- name: Make Sure Homebrew Zsh Is An Allowed Shell
+  lineinfile: dest=/etc/shells line={{default_shell}}
+
+- name: Set The Default Shell To Homebrew Zsh
+  shell: chpass -s {{default_shell}} {{username}}

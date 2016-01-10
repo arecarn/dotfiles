@@ -1,0 +1,4 @@
+---
+become: true
+
+default_shell: /usr/local/bin/zsh

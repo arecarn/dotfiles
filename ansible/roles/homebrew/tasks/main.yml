@@ -6,11 +6,14 @@
   with_items: homebrew_taps
 
 - name: Install packages with homebrew
-  homebrew: name={{item.name}} state=latest options={{item.options}}
+  homebrew:
+    name: "{{item.name}}"
+    state: latest
+    options: "{{item.options|default()}}"
   with_items: homebrew_packages
 
 - name: Install packages with homebrew cask
-  homebrew_cask: name={{ item }} state=installed
+  homebrew_cask: name={{item}} state=installed
   with_items: homebrew_cask_packages
 
 - name: Update all packages

@@ -1,0 +1,4 @@
+- name: Clone or Update Git Repositories
+  git: repo={{item.repo}} dest={{item.dest}} version={{item.version}} force=no update=no
+  with_items: repositories
+  ignore_errors: yes

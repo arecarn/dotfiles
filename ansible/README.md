@@ -5,10 +5,10 @@ Ansible playbooks to manage the configuration of my computers
 
 ## Usage
 ```
-$ ansible-playbook -i hosts <playbook> --ask-become-pass`
+$ ansible-playbook -i hosts <playbook> --ask-become-pass
 ```
 
-## osx
+### osx
 Requirements:
 - install Homebrew
     ```
@@ -18,3 +18,9 @@ Requirements:
     ```
     brew install ansible
     ```
+### openSUSE
+Requirements:
+- install Ansible
+  ```
+  zypper install http://download.opensuse.org/repositories/systemsmanagement/openSUSE_13.1/noarch/ansible-1.9.4-42.1.noarch.rpm
+  ```

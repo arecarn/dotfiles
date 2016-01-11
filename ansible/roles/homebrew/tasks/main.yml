@@ -8,8 +8,8 @@
 - name: Install packages with homebrew
   homebrew:
     name: "{{item.name}}"
-    state: latest
     options: "{{item.options|default()}}"
+    state: latest
   with_items: homebrew_packages
 
 - name: Install packages with homebrew cask

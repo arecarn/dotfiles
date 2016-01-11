@@ -8,7 +8,7 @@ Ansible playbooks to manage the configuration of my computers
 $ ansible-playbook -i hosts <playbook> --ask-become-pass
 ```
 
-### osx
+### OSX
 Requirements:
 - install Homebrew
     ```

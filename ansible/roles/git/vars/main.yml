@@ -1,5 +1,5 @@
 ---
-repositories:
+git_repositories:
   - {
       repo : "https://github.com/altercation/mutt-colors-solarized",
       dest : "~/dotfiles/.mutt/colors/mutt",

@@ -12,7 +12,7 @@ zypper_packages:
   - dirdiff
   - htop
 
-zypper_packages_13_1:
+zypper_specifc_packages:
   - http://download.opensuse.org/repositories/systemsmanagement/openSUSE_13.1/noarch/ansible-1.9.4-42.1.noarch.rpm
   - http://download.opensuse.org/repositories/utilities/openSUSE_13.1/x86_64/the_silver_searcher-0.31.0-10.1.x86_64.rpm
   - http://download.opensuse.org/repositories/editors/openSUSE_13.1/x86_64/vim-7.4.972-299.1.x86_64.rpm

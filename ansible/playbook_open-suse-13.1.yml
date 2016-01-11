@@ -10,3 +10,4 @@
   roles:
     - pip
     - zypper
+    - git

@@ -11,7 +11,7 @@ export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
 # configure path
 export PATH="$PATH:$HOME/dotfiles/tools/scripts"
-if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" ]]; then
+if [[ "$OSTYPE" == "linux"* ]]; then
     export PATH="$PATH:/usr/bin/X11"
     export PATH="$PATH:/usr/X11R6/bin"
     export PATH="$PATH:/usr/games"
@@ -21,9 +21,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     #for homebrew
     export MANPATH="/usr/local/man"
     export PATH="/usr/local/bin:$PATH"
-elif [[ "$OSTYPE" == "win32" ]]; then
-elif [[ "$OSTYPE" == "cygwin" ]]; then
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
 fi
 
 if [[ $TERM == "xterm" ]]; then
@@ -238,7 +235,7 @@ alias tsh="~/dotfiles/mybin/scripts/trash.sh"
 alias nfind="find . -name "
 alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"
 
-if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" ]]; then
+if [[ "$OSTYPE" == "linux"* ]]; then
     alias open="xdg-open"
 elif [[ "$OSTYPE" == "cygwin" ]]; then
     alias open="cygstart"
@@ -247,7 +244,7 @@ elif [[ "$OSTYPE" == "win32" ]]; then
 fi
 
 
-if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux"]]; then
+if [[ "$OSTYPE" == "linux"* ]]; then
     alias rsyncp="rsync -aHAX"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     alias rsyncp="rsync -aHE"

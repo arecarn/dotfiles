@@ -24,7 +24,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 if [[ $TERM == "xterm" ]]; then
-        export TERM=xterm-256color
+    export TERM=xterm-256color
 fi
 
 ###########################################################################}}}
@@ -32,11 +32,9 @@ fi
 ##############################################################################
 zplug_file=~/.zplug/zplug
 
-(
 if ! [[ -e $zplug_file ]]; then
     curl -fLo ~/.zplug/zplug --create-dirs https://git.io/zplug
 fi
-)
 
 source $zplug_file
 
@@ -84,11 +82,25 @@ setopt auto_list
 setopt auto_param_slash
 setopt auto_param_keys # List files like "ls -F"
 setopt list_types # Compact completion
-# gives you more extensive tab completion TODO(look into this)
-autoload -U compinit
-compinit
+
 # Tab completion should be case-insensitive.
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# list of completion types to use
+zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
+zstyle ':completion:*' menu select=1 _complete _ignored _approximate
+
+# formatting and messages
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
+zstyle ':completion:*' group-name ''
+
+# gives you more extensive tab completion
+autoload -Uz compinit
+compinit
 
 ###########################################################################}}}
 # GENERAL OPTIONS                                                          {{{

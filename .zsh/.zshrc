@@ -230,6 +230,7 @@ alias gp="grep -P"
 
 alias py="python"
 
+alias df="df -h"
 alias du="du -hc"
 # disk usage sorted
 alias dus="du -hsxc *(D) | sort -rh"
@@ -245,9 +246,9 @@ alias -g gmdf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//
 alias -g guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
 #TODO handle Git Unmerged Files
 
-alias l="pwd; ls -paF"
+alias l="ls -paF"
 alias ll="l -lh"
-alias ld="pwd; ls -paFd *(/D)"
+alias ld="l -d *(/D)"
 alias lld="ld -lh *(/D)"
 
 if exits tree ; then

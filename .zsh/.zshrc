@@ -186,6 +186,20 @@ bindkey -M vicmd '^R'    redo
 bindkey -M vicmd '^F'    forward-character
 bindkey -M vicmd '^B'    back-character #}}}2
 
+# Menu Selection {{{2
+zle -C complete-menu menu-select _generic
+_complete_menu() {
+    setopt localoptions alwayslastprompt
+    zle complete-menu
+}
+zle -N _complete_menu
+
+bindkey '^F' _complete_menu
+bindkey -M menuselect '/'  accept-and-infer-next-history
+bindkey -M menuselect '^?' undo
+bindkey -M menuselect ' ' accept-and-hold
+bindkey -M menuselect '*' history-incremental-search-forward
+bindkey -M menuselect '^[[Z' reverse-menu-complete # Shift Tab }}}2
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

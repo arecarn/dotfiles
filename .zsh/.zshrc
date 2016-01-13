@@ -246,6 +246,13 @@ elif [[ "$OSTYPE" == "win32" ]]; then
     alias open="start"
 fi
 
+
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux"]]; then
+    alias rsyncp="rsync -aHAX"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    alias rsyncp="rsync -aHE"
+fi
+
 # GLOBAL ABBERVIATIONS {{{2
 typeset -Ag abbreviations
 abbreviations=(

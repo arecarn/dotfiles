@@ -75,6 +75,10 @@ SAVEHIST=10000
 # COMPLETION OPTIONS                                                       {{{
 ##############################################################################
 # Completion
+
+# gives you more extensive tab completion
+autoload -Uz compinit && compinit
+
 setopt glob_complete # open completion on globs
 setopt glob_dots # do not require a leading `.' in filename to be matched
 setopt complete_in_word # Tab completion from both ends
@@ -83,12 +87,16 @@ setopt auto_param_slash
 setopt auto_param_keys # List files like "ls -F"
 setopt list_types # Compact completion
 
-# Tab completion should be case-insensitive.
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # list of completion types to use
 zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
+
+# use completion menu, where select is the number of items needed for the menu
+# to open
 zstyle ':completion:*' menu select=1 _complete _ignored _approximate
+
+# completion should be case-insensitive.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # formatting and messages
 zstyle ':completion:*' verbose yes
@@ -97,10 +105,6 @@ zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format 'No matches for: %d'
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
-
-# gives you more extensive tab completion
-autoload -Uz compinit
-compinit
 
 ###########################################################################}}}
 # GENERAL OPTIONS                                                          {{{

@@ -118,58 +118,54 @@ REPORTTIME=10
 ##############################################################################
 # vi like settings
 bindkey -v
+export KEYTIMEOUT=1
 
-# VI MODE KEYBINDINGS (ins mode)
-bindkey -M viins '^A'    beginning-of-line
-bindkey -M viins '^E'    end-of-line
-bindkey -M viins '^K'    kill-line
-# bindkey -M viins '^R'    history-incremental-pattern-search-backward
-# bindkey -M viins '^S'    history-incremental-pattern-search-forward
-bindkey -M viins '^P' history-beginning-search-backward
-bindkey -M viins '^N' history-beginning-search-forward
-
-backward-kill-word-and-split-undo() {
+# Vim Mode (Ins Mode) {{{2
+_backward-kill-word-and-split-undo() {
     zle backward-kill-word
     zle split-undo
 }
-zle -N backward-kill-word-and-split-undo
+zle -N _backward-kill-word-and-split-undo
 
-backward-kill-line-and-split-undo() {
+_backward-kill-line-and-split-undo() {
     zle backward-kill-line
     zle split-undo
 }
-zle -N backward-kill-line-and-split-undo
+zle -N _backward-kill-line-and-split-undo
 
-backward-delete-char-and-split-undo() {
+_backward-delete-char-and-split-undo() {
     zle backward-delete-char
     zle split-undo
 }
-zle -N backward-delete-char-and-split-undo
+zle -N _backward-delete-char-and-split-undo
 
-insert-next-word() {
+_insert-next-word() {
     zle insert-last-word 1
 }
-zle -N insert-next-word
+zle -N _insert-next-word
 
+bindkey -M viins '^A'    beginning-of-line
+bindkey -M viins '^E'    end-of-line
+bindkey -M viins '^K'    kill-line
+bindkey -M viins '^P'    history-beginning-search-backward
+bindkey -M viins '^N'    history-beginning-search-forward
 bindkey -M viins '^_'    undo
-bindkey -M viins '^W'    backward-kill-word-and-split-undo
-bindkey -M viins '^U'    backward-kill-line-and-split-undo
-bindkey -M viins '^H'    backward-delete-char-and-split-undo
-bindkey -M viins '^?'    backward-delete-char-and-split-undo
+bindkey -M viins '^W'    _backward-kill-word-and-split-undo
+bindkey -M viins '^U'    _backward-kill-line-and-split-undo
+bindkey -M viins '^H'    _backward-delete-char-and-split-undo
+bindkey -M viins '^?'    _backward-delete-char-and-split-undo
 bindkey -M viins '^X'    _expand_alias
 bindkey -M viins '^K'    insert-last-word
-bindkey -M viins '^J'    insert-next-word
+bindkey -M viins '^J'    _insert-next-word
 bindkey -M viins '^O'    copy-prev-shell-word
-
 bindkey -M viins '^X^R'  redisplay
 bindkey -M viins '\eOH'  beginning-of-line # Home
 bindkey -M viins '\eOF'  end-of-line       # End
 bindkey -M viins '\e[2~' overwrite-mode    # Insert
 bindkey -M viins '^F'    forward-character
-bindkey -M viins '^B'    back-character
+bindkey -M viins '^B'    back-character # }}}
 
-
-# VI MODE KEYBINDINGS (cmd mode)
+# Vim Mode (Cmd Mode) {{{2
 bindkey -M vicmd '^A'    beginning-of-line
 bindkey -M vicmd '^E'    end-of-line
 bindkey -M vicmd '^P'    history-beginning-search-backward
@@ -184,9 +180,8 @@ bindkey -M vicmd '^_'    undo
 bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
 bindkey -M vicmd '^F'    forward-character
-bindkey -M vicmd '^B'    back-character
+bindkey -M vicmd '^B'    back-character #}}}2
 
-export KEYTIMEOUT=1
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

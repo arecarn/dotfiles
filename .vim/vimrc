@@ -242,10 +242,12 @@ set modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-augroup colorcolumn
-    autocmd!
-    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
-augroup END
+if has("autocmd")
+    augroup colorcolumn
+        autocmd!
+        autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
+    augroup END
+endif
 
 set background=dark
 set confirm
@@ -932,6 +934,8 @@ NeoBundle 'airblade/vim-rooter'
 NeoBundle 'wesQ3/vim-windowswap'
 NeoBundle 'dyng/ctrlsf.vim'
 NeoBundle 'ludovicchabant/vim-gutentags'
+NeoBundle 'Konfekt/FastFold'
+NeoBundle 'chrisbra/NrrwRgn'
 call neobundle#end()
 NeoBundleCheck
 filetype plugin indent on

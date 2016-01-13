@@ -11,7 +11,7 @@ export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
 # configure path
 export PATH="$PATH:$HOME/dotfiles/tools/scripts"
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" ]]; then
     export PATH="$PATH:/usr/bin/X11"
     export PATH="$PATH:/usr/X11R6/bin"
     export PATH="$PATH:/usr/games"
@@ -238,7 +238,7 @@ alias tsh="~/dotfiles/mybin/scripts/trash.sh"
 alias nfind="find . -name "
 alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"
 
-if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" || "$OSTYPE" == "freebsd"*  ]]; then
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" ]]; then
     alias open="xdg-open"
 elif [[ "$OSTYPE" == "cygwin" ]]; then
     alias open="cygstart"

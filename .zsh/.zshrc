@@ -216,15 +216,17 @@ alias so="source"
 alias soz="source ~/dotfiles/.zsh/.zshrc"
 alias sot="tmux source-file ~/dotfiles/.tmux/.tmux.conf"
 
+alias p="$PAGER"
 alias e="$EDITOR"
 alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"
 alias eg="$EDITOR ~/dotfiles/.gitconfig"
+alias egs='$EDITOR $(git status --porcilean | cut -c 4- | fzf -m)'
 alias ev="$EDITOR ~/dotfiles/.vim/vimrc"
 alias et="$EDITOR ~/dotfiles/.tmux/.tmux.conf"
 
 alias mk="mkdir"
 alias rd="rmdir"
-alias rmf="rm -rf"
+alias rmr="rm -rI"
 
 alias gp="grep -P"
 
@@ -235,16 +237,8 @@ alias du="du -hc"
 # disk usage sorted
 alias dus="du -hsxc *(D) | sort -rh"
 
-alias p="$PAGER"
-
 alias g="git"
-# Git Files
-alias -g gf='`git status --porcelain | sed -ne "s/^..//p"`'
-# Git Modified Files
-alias -g gmdf='`git status --porcelain | grep -P "^.M|^[AM]." | sed -ne "s/^..//p"`'
-# Git Untracked Files
-alias -g guf='`git status --porcelain | grep -P "^\?\?" | sed -ne "s/^..//p"`'
-#TODO handle Git Unmerged Files
+alias v="vim"
 
 alias l="ls -paF"
 alias ll="l -lh"

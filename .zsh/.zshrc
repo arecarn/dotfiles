@@ -27,6 +27,8 @@ if [[ $TERM == "xterm" ]]; then
     export TERM=xterm-256color
 fi
 
+n="$HOME/Dropbox/notes/"
+
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
@@ -223,6 +225,7 @@ alias eg="$EDITOR ~/dotfiles/.gitconfig"
 alias egs='$EDITOR $(git status --porcilean | cut -c 4- | fzf -m)'
 alias ev="$EDITOR ~/dotfiles/.vim/vimrc"
 alias et="$EDITOR ~/dotfiles/.tmux/.tmux.conf"
+alias todo="$EDITOR ~/Dropbox/notes/todo.txt"
 
 alias mk="mkdir"
 alias rd="rmdir"

@@ -79,7 +79,7 @@ SAVEHIST=10000
 # Completion
 
 # gives you more extensive tab completion
-autoload -Uz compinit && compinit
+autoload -U compinit && compinit -d ~/.zcompdump
 
 setopt glob_complete # open completion on globs
 setopt glob_dots # do not require a leading `.' in filename to be matched

@@ -32,11 +32,7 @@
 
     # execute an arbitrary command in the top level directory e.g.
     # $ git exec pwd
-    exec = "!f() {\
-                GIT_TOP=\"${GIT_DIR%%/.git/modules/*}\"; \
-                [ \".$GIT_TOP\" != \".$GIT_DIR\" ] && cd \"$GIT_TOP\"; \
-                exec \"$@\"; \
-            }; f"
+    exec = "!~/dotfiles/.gitfiles/aliases/execute_in_git_dir.sh"
 
     f = fetch
     co = checkout
@@ -49,8 +45,8 @@
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
     stl = !git stash-list-pretty
 
-    s =  "!~/dotfiles/.gitfiles/alias/status_short.sh"
-    sl = "!~/dotfiles/.gitfiles/alias/status_long.sh"
+    s =  "!~/dotfiles/.gitfiles/aliases/status_short.sh"
+    sl = "!~/dotfiles/.gitfiles/aliases/status_long.sh"
 
     a = add
     # Add Staged files that need to be updated: files that need to be updated

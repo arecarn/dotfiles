@@ -1,24 +1,13 @@
-#Your Gmail account details
-set imap_user = "arecarn@gmail.com"
-set smtp_url = "smtp://arecarn@smtp.gmail.com:587/"
-set from = "arecarn@gmail.com"
-set realname = "Ryan Carney"
-set folder = "imaps://imap.gmail.com:993"
  
 # Setup your favorite editor to write email bodies
 set editor = "vim"
  
 # Basic config, you can leave this as is
 set imap_check_subscribed
-set hostname = gmail.com
 set mail_check = 120
 set timeout = 300
 set imap_keepalive = 300
 
-# My mailboxes
-mailboxes +[Gmail]/INBOX
-set spoolfile = "+INBOX"
-set postponed = "+[Gmail]/Drafts"
 
 # Where to put stuff
 set header_cache=~/.mutt/cache/headers
@@ -55,25 +44,12 @@ set imap_keepalive = 300
 # how often to check for new mail (time in seconds)
 set mail_check = 120
 
+source ~/.mutt/accounts/personal.muttrc
 ##############################################################################
 # MAPPINGS / MACROS
 ##############################################################################
-# Archive Messages (A)
-macro index,pager a "<enter-command>unset trash\n<delete-message>" "Gmail archive message"
-macro index,pager d "<enter-command>set my_resolve=\$resolve resolve=no<enter>\<clear-flag>N\<enter-command>set resolve=\$my_resolve &my_resolve<enter>\<save-message>+[Gmail]/Trash<enter>" "move message to the trash"
-# macro index,pager d "<enter-command>set trash=\"+Gmail/Trash\"\n<delete-message>" "Gmail delete message"
-# macro index,pager A "<enter-command>unset trash\n<delete-pattern>" "Gmail archive pattern"
-# macro index,pager D "<enter-command>set trash=\"+Gmail/Trash\"\n<delete-pattern>" "Gmail delete pattern"
- 
-# make space not do weird things inside the command line
-bind editor <space> noop 
-macro index,pager gi "<change-folder>=INBOX<enter>" "Go to inbox"
-macro index,pager ga "<change-folder>=[Gmail]/All Mail<enter>" "Go to all mail"
-macro index,pager gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
-macro index,pager gs "<change-folder>=[Gmail]/Sent Mail<enter>" "Go to starred mail"
-macro index,pager gt "<change-folder>=[Gmail]/Trash<enter>" "Go to trash"
 
 ##############################################################################
 # Color Scheme
 ##############################################################################
-source ~/.mutt/colors/mutt-colors-solarized/mutt-colors-solarized-dark-256.muttrc
+# source ~/.mutt/colors/mutt-colors-solarized/mutt-colors-solarized-dark-256.muttrc

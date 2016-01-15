@@ -214,11 +214,14 @@ exits() {
     command -v "$1" >/dev/null 2>&1
 }
 
+alias gp="grep -P"
+alias py="python"
+alias p="$PAGER"
+
 alias so="source"
 alias soz="source ~/dotfiles/.zsh/.zshrc"
 alias sot="tmux source-file ~/dotfiles/.tmux/.tmux.conf"
 
-alias p="$PAGER"
 alias e="$EDITOR"
 alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"
 alias eg="$EDITOR ~/dotfiles/.gitconfig"
@@ -231,9 +234,10 @@ alias mk="mkdir"
 alias rd="rmdir"
 alias rmr="rm -rI"
 
-alias gp="grep -P"
-
-alias py="python"
+alias untgz="tar -zxvf"
+alias tgz="tar -zcvf"
+alias untbz2="tar -jxvf"
+alias tbz2="tar -jcvf"
 
 alias df="df -h"
 alias du="du -hc"
@@ -248,14 +252,12 @@ alias ll="l -lh"
 alias ld="l -d *(/D)"
 alias lld="ld -lh *(/D)"
 
-if exits tree ; then
-    alias t="pwd; tree -a"
-    alias tt="t -ph"
-    alias td="t -d"
-    alias ttd="tt -d"
-fi
+alias t="pwd; tree -a"
+alias tt="t -ph"
+alias td="t -d"
+alias ttd="tt -d"
+
 alias tsh="~/dotfiles/mybin/scripts/trash.sh"
-alias nfind="find . -name "
 alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"
 
 if [[ "$OSTYPE" == "linux"* ]]; then
@@ -265,7 +267,6 @@ elif [[ "$OSTYPE" == "cygwin" ]]; then
 elif [[ "$OSTYPE" == "win32" ]]; then
     alias open="start"
 fi
-
 
 if [[ "$OSTYPE" == "linux"* ]]; then
     alias rsyncp="rsync -aHAX"
@@ -319,7 +320,6 @@ bindkey -M viins " " magic-abbrev-expand
 bindkey -M viins "^ " no-magic-abbrev-expand
 bindkey -M isearch " " self-insert
 # }}}2
-
 
 # run a command until it fails
 function untilfail()

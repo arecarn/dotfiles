@@ -93,6 +93,8 @@ setopt list_types # Compact completion
 # list of completion types to use
 zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
 
+zstyle ':completion:*' special-dirs true
+
 # use completion menu, where select is the number of items needed for the menu
 # to open
 zstyle ':completion:*' menu select=1 _complete _ignored _approximate
@@ -100,13 +102,18 @@ zstyle ':completion:*' menu select=1 _complete _ignored _approximate
 # completion should be case-insensitive.
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
-# formatting and messages
-zstyle ':completion:*' verbose yes
-zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*' extra-verbose yes
+zstyle ':completion:*:values' verbose yes
+zstyle ':completion:*:options' verbose yes
+zstyle ':completion:*:descriptions' format "$fg[yellow]%B--- %d%b"
 zstyle ':completion:*:messages' format '%d'
-zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
+
+# command completion: highlight matching part of command, and 
+zstyle -e ':completion:*' list-colors 'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ${(s.:.)LS_COLORS}
 
 ###########################################################################}}}
 # GENERAL OPTIONS                                                          {{{

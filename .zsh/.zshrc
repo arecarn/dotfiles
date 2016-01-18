@@ -79,41 +79,58 @@ SAVEHIST=10000
 # Completion
 
 # gives you more extensive tab completion
-autoload -U compinit && compinit -d ~/.zcompdump
+autoload -U compinit
+compinit
 
+unsetopt menu_complete # unset as to not to collide with auto_menu
+setopt auto_menu # use menu completion after the second consecutive request for completion
+setopt complete_in_word # keep the cursor in place until a completion
+setopt always_to_end # move the cursor to end after completion
+setopt auto_param_slash # add a trailing slash instead of a space
+setopt list_types # List files like "ls -F"
 setopt glob_complete # open completion on globs
 setopt glob_dots # do not require a leading `.' in filename to be matched
-setopt complete_in_word # Tab completion from both ends
-setopt auto_list
-setopt auto_param_slash
-setopt auto_param_keys # List files like "ls -F"
-setopt list_types # Compact completion
-
-
-# list of completion types to use
-zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
-
-zstyle ':completion:*' special-dirs true
 
 # use completion menu, where select is the number of items needed for the menu
 # to open
 zstyle ':completion:*' menu select=1 _complete _ignored _approximate
 
-# completion should be case-insensitive.
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+# Completion Styles
 
-zstyle ':completion:*' extra-verbose yes
-zstyle ':completion:*:values' verbose yes
-zstyle ':completion:*:options' verbose yes
-zstyle ':completion:*:descriptions' format "$fg[yellow]%B--- %d%b"
+# list of completion types to use
+zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
+
+# allow one error for every three characters typed in approximate completer
+zstyle ':completion:*:approximate:*' max-errors 3
+
+# insert all expansions for expand completer
+zstyle ':completion:*:expand:*' tag-order all-expansions
+
+# Formatting and messages
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:matches' group yes
+zstyle ':completion:*:options' description yes
+zstyle ':completion:*:descriptions' format "$fg[yellow]%B-- %d --%b"
 zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
+zstyle ':completion:*:options' auto-description '%d'
 
-# command completion: highlight matching part of command, and 
-zstyle -e ':completion:*' list-colors 'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ${(s.:.)LS_COLORS}
+# match uppercase from lowercase, and left-side substrings
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' '+l:|=*'
+
+
+# command completion: highlight matching part
+zstyle -e ':completion:*:-command-:*' list-colors 'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
+
+# use LS_COLORS for file coloring
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# show command short descriptions, too
+zstyle ':completion:*' extra-verbose yes
+# make them a little less short, after all (mostly adds -l option to the whatis calll)
+zstyle ':completion:*:command-descriptions' command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
 
 ###########################################################################}}}
 # GENERAL OPTIONS                                                          {{{

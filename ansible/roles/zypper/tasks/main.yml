@@ -5,3 +5,4 @@
 - name: Zypper Install Specific Packages
   zypper: name={{item}} state=present disable_recommends=no
   with_items: zypper_specifc_packages
+  ignore_errors: yes

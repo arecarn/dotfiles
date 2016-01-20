@@ -258,10 +258,12 @@ alias mk="mkdir"
 alias rd="rmdir"
 alias rmr="rm -rI"
 
-alias untgz="tar -zxvf"
-alias tgz="tar -zcvf"
-alias untbz2="tar -jxvf"
-alias tbz2="tar -jcvf"
+# shortcuts to tar and compress
+alias targz="tar -zcvf"
+alias tarbz2="tar -jcvf"
+alias tarxz="tar -Jcvf"
+# extract tar archive even if it has been compressed (e.g. .gz, .xz, bz2)
+alias untar="tar -xvf"
 
 alias df="df -h"
 alias du="du -hc"

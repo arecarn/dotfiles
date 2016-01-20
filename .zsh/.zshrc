@@ -103,9 +103,6 @@ zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
 # allow one error for every three characters typed in approximate completer
 zstyle ':completion:*:approximate:*' max-errors 3
 
-# insert all expansions for expand completer
-zstyle ':completion:*:expand:*' tag-order all-expansions
-
 # Formatting and messages
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:matches' group yes
@@ -117,9 +114,11 @@ zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*:options' auto-description '%d'
 
+# when doing an expansion use a custom order of tags
+zstyle ':completion:*:expand:*' group-order original all-expansions expansions
+
 # match uppercase from lowercase, and left-side substrings
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' '+l:|=*'
-
 
 # command completion: highlight matching part
 zstyle -e ':completion:*:-command-:*' list-colors 'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'

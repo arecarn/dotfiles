@@ -621,11 +621,10 @@ endif
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " neobundle {{{2
-
 let s:neobundle_path = s:vim_path.'/bundle/neobundle.vim'
 if !isdirectory(s:neobundle_path)
     execute '!git clone https://github.com/Shougo/neobundle.vim '
-        \ . s:neobundle_path
+                \ . s:neobundle_path
 endif
 if has('vim_starting')
     execute 'set runtimepath+='.s:neobundle_path.'/'
@@ -677,105 +676,141 @@ NeoBundle 'kopischke/unite-spell-suggest', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'kmnk/vim-unite-giti', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'hewes/unite-gtags', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
+NeoBundleFetch 'junegunn/fzf', {
+            \ 'base' : '~/.fzf',
+            \ 'build' : './install --all'
+            \ }
+NeoBundle 'dyng/ctrlsf.vim'
 
+
+" Operators
+NeoBundle 'arecarn/mixed-case-operator.vim'
 NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-repeat' "}}}2
 
-NeoBundleFetch 'junegunn/fzf', {
-            \ 'base' : '~/.fzf',
-            \ 'build' : './install --all'
-            \ }
 
-" NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'arecarn/split-join.vim'
-NeoBundle 'osyo-manga/vim-anzu'
-NeoBundle 'altercation/vim-colors-solarized'
-NeoBundle 'AndrewRadev/linediff.vim'
-NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
-NeoBundle 'arecarn/auto-file-loader.vim'
+" Folds
+NeoBundle 'Konfekt/FastFold'
 NeoBundle 'arecarn/clean-fold.vim'
 NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
-NeoBundle 'arecarn/frisk.vim'
-NeoBundle 'dbeniamine/todo.txt-vim'
-NeoBundle 'stephpy/vim-yaml' "and alternative yaml sicne the built in one is slow
-NeoBundle 'diffchanges.vim'
-NeoBundle 'arecarn/git-diff-cached-preview.vim'
-NeoBundle 'arecarn/go-to-buffer.vim'
-NeoBundle 'arecarn/mixed-case-operator.vim'
-NeoBundle 'arecarn/spell-utils.vim'
-NeoBundle 'arecarn/diff-utils.vim'
-NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
-NeoBundle 'arecarn/templates'
+
+
+" Visual Enhancements
 NeoBundle 'bling/vim-airline'
 NeoBundle 'chreekat/vim-paren-crosshairs'
-NeoBundle 'chrisbra/vim-diff-enhanced'
-NeoBundle 'dbakker/vim-lint'
-NeoBundle 'dhruvasagar/vim-table-mode'
 NeoBundle 'edkolev/tmuxline.vim'
-NeoBundle 'godlygeek/tabular'
-NeoBundle 'gregsexton/gitv'
-NeoBundle 'cohama/agit.vim'
-" NeoBundle 'henrik/vim-qargs'
-NeoBundle 'hrsh7th/vim-neco-calc'
-NeoBundle 'idanarye/vim-vebugger', {'depends' : 'shougo/vimproc.vim'}
-NeoBundle 'int3/vim-extradite'
 NeoBundle 'junegunn/goyo.vim'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+
+
+NeoBundle 'scrooloose/syntastic'
+
+
+" Vim script Development
+NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'junegunn/vader.vim'
-NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'}
-NeoBundle 'kana/vim-niceblock'
-" NeoBundle 'Lokaltog/vim-easymotion'
+NeoBundle 'Decho'
+NeoBundle 'dbakker/vim-lint', {'depends' : 'scrooloose/syntastic'}
+
+
+" File Type
+NeoBundle 'stephpy/vim-yaml' "and alternative yaml sicne the built in one is slow
 NeoBundle 'lopter/moin.vim'
 NeoBundle 'confluencewiki.vim'
-NeoBundle 'mbbill/undotree'
+NeoBundle 'plasticboy/vim-markdown'
+NeoBundle 'dbeniamine/todo.txt-vim'
+NeoBundle 'vim-scripts/scons.vim'
+
+
+" Colors
 NeoBundle 'morhetz/gruvbox'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-NeoBundle 'roman/golden-ratio'
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'Shougo/echodoc.vim'
-NeoBundle 'Shougo/neocomplete'
+NeoBundle 'altercation/vim-colors-solarized'
+
+
+" Completion
+if exists('+lua') || exists ('+lua/dyn')
+    NeoBundle 'Shougo/neocomplete'
+else
+    NeoBundle 'Shougo/neocomplcache'
+endif
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/echodoc.vim'
+
+
+" Git / VCS
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'int3/vim-extradite', {'depends' : 'tpope/vim-fugitive'}
+NeoBundle 'jreybert/vimagit'
+NeoBundle 'airblade/vim-rooter'
+NeoBundle 'cohama/agit.vim'
+NeoBundle 'arecarn/git-diff-cached-preview.vim'
+NeoBundle 'mhinz/vim-signify'
+
+
+" Diff
+NeoBundle 'AndrewRadev/linediff.vim'
+NeoBundle 'chrisbra/vim-diff-enhanced'
+NeoBundle 'diffchanges.vim'
+NeoBundle 'arecarn/diff-utils.vim'
+
+
+" Applications
 NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'Shougo/vimshell.vim', {'depends' : 'Shougo/vimproc.vim'}
-NeoBundle 't9md/vim-choosewin'
-NeoBundle 't9md/vim-quickhl'
+NeoBundle 'idanarye/vim-vebugger', {'depends' : 'shougo/vimproc.vim'}
+
+
+" Text Manipulation Commands / Mappings
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'arecarn/split-join.vim'
 NeoBundle 't9md/vim-textmanip'
-NeoBundle 'talek/obvious-resize'
-" NeoBundle 'TeTrIs.vim'
-NeoBundle 'thinca/vim-qfreplace'
-" NeoBundle 'tommcdo/vim-lion'
-NeoBundle 'tpope/vim-abolish'
-" NeoBundle 'tpope/vim-dispatch'
-NeoBundle 'tpope/vim-eunuch'
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'plasticboy/vim-markdown'
-NeoBundle 'tpope/vim-scriptease'
+NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
+
+" Enhancements
+NeoBundle 'kana/vim-niceblock'
 NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-unimpaired'
-NeoBundle 'jreybert/vimagit'
-NeoBundle 'vim-scripts/cmdalias.vim'
-NeoBundle 'vim-scripts/DrawIt'
-NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
-NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'vim-scripts/UnconditionalPaste'
-" NeoBundle 'w0ng/vim-hybrid'
-NeoBundle 'mhinz/vim-signify'
+NeoBundle 'arecarn/go-to-buffer.vim'
+NeoBundle 'arecarn/auto-file-loader.vim'
+NeoBundle 'thinca/vim-qfreplace'
+NeoBundle 'tpope/vim-eunuch'
+NeoBundle 'arecarn/spell-utils.vim'
+NeoBundle 'tpope/vim-abolish'
+
+" Word Under the Cursor Highlighting
+NeoBundle 't9md/vim-quickhl'
 NeoBundle 'qstrahl/vim-matchmaker'
-" NeoBundle 'AndrewRadev/gapply.vim'
-" NeoBundle 'tomtom/tassert_vim'
-NeoBundle 'Decho'
-" NeoBundle 'lyuts/vim-rtags'
-" NeoBundle 'sickill/vim-monokai'
-" NeoBundle 'mhinz/vim-sayonara'
-NeoBundle 'airblade/vim-rooter'
-NeoBundle 'wesQ3/vim-windowswap'
-NeoBundle 'dyng/ctrlsf.vim'
-NeoBundle 'ludovicchabant/vim-gutentags'
-NeoBundle 'Konfekt/FastFold'
+
+" Search
+NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'}
+NeoBundle 'osyo-manga/vim-anzu'
+
+" Utilitys
+NeoBundle 'talek/obvious-resize'
+NeoBundle 'vim-scripts/cmdalias.vim'
+NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
+
+" Interactive Tools/Modes
+NeoBundle 'dhruvasagar/vim-table-mode'
+NeoBundle 'vim-scripts/DrawIt'
+NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
 NeoBundle 'chrisbra/NrrwRgn'
+NeoBundle 'mbbill/undotree'
+
+" Window Management
+NeoBundle 't9md/vim-choosewin'
+NeoBundle 'wesQ3/vim-windowswap'
+
+NeoBundle 'arecarn/binascii.vim'
+NeoBundle 'arecarn/frisk.vim'
+NeoBundle 'ludovicchabant/vim-gutentags'
+NeoBundle 'roman/golden-ratio'
+NeoBundle 'arecarn/templates'
 call neobundle#end()
 NeoBundleCheck
 filetype plugin indent on
@@ -783,13 +818,6 @@ filetype plugin indent on
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" netrw {{{2
-" set up line numebring and other good stuff
-let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
-" hide .swp .o12 .dbg .lst files in explorer
-let g:netrw_list_hide= '.*\.swp$,.*\.o12$,.*\.dbg$,.*\.lst'
-" netrw }}}2
-
 if neobundle#is_installed('neocomplcache') "{{{2
     if !isdirectory(s:vim_path.'/utils_local/neocomplcache')
         call mkdir(s:vim_path.'/utils_local/neocomplcache', "p", 0755)
@@ -1117,6 +1145,12 @@ if neobundle#is_installed('vimfiler.vim') "{{{2
     command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>
     command! -nargs=* Vexplore :VimFilerBufferDir -split  <Args>
     command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
+else
+    " setup netrw
+    " set up line numbering and other good stuff
+    let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
+" netrw }}}2
+
 endif "}}}2
 
 if neobundle#is_installed('vimshell.vim') "{{{2
@@ -1137,17 +1171,19 @@ if neobundle#is_installed('vimshell.vim') "{{{2
     endif
     let g:vimshell_data_directory = s:vim_path.'/utils_local/vimshell/'
     let g:vimshell_editor_command = 'gvim'
+
+    command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{3
+    function! RunInVimShell(cmd)
+        VimShellBufferDir -popup
+        execute "VimShellSendString " . a:cmd
+    endfunction "}}}3
+
 endif "}}}2
 
 if neobundle#is_installed('echodoc.vim') "{{{2
     let g:echodoc_enable_at_startup=1
     set cmdheight=2
 
-command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{2
-function! RunInVimShell(cmd)
-    VimShellBufferDir -popup
-    execute "VimShellSendString " . a:cmd
-endfunction "}}}2
 endif "}}}2
 
 if neobundle#is_installed('vim-oblique') "{{{2
@@ -1161,66 +1197,66 @@ if neobundle#is_installed('vim-fugitive') "{{{2
     nmap <Leader>gj <C-W>P<C-N>D
     nmap <Leader>gk <C-W>P<C-P>D
 
-  " Jump to last known cursor position on BufReadPost {{{
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  " NOTE: read viminfo/marks, but removed: causes issues with jumplist sync
-  " across Vim instances
+    " Jump to last known cursor position on BufReadPost {{{
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    " NOTE: read viminfo/marks, but removed: causes issues with jumplist sync
+    " across Vim instances
     " \   rviminfo |
-  " NOTE: removed for SVN commit messages: && fnamemodify(bufname('%'), ':t') != 'svn-commit.tmp'
-  " ref: :h last-position-jump
-  fun! AutojumpLastPosition()
-    if ! exists('b:autojumped_init')
-      let b:autojumped_init = 1
-      if &ft != 'gitcommit' && &ft != 'diff' && ! &diff && line("'\"") <= line("$") && line("'\"") > 0
-        " NOTE: `zv` is ignored with foldlevel in modeline.
-        exe 'normal! g`"zv'
-      endif
-    endif
-  endfun
+    " NOTE: removed for SVN commit messages: && fnamemodify(bufname('%'), ':t') != 'svn-commit.tmp'
+    " ref: :h last-position-jump
+    fun! AutojumpLastPosition()
+        if ! exists('b:autojumped_init')
+            let b:autojumped_init = 1
+            if &ft != 'gitcommit' && &ft != 'diff' && ! &diff && line("'\"") <= line("$") && line("'\"") > 0
+                " NOTE: `zv` is ignored with foldlevel in modeline.
+                exe 'normal! g`"zv'
+            endif
+        endif
+    endfun
 
- " Follow symlinks when opening a file {{{
-  " NOTE: this happens with directory symlinks anyway (due to Vim's chdir/getcwd
-  "       magic when getting filenames).
-  " Sources:
-  "  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
-  "  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
-  function! MyFollowSymlink(...)
-    if exists('w:no_resolve_symlink') && w:no_resolve_symlink
-      return
-    endif
-    if &ft == 'help'
-      return
-    endif
-    let fname = a:0 ? a:1 : expand('%')
-    if fname =~ '^\w\+:/'
-      " Do not mess with 'fugitive://' etc.
-      return
-    endif
-    let fname = simplify(fname)
+    " Follow symlinks when opening a file {{{
+    " NOTE: this happens with directory symlinks anyway (due to Vim's chdir/getcwd
+    "       magic when getting filenames).
+    " Sources:
+    "  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
+    "  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
+    function! MyFollowSymlink(...)
+        if exists('w:no_resolve_symlink') && w:no_resolve_symlink
+            return
+        endif
+        if &ft == 'help'
+            return
+        endif
+        let fname = a:0 ? a:1 : expand('%')
+        if fname =~ '^\w\+:/'
+            " Do not mess with 'fugitive://' etc.
+            return
+        endif
+        let fname = simplify(fname)
 
-    let resolvedfile = resolve(fname)
-    if resolvedfile == fname
-      return
-    endif
-    let resolvedfile = fnameescape(resolvedfile)
-    let sshm = &shm
-    set shortmess+=A  " silence ATTENTION message about swap file (would get displayed twice)
-    redraw  " Redraw now, to avoid hit-enter prompt.
-    exec 'file ' . resolvedfile
-    let &shm=sshm
+        let resolvedfile = resolve(fname)
+        if resolvedfile == fname
+            return
+        endif
+        let resolvedfile = fnameescape(resolvedfile)
+        let sshm = &shm
+        set shortmess+=A  " silence ATTENTION message about swap file (would get displayed twice)
+        redraw  " Redraw now, to avoid hit-enter prompt.
+        exec 'file ' . resolvedfile
+        let &shm=sshm
 
-    call AutojumpLastPosition()
-    unlet! b:git_dir
-    call fugitive#detect(resolvedfile)
+        call AutojumpLastPosition()
+        unlet! b:git_dir
+        call fugitive#detect(resolvedfile)
 
-    if &modifiable
-      " Only display a note when editing a file, especially not for `:help`.
-      redraw  " Redraw now, to avoid hit-enter prompt.
-      echomsg 'Resolved symlink: =>' resolvedfile
-    endif
-  endfunction
-  command! -bar FollowSymlink call MyFollowSymlink()
+        if &modifiable
+            " Only display a note when editing a file, especially not for `:help`.
+            redraw  " Redraw now, to avoid hit-enter prompt.
+            echomsg 'Resolved symlink: =>' resolvedfile
+        endif
+    endfunction
+    command! -bar FollowSymlink call MyFollowSymlink()
 endif "}}}2
 
 if neobundle#is_installed('frisk.vim') "{{{2
@@ -1244,10 +1280,10 @@ if neobundle#is_installed('vim-anzu') "{{{2
     if neobundle#is_installed('unite.vim')
         nnoremap [myleader]/ :<C-u>Unite anzu<CR>
     endif
-endif
+endif "}}}2
 
 if neobundle#is_installed('vim-table-mode') "{{{2
-        let g:table_mode_corner = '|'
+    let g:table_mode_corner = '|'
 endif "}}}2
 
 if neobundle#is_installed('vim-indent-guides') "{{{2
@@ -1487,11 +1523,11 @@ if neobundle#is_installed('vim-unite-giti') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('fold-cycle.vim') "{{{2
-   let g:fold_cycle_default_mapping = 0
-   nmap zo <Plug>(fold-cycle-open)
-   nmap zc <Plug>(fold-cycle-close)
-   " nmap zr <Plug>(fold-cycle-open-global)
-   " nmap zm <Plug>(fold-cycle-close-global)
+    let g:fold_cycle_default_mapping = 0
+    nmap zo <Plug>(fold-cycle-open)
+    nmap zc <Plug>(fold-cycle-close)
+    " nmap zr <Plug>(fold-cycle-open-global)
+    " nmap zm <Plug>(fold-cycle-close-global)
 endif "}}}2
 
 if neobundle#is_installed('vim-operator-replace') "{{{2

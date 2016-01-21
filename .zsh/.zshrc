@@ -121,7 +121,7 @@ zstyle ':completion:*:expand:*' group-order original all-expansions expansions
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' '+l:|=*'
 
 # command completion: highlight matching part
-zstyle -e ':completion:*:-command-:*' list-colors 'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
+zstyle -e ':completion:*:default' list-colors 'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
 
 # use LS_COLORS for file coloring
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}

@@ -61,6 +61,8 @@
 
     rs = reset
     rsh = reset HEAD
+    # ReSet to Upstream tracking branch
+    rsu = reset @{u}
 
     rb = rebase
     rbi = rebase --interactive --autosquash

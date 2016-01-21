@@ -38,7 +38,7 @@ if ! [[ -e $zplug_file ]]; then
     curl -fLo ~/.zplug/zplug --create-dirs https://git.io/zplug
 fi
 
-source $zplug_file
+source $zplug_file > /dev/null
 
 zplug "plugins/command-not-found", from:oh-my-zsh
 zplug "plugins/tmux", from:oh-my-zsh
@@ -50,17 +50,17 @@ zplug "zsh-users/zsh-syntax-highlighting"
 zplug "rupa/z", of:"*.sh"
 
 # Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
+if ! zplug check --verbose > /dev/null; then
+    printf "Install? [y/n]: "
     if read -q; then
         echo; zplug install
     fi
 fi
 
 # Then, source plugins and add commands to $PATH
-zplug load --verbose
+zplug load --verbose > /dev/null
 # let zplug manage itself
-zplug update --self
+zplug update --self > /dev/null
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 

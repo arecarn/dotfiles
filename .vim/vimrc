@@ -926,6 +926,7 @@ if neobundle#is_installed('neocomplete') "{{{2
 
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#close_popup()
+    inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : "\<CR>"
     inoremap <expr><C-e>  neocomplete#cancel_popup()
 
     " Enable omni completion.

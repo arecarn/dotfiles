@@ -28,6 +28,7 @@ if [[ $TERM == "xterm" ]]; then
 fi
 
 n="$HOME/Dropbox/notes/"
+df="$HOME/dotfiles"
 
 ###########################################################################}}}
 # PLUGINS                                                                  {{{

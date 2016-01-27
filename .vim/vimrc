@@ -433,26 +433,26 @@ nnoremap <leader>f :find *
 nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
 
 
-" fn filename (trail) (foo.txt)
-" fp absolute path  (/something/src/foo.txt)
-" fP relative path  (src/foo.txt)
-" ofn file name filename (trail)
-" ofp other absolute path
-" ofP relative path
-" dp current directory name (head) (/something/src)
-" dP directory name (head) (/something/src)
-" pwd current working directory
+" fn File Name (trail) (foo.txt)
+" fp File Path  (/something/src/foo.txt)
+" fpr File Path relative  (src/foo.txt)
+" ofn Other File Name (trail)
+" ofp Other File Path
+" ofpr Other File Path Relative to pwd
+" dp Directory Path (head) (/something/src)
+" dpr Directory Path Relative to pwd (head) (/something/src)
+" pwd Present Working Directory
 let maps = [
-            \ {"str" : "fn",  "func" : "expand('%:t')"},
-            \ {"str" : "fp",  "func" : "expand('%:p')"},
-            \ {"str" : "fP",  "func" : "expand('%')"},
-            \ {"str" : "ofn", "func" : "expand('%:t:r') . '.'"},
-            \ {"str" : "ofp", "func" : "expand('%:p:r:.') . '.'"},
-            \ {"str" : "ofP", "func" : "expand('%<') . '.'"},
-            \ {"str" : "dp",  "func" : "expand('%:p:h')"},
-            \ {"str" : "dP",  "func" : "expand('%:h')"},
-            \ {"str" : "pwd", "func" : "getcwd()"}
-            \ ]
+    \ {'str' : 'fn',   'func' : "expand('%:t')"},
+    \ {'str' : 'fp',   'func' : "expand('%:p')"},
+    \ {'str' : 'fpr',  'func' : "expand('%')"},
+    \ {'str' : 'ofn',  'func' : "expand('%:t:r') . '.'"},
+    \ {'str' : 'ofp',  'func' : "expand('%:p:r:.') . '.'"},
+    \ {'str' : 'ofpr', 'func' : "expand('%<') . '.'"},
+    \ {'str' : 'dp',   'func' : "expand('%:p:h') . '/'"},
+    \ {'str' : 'dpr',  'func' : "expand('%:h') . '/'"},
+    \ {'str' : 'pwd',  'func' : "getcwd()"}
+    \ ]
 for map in maps
     execute "nnoremap <silent> <Leader>y".map.str.
                 \ " :let @*=".map.func.

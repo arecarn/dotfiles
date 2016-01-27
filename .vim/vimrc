@@ -693,7 +693,7 @@ NeoBundle 'altercation/vim-colors-solarized'
 
 
 " Completion
-if exists('+lua') || exists ('+lua/dyn')
+if has('lua') || has('lua/dyn')
     NeoBundle 'Shougo/neocomplete'
 else
     NeoBundle 'Shougo/neocomplcache'

@@ -28,6 +28,11 @@ DOTFILES = [
             "location" : "~/.mutt",
         },
 
+        {
+            "source" : "bin",
+            "location" : "~/bin",
+        },
+
 
         # Tmux
         {

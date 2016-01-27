@@ -1,8 +1,0 @@
-# ignore all files
-*
-# except this file
-!.gitignore
-
-# ignore all directories
-**/
-

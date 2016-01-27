@@ -1,0 +1,13 @@
+set imap_user = "GLOBAL\rcarney"
+set hostname = outlook.evt.danahertm.com:993
+set realname = "Ryan Carney"
+set folder = "imaps://outlook.evt.danahertm.com:993"
+
+set sendmail=/usr/bin/msmtp
+set mbox_type=Maildir
+set folder="~/Maildir"
+mailboxes `echo -n "+ "; for file in ~/Maildir/*; do box=$(basename "$file"); echo -n "\"+$box\" "; done`
+set spoolfile="~/Maildir/work/INBOX"
+set postponed="+Drafts"
+set record="+work/Sent"
+

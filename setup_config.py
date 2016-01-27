@@ -9,56 +9,56 @@ DOTFILES_DIRECTORY = "~/dotfiles"
 # TODO if source isn't specified use name by default?
 DOTFILES = [
         {
-            "source" : ".ctags",
+            "source" : "ctags",
             "location" : "~/.ctags",
         },
 
         {
-            "source" : ".gitconfig",
+            "source" : "git/gitconfig",
             "location" : "~/.gitconfig",
         },
 
         {
-            "source" : ".inputrc",
+            "source" : "inputrc",
             "location" : "~/.inputrc",
         },
 
         {
-            "source" : ".mutt",
+            "source" : "mutt",
             "location" : "~/.mutt",
         },
 
 
         # Tmux
         {
-            "source" : ".tmux",
+            "source" : "tmux",
             "location" : "~/.tmux",
         },
         {
-            "source" : ".tmux/.tmux.conf",
+            "source" : "tmux/tmux.conf",
             "location" : "~/.tmux.conf",
         },
 
         # Vim
         {
-            "source" : ".vim",
+            "source" : "vim",
             "location" : "~/.vim",
         },
         {
-            "source" : ".vim/vimrc",
+            "source" : "vim/vimrc",
             "location" : "~/.vimrc",
         },
         {
-            "source" : '.vim',
+            "source" : 'vim',
             "location" : "~/vimfiles",
         },
 
         # Z-Shell
-        {   "source" : ".zsh",
+        {   "source" : "zsh",
             "location" : "~/.zsh",
         },
         {
-            "source" : ".zsh/.zshrc",
+            "source" : "zsh/zshrc",
             "location" : "~/.zshrc",
         },
 ]

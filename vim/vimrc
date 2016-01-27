@@ -74,7 +74,7 @@ execute 'set backupdir='.s:backupdir
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nowrap
 set linebreak
-set textwidth=0 "TODO for c make tw=78
+set textwidth=78
 if exists('+breakindent')
     set breakindent
 endif

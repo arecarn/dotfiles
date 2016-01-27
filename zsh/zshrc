@@ -28,7 +28,8 @@ if [[ $TERM == "xterm" ]]; then
 fi
 
 n="$HOME/Dropbox/notes/"
-df="$HOME/dotfiles"
+df="$HOME/dotfiles/"
+db="$HOME/Dropbox/"
 
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
@@ -255,7 +256,7 @@ alias etodo="$EDITOR ~/Dropbox/notes/todo.txt"
 
 alias mk="mkdir"
 alias rd="rmdir"
-alias rmr="rm -rI"
+alias rmr="rm -r"
 
 # shortcuts to tar and compress
 alias targz="tar -zcvf"

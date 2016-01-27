@@ -243,16 +243,15 @@ alias py="python"
 alias p="$PAGER"
 
 alias so="source"
-alias soz="source ~/dotfiles/.zsh/.zshrc"
-alias sot="tmux source-file ~/dotfiles/.tmux/.tmux.conf"
+alias sozsh="source ~/dotfiles/.zsh/.zshrc"
+alias sotmux="tmux source-file ~/dotfiles/.tmux/.tmux.conf"
 
 alias e="$EDITOR"
-alias ez="$EDITOR ~/dotfiles/.zsh/.zshrc"
-alias eg="$EDITOR ~/dotfiles/.gitconfig"
-alias egs='$EDITOR $(git status --porcilean | cut -c 4- | fzf -m)'
-alias ev="$EDITOR ~/dotfiles/.vim/vimrc"
-alias et="$EDITOR ~/dotfiles/.tmux/.tmux.conf"
-alias todo="$EDITOR ~/Dropbox/notes/todo.txt"
+alias ezsh="$EDITOR ~/dotfiles/.zsh/.zshrc"
+alias egit="$EDITOR ~/dotfiles/.gitconfig"
+alias evim="$EDITOR ~/dotfiles/.vim/vimrc"
+alias etmux="$EDITOR ~/dotfiles/.tmux/.tmux.conf"
+alias etodo="$EDITOR ~/Dropbox/notes/todo.txt"
 
 alias mk="mkdir"
 alias rd="rmdir"

@@ -24,6 +24,7 @@
     bdu = push origin --delete # Branch Delete Upstream
     bc = checkout -b # Branch Create
     bcu = push origin --set-upstream HEAD # Branch Create Upstream
+    bco = checkout --orphan # Branch Create Orphan (empty branch)
 
     cm = commit
     cmm = commit --message
@@ -88,9 +89,9 @@
     # better LoG with All branches and refs
     lga = !git lg --graph --all
 
-    rm = remote
-    rms = remote show
-    rmso = remote show origin
+    rem = remote
+    rems = remote show
+    remso = remote show origin
 
     # Worktrees were added in v2.6.0
     wta = worktree add

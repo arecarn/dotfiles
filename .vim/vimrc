@@ -56,16 +56,7 @@ let s:undodir = s:vim_path.'/utils_local/undo//'
 execute 'set undodir='.s:undodir
 set undolevels=20000
 set undoreload=20000
-
-
-" let s:swap=s:vim_path.'/utils_local/swap//'
 set noswapfile
-" execute 'set directory='.s:swap
-" ^ Here be magic! Quoth the help: (from godlygeek)
-" For Unix and Win32, if a directory ends in two path separators "//" or "\\",
-" the swap file name will be built from the complete path to the file with all
-" path separators substituted to percent '%' signs.  This will ensure file
-" name uniqueness in the preserve directory.
 set history=10000
 set backup
 " Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
@@ -242,6 +233,7 @@ set modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" set color column based on 'textwidth'
 if has("autocmd")
     augroup colorcolumn
         autocmd!
@@ -259,28 +251,22 @@ set lazyredraw
 set laststatus=2
 set list
 set listchars=trail:·,tab:»·,extends:▶,precedes:◀
-" set cursorline
 
 " Maximize Window on Startup
-if has ("gui_running")
-    if has("autocmd") && s:has_windows
-        augroup windowsgui:
-            autocmd!
-            autocmd GUIEnter * simalt ~x " maximize in windows
-        augroup END
-    else
-    endif
+if has ("gui_running") && has("autocmd") && s:has_windows
+    augroup windowsgui:
+        autocmd!
+        autocmd GUIEnter * simalt ~x " maximize in windows
+    augroup END
 endif
 
 " Highlight TODO, FIXME, NOTE, etc.
-if has("autocmd")
-    if v:version > 701
-        augroup todo
-            autocmd!
-            autocmd Syntax * call matchadd('Debug',  '\v\W\zs<(TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
-            autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
-        augroup END
-    endif
+if has("autocmd") && v:version > 701
+    augroup todo
+        autocmd!
+        autocmd Syntax * call matchadd('Debug',  '\v\W\zs<(TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
+        autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
+    augroup END
 endif
 
 " gui settings {{{2
@@ -353,7 +339,7 @@ nnoremap sl viW<Esc>a<C-x><C-s><C-p>
 map [sl [ssl
 map ]sl ]ssl
 
-" underline current selection with character of choice
+" underline current line with character of choice
 nnoremap <silent> _ :call <SID>under_line()<CR>
 function! s:under_line() abort
     let char = escape(nr2char(getchar()), '\')
@@ -380,9 +366,6 @@ function! s:scratch_toggle() abort
         set buftype+=nofile
     endif
 endfunction
-
-" update diff with a key mapping
-nnoremap du :diffupdate<CR>
 
 " reselect pasted or last changed text
 nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -519,27 +502,7 @@ function! AddToSearch(mode)
     let @@ = save_reg
 endfunction
 
-command!  PreviewTagToggle call PreviewWordToggle()
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
-
-" add numbers to the front or end of a line
-cabbrev numend s/$/\=1-line("'<")+line(".")/c
-cabbrev numfront s/^/\=1-line("'<")+line(".")/c
-
-" Details:
-" s/\d\+/ : Match one or more digits (\d\+) on any line (:%) and substitute (s).
-"            \= : for each match, replace with the result of the following expression:
-" printf("0x%04x", : produce a string using the format "0x%04x", which corresponds to a literal 0x followed by a four digit (or more) hex number, padded with zeros.
-" submatch(0) : The result of the complete match (i.e. the number).
-cabbrev tohex s/\d\+/\=printf("0x%x", submatch(0))
-" find the first occurrence of a hex digit and changes it to decimal
-cabbrev todec s/0x\x\+/\=printf("%d", submatch(0))
-cabbrev toasc s/0x\x\+/\=printf("%c", submatch(0))
-" delete the current character and replace it with it's ASCII Decimal value
-nnoremap <Leader>tad xi<C-r>=printf("%d",char2nr("<C-r>""))<CR><ESC>
-" delete the current character and replace it with it's ASCII Hex value
-nnoremap <Leader>tah xi<C-r>=printf("0x%x",char2nr("<C-r>""))<CR><ESC>
-" noremap <Leader>cs  :s/./\=printf("Ox%x + ",char2nr("submatch(0)"))/gc<CR>
 
 " reverse selection kind of works
 vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
@@ -581,8 +544,8 @@ function! Seq(count, first_line, last_line, cmdInput, bang) abort
 endfunction
 
 command! -nargs=* -range=0 -bang Renumber
-            \ call Renumber(<line1>, <line2>, "<bang>")
-function! Renumber(first_line, last_line, bang) abort
+            \ call <SID>s:renumber(<line1>, <line2>, "<bang>")
+function! s:renumber(first_line, last_line, bang) abort
     let num_expr = '\v\C^.{-}\zs\d+\ze'
     " 0 index if ! is used
     if a:bang != '!'
@@ -591,19 +554,18 @@ function! Renumber(first_line, last_line, bang) abort
         let s:renumber_index = 0
     endif
 
-    execute a:first_line.','.a:last_line.'s#'.num_expr.'#\=s:renumber()#'
+    execute a:first_line.','.a:last_line.'s#'.num_expr.'#\=s:increment()#'
 endfunction
 
-function! s:renumber() abort
+function! s:increment() abort
     let old_renumber_index = s:renumber_index
     let s:renumber_index = s:renumber_index + 1
     return old_renumber_index
 endfunction
 
-function! TSIndent(line)
-    return strlen(matchstr(a:line,'\v^\s+'))
-endfunction
-
+" add numbers to the front or end of a line
+cabbrev numend s/$/\=1-line("'<")+line(".")/c
+cabbrev numfront s/^/\=1-line("'<")+line(".")/c
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -776,7 +738,7 @@ NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'vim-scripts/UnconditionalPaste'
 NeoBundle 'arecarn/go-to-buffer.vim'
-NeoBundle 'arecarn/auto-file-loader.vim'
+NeoBundle 'arecarn/auto-autoread.vim'
 NeoBundle 'thinca/vim-qfreplace'
 NeoBundle 'tpope/vim-eunuch'
 NeoBundle 'arecarn/spell-utils.vim'

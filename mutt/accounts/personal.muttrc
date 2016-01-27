@@ -1,7 +1,9 @@
+set from = "arecarn@gmail.com"
+set sendmail = "usr/bin/msmtp -a personal"
+
 set imap_user = "arecarn@gmail.com"
 set hostname = gmail.com
 set smtp_url = "smtp://arecarn@smtp.gmail.com:587/"
-set from = "arecarn@gmail.com"
 set realname = "Ryan Carney"
 set folder = "imaps://imap.gmail.com:993"
 

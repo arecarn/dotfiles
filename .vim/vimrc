@@ -1388,8 +1388,18 @@ endif "}}}2
 if neobundle#is_installed('todo.txt-vim') "{{{2
     augroup TODO_TXT
         autocmd!
-        autocmd BufNewFile,BufRead todo* set filetype=todo.txt
+        autocmd BufNewFile,BufRead *-todo.txt,*-done.txt set filetype=todo
+        autocmd FileType todo call s:todo_txt_settings()
     augroup END
+
+    function! s:todo_txt_settings() abort
+        try
+            execute "iunmap <buffer> date\<TAB>"
+            iunmap <buffer> due:
+        catch
+        endtry
+    endfunction
+
 endif "}}}2
 
 if neobundle#is_installed('obvious-resize') "{{{2

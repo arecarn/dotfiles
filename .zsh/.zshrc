@@ -277,7 +277,7 @@ alias ll="l -lh"
 alias ld="l -d *(/D)"
 alias lld="ld -lh *(/D)"
 
-alias t="pwd; tree -a"
+alias t="pwd; tree"
 alias tt="t -ph"
 alias td="t -d"
 alias ttd="tt -d"

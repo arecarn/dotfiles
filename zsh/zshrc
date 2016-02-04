@@ -10,7 +10,7 @@ export LANG='en_US.UTF-8'
 export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
 # configure path
-export PATH="$PATH:$HOME/dotfiles/tools/scripts"
+export PATH="$PATH:$HOME/dotfiles/bin"
 if [[ "$OSTYPE" == "linux"* ]]; then
     export PATH="$PATH:/usr/bin/X11"
     export PATH="$PATH:/usr/X11R6/bin"

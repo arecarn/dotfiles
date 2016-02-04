@@ -24,6 +24,7 @@
     bdu = push origin --delete # Branch Delete Upstream
     bc = checkout -b # Branch Create
     bcu = push origin --set-upstream HEAD # Branch Create Upstream
+    bsu = branch --set-upstream-to # Branch Set Upstream
     bco = checkout --orphan # Branch Create Orphan (empty branch)
 
     cm = commit
@@ -41,7 +42,7 @@
 
     st = stash
     sts = stash show --patch --stat
-    stp = stash pop
+    stp = stash pop --index
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
     stl = !git stash-list-pretty

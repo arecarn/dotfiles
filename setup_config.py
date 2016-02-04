@@ -9,7 +9,7 @@ DOTFILES_DIRECTORY = "~/dotfiles"
 # TODO if source isn't specified use name by default?
 DOTFILES = [
         {
-            "source" : "ctags",
+            "source" : "ctags/ctags",
             "location" : "~/.ctags",
         },
 
@@ -19,7 +19,7 @@ DOTFILES = [
         },
 
         {
-            "source" : "inputrc",
+            "source" : "readline/inputrc",
             "location" : "~/.inputrc",
         },
 

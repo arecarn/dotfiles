@@ -1398,6 +1398,9 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
             iunmap <buffer> due:
         catch
         endtry
+
+        " update time
+        nnoremap <localleader>ut :s/\d\d\d\d-\d\d\-\d\d/\=strftime("%Y-%m-%d")/<CR>
     endfunction
 
 endif "}}}2

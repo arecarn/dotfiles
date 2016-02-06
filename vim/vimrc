@@ -101,6 +101,7 @@ set autoindent
 set formatoptions+=n "recognize lists
 set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
 set formatoptions+=j "remove comments leader when joining
+set formatoptions-=t "don't auto wrap based on textwidth
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FOLDING                                                                  {{{

@@ -45,7 +45,6 @@ source $zplug_file > /dev/null
 zplug "plugins/command-not-found", from:oh-my-zsh
 zplug "plugins/tmux", from:oh-my-zsh
 zplug "plugins/ssh-agent", from:oh-my-zsh
-zplug "themes/bureau", from:oh-my-zsh
 
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-syntax-highlighting"
@@ -372,6 +371,58 @@ function fex()
     local cmd='ls -t | '$input
     eval $cmd
 }
+
+###########################################################################}}}
+# PROMPT                                                                   {{{
+##############################################################################
+setopt prompt_subst
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' stagedstr 'M'
+zstyle ':vcs_info:*' unstagedstr 'M'
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' actionformats '[%F{green}%b%F{yellow}|%F{red}%a]%f'
+zstyle ':vcs_info:*' formats '%F{green}%b%\ %F{green}%c%F{yellow}%u%f'
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+zstyle ':vcs_info:*' enable git
+
++vi-git-untracked() {
+if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+    [[ $(git ls-files --other --directory --exclude-standard | sed q | wc -l | tr -d ' ') == 1 ]] ; then
+    hook_com[unstaged]+='%F{red}??%f'
+fi
+}
+
+terminfo_down_sc=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
+
+function insert-mode () { echo "-- INSERT --" }
+function normal-mode () { echo "            " }
+function visual-mode () { echo "-- VISUAL --" } #this doesn't seem to work :(
+
+precmd () {
+    vcs_info
+    print -rP "
+%n/%F{blue}%m%F{default}/${vcs_info_msg_0_}"
+    PROMPT="%{$terminfo_down_sc$(insert-mode)$terminfo[rc]%}%~ %# "
+    RPROMPT="[%D{%Y-%m-%d %H:%M:%S}]"
+}
+
+function set-prompt () {
+    case ${KEYMAP} in
+      (vicmd)      VI_MODE="$(normal-mode)" ;;
+      (viins|main) VI_MODE="$(insert-mode)" ;;
+      (visual)     VI_MODE="$(visual-mode)" ;;
+    esac
+    PROMPT="%{$terminfo_down_sc$VI_MODE$terminfo[rc]%}%~ %# "
+}
+
+function zle-line-init zle-keymap-select {
+    set-prompt
+    zle reset-prompt
+}
+zle -N zle-line-init
+zle -N zle-keymap-select
+
+preexec () { print -rn -- $terminfo[el]; }
 
 ###########################################################################}}}
 # MISC                                                                     {{{

@@ -60,8 +60,6 @@ fi
 
 # Then, source plugins and add commands to $PATH
 zplug load --verbose > /dev/null
-# let zplug manage itself
-zplug update --self > /dev/null
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 

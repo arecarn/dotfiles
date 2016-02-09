@@ -192,6 +192,9 @@ bindkey -M viins '\eOF'  end-of-line       # End
 bindkey -M viins '\e[2~' overwrite-mode    # Insert
 bindkey -M viins '^F'    forward-character
 bindkey -M viins '^B'    back-character # }}}
+bindkey -M viins 'g~'    vi-oper-swap-case
+bindkey -M viins 'gg'    beginning-of-buffer-or-history
+bindkey -M viins  G      end-of-buffer-or-history
 
 # Vim Mode (Cmd Mode) {{{2
 bindkey -M vicmd '^A'    beginning-of-line

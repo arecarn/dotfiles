@@ -1,0 +1,16 @@
+#!/bin/sh
+
+USAGE="change-commit VAR OLD_VALUE NEW_VALUE"
+
+if [[ "$1" == '' || "$2" == '' || "$3" == '' ]]; then
+    echo $USAGE
+    exit 1
+fi
+
+VAR=$1
+OLD_VALUE=$2
+NEW_VALUE=$3
+
+shift 3
+
+git filter-branch --env-filter "if [[ $`echo $VAR` = \"$OLD_VALUE\" ]]; then export $VAR=\"$NEW_VALUE\"; fi" "$@";

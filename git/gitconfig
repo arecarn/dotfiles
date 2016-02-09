@@ -34,7 +34,7 @@
 
     # execute an arbitrary command in the top level directory e.g.
     # $ git exec pwd
-    exec = "!~/dotfiles/git/bin/execute_in_git_dir.sh"
+    exec = !git execute_in_git_dir.sh
 
     f = fetch
     co = checkout
@@ -47,8 +47,8 @@
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
     stl = !git stash-list-pretty
 
-    s =  "!~/dotfiles/git/bin/status_short.sh"
-    sl = "!~/dotfiles/git/bin/status_long.sh"
+    s = status-short
+    sl = status-long
 
     a = add
     # Add Staged files that need to be updated: files that need to be updated
@@ -123,6 +123,7 @@
     # check if a file  exist in the repository?
     exists = ls-files --error-unmatch
 
+    chcm = !git change-commits
 [push]
     # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
     # only pushes current branch to the one that git pull would pull from only

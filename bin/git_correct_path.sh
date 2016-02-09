@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # This script ensures that the relative file path is used for aliases that
 # include a "!" at the start, otherwise they are run at the root of the
 # repository.

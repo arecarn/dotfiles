@@ -52,4 +52,4 @@ source ~/.mutt/accounts/personal.muttrc
 ##############################################################################
 # Color Scheme
 ##############################################################################
-# source ~/.mutt/colors/mutt-colors-solarized/mutt-colors-solarized-dark-256.muttrc
+# source ~/.mutt/colors/solarized/mutt-colors-solarized-dark-256.muttrc

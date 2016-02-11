@@ -381,17 +381,70 @@ autoload -Uz vcs_info
 zstyle ':vcs_info:*' stagedstr 'M'
 zstyle ':vcs_info:*' unstagedstr 'M'
 zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:*' actionformats '[%F{green}%b%F{yellow}|%F{red}%a]%f'
-zstyle ':vcs_info:*' formats '%F{green}%b%\ %F{green}%c%F{yellow}%u%f'
-zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+zstyle ':vcs_info:*' actionformats '[%F{green}%b%m%F{yellow}|%F{red}%a]%f'
+zstyle ':vcs_info:*' formats '%F{green}%b%m%\ %F{green}%c%F{yellow}%u%f'
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-aheadbehind git-stash
 zstyle ':vcs_info:*' enable git
 
-+vi-git-untracked() {
-if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-    [[ $(git ls-files --other --directory --exclude-standard | sed q | wc -l | tr -d ' ') == 1 ]] ; then
-    hook_com[unstaged]+='%F{red}??%f'
-fi
-}
++vi-git-untracked() { # {{{2
+    local is_inside_work_tree="$(git rev-parse --is-inside-work-tree 2> /dev/null)"
+    local untracked_files="$(git ls-files --other --directory --exclude-standard)"
+
+    if [[ $is_inside_work_tree = 'true' ]] && \
+    [[ $(echo "$untracked_files" | sed q | wc -l | tr -d ' ') = 1 ]] ; then
+        hook_com[unstaged]+='%F{red}??%f'
+    fi
+} # }}}2
+
+### git: Show +N/-N when your local branch is ahead-of or behind remote HEAD.
+# Make sure you have added misc to your 'formats':  %m
+function +vi-git-aheadbehind() { # {{{2
+    local ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | tr -d ' ')
+    local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l | tr -d ' ')
+    local -a gitstatus
+
+    (( $ahead )) && gitstatus+=(" %B%F{blue}+${ahead}%f%b")
+    (( $behind )) && gitstatus+=("%B%F{red}-${behind}%f%b")
+    hook_com[misc]+=${(j::)gitstatus}
+} # }}}2
+
+# Show count of stashed changes
+function +vi-git-stash() { # {{{2
+
+    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
+        local stashes=$(git stash list 2>/dev/null | wc -l | xargs)
+        hook_com[misc]+=" #${stashes}"
+    fi
+} #}}}
+
+### git: Show +N/-N when your local branch is ahead-of or behind remote HEAD.
+# Make sure you have added misc to your 'formats':  %m
+function +vi-git-aheadbehind() { # {{{2
+    local ahead behind
+    local -a gitstatus
+
+    # for git prior to 1.7
+    # ahead=$(git rev-list origin/${hook_com[branch]}..HEAD | wc -l)
+    ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | tr -d ' ')
+    (( $ahead )) && gitstatus+=( "%B%F{blue}+${ahead}%f%b" )
+
+    # for git prior to 1.7
+    # behind=$(git rev-list HEAD..origin/${hook_com[branch]} | wc -l)
+    behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l | tr -d ' ')
+    (( $behind )) && gitstatus+=( "%B%F{red}-${behind}%f%b" )
+
+    hook_com[misc]+=${(j::)gitstatus}
+} # }}}2
+
+# Show count of stashed changes
+function +vi-git-stash() { # {{{2
+    local -a stashes
+
+    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
+        stashes=$(git stash list 2>/dev/null | wc -l)
+        hook_com[misc]+=" (${stashes} stashed)"
+    fi
+} # }}}2
 
 terminfo_down_sc=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
 
@@ -399,27 +452,28 @@ function insert-mode () { echo "-- INSERT --" }
 function normal-mode () { echo "            " }
 function visual-mode () { echo "-- VISUAL --" } #this doesn't seem to work :(
 
-precmd () {
-    vcs_info
-    print -rP "
-%n/%F{blue}%m%F{default}/${vcs_info_msg_0_}"
-    PROMPT="%{$terminfo_down_sc$(insert-mode)$terminfo[rc]%}%~ %# "
-    RPROMPT="[%D{%Y-%m-%d %H:%M:%S}]"
-}
-
-function set-prompt () {
+function set-prompt () { # {{{2
     case ${KEYMAP} in
       (vicmd)      VI_MODE="$(normal-mode)" ;;
       (viins|main) VI_MODE="$(insert-mode)" ;;
       (visual)     VI_MODE="$(visual-mode)" ;;
     esac
     PROMPT="%{$terminfo_down_sc$VI_MODE$terminfo[rc]%}%~ %# "
-}
+} # }}}2
 
-function zle-line-init zle-keymap-select {
+precmd () { # {{{2
+    vcs_info
+    print -rP "
+~%n/@%F{blue}%m%F{default}/±${vcs_info_msg_0_}"
+    PROMPT="%{$terminfo_down_sc$(insert-mode)$terminfo[rc]%}%~ %# "
+    RPROMPT="[%D{%Y-%m-%d %H:%M:%S}]"
+} # }}}2
+
+
+function zle-line-init zle-keymap-select { # {{{2
     set-prompt
     zle reset-prompt
-}
+} # }}}2
 zle -N zle-line-init
 zle -N zle-keymap-select
 

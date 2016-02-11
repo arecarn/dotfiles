@@ -353,10 +353,16 @@ inoremap <C-F> <ESC>gw{zea
 
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
 
+function! s:in(group, item) abort
+    if type(a:group) = type('')
+    let group = split(a:group, '\zs')
+    return index(group, a:item) <= 0
+endfunction
+
 " think of "co" as "change option"
 nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>
 nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
-nnoremap cotw :<C-U>set textwidth=
+nnoremap cot :<C-U>set textwidth=
 nnoremap cocl :<C-U>setlocal conceallevel=
 nnoremap cosw :<C-U>set shiftwidth=
 nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
@@ -367,6 +373,21 @@ function! s:scratch_toggle() abort
         set buftype+=nofile
     endif
 endfunction
+function! s:format_options_toggle(options) abort
+    let options = split(a:options, '\zs')
+
+    for option in options
+        if s:in(formatoptions, option)
+            let add_or_subtract = "+="
+        else
+            let add_or_subtract = "-="
+        endif
+        execute "set formatoptions" . add_or_subtract . option
+    endfor
+    set formatoptions?
+endfunction
+nnoremap cotw :<C-U>call <SID>format_options_toggle('t')<CR>
+nnoremap copw :<C-U>call <SID>format_options_toggle('aw')<CR>
 
 " reselect pasted or last changed text
 nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'

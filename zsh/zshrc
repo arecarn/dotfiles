@@ -451,15 +451,13 @@ function +vi-git-stash() { # {{{2
 
 terminfo_down_sc=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
 
-function insert-mode () { echo "-- INSERT --" }
-function normal-mode () { echo "            " }
-function visual-mode () { echo "-- VISUAL --" } #this doesn't seem to work :(
+function insert-mode() { echo "-- INSERT --" }
+function other-mode()  { echo "            " }
 
 function set-prompt () { # {{{2
     case ${KEYMAP} in
-      (vicmd)      VI_MODE="$(normal-mode)" ;;
       (viins|main) VI_MODE="$(insert-mode)" ;;
-      (visual)     VI_MODE="$(visual-mode)" ;;
+      (*)          VI_MODE="$(other-mode)" ;;
     esac
     PROMPT="%{$terminfo_down_sc$VI_MODE$terminfo[rc]%}%~ %# "
 } # }}}2
@@ -472,13 +470,13 @@ precmd () { # {{{2
     RPROMPT="[%D{%Y-%m-%d %H:%M:%S}]"
 } # }}}2
 
-
 function zle-line-init zle-keymap-select { # {{{2
     set-prompt
     zle reset-prompt
-} # }}}2
+}
 zle -N zle-line-init
 zle -N zle-keymap-select
+# }}}2
 
 preexec () { print -rn -- $terminfo[el]; }
 

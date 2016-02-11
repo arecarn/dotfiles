@@ -191,10 +191,8 @@ bindkey -M viins '\eOH'  beginning-of-line # Home
 bindkey -M viins '\eOF'  end-of-line       # End
 bindkey -M viins '\e[2~' overwrite-mode    # Insert
 bindkey -M viins '^F'    forward-character
-bindkey -M viins '^B'    back-character # }}}
-bindkey -M viins 'g~'    vi-oper-swap-case
-bindkey -M viins 'gg'    beginning-of-buffer-or-history
-bindkey -M viins  G      end-of-buffer-or-history
+bindkey -M viins '^B'    back-character
+# }}}
 
 # Vim Mode (Cmd Mode) {{{2
 bindkey -M vicmd '^A'    beginning-of-line
@@ -211,7 +209,11 @@ bindkey -M vicmd '^_'    undo
 bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
 bindkey -M vicmd '^F'    forward-character
-bindkey -M vicmd '^B'    back-character #}}}2
+bindkey -M vicmd '^B'    back-character
+bindkey -M viins g~      vi-oper-swap-case
+bindkey -M vicmd gg      beginning-of-buffer-or-history
+bindkey -M vicmd G       end-of-buffer-or-history
+# }}}2
 
 # Menu Selection {{{2
 zle -C complete-menu menu-select _generic

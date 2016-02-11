@@ -26,6 +26,7 @@ homebrew_packages:
   - {name: 'sdl_mixer'}
   - {name: 'sdl_ttf'}
   - {name: 'portmidi'}
+  # - {name: 'neovim/neovim/neovim'
 
 homebrew_cask_packages:
   - appcleaner
@@ -38,3 +39,4 @@ homebrew_cask_packages:
   - transmission
   - vlc
   - xquartz
+  # - licecap

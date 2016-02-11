@@ -566,7 +566,7 @@ function! Seq(count, first_line, last_line, cmdInput, bang) abort
 endfunction
 
 command! -nargs=* -range=0 -bang Renumber
-            \ call <SID>s:renumber(<line1>, <line2>, "<bang>")
+            \ call <SID>renumber(<line1>, <line2>, "<bang>")
 function! s:renumber(first_line, last_line, bang) abort
     let num_expr = '\v\C^.{-}\zs\d+\ze'
     " 0 index if ! is used

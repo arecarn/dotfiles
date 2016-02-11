@@ -18,3 +18,4 @@ zypper_specifc_packages:
   - http://download.opensuse.org/repositories/utilities/openSUSE_13.1/x86_64/tmux-2.1-2.1.x86_64.rpm
   - http://download.opensuse.org/repositories/editors/openSUSE_13.1/x86_64/vim-7.4.1087-307.1.x86_64.rpm
   - http://download.opensuse.org/repositories/home:/marec2000/openSUSE_13.1/x86_64/eclipse-4.5.1-7.1.x86_64.rpm
+  - http://download.opensuse.org/repositories/shells/openSUSE_13.1/shells.repo

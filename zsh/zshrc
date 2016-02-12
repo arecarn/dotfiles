@@ -384,8 +384,8 @@ autoload -Uz vcs_info
 zstyle ':vcs_info:*' stagedstr 'M'
 zstyle ':vcs_info:*' unstagedstr 'M'
 zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:*' actionformats '[%F{green}%b%m%F{yellow}|%F{red}%a]%f'
-zstyle ':vcs_info:*' formats '%F{green}%b%m%\ %F{green}%c%F{yellow}%u%f'
+zstyle ':vcs_info:*' actionformats '/±%F{green}%b%f|%F{red}%a %m%f'
+zstyle ':vcs_info:*' formats       '/±%F{green}%b%f%m%f%\ %F{green}%c%f%F{red}%u%f'
 zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-aheadbehind git-stash
 zstyle ':vcs_info:*' enable git
 
@@ -414,7 +414,7 @@ zstyle ':vcs_info:*' enable git
 +vi-git-stash() { # {{{2
     if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
         local stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
-        hook_com[misc]+=" #${stashes}"
+        hook_com[misc]+=" %F{yellow}#${stashes}%f"
     fi
 } # }}}2
 
@@ -434,7 +434,7 @@ set-prompt () { # {{{2
 precmd () { # {{{2
     vcs_info
     print -rP "
-~%n/@%F{blue}%m%F{default}/±${vcs_info_msg_0_}"
+~%n/@%F{blue}%m%F{default}${vcs_info_msg_0_}"
     PROMPT="%{$terminfo_down_sc$(insert-mode)$terminfo[rc]%}%~ %# "
     RPROMPT="[%D{%Y-%m-%d %H:%M:%S}]"
 } # }}}2

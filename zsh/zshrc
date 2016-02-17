@@ -391,7 +391,7 @@ zstyle ':vcs_info:*' enable git
 
 +vi-git-untracked() { # {{{2
     local is_inside_work_tree=$(git rev-parse --is-inside-work-tree 2> /dev/null)
-    local number_of_untracked_files=$(git ls-files --other --directory --exclude-standard | wc -l | tr -d ' ')
+    local number_of_untracked_files=$(git ls-files --other --directory --exclude-standard --no-empty-directory | wc -l | tr -d ' ')
 
     if [[ $is_inside_work_tree = 'true' ]] && [[ $number_of_untracked_files != 0 ]]; then
         hook_com[unstaged]+='%F{red}??%f'

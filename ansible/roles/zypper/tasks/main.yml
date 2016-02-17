@@ -1,3 +1,11 @@
+- name: Zypper Add Additional Repositories
+  zypper_repository:
+    name: "{{item.name}}"
+    refresh: yes
+    repo: "{{item.repo}}"
+    state: present
+  with_items: zypper_repositories
+
 - name: Zypper Install General Packages
   zypper: name={{item}} state=latest disable_recommends=no
   with_items: zypper_packages

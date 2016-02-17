@@ -1,6 +1,12 @@
 ---
 become: true
 
+zypper_repositories:
+  - {
+      name : 'packman',
+      repo : 'http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_13.1/'
+    }
+
 zypper_packages:
   - dropbox
   - picocom
@@ -11,6 +17,8 @@ zypper_packages:
   - python-pip
   - dirdiff
   - htop
+  - vlc
+  - vlc-codecs
 
 zypper_specifc_packages:
   - http://download.opensuse.org/repositories/systemsmanagement/openSUSE_13.1/noarch/ansible-1.9.4-42.2.noarch.rpm

@@ -707,6 +707,7 @@ NeoBundle 'confluencewiki.vim'
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'dbeniamine/todo.txt-vim'
 NeoBundle 'vim-scripts/scons.vim'
+NeoBundle 'hynek/vim-python-pep8-indent'
 
 
 " Colors

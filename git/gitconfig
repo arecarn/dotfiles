@@ -62,9 +62,14 @@
     amd = !git add --update :/
 
     rs = reset
-    rsh = reset HEAD
+    rsh = reset --hard
+    rsm = reset --mixed
+    rss = reset --soft
     # ReSet to Upstream tracking branch
     rsu = reset @{u}
+    rsuh = reset --hard @{u}
+    rsum = reset --mixed @{u}
+    rsus = reset --soft @{u}
 
     rb = rebase
     rbi = rebase --interactive --autosquash

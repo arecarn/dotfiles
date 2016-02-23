@@ -694,6 +694,7 @@ NeoBundle 'scrooloose/syntastic'
 
 
 " Vim script Development
+NeoBundle 'vim-jp/vital.vim'
 NeoBundle 'tpope/vim-scriptease'
 NeoBundle 'junegunn/vader.vim'
 NeoBundle 'Decho'
@@ -1415,7 +1416,36 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         autocmd FileType todo call s:todo_txt_settings()
     augroup END
 
-    function! s:todo_txt_settings() abort
+    function! s:get_context(lnum) abort "{{{3
+         return matchstr(getline(a:lnum), '@\w\+')
+    endfunction "}}}3
+
+    function! Todo_fold_text(foldchar) "{{{3
+        let line = s:get_context(v:foldstart)
+        let lines_count = v:foldend - v:foldstart + 1
+        let lines_count_text = '| ' . printf("%10s", lines_count . ' todos') . ' |'
+        let foldtextstart = strpart(line, 0, (winwidth(0)*2)/3)
+        let foldtextend = lines_count_text . repeat(a:foldchar, 8)
+        let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+        return foldtextstart . repeat(a:foldchar, winwidth(0)-foldtextlength) . foldtextend
+    endfunction "}}}3
+
+    function! Todo_fold(lnum) "{{{3
+        let this_context = s:get_context(a:lnum)
+        let next_context = s:get_context(a:lnum - 1)
+
+        let fold_level = '0'
+
+        if this_context ==# next_context
+            let fold_level = '1'
+        else
+            let fold_level = '>1'
+        endif
+
+        return fold_level
+    endfunction "}}}3
+
+    function! s:todo_txt_settings() abort "{{{3
         try
             execute "iunmap <buffer> date\<TAB>"
             iunmap <buffer> due:
@@ -1424,7 +1454,11 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
 
         " update time
         nnoremap <localleader>ud :s/\d\d\d\d-\d\d\-\d\d/\=strftime("%Y-%m-%d")/<CR>
-    endfunction
+
+        setlocal foldmethod=expr
+        setlocal foldexpr=Todo_fold(v:lnum)
+        setlocal foldtext=Todo_fold_text('_')
+    endfunction "}}}3
 
 endif "}}}2
 

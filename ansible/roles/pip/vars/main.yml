@@ -3,5 +3,5 @@ pip_modules:
   - gitpython
 
 pip_modules_osx:
-  - 'hg+http://bitbucket.org/pygame/pygame#egg=pygame'
+  # - 'hg+http://bitbucket.org/pygame/pygame#egg=pygame'
 

@@ -29,7 +29,7 @@ fi
 
 n="$HOME/Dropbox/notes/"
 df="$HOME/dotfiles/"
-db="$HOME/Dropbox/"
+f="$HOME/Dropbox/"
 
 ###########################################################################}}}
 # PLUGINS                                                                  {{{

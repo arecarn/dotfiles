@@ -1458,8 +1458,17 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         setlocal foldmethod=expr
         setlocal foldexpr=Todo_fold(v:lnum)
         setlocal foldtext=Todo_fold_text('_')
-    endfunction "}}}3
+        setlocal iskeyword+=+,-
+        setlocal iskeyword+=@-@ " add literal @
 
+        if neobundle#is_installed('neocomplete') "{{{2
+            " use iskeyword characters in neocompletion
+            let keyword_patterns = {}
+            let keyword_patterns.todo = '\k\+'
+            call neocomplete#custom#source('buffer',
+                        \ 'keyword_patterns', keyword_patterns)
+        endif
+    endfunction "}}}3
 endif "}}}2
 
 if neobundle#is_installed('obvious-resize') "{{{2

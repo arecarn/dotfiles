@@ -30,6 +30,7 @@
     cm = commit
     cmm = commit --message
     cmfu = commit --fixup
+    cmsq = commit --squash
     cma = commit --amend
 
     # execute an arbitrary command in the top level directory e.g.

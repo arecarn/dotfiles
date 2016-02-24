@@ -6,6 +6,10 @@ set PATH=%PATH%;%HOME%dotfiles\bin
 
 :: ALIASES
 doskey g=git $*
+doskey cd=cd /d $*
+doskey searchf=dir /S /P $*
+doskey searchd=dir /S /P /A:D $*
+
 
 :: run this last
 "C:\Program Files\clink\0.4.7\clink.bat" inject --autorun --profile ~\clink

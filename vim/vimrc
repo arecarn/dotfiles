@@ -353,8 +353,9 @@ inoremap <C-F> <ESC>gw{zea
 
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
 
+" TODO add to util set
 function! s:in(group, item) abort
-    if type(a:group) = type('')
+    if type(a:group) == type('')
     let group = split(a:group, '\zs')
     return index(group, a:item) <= 0
 endfunction

@@ -1,16 +1,19 @@
 #!/bin/sh
 
-USAGE="author-rewrite [-f] OLD_EMAIL CORRECT_EMAIL CORRECT_NAME"
+print_usage() {
+    echo "author-rewrite [-f] OLD_EMAIL CORRECT_EMAIL CORRECT_NAME"
+}
 
 force=''
-if [ "$1" == '-f' ]; then
+
+if [ "$1" = '-f' ]; then
     force=$1
     shift
 fi
 
-if [ "$1" == '' || "$2" == '' || "$3" == '' ]; then
-    echo $USAGE
-    exit 1
+if [ "$1" = '' ] || [ "$2" = '' ] || [ "$3" = '' ]; then
+    print_usage
+    exit 128
 fi
 
 OLD_EMAIL=$1

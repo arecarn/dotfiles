@@ -797,7 +797,7 @@ NeoBundle 'arecarn/binascii.vim'
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'ludovicchabant/vim-gutentags'
 NeoBundle 'roman/golden-ratio'
-NeoBundle 'arecarn/templates'
+NeoBundleFetch 'arecarn/template.vim'
 call neobundle#end()
 NeoBundleCheck
 filetype plugin indent on
@@ -1459,7 +1459,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         setlocal foldmethod=expr
         setlocal foldexpr=Todo_fold(v:lnum)
         setlocal foldtext=Todo_fold_text('_')
-        setlocal iskeyword+=+,-
+        setlocal iskeyword+=+,-,.
         setlocal iskeyword+=@-@ " add literal @
 
         if neobundle#is_installed('neocomplete') "{{{2

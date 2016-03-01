@@ -7,26 +7,28 @@ homebrew_taps:
 homebrew_packages:
   - {name: 'ack'}
   - {name: 'ag'}
+  - {name: 'coreutils'}
   - {name: 'curl'}
   - {name: 'git'}
+  - {name: 'hg'}
   - {name: 'htop'}
+  - {name: 'moreutils'}
+  - {name: 'neovim/neovim/neovim'}
   - {name: 'python'}
   - {name: 'python3'}
+  - {name: 'reattach-to-user-namespace'}
   - {name: 'tmux'}
   - {name: 'tree'}
   - {name: 'vim', options: 'with-lua'}
   - {name: 'wget'}
   - {name: 'zsh'}
-  - {name: 'reattach-to-user-namespace'}
-  - {name: 'coreutils'}
-  - {name: 'moreutils'}
-  - {name: 'hg'}
+
+    #for pygame
+  - {name: 'portmidi'}
   - {name: 'sdl'}
   - {name: 'sdl_image'}
   - {name: 'sdl_mixer'}
   - {name: 'sdl_ttf'}
-  - {name: 'portmidi'}
-  # - {name: 'neovim/neovim/neovim'
 
 homebrew_cask_packages:
   - appcleaner
@@ -35,8 +37,9 @@ homebrew_cask_packages:
   - firefox
   - google-chrome
   - iterm2
+  - licecap
+  - skype
   - spectacle
   - transmission
   - vlc
   - xquartz
-  # - licecap

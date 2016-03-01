@@ -18,7 +18,7 @@
     mt = mergetool
 
     b = branch
-    ba = branch --all --verbose # Branch All
+    bl = branch --all --verbose # Branch List
     bd = branch -d # Branch Delete
     bD = branch -D # Branch Delete
     bdu = push origin --delete # Branch Delete Upstream
@@ -96,9 +96,11 @@
     # better LoG with All branches and refs
     lga = !git lg --graph --all
 
-    rem = remote
-    rems = remote show
-    remso = remote show origin
+    rmt = remote
+    rmtrm = remote rm
+    rmtmv = remote rename
+    rmtl = remote -v
+    rmts = remote show
 
     # Worktrees were added in v2.6.0
     wta = worktree add
@@ -119,10 +121,10 @@
 
     # better CLONe repo and its submodules and make sure they are
     # initialized/updated
-    clo = "!f() { git clone --recursive \"$@\" && git smu; }; f"
+    cl = "!f() { git clone --recursive \"$@\" && git smu; }; f"
     # better PULl only if a fast forward is possible, then  make sure
     # submodules are updated
-    pul = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
+    pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
 
     cln = clean --force --interactive -d
 

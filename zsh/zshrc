@@ -19,7 +19,8 @@ if [[ "$OSTYPE" == "linux"* ]]; then
     export PATH="$PATH:/usr/lib/qt3/bin"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     #for homebrew
-    export MANPATH="/usr/local/man"
+    export MANPATH="$MANPATH:/usr/local/man"
+    export MANPATH="$MANPATH:/opt/homebrew/bin"
     export PATH="/usr/local/bin:$PATH"
 fi
 
@@ -30,6 +31,8 @@ fi
 n="$HOME/Dropbox/notes/"
 df="$HOME/dotfiles/"
 f="$HOME/Dropbox/"
+
+autoload -Uz compinit  && compinit -d ~/.zcompdump
 
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
@@ -77,9 +80,6 @@ SAVEHIST=10000
 ##############################################################################
 # Completion
 
-# gives you more extensive tab completion
-autoload -U compinit
-compinit
 
 unsetopt menu_complete # unset as to not to collide with auto_menu
 setopt auto_menu # use menu completion after the second consecutive request for completion

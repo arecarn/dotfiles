@@ -10,9 +10,9 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 let s:has_windows = has("win16") || has("win32") || has("win64")
 
 if s:has_windows
-    let s:vim_path = $HOME."/vimfiles"
+    let s:vim_path = $HOME . "/vimfiles"
 else
-    let s:vim_path = $HOME."/.vim"
+    let s:vim_path = $HOME . "/.vim"
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -31,13 +31,13 @@ set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn
 set path=
 set path+=.  " To search relative to the directory of the current file
 set path+=,, " To search in the current directory
-set path+=** "relative to the current directory search recursively
+set path+=** " Relative to the current directory search recursively
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " CURSOR SETTINGS                                                          {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set scrolloff=6 " Keep lines (top/bottom) for scope
-set sidescrolloff=6 " keep lines (side/side) for scope
+set sidescrolloff=6 " Keep lines (side/side) for scope
 set sidescroll=3
 
 " In many terminal emulators the mouse works just fine, thus enable it.
@@ -52,8 +52,8 @@ set ttymouse=xterm2
 " UNDO & SWAP                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set undofile
-let s:undodir = s:vim_path.'/utils_local/undo//'
-execute 'set undodir='.s:undodir
+let s:undodir = s:vim_path . '/utils_local/undo//'
+execute 'set undodir=' . s:undodir
 set undolevels=20000
 set undoreload=20000
 set noswapfile
@@ -66,8 +66,8 @@ execute "set backupext=" . backupext
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:backupdir = s:vim_path.'/utils_local/backup//'
-execute 'set backupdir='.s:backupdir
+let s:backupdir = s:vim_path . '/utils_local/backup//'
+execute 'set backupdir=' . s:backupdir
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                            {{{
@@ -84,8 +84,8 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set spell
 set spelllang=en_us
-let &spellfile=s:vim_path.'/utils/spell/spellfile.add'
-let &thesaurus=s:vim_path.'/utils/thesaurus/thesaurus.txt'
+let &spellfile = s:vim_path . '/utils/spell/spellfile.add'
+let &thesaurus = s:vim_path . '/utils/thesaurus/thesaurus.txt'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                         {{{
@@ -97,7 +97,7 @@ set softtabstop=4
 set smarttab
 
 set autoindent
-"these are buffer local let make them everywhere
+" these are buffer local let make them everywhere
 set formatoptions+=n "recognize lists
 set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
 set formatoptions+=j "remove comments leader when joining
@@ -127,7 +127,7 @@ if has("autocmd")
 
     augroup QuickFix
         autocmd!
-        "opens quick fix window on the bottom of all screens
+        " opens quick fix window on the bottom of all screens
         autocmd FileType qf wincmd J
 
         " Automatically open, but do not go to (if there are errors) the
@@ -160,7 +160,7 @@ if has("autocmd")
         augroup TEX
             autocmd!
             autocmd BufEnter *.tex setf tex
-            "autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
+            " autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
             autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
             autocmd BufEnter *.tex setlocal concealcursor=
         augroup END
@@ -265,16 +265,16 @@ endif
 
 " gui settings {{{2
 if has ("gui_running")
-    "Make GVim more like Terminal Vim
+    " Make GVim more like Terminal Vim
     set guioptions-=T "remove toolbar
     set guioptions-=r "remove right-hand scroll bar
     set guioptions-=l "remove right-hand scroll bar
     set guioptions=c "makes dialogs boxes appear like they do in console vim
 
-    "Set Font
+    " Set Font
     if s:has_windows
         set guifont=DejaVu_Sans_Mono_For_Powerline:h10:cANSI
-        "set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
+        " set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
     elseif has('mac')
         set guifont=DejaVu\ Sans\ Mono\ For\ Powerline:h11
         " set guifont=Monaco:h12
@@ -323,9 +323,9 @@ nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
 nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
 
-"go to the next number
+" go to the next number
 nnoremap <silent> g<C-a> /\d\+<CR>
-"go to the previous number
+" go to the previous number
 nnoremap <silent> g<C-x> ?\d\+<CR>
 
 " list spelling corrections
@@ -535,7 +535,7 @@ command! -nargs=* -range=0 -bang Seq
             \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
 
 function! Seq(count, first_line, last_line, cmdInput, bang) abort
-    "anything within backticks
+    " anything within backticks
     let rg_expr = '`\(.\{-1,}\)`'
 
     " 1 index if ! is used
@@ -1245,7 +1245,7 @@ if neobundle#is_installed('frisk.vim') "{{{2
     call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
     command! Rfrisk call ReloadFrisk()
-    "Do the stuff for frisk
+    " Do the stuff for frisk
     function! ReloadFrisk()
         Runtime ~/Dropbox/projects/frisk/gc/frisk/plugin/*.vim
         Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/*.vim
@@ -1469,7 +1469,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('obvious-resize') "{{{2
-    "map F9 - F12 (like hjkl) to resize windows
+    " map F9 - F12 (like hjkl) to resize windows
     nnoremap  <silent><F9>  :ObviousResizeLeft<CR>
     nnoremap  <silent><F10> :ObviousResizeDown<CR>
     nnoremap  <silent><F11> :ObviousResizeUp<CR>
@@ -1503,23 +1503,7 @@ endif "}}}2
 
 if neobundle#is_installed('crunch.vim') "{{{2
     let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
-
-    command! Rcrunch call ReloadCrunch()
-    " Do the stuff for crunch
-    function! ReloadCrunch()
-        Runtime ~/Dropbox/projects/crunch/crunch/plugin/*.vim
-        Runtime ~/Dropbox/projects/crunch/crunch/autoload/*.vim
-        Runtime ~/Dropbox/projects/crunch/crunch/autoload/crunch/*.vim
-    endfunction
-
-    " do crunch tests
-    if s:has_windows
-        nnoremap <Leader>ct :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal +Vader*<CR>
-        nnoremap <Leader>tc :!cd \Users\arecarn\Dropbox\repos\crunch\crunch\tests && gvim -u ..\.vimrc_minimal<CR>
-    else
-        nnoremap <Leader>ct :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal +Vader\*<CR>
-        nnoremap <Leader>tc :!cd ~/Dropbox/repos/crunch/crunch/tests && /usr/local/bin/vim -u ../.vimrc_minimal<CR>
-    endif
+    let g:crunch_result_type_append = 2
 endif "}}}2
 
 if neobundle#is_installed('golden-ratio') "{{{2

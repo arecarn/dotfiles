@@ -1421,7 +1421,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
     augroup END
 
     function! s:get_context(lnum) abort "{{{3
-         return matchstr(getline(a:lnum), '@\w\+')
+         return matchstr(getline(a:lnum), '@[^ ]\+')
     endfunction "}}}3
 
     function! Todo_fold_text(foldchar) "{{{3

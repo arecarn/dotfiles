@@ -894,6 +894,9 @@ if neobundle#is_installed('neocomplete') "{{{2
     " Plugin key-mappings
     inoremap <expr><C-g> neocomplete#undo_completion()
 
+    " Search from neocomplete, omni candidates, vim keywords.
+    let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
+
     " For smart TAB completion.
     function! s:check_back_space() "{{{
         let col = col('.') - 1

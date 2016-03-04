@@ -69,7 +69,7 @@ zstyle :omz:plugins:ssh-agent agent-forwarding on
 ###########################################################################}}}
 # HISTORY OPTIONS                                                          {{{
 ##############################################################################
-setopt share_history  # adds history incrementally and share
+setopt share_history # adds history incrementally and share
 setopt hist_ignore_dups # ignore duplicates in history
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
@@ -78,9 +78,6 @@ SAVEHIST=10000
 ###########################################################################}}}
 # COMPLETION OPTIONS                                                       {{{
 ##############################################################################
-# Completion
-
-
 unsetopt menu_complete # unset as to not to collide with auto_menu
 setopt auto_menu # use menu completion after the second consecutive request for completion
 setopt complete_in_word # keep the cursor in place until a completion
@@ -90,11 +87,11 @@ setopt list_types # List files like "ls -F"
 setopt glob_complete # open completion on globs
 setopt glob_dots # do not require a leading `.' in filename to be matched
 
+# Completion Styles
+
 # use completion menu, where select is the number of items needed for the menu
 # to open
 zstyle ':completion:*' menu select=1 _complete _ignored _approximate
-
-# Completion Styles
 
 # list of completion types to use
 zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
@@ -188,8 +185,8 @@ bindkey -M viins '^J'    _insert-next-word
 bindkey -M viins '^O'    copy-prev-shell-word
 bindkey -M viins '^X^R'  redisplay
 bindkey -M viins '\eOH'  beginning-of-line # Home
-bindkey -M viins '\eOF'  end-of-line       # End
-bindkey -M viins '\e[2~' overwrite-mode    # Insert
+bindkey -M viins '\eOF'  end-of-line # End
+bindkey -M viins '\e[2~' overwrite-mode # Insert
 bindkey -M viins '^F'    forward-character
 bindkey -M viins '^B'    back-character
 # }}}
@@ -225,7 +222,7 @@ _complete_menu() {
 zle -N _complete_menu
 
 bindkey '^F' _complete_menu
-bindkey -M menuselect '/'  accept-and-infer-next-history
+bindkey -M menuselect '/' accept-and-infer-next-history
 bindkey -M menuselect '^?' undo
 bindkey -M menuselect ' ' accept-and-hold
 bindkey -M menuselect '*' history-incremental-search-forward
@@ -382,7 +379,7 @@ zstyle ':vcs_info:*' enable git
 } # }}}2
 
 ### git: Show +N/-N when your local branch is ahead-of or behind remote HEAD.
-# Make sure you have added misc to your 'formats':  %m
+# Make sure you have added misc to your 'formats': %m
 +vi-git-aheadbehind() { # {{{2
     local ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | tr -d ' ')
     local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l | tr -d ' ')

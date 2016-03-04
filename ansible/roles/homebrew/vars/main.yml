@@ -7,23 +7,38 @@ homebrew_taps:
 homebrew_packages:
   - {name: 'ack'}
   - {name: 'ag'}
-  - {name: 'coreutils'}
+
   - {name: 'curl'}
+  - {name: 'httpie'}
+  - {name: 'wget'}
+
   - {name: 'git'}
   - {name: 'hg'}
+
   - {name: 'htop'}
+  - {name: 'pstree'}
+
   - {name: 'moreutils'}
-  - {name: 'neovim/neovim/neovim'}
+  - {name: 'mutt'}
+  - {name: 'scons'}
+  - {name: 'tmux'}
+  - {name: 'zsh'}
+  - {name: 'tree'}
+
+  - {name: 'lua'}
+  - {name: 'ruby'}
   - {name: 'python'}
   - {name: 'python3'}
-  - {name: 'reattach-to-user-namespace'}
-  - {name: 'tmux'}
-  - {name: 'tree'}
-  - {name: 'vim', options: 'with-lua'}
-  - {name: 'wget'}
-  - {name: 'zsh'}
 
-    #for pygame
+  - {name: 'vim', options: 'with-lua'}
+  - {name: 'neovim/neovim/neovim'}
+  - {name: 'cscope'}
+
+    # mac specific
+  - {name: 'reattach-to-user-namespace'}
+  - {name: 'coreutils'}
+
+    # for pygame
   - {name: 'portmidi'}
   - {name: 'sdl'}
   - {name: 'sdl_image'}

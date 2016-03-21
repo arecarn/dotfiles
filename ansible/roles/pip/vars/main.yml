@@ -2,6 +2,7 @@
 pip_modules:
   - gitpython
   - dploy
+  - pylint
 
 pip_modules_osx:
   # - 'hg+http://bitbucket.org/pygame/pygame#egg=pygame'

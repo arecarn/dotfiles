@@ -1,6 +1,7 @@
 ---
 pip_modules:
   - gitpython
+  - dploy
 
 pip_modules_osx:
   # - 'hg+http://bitbucket.org/pygame/pygame#egg=pygame'

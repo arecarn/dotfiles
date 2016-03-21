@@ -461,12 +461,12 @@ nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
 let maps = [
     \ {'str' : 'fn',   'func' : "expand('%:t')"},
     \ {'str' : 'fp',   'func' : "expand('%:p')"},
-    \ {'str' : 'fpr',  'func' : "expand('%')"},
+    \ {'str' : 'rfp',  'func' : "expand('%')"},
     \ {'str' : 'ofn',  'func' : "expand('%:t:r') . '.'"},
     \ {'str' : 'ofp',  'func' : "expand('%:p:r:.') . '.'"},
-    \ {'str' : 'ofpr', 'func' : "expand('%<') . '.'"},
+    \ {'str' : 'rofp', 'func' : "expand('%<') . '.'"},
     \ {'str' : 'dp',   'func' : "expand('%:p:h') . '/'"},
-    \ {'str' : 'dpr',  'func' : "expand('%:h') . '/'"},
+    \ {'str' : 'rdp',  'func' : "expand('%:h') . '/'"},
     \ {'str' : 'pwd',  'func' : "getcwd()"}
     \ ]
 for map in maps

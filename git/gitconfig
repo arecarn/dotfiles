@@ -1,6 +1,9 @@
 [core]
     excludesfile = ~/dotfiles/git/gitignore_global
 
+[commit]
+    template = ~/dotfiles/git/gitmessage
+
 [diff]
     tool = vimdiff
 

@@ -945,20 +945,13 @@ if neobundle#is_installed('neosnippet-snippets') "{{{2
                 \     "\<Plug>(neosnippet_expand)" :
                 \     neocomplete#close_popup()
                 \ ) :
-                \ (
-                \     neosnippet#jumpable() ?
-                \     "\<Plug>(neosnippet_jump)" : "\<CR>"
-                \ )
+                \ ("\<CR>")
 
 
     function! s:check_back_space() "{{{
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~ '\s'
     endfunction
-
-    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-                \ "\<Plug>(neosnippet_expand_or_jump)"
-                \: "\<TAB>"
 
     if has('conceal')
         set conceallevel=2 concealcursor=i

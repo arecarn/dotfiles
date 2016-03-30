@@ -263,8 +263,10 @@ endif
 if has("autocmd") && v:version > 701
     augroup todo
         autocmd!
-        autocmd Syntax * call matchadd('Debug',  '\v\W\zs<(TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>')
-        autocmd Syntax * call matchadd('Debug', '\v\W\zs<(NOTE|INFO|IDEA)>')
+        autocmd Syntax * call matchadd(
+                    \ 'Debug',
+                    \ '\v\W\zs<(NOTE|INFO|IDEA|TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
+                    \ )
     augroup END
 endif
 

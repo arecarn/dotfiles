@@ -33,9 +33,10 @@ if which pyenv > /dev/null; then
 fi
 
 
+f="$HOME/Dropbox/"
 n="$HOME/Dropbox/notes/"
 df="$HOME/dotfiles/"
-f="$HOME/Dropbox/"
+dfl="$HOME/dotfiles_local/"
 
 autoload -Uz compinit  && compinit -d ~/.zcompdump
 
@@ -254,8 +255,11 @@ alias sotmux="tmux source-file ~/.tmux.conf"
 
 alias e="$EDITOR"
 alias ezsh="$EDITOR ~/.zshrc"
+alias ezshl="$EDITOR ~/.zshrc_local"
 alias egit="$EDITOR ~/.gitconfig"
+alias egitl="$EDITOR ~/.gitconfig_local"
 alias evim="$EDITOR ~/.vimrc"
+alias eviml="$EDITOR ~/.vimrc_local"
 alias etmux="$EDITOR ~/.tmux.conf"
 alias etodo="$EDITOR ~/Dropbox/notes/todo.txt"
 

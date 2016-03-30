@@ -230,7 +230,6 @@ zle -N _complete_menu
 bindkey '^F' _complete_menu
 bindkey -M menuselect '/' accept-and-infer-next-history
 bindkey -M menuselect '^?' undo
-bindkey -M menuselect ' ' accept-and-hold
 bindkey -M menuselect '*' history-incremental-search-forward
 bindkey -M menuselect '^[[Z' reverse-menu-complete # Shift Tab }}}2
 

@@ -3,4 +3,5 @@ tags*
 cscope.out
 *.log
 .DS_Store
-
+.cache
+.dropbox.attr

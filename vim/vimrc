@@ -1413,8 +1413,12 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         autocmd FileType todo call s:todo_txt_settings()
     augroup END
 
-    function! s:get_context(lnum) abort "{{{3
-         return matchstr(getline(a:lnum), '@[^ ]\+')
+    function! s:get_context(line) abort "{{{3
+         return matchstr(getline(a:line), '@[^ ]\+')
+    endfunction "}}}3
+
+    function! s:get_project(line) abort "{{{3
+         return matchstr(getline(a:line), '+[^ ]\+')
     endfunction "}}}3
 
     function! Todo_fold_text(foldchar) "{{{3

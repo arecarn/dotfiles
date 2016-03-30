@@ -361,6 +361,27 @@ untilfail()
     done
 }
 
+
+# normalize permissions for files and directories by referring to umask
+_nmod()
+{
+    local umask=$(umask)
+    local permissions="$(($1 - $umask))"
+    local expression="chmod "$permissions" ${@:2}"
+    print $expression
+    eval $expression
+}
+
+nmodd()
+{
+    _nmod 777 "$@"
+}
+
+nmodf()
+{
+    _nmod 666 "$@"
+}
+
 ###########################################################################}}}
 # PROMPT                                                                   {{{
 ##############################################################################

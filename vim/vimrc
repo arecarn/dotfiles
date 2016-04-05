@@ -244,7 +244,7 @@ set showcmd
 set lazyredraw
 set laststatus=2
 set list
-set listchars=trail:·,tab:»·,extends:▶,precedes:◀
+set listchars=trail:·,tab:→-,extends:▶,precedes:◀
 
 " Maximize Window on Startup
 if has ("gui_running") && has("autocmd") && s:has_windows

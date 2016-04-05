@@ -95,7 +95,7 @@
     lla = !git log-pretty --graph --all
 
     # better LoG
-    lg =  log --decorate --boundary --stat
+    lg =  log --decorate --boundary --stat --pretty=fuller
     # better LoG with All branches and refs
     lga = !git lg --graph --all
 

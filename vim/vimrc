@@ -33,11 +33,6 @@ set path+=.  " To search relative to the directory of the current file
 set path+=,, " To search in the current directory
 set path+=** " Relative to the current directory search recursively
 
-cnoremap ~f ~/Dropbox/
-cnoremap ~n ~/Dropbox/notes/
-cnoremap ~df ~/dotfiles/
-cnoremap ~dfl ~/dotfiles_local/
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " CURSOR SETTINGS                                                          {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -486,6 +481,20 @@ endfor
 
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
+
+cnoremap ~f ~/Dropbox/
+cnoremap ~n ~/Dropbox/notes/
+cnoremap ~df ~/dotfiles/
+cnoremap ~dfl ~/dotfiles_local/
+
+command! -range=0 Ezsh tabe ~/.zshrc
+command! -range=0 Ezshl tabe ~/.zshrc_local
+command! -range=0 Egit tabe ~/.gitconfig
+command! -range=0 Egitl tabe ~/.gitconfig_local
+command! -range=0 Evim tabe ~/.vimrc
+command! -range=0 Eviml tabe ~/.vimrc_local
+command! -range=0 Etmux tabe ~/.tmux.conf
+command! -range=0 Etodo tabe ~/Dropbox/notes/todo.txt
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{

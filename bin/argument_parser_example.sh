@@ -15,13 +15,28 @@ default=0
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
-        -n|--name) name="$2"; shift 1;;
-        -f|--file) file="$2"; shift 1;;
-        -l|--log) log="$2"; shift 1;;
-        -d|--default) default=1;;
-        --name|--file|--log) echo "$1 requires an argument" >&2; exit 1;;
-        -*) echo "unknown option: $1" >&2; exit 1;;
-        *) handle_other_argument "$1";
+
+        -n|--name)
+            name="$2";
+            shift 1;;
+
+        -f|--file)
+            file="$2";
+            shift 1;;
+
+        -l|--log)
+            log="$2";
+            shift 1;;
+
+        -d|--default)
+            default=1;;
+
+        -*)
+            echo "unknown option: $1" >&2;
+            exit 1;;
+
+        *)
+            handle_other_argument "$1";
     esac
     shift 1
 done

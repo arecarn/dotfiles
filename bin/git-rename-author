@@ -1,34 +1,58 @@
 #!/bin/sh
 
 print_usage() {
-    echo "author-rewrite [-f] OLD_EMAIL CORRECT_EMAIL CORRECT_NAME"
+    echo "usage: git rename-author [-f] <old-email> <old-name> [<new-email> [<new-name>]]"
+}
+
+die() {
+    printf '%s\n' "$@"
+    exit 128
 }
 
 force=''
-
 if [ "$1" = '-f' ]; then
     force=$1
     shift
 fi
 
-if [ "$1" = '' ] || [ "$2" = '' ] || [ "$3" = '' ]; then
+if [ -z "$1" ] || [ -z "$2" ]; then
     print_usage
-    exit 128
+    exit 1
 fi
 
 OLD_EMAIL=$1
-CORRECT_EMAIL=$2
-CORRECT_NAME=$3
-export OLD_EMAIL CORRECT_NAME CORRECT_EMAIL
+OLD_NAME=$2
+NEW_EMAIL=${3:-}
+NEW_NAME=${4:-}
+export OLD_EMAIL NEW_NAME NEW_EMAIL
 
-git filter-branch $force --env-filter '
-if [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ]; then
-    export GIT_COMMITTER_NAME="$CORRECT_NAME"
-    export GIT_COMMITTER_EMAIL="$CORRECT_EMAIL"
-fi
+filter='
+    if [ "$GIT_AUTHOR_EMAIL" = "$OLD_EMAIL" ] || [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ] then
+        if [ -n "$NEW_EMAIL" ]; then
+            GIT_AUTHOR_EMAIL="$NEW_EMAIL"
+            export GIT_AUTHOR_EMAIL
 
-if [ "$GIT_AUTHOR_EMAIL" = "$OLD_EMAIL" ]; then
-    export GIT_AUTHOR_NAME="$CORRECT_NAME"
-    export GIT_AUTHOR_EMAIL="$CORRECT_EMAIL"
-fi
-' --tag-name-filter cat -- --branches --tags
+            GIT_COMMITTER_EMAIL="$NEW_EMAIL"
+            export GIT_COMMITTER_EMAIL
+
+        else
+            unset GIT_AUTHOR_EMAIL
+            unset GIT_COMMITER_EMAIL
+        fi
+    fi
+
+    if [ "GIT_AUTHOR_NAME" == "$OLD_NAME"; ] || [ "GIT_COMMITTER_NAME" == "$OLD_NAME"; ] then
+        if [ -n "$NEW_NAME" ]; then
+            GIT_AUTHOR_NAME="$NEW_NAME"
+            export GIT_AUTHOR_NAME
+
+            GIT_COMMITTER_NAME="$NEW_NAME"
+            export GIT_COMMITTER_NAME
+        else
+            unset GIT_AUTHOR_NAME
+            unset GIT_COMMITTER_NAME
+        fi
+    fi
+'
+
+git filter-branch $force --env-filter "$filter" --tag-name-filter cat -- --branches --tags

@@ -761,6 +761,7 @@ NeoBundle 'idanarye/vim-vebugger', {'depends' : 'shougo/vimproc.vim'}
 
 
 " Text Manipulation Commands / Mappings
+NeoBundle 'junegunn/vim-easy-align'
 NeoBundle 'godlygeek/tabular'
 NeoBundle 'arecarn/split-join.vim'
 NeoBundle 't9md/vim-textmanip'
@@ -1588,6 +1589,14 @@ if neobundle#is_installed('vim-airline') "{{{2
         AirlineRefresh "refresh  when it starts looking wonky
     endif
 endif "}}}2
+
+if neobundle#is_installed('vim-easy-align') "{{{2
+    " Start interactive EasyAlign in visual mode (e.g. vipga)
+    xmap ga <Plug>(EasyAlign)
+    " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+    nmap ga <Plug>(EasyAlign)
+endif "}}}2
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " -                                                                        {{{

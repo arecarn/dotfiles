@@ -10,13 +10,15 @@ export LANG='en_US.UTF-8'
 export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
 # configure path
-export PATH="$PATH:$HOME/dotfiles/bin"
+export PATH="$PATH:$HOME/bin"
+
 if [[ "$OSTYPE" == "linux"* ]]; then
     export PATH="$PATH:/usr/bin/X11"
     export PATH="$PATH:/usr/X11R6/bin"
     export PATH="$PATH:/usr/games"
     export PATH="$PATH:/opt/kde3/bin"
     export PATH="$PATH:/usr/lib/qt3/bin"
+
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     #for homebrew
     export MANPATH="$MANPATH:/usr/local/man"
@@ -32,7 +34,6 @@ if which pyenv > /dev/null; then
     eval "$(pyenv init -)";
 fi
 
-
 f="$HOME/Dropbox/"
 n="$HOME/Dropbox/notes/"
 df="$HOME/dotfiles/"
@@ -43,10 +44,10 @@ autoload -Uz compinit  && compinit -d ~/.zcompdump
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
-zplug_file=~/.zplug/zplug
+zplug_file=~/.config/zsh/zplug
 
 if ! [[ -e $zplug_file ]]; then
-    curl -fLo ~/.zplug/zplug --create-dirs https://git.io/zplug
+    curl -fLo $zplug_file --create-dirs https://git.io/zplug
 fi
 
 source $zplug_file > /dev/null

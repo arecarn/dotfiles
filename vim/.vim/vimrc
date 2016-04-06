@@ -1288,7 +1288,8 @@ endif "}}}2
 
 if neobundle#is_installed('syntastic') "{{{2
     let g:syntastic_check_on_open = 0
-    let g:syntastic_python_checkers = ['python', 'pylint']
+    " let g:syntastic_python_checkers = ['python', 'pylint']
+    let g:syntastic_python_checkers = ['python']
     nnoremap cost :SyntasticToggleMode<CR>
 endif "}}}2
 

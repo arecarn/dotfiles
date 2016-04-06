@@ -1,8 +1,0 @@
-# ignore all files and directories
-*
-**/
-
-# except these files
-!.gitignore
-!zshrc
-

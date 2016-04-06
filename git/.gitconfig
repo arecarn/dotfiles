@@ -1,8 +1,8 @@
 [core]
-    excludesfile = ~/dotfiles/git/gitignore_global
+    excludesfile = ~/.config/git/gitignore_global
 
 [commit]
-    template = ~/dotfiles/git/gitmessage
+    template = ~/.config/git/gitmessage
 
 [diff]
     tool = vimdiff

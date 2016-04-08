@@ -1,7 +1,7 @@
 MODULES = [
         {
             "url" : "https://github.com/altercation/mutt-colors-solarized",
-            "directory" : "~/dotfiles/.mutt/colors/mutt",
+            "directory" : "~/.mutt/colors/mutt",
             "rev" : "master",
         },
 

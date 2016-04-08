@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    echo "usage: trash <files...>" >&2
+    exit 2;
+fi
+
+trash_directory="$HOME/.trash"
+if [ ! -d "$trash_directory" ]; then
+    mkdir $trash_directory
+fi
+
+for file in "$@"; do
+    # get just file name
+    destfile="$(basename \"$file\")"
+    suffix=''
+    i=0
+
+    trash_file_path='$trash_directory/${destfile}${suffix}'
+    # If that file already exists, change the name
+    while [ -e $(eval echo \"$trash_file_path\") ]; do
+        suffix=" - $i";
+        i=$(expr $i + 1)
+    done
+
+    eval mv -vi "$file" "$trash_file_path"
+done

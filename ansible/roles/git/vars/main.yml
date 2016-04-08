@@ -2,7 +2,7 @@
 git_repositories:
   - {
       repo : "https://github.com/altercation/mutt-colors-solarized",
-      dest : "~/dotfiles/mutt/colors/solarized",
+      dest : "~/.mutt/colors/solarized",
       version : "master",
     }
   - {

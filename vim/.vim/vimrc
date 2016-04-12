@@ -46,7 +46,10 @@ if has('mouse')
 endif
 
 set ttyfast
-set ttymouse=xterm2
+
+if ! has('nvim')
+    set ttymouse=xterm2
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                              {{{

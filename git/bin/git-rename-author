@@ -1,12 +1,12 @@
 #!/bin/sh
 
 print_usage() {
-    echo "usage: git rename-author [-f] <new-email> <new-name>
-                 [<commit-range>] [<old-email>] [<old-name>]
+    echo "\
+usage: git rename-author [-f|--force] <new-email <new-name> [options]
 
-        git rename-author [-f|--force] <new-email <new-name>
-                [--range <commit-range>] [--old-name <old-name>]
-                [--old-email <old-email>]
+    -r, --range <commit-range>     commit range to limit rename to
+    -n, --old-name <old-name>      old author name to limit rename to
+    -e, --old-email <old-email>    old author email to limit rename to
 "
 }
 
@@ -27,13 +27,31 @@ old_name=''
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
-        -f|--force) force='-f';;
-        -c|--use-config) use_config="$2"; shift 1;;
-        -n|--old-name) old_name="$2"; shift 1;;
-        -e|--old-email) old_email="$2"; shift 1;;
-        -r|--range) range="$2"; shift 1;;
-        -*) echo "unknown option: $1" >&2; exit 1;;
-        *) handle_other_argument "$1";
+        -f|--force)
+            force='-f';;
+
+        -c|--use-config)
+            use_config="$2";
+            shift 1;;
+
+        -n|--old-name)
+            old_name="$2";
+            shift 1;;
+
+        -e|--old-email)
+            old_email="$2";
+            shift 1;;
+
+        -r|--range)
+            range="$2";
+            shift 1;;
+
+        -*)
+            echo "unknown option: $1" >&2;
+            exit 1;;
+
+        *)
+            handle_other_argument "$1";
     esac
     shift 1
 done

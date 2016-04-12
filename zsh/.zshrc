@@ -1,5 +1,37 @@
 # -                                                                        {{{
 ###########################################################################}}}
+# PLUGINS                                                                  {{{
+##############################################################################
+zplug_file=~/.config/zsh/zplug
+
+if ! [[ -e $zplug_file ]]; then
+    curl -fLo $zplug_file --create-dirs https://git.io/zplug
+fi
+
+source $zplug_file > /dev/null
+
+zplug "plugins/command-not-found", from:oh-my-zsh
+zplug "plugins/tmux", from:oh-my-zsh
+zplug "plugins/ssh-agent", from:oh-my-zsh
+
+zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-syntax-highlighting"
+zplug "rupa/z", of:"*.sh"
+
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose > /dev/null; then
+    printf "Install? [y/n]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# Then, source plugins and add commands to $PATH
+zplug load --verbose > /dev/null
+
+zstyle :omz:plugins:ssh-agent agent-forwarding on
+
+###########################################################################}}}
 # ENVIRONMENT                                                              {{{
 ##############################################################################
 export EDITOR='vim'
@@ -40,38 +72,6 @@ df="$HOME/dotfiles/"
 dfl="$HOME/dotfiles_local/"
 
 autoload -Uz compinit  && compinit -d ~/.zcompdump
-
-###########################################################################}}}
-# PLUGINS                                                                  {{{
-##############################################################################
-zplug_file=~/.config/zsh/zplug
-
-if ! [[ -e $zplug_file ]]; then
-    curl -fLo $zplug_file --create-dirs https://git.io/zplug
-fi
-
-source $zplug_file > /dev/null
-
-zplug "plugins/command-not-found", from:oh-my-zsh
-zplug "plugins/tmux", from:oh-my-zsh
-zplug "plugins/ssh-agent", from:oh-my-zsh
-
-zplug "zsh-users/zsh-completions"
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug "rupa/z", of:"*.sh"
-
-# Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose > /dev/null; then
-    printf "Install? [y/n]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
-
-# Then, source plugins and add commands to $PATH
-zplug load --verbose > /dev/null
-
-zstyle :omz:plugins:ssh-agent agent-forwarding on
 
 ###########################################################################}}}
 # HISTORY OPTIONS                                                          {{{

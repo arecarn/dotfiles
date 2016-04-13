@@ -673,8 +673,8 @@ NeoBundle 'kopischke/unite-spell-suggest', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'kmnk/vim-unite-giti', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'hewes/unite-gtags', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
-NeoBundleFetch 'junegunn/fzf', {
-            \ 'base' : '~/.fzf',
+NeoBundle 'junegunn/fzf', {
+            \ 'base' : '~/.config/fzf',
             \ 'build' : './install --all'
             \ }
 NeoBundle 'dyng/ctrlsf.vim'

@@ -293,9 +293,6 @@ alias tt="t -ph"
 alias td="t -d"
 alias ttd="tt -d"
 
-alias tsh="~/dotfiles/mybin/scripts/trash.sh"
-alias minivim="vim -u ~/dotfiles/vim/.vimrc_minimal"
-
 if [[ "$OSTYPE" == "linux"* ]]; then
     alias open="xdg-open"
 elif [[ "$OSTYPE" == "cygwin" ]]; then
@@ -318,7 +315,6 @@ abbreviations=(
 "Ig"    "| grep -P"
 "Igv"   "| grep -Pv" #inverse match
 "Ih"    "| head"
-"Ic"    "Hello__CURSOR__! How are you" # cursor example
 "Im"    "| more"
 "Ip"    "| $PAGER"
 "Is"    "| sort"
@@ -376,12 +372,12 @@ _nmod()
     eval $expression
 }
 
-nmodd()
+chmodnd()
 {
     _nmod 777 "$@"
 }
 
-nmodf()
+chmodnf()
 {
     _nmod 666 "$@"
 }
@@ -446,7 +442,6 @@ precmd () { # {{{2
     print -rP "
 %n%F{blue}@%m%f ${vcs_info_msg_0_}"
     PROMPT="%{$MOVE_CURSOR_DOWN$VI_INSERT_MODE$RESTORE_CURSOR%}%~ %# "
-    RPROMPT="[%D{%Y-%m-%d %H:%M:%S}]"
 } # }}}2
 
 zle-line-init() zle-keymap-select() { # {{{2

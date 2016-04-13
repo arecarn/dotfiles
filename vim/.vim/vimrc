@@ -490,14 +490,14 @@ cnoremap ~n ~/Dropbox/notes/
 cnoremap ~df ~/dotfiles/
 cnoremap ~dfl ~/dotfiles_local/
 
-command! -range=0 Ezsh tabe ~/.zshrc
-command! -range=0 Ezshl tabe ~/.zshrc_local
-command! -range=0 Egit tabe ~/.gitconfig
-command! -range=0 Egitl tabe ~/.gitconfig_local
-command! -range=0 Evim tabe ~/.vimrc
-command! -range=0 Eviml tabe ~/.vimrc_local
-command! -range=0 Etmux tabe ~/.tmux.conf
-command! -range=0 Etodo tabe ~/Dropbox/notes/todo.txt
+command! -range=0 Ezsh edit ~/.zshrc
+command! -range=0 Ezshl edit ~/.zshrc_local
+command! -range=0 Egit edit ~/.gitconfig
+command! -range=0 Egitl edit ~/.gitconfig_local
+command! -range=0 Evim edit ~/.vimrc
+command! -range=0 Eviml edit ~/.vimrc_local
+command! -range=0 Etmux edit ~/.tmux.conf
+command! -range=0 Etodo edit ~/Dropbox/notes/todo.txt
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{

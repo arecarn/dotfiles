@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ ! -z "$(git status --short)" ]; then
+    echo >&2 "cannot $1: you have unstaged, uncommited, or untracked changes."
+    echo >&2 "Please commit, stash, or remove them."
+    exit 1
+fi
+
+# Remove every file from Git's index.
+git rm --cached -r .
+
+# Rewrite the Git index to pick up all the new line endings.
+git reset --hard
+
+# Add all your changed files back, and prepare them for a commit. This is your
+# chance to inspect which files, if any, were unchanged.
+# It is perfectly safe to see a lot of messages here that read:
+# "warning: CRLF will be replaced by LF in file."
+git add .
+
+# Commit the changes to your repository.
+git commit -m "Normalize all the line endings"

@@ -79,8 +79,8 @@ autoload -Uz compinit  && compinit -d ~/.zcompdump
 setopt share_history # adds history incrementally and share
 setopt hist_ignore_dups # ignore duplicates in history
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=50000
+SAVEHIST=50000
 
 ###########################################################################}}}
 # COMPLETION OPTIONS                                                       {{{

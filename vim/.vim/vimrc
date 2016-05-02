@@ -449,10 +449,7 @@ cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 
 " find files easier
-nnoremap <leader>e :e **/*
-nnoremap <leader>f :find *
-nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
-
+cnoremap <C-e> e <C-r>=expand('%:p:h') . '/'<CR>
 
 " fn File Name (trail) (foo.txt)
 " fp File Path  (/something/src/foo.txt)
@@ -463,12 +460,13 @@ nnoremap <leader>eo :e <C-r>=expand('%<')<CR>.
 " dp Directory Path (head) (/something/src)
 " dpr Directory Path Relative to pwd (head) (/something/src)
 " pwd Present Working Directory
+let extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
 let maps = [
     \ {'str' : 'fn',   'func' : "expand('%:t')"},
     \ {'str' : 'fp',   'func' : "expand('%:p')"},
     \ {'str' : 'rfp',  'func' : "expand('%')"},
-    \ {'str' : 'ofn',  'func' : "expand('%:t:r') . '.'"},
-    \ {'str' : 'ofp',  'func' : "expand('%:p:r:.') . '.'"},
+    \ {'str' : 'ofn',  'func' : "substitute(expand('%:t'),     '".extension_patter."', '\\2', 'g')"},
+    \ {'str' : 'ofp',  'func' : "substitute(expand('%:p:r:.'), '".extension_patter."', '\\2', 'g')"}, 
     \ {'str' : 'rofp', 'func' : "expand('%<') . '.'"},
     \ {'str' : 'dp',   'func' : "expand('%:p:h') . '/'"},
     \ {'str' : 'rdp',  'func' : "expand('%:h') . '/'"},
@@ -489,7 +487,6 @@ cnoremap ~f ~/Dropbox/
 cnoremap ~n ~/Dropbox/notes/
 cnoremap ~df ~/dotfiles/
 cnoremap ~dfl ~/dotfiles_local/
-
 command! -range=0 Ezsh edit ~/.zshrc
 command! -range=0 Ezshl edit ~/.zshrc_local
 command! -range=0 Egit edit ~/.gitconfig

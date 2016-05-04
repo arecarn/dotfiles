@@ -31,6 +31,7 @@ fi
 zplug load
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
+zstyle :omz:plugins:ssh-agent identities id_rsa
 
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{

@@ -2,13 +2,14 @@
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
-zplug_file=~/.config/zsh/zplug
+zplug_dir="${HOME}/.config/zsh/zplug"
+zplug_file="${zplug_dir}/init.zsh"
 
-if ! [[ -e $zplug_file ]]; then
-    curl -fLo $zplug_file --create-dirs https://git.io/zplug
+if [[ ! -d "${zplug_dir}" ]]; then
+    git clone https://github.com/zplug/zplug "${zplug_dir}"
 fi
 
-source $zplug_file > /dev/null
+source ${zplug_file}
 
 zplug "plugins/command-not-found", from:oh-my-zsh
 zplug "plugins/tmux", from:oh-my-zsh
@@ -16,10 +17,10 @@ zplug "plugins/ssh-agent", from:oh-my-zsh
 
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-syntax-highlighting"
-zplug "rupa/z", of:"*.sh"
+zplug "rupa/z", use:"*.sh"
 
 # Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose > /dev/null; then
+if ! zplug check --verbose; then
     printf "Install? [y/n]: "
     if read -q; then
         echo; zplug install
@@ -27,7 +28,7 @@ if ! zplug check --verbose > /dev/null; then
 fi
 
 # Then, source plugins and add commands to $PATH
-zplug load --verbose > /dev/null
+zplug load
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 
@@ -72,6 +73,7 @@ df="$HOME/dotfiles/"
 dfl="$HOME/dotfiles_local/"
 
 autoload -Uz compinit  && compinit -d ~/.zcompdump
+zmodload zsh/complist
 
 ###########################################################################}}}
 # HISTORY OPTIONS                                                          {{{

@@ -135,7 +135,7 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 # show command short descriptions, too
 zstyle ':completion:*' extra-verbose yes
 # make them a little less short, after all (mostly adds -l option to the whatis calll)
-zstyle ':completion:*:command-descriptions' command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
+zstyle ':completion:*:command-descriptions' command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2> /dev/null'
 
 ###########################################################################}}}
 # GENERAL OPTIONS                                                          {{{
@@ -245,7 +245,7 @@ bindkey -M menuselect '^[[Z' reverse-menu-complete # Shift Tab }}}2
 
 # check if a command exits
 exits() {
-    command -v "$1" >/dev/null 2>&1
+    command -v "$1" > /dev/null 2>&1
 }
 
 alias gp="grep -P"
@@ -399,10 +399,9 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-aheadbehind git-st
 zstyle ':vcs_info:*' enable git
 
 +vi-git-untracked() { # {{{2
-    local is_inside_work_tree=$(git rev-parse --is-inside-work-tree 2> /dev/null)
-    local number_of_untracked_files=$(git ls-files --other --directory --exclude-standard --no-empty-directory | wc -l | tr -d ' ')
+    local number_of_untracked_files=$(git ls-files --other --directory --exclude-standard --no-empty-directory 2> /dev/null | wc -l | tr -d ' ')
 
-    if [[ $is_inside_work_tree = 'true' ]] && [[ $number_of_untracked_files != 0 ]]; then
+    if [[ $number_of_untracked_files != 0 ]]; then
         hook_com[unstaged]+='%F{red}??%f'
     fi
 } # }}}2
@@ -410,8 +409,8 @@ zstyle ':vcs_info:*' enable git
 ### git: Show +N/-N when your local branch is ahead-of or behind remote HEAD.
 # Make sure you have added misc to your 'formats': %m
 +vi-git-aheadbehind() { # {{{2
-    local ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | tr -d ' ')
-    local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l | tr -d ' ')
+    local ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2> /dev/null | wc -l | tr -d ' ')
+    local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2> /dev/null | wc -l | tr -d ' ')
     local -a gitstatus
 
     (( $ahead )) && gitstatus+=(" %B%F{blue}+${ahead}%f%b")
@@ -422,7 +421,7 @@ zstyle ':vcs_info:*' enable git
 # Show count of stashed changes
 +vi-git-stash() { # {{{2
     if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
-        local stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
+        local stashes=$(git stash list 2> /dev/null | wc -l | tr -d ' ')
         hook_com[misc]+=" %F{yellow}#${stashes}%f"
     fi
 } # }}}2

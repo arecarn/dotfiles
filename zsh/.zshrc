@@ -248,6 +248,10 @@ exits() {
     command -v "$1" > /dev/null 2>&1
 }
 
+weather() {
+    curl wttr.in/"$1"
+}
+
 alias gp="grep -P"
 alias py="python"
 alias p="$PAGER"

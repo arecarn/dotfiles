@@ -483,10 +483,10 @@ endfor
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
 
-cnoremap ~f ~/Dropbox/
-cnoremap ~n ~/Dropbox/notes/
-cnoremap ~df ~/dotfiles/
-cnoremap ~dfl ~/dotfiles_local/
+cnoremap ~f ~/Dropbox
+cnoremap ~n ~/Dropbox/notes
+cnoremap ~df ~/dotfiles
+cnoremap ~dfl ~/dotfiles_local
 command! -range=0 Ezsh edit ~/.zshrc
 command! -range=0 Ezshl edit ~/.zshrc_local
 command! -range=0 Egit edit ~/.gitconfig

@@ -5,7 +5,7 @@ set fileformats=unix,dos
 set encoding=utf-8 "make Vim use UTF-8 by default
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" OPERATING SYSTEM VARIABLES                                               {{{
+" UTILITY FUNCTIONS & VARIABLES                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let s:has_windows = has("win16") || has("win32") || has("win64")
 
@@ -15,9 +15,22 @@ else
     let s:vim_path = $HOME . "/.vim"
 endif
 
+function! s:make_private_local_path(name) abort
+    return s:vim_path . '/utils_local/' . a:name
+endfunction
+
+function! s:make_private_local_directory(path) abort
+    let location = s:make_private_local_path(a:path)
+    if !isdirectory(location)
+        call mkdir(location, "p", 0700)
+    endif
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " COMMAND LINE                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set history=10000
+
 set wildmode=full
 set wildmenu
 set wildcharm=<TAB>
@@ -55,21 +68,22 @@ endif
 " UNDO & SWAP                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set undofile
-let s:undodir = s:vim_path . '/utils_local/undo//'
-execute 'set undodir=' . s:undodir
+call s:make_private_local_directory('vim/undo')
+let s:undodir = s:make_private_local_path('vim/undo')
+execute 'set undodir=' . s:undodir . '//'
 set undolevels=20000
 set undoreload=20000
 set noswapfile
-set history=10000
-set backup
-" Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
-let backupext = "_" . strftime("%y-%m-%d_%H")
-execute "set backupext=" . backupext
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:backupdir = s:vim_path . '/utils_local/backup//'
+set backup
+" Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
+let backupext = "_" . strftime("%y-%m-%d_%H")
+execute "set backupext=" . backupext
+call s:make_private_local_directory('vim/backup')
+let s:backupdir = s:make_private_local_path('vim/backup') . '//'
 execute 'set backupdir=' . s:backupdir
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -816,10 +830,8 @@ filetype plugin indent on
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if neobundle#is_installed('neocomplcache') "{{{2
-    if !isdirectory(s:vim_path.'/utils_local/neocomplcache')
-        call mkdir(s:vim_path.'/utils_local/neocomplcache', "p", 0755)
-    endif
-    let g:neocomplcache_temporary_dir = s:vim_path.'/utils_local/neocomplcache'
+    call s:make_private_local_directory('neocomplcache')
+    let g:neocomplcache_temporary_dir = s:make_private_local_path('neocomplcache')
     let g:neocomplcache_enable_at_startup = 1
     let g:neocomplcache_enable_smart_case = 1
     let g:neocomplcache_enable_camel_case_completion = 1
@@ -883,10 +895,8 @@ if neobundle#is_installed('neocomplete') "{{{2
     let g:neocomplete#sources#tags#cache_limit_size = 5000000000000000.0
     let g:neocomplete#max_list = 20
 
-    if !isdirectory(s:vim_path.'/utils_local/neocomplete')
-        call mkdir(s:vim_path.'/utils_local/neocomplete', "p", 755)
-    endif
-    let g:neocomplete#data_directory = s:vim_path.'/utils_local/neocomplete/'
+    call s:make_private_local_directory('neocomplete')
+    let g:neocomplete#data_directory = s:make_private_local_path('neocomplete')
 
     " Define dictionary.
     let g:neocomplete#sources#dictionary#dictionaries = {
@@ -973,7 +983,9 @@ if neobundle#is_installed('neosnippet-snippets') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('unite.vim') "{{{2
-    let g:unite_data_directory = s:vim_path.'/utils_local/unite/'
+
+    call s:make_private_local_directory('unite')
+    let g:unite_data_directory = s:make_private_local_path('unite')
     let g:unite_winheight = 10
     let g:unite_source_history_yank_enable = 1
     let g:unite_source_history_yank_limit = 100
@@ -1158,10 +1170,8 @@ if neobundle#is_installed('vimshell.vim') "{{{2
     let g:vimshell_enable_start_insert = 1
     let g:vimshell_vimshrc_path = s:vim_path.'/utils/vimshell/vimshellrc'
 
-    if !isdirectory(s:vim_path.'/utils_local/vimshell')
-        call mkdir(s:vim_path.'/utils_local/vimshell', "p", 0755)
-    endif
-    let g:vimshell_data_directory = s:vim_path.'/utils_local/vimshell/'
+    call s:make_private_local_directory('vimshell')
+    let g:vimshell_data_directory = s:make_private_local_path('vimshell')
     let g:vimshell_editor_command = 'gvim'
 
     command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{3

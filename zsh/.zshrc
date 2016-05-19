@@ -252,6 +252,8 @@ weather() {
     curl wttr.in/"$1"
 }
 
+alias -g ...="../../"
+
 alias gp="grep -P"
 alias py="python"
 alias p="$PAGER"

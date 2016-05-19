@@ -61,7 +61,7 @@
     # run these two as external commands so they operate at the toplevel dir
     # (this is the default in v2.0.0+)
     # Add All
-    aa = !git add -A
+    aa = !git add --all
     # Add Modified files
     amd = !git add --update :/
 

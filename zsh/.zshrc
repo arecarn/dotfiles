@@ -2,11 +2,11 @@
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
-zplug_dir="${HOME}/.config/zsh/zplug"
-zplug_file="${zplug_dir}/init.zsh"
+export ZPLUG_HOME="${HOME}/.cache/zsh/zplug"
+zplug_file="${ZPLUG_HOME}/init.zsh"
 
-if [[ ! -d "${zplug_dir}" ]]; then
-    git clone https://github.com/zplug/zplug "${zplug_dir}"
+if [[ ! -d "${ZPLUG_HOME}" ]]; then
+    git clone https://github.com/zplug/zplug "${ZPLUG_HOME}"
 fi
 
 source ${zplug_file}

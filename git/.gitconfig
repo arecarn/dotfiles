@@ -36,10 +36,6 @@
     cmsq = commit --squash
     cma = commit --amend
 
-    # execute an arbitrary command in the top level directory e.g.
-    # $ git exec pwd
-    exec = !git execute_in_git_dir.sh
-
     f = fetch
     co = checkout
     sh = show --decorate --stat --patch

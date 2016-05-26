@@ -518,8 +518,9 @@ command! -range=0 Ezsh edit ~/.zshrc
 command! -range=0 Ezshl edit ~/.zshrc_local
 command! -range=0 Egit edit ~/.gitconfig
 command! -range=0 Egitl edit ~/.gitconfig_local
-command! -range=0 Evim edit ~/.vimrc
+command! -range=0 Evim edit $MYVIMRC
 command! -range=0 Eviml edit ~/.vimrc_local
+command! -range=0 SoVim source $MYVIMRC
 command! -range=0 Etmux edit ~/.tmux.conf
 command! -range=0 Etodo edit ~/Dropbox/notes/todo.txt
 
@@ -630,7 +631,7 @@ cabbrev numfront s/^/\=1-line("'<")+line(".")/c
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BEFORE PLUGINS                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if filereadable('.vimrc_project')
+if filereadable(glob('.vimrc_project'))
     source .vimrc_project
 endif
 

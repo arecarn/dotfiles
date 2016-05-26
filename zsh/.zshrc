@@ -294,6 +294,7 @@ alias dus="du -hsxc *(D) | sort -rh"
 
 alias g="git"
 alias gnp="git --no-pager"
+alias gcd="cd $(git rev-parse --show-toplevel)"
 alias v="vim"
 
 alias l="ls -paF"

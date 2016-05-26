@@ -179,6 +179,9 @@ _insert-next-word() {
 }
 zle -N _insert-next-word
 
+autoload -Uz edit-command-line
+zle -N edit-command-line
+
 bindkey -M viins '^A'    beginning-of-line
 bindkey -M viins '^E'    end-of-line
 bindkey -M viins '^K'    kill-line
@@ -199,6 +202,7 @@ bindkey -M viins '\eOF'  end-of-line # End
 bindkey -M viins '\e[2~' overwrite-mode # Insert
 bindkey -M viins '^F'    forward-character
 bindkey -M viins '^B'    back-character
+bindkey -M viins '^V'    edit-command-line
 # }}}
 
 # Vim Mode (Cmd Mode) {{{2

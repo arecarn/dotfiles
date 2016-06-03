@@ -16,7 +16,7 @@ other_args=''
 handle_other_argument(){
     # save all the non-named arguments so they can be reinserted back into the
     # positional parameters at the end of the argument parsing
-    other_args="$other_args $@"
+    other_args="$other_args \"$@\""
 }
 
 # default values

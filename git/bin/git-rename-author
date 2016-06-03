@@ -104,10 +104,8 @@ filter='
         fi
     }
 
-    if ([ "GIT_AUTHOR_NAME" == "$old_name" ] ||
-        [ "GIT_COMMITTER_NAME" == "$old_name" ]) ||
-        ([ "$GIT_AUTHOR_EMAIL" = "$old_email" ] ||
-        [ "$GIT_COMMITTER_EMAIL" = "$old_email" ]) ||
+    if ([ "GIT_AUTHOR_NAME" = "$old_name" ] || [ "GIT_COMMITTER_NAME" = "$old_name" ]) ||
+        ([ "$GIT_AUTHOR_EMAIL" = "$old_email" ] || [ "$GIT_COMMITTER_EMAIL" = "$old_email" ]) ||
         [ "$all_authors" -eq 1 ]; then
 
         set_name

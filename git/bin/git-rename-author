@@ -2,9 +2,10 @@
 
 print_usage() {
     echo "\
-usage: git rename-author [-f|--force] <new-email <new-name> [options]
+usage: git rename-author [-f|--force] <new-name> <new-email> [options]
 
-    -r, --range <commit-range>     commit range to limit rename to
+    -r, --range <commit-range>     commit range to limit rename to e.g.
+                                   \"HEAD~2..HEAD\" uses the last two commits
     -n, --old-name <old-name>      old author name to limit rename to
     -e, --old-email <old-email>    old author email to limit rename to
 "

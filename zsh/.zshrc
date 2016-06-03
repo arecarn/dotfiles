@@ -134,7 +134,7 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # show command short descriptions, too
 zstyle ':completion:*' extra-verbose yes
-# make them a little less short, after all (mostly adds -l option to the whatis calll)
+# make them a little less short, after all (mostly adds -l option to the whatis call)
 zstyle ':completion:*:command-descriptions' command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2> /dev/null'
 
 ###########################################################################}}}
@@ -294,7 +294,7 @@ alias dus="du -hsxc *(D) | sort -rh"
 
 alias g="git"
 alias gnp="git --no-pager"
-alias gcd="cd $(git rev-parse --show-toplevel)"
+alias gcd='cd $(git rev-parse --show-toplevel)'
 alias v="vim"
 
 alias l="ls -paF"
@@ -424,14 +424,14 @@ zstyle ':vcs_info:*' enable git
     local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2> /dev/null | wc -l | tr -d ' ')
     local -a gitstatus
 
-    (( $ahead )) && gitstatus+=(" %B%F{blue}+${ahead}%f%b")
-    (( $behind )) && gitstatus+=("%B%F{red}-${behind}%f%b")
+    (($ahead)) && gitstatus+=(" %B%F{blue}+${ahead}%f%b")
+    (($behind)) && gitstatus+=("%B%F{red}-${behind}%f%b")
     hook_com[misc]+=${(j::)gitstatus}
 } # }}}2
 
 # Show count of stashed changes
 +vi-git-stash() { # {{{2
-    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
+    if [[ -s ${hook_com[base]}/.git/refs/stash ]]; then
         local stashes=$(git stash list 2> /dev/null | wc -l | tr -d ' ')
         hook_com[misc]+=" %F{yellow}#${stashes}%f"
     fi

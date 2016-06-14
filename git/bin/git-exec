@@ -5,7 +5,7 @@
 
 GIT_TOP="${GIT_DIR%%/.git/modules/*}";
 
-[ ".$GIT_TOP" != ".$GIT_DIR" ] && cd "$GIT_TOP";
+[ ".$GIT_TOP" != ".$GIT_DIR" ] && cd "$GIT_TOP" || exit
 
 exec "$@";
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# based on: https://help.github.com/articles/dealing-with-line-endings/#platform-all
+
 if [ ! -z "$(git status --short)" ]; then
     echo >&2 "cannot $1: you have unstaged, uncommited, or untracked changes."
     echo >&2 "Please commit, stash, or remove them."

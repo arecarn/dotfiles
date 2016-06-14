@@ -16,7 +16,7 @@ other_args=''
 handle_other_argument(){
     # save all the non-named arguments so they can be reinserted back into the
     # positional parameters at the end of the argument parsing
-    other_args="$other_args \"$@\""
+    other_args="${other_args} '$*'"
 }
 
 # default values
@@ -58,19 +58,19 @@ while [ "$#" -gt 0 ]; do
 done
 
 # reinsert non-named arguments back into positional parameters ($1 $2 ..)
-eval set -- $other_args
+eval set -- "${other_args}"
 
 new_name="$1"
 new_email="$2"
 all_authors=0
 
-if [ -z "$new_email" ] || [ -z "$new_name" ]; then
+if [ -z "${new_email}" ] || [ -z "${new_name}" ]; then
     # not enough arguments
     print_usage
     exit 1
 fi
 
-if [ -z "$old_email" ] && [ -z "$old_name" ]; then
+if [ -z "${old_email}" ] && [ -z "${old_name}" ]; then
     all_authors=1
 fi
 
@@ -113,5 +113,5 @@ filter='
     fi
 '
 
-git filter-branch $force --env-filter "$filter" --tag-name-filter cat \
-    -- $range --branches --tags
+git filter-branch "${force}" --env-filter "${filter}" --tag-name-filter cat \
+    -- "${range}" --branches --tags

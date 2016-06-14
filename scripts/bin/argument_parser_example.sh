@@ -1,10 +1,12 @@
 #!/bin/sh
 
-other_args=''
-handle_other_argument(){
+# based on: http://stackoverflow.com/a/31443098/2228183
+
+positional_arguments=''
+collect_positional_argument(){
     # save all the non-named arguments so they can be reinserted back into the
     # positional parameters at the end of the argument parsing
-    other_args="$other_args \"$@\""
+    positional_arguments="${positional_arguments} '$*'"
 }
 
 # default values
@@ -36,16 +38,21 @@ while [ "$#" -gt 0 ]; do
             exit 1;;
 
         *)
-            handle_other_argument "$1";
+            collect_positional_argument "$1";
     esac
     shift 1
 done
 
 # reinsert non-named arguments back into positional parameters ($1 $2 ..)
-eval set -- $other_args
+eval set -- "${positional_arguments}"
 
-echo name       = "$name"
-echo file       = "$file"
-echo log        = "$log"
-echo default    = "$default"
-echo other args = "$@"
+echo name = "${name}"
+echo file = "${file}"
+echo log = "${log}"
+echo default = "${default}"
+
+# print the other args
+while [ "$#" -gt 0 ]; do
+    echo positional argument = "$1"
+    shift 1
+done

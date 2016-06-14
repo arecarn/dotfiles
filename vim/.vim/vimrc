@@ -493,7 +493,7 @@ let maps = [
     \ {'str' : 'fp',   'func' : "expand('%:p')"},
     \ {'str' : 'rfp',  'func' : "expand('%')"},
     \ {'str' : 'ofn',  'func' : "substitute(expand('%:t'),     '".extension_patter."', '\\2', 'g')"},
-    \ {'str' : 'ofp',  'func' : "substitute(expand('%:p:r:.'), '".extension_patter."', '\\2', 'g')"}, 
+    \ {'str' : 'ofp',  'func' : "substitute(expand('%:p:r:.'), '".extension_patter."', '\\2', 'g')"},
     \ {'str' : 'rofp', 'func' : "expand('%<') . '.'"},
     \ {'str' : 'dp',   'func' : "expand('%:p:h') . '/'"},
     \ {'str' : 'rdp',  'func' : "expand('%:h') . '/'"},
@@ -520,7 +520,7 @@ command! -range=0 Egit edit ~/.gitconfig
 command! -range=0 Egitl edit ~/.gitconfig_local
 command! -range=0 Evim edit $MYVIMRC
 command! -range=0 Eviml edit ~/.vimrc_local
-command! -range=0 SoVim source $MYVIMRC
+command! -range=0 Sovim source $MYVIMRC
 command! -range=0 Etmux edit ~/.tmux.conf
 command! -range=0 Etodo edit ~/Dropbox/notes/todo.txt
 

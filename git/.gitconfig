@@ -30,11 +30,14 @@
     bsu = branch --set-upstream-to # Branch Set Upstream
     bco = checkout --orphan # Branch Create Orphan (empty branch)
 
-    cm = commit
-    cmm = commit --message
-    cmfu = commit --fixup
-    cmsq = commit --squash
-    cma = commit --amend
+    # the --verbose flag is equivalent to setting the commit.verbose option
+    # but this option is only supported in git v2.9+ so the flag is included in
+    # the following aliases instead
+    cm = commit --verbose
+    cmm = !git cm --message
+    cmfu = !git cm --fixup
+    cmsq = !git cm --squash
+    cma = !git cm --amend
 
     f = fetch
     co = checkout
@@ -55,7 +58,7 @@
     as = update-index --again
 
     # run these two as external commands so they operate at the toplevel dir
-    # (this is the default in v2.0.0+)
+    # (this is the default in v2.0+)
     # Add All
     aa = !git add --all
     # Add Modified files
@@ -102,10 +105,10 @@
     rmtl = remote -v
     rmts = remote show
 
-    # Worktrees were added in v2.6.0
+    # Worktrees were added in v2.6
     wta = worktree add
     wtp = worktree prune
-    wtl = worktree list # added in v2.7.0
+    wtl = worktree list # added in v2.7
 
     sm = submodule
     # SubModule Update

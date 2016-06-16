@@ -27,11 +27,24 @@ if ! zplug check --verbose; then
     fi
 fi
 
-# Then, source plugins and add commands to $PATH
+# checks if a plugin is installed via zplug
+_is_installed() {
+    zplug list | grep -q "$@"
+}
+
+# Then, source plugins and add commands to ${PATH}
 zplug load
 
-zstyle :omz:plugins:ssh-agent agent-forwarding on
-zstyle :omz:plugins:ssh-agent identities id_rsa
+if _is_installed 'plugins/ssh-agent'; then
+    zstyle :omz:plugins:ssh-agent agent-forwarding on
+    zstyle :omz:plugins:ssh-agent identities id_rsa
+fi
+
+if _is_installed 'rupa/z'; then
+    local _Z_DATA_DIR="${HOME}/.cache/zsh/z" 
+    mkdir -p $_Z_DATA_DIR
+    export _Z_DATA="${_Z_DATA_DIR}/data"
+fi
 
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{

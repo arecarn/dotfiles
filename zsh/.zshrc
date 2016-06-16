@@ -9,19 +9,20 @@ if [[ ! -d "${ZPLUG_HOME}" ]]; then
     git clone https://github.com/zplug/zplug "${ZPLUG_HOME}"
 fi
 
-source ${zplug_file}
+# shellcheck source=/dev/null
+source "${zplug_file}"
 
-zplug "plugins/command-not-found", from:oh-my-zsh
-zplug "plugins/tmux", from:oh-my-zsh
-zplug "plugins/ssh-agent", from:oh-my-zsh
+zplug 'plugins/command-not-found', from:oh-my-zsh
+zplug 'plugins/tmux', from:oh-my-zsh
+zplug 'plugins/ssh-agent', from:oh-my-zsh
 
-zplug "zsh-users/zsh-completions"
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug "rupa/z", use:"*.sh"
+zplug 'zsh-users/zsh-completions'
+zplug 'zsh-users/zsh-syntax-highlighting'
+zplug 'rupa/z', use:'*.sh'
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
-    printf "Install? [y/n]: "
+    printf 'Install? [y/n]: '
     if read -q; then
         echo; zplug install
     fi
@@ -57,34 +58,34 @@ export LANG='en_US.UTF-8'
 export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
 # configure path
-export PATH="$PATH:$HOME/bin"
+export PATH="${PATH}:${HOME}/bin"
 
-if [[ "$OSTYPE" == "linux"* ]]; then
-    export PATH="$PATH:/usr/bin/X11"
-    export PATH="$PATH:/usr/X11R6/bin"
-    export PATH="$PATH:/usr/games"
-    export PATH="$PATH:/opt/kde3/bin"
-    export PATH="$PATH:/usr/lib/qt3/bin"
+if [[ "${OSTYPE}" == 'linux'* ]]; then
+    export PATH="${PATH}:/usr/bin/X11"
+    export PATH="${PATH}:/usr/X11R6/bin"
+    export PATH="${PATH}:/usr/games"
+    export PATH="${PATH}:/opt/kde3/bin"
+    export PATH="${PATH}:/usr/lib/qt3/bin"
 
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [[ "${OSTYPE}" == 'darwin'* ]]; then
     #for homebrew
-    export MANPATH="$MANPATH:/usr/local/man"
-    export MANPATH="$MANPATH:/opt/homebrew/bin"
-    export PATH="/usr/local/bin:$PATH"
+    export MANPATH="${MANPATH}:/usr/local/man"
+    export MANPATH="${MANPATH}:/opt/homebrew/bin"
+    export PATH="/usr/local/bin:${PATH}"
 fi
 
-if [[ $TERM == "xterm" ]]; then
+if [[ ${TERM} == 'xterm' ]]; then
     export TERM=xterm-256color
 fi
 
 if which pyenv > /dev/null; then
-    eval "$(pyenv init -)";
+    eval '$(pyenv init -)';
 fi
 
-f="$HOME/Dropbox/"
-n="$HOME/Dropbox/notes/"
-df="$HOME/dotfiles/"
-dfl="$HOME/dotfiles_local/"
+f="${HOME}/Dropbox/"
+n="${HOME}/Dropbox/notes/"
+df="${HOME}/dotfiles/"
+dfl="${HOME}/dotfiles_local/"
 
 autoload -Uz compinit  && compinit -d ~/.zcompdump
 zmodload zsh/complist
@@ -271,94 +272,94 @@ weather() {
 
 alias -g ...="../../"
 
-alias gp="grep -P"
-alias py="python"
-alias p="$PAGER"
+alias gp='grep -P'
+alias py='python'
+alias p='${PAGER}'
 
-alias so="source"
-alias sozsh="source ~/.zshrc"
-alias sotmux="tmux source-file ~/.tmux.conf"
+alias so='source'
+alias sozsh='source ~/.zshrc'
+alias sotmux='tmux source-file ~/.tmux.conf'
 
-alias e="$EDITOR"
-alias ezsh="$EDITOR ~/.zshrc"
-alias ezshl="$EDITOR ~/.zshrc_local"
-alias egit="$EDITOR ~/.gitconfig"
-alias egitl="$EDITOR ~/.gitconfig_local"
-alias evim="$EDITOR ~/.vimrc"
-alias eviml="$EDITOR ~/.vimrc_local"
-alias etmux="$EDITOR ~/.tmux.conf"
-alias etodo="$EDITOR ~/Dropbox/notes/todo.txt"
+alias e='${EDITOR}'
+alias ezsh='${EDITOR} ~/.zshrc'
+alias ezshl='${EDITOR} ~/.zshrc_local'
+alias egit='${EDITOR} ~/.gitconfig'
+alias egitl='${EDITOR} ~/.gitconfig_local'
+alias evim='${EDITOR} ~/.vimrc'
+alias eviml='${EDITOR} ~/.vimrc_local'
+alias etmux='${EDITOR} ~/.tmux.conf'
+alias etodo='${EDITOR} ~/Dropbox/notes/todo.txt'
 
-alias mk="mkdir"
-alias rd="rmdir"
-alias rmr="rm -r"
+alias mk='mkdir'
+alias rd='rmdir'
+alias rmr='rm -r'
 
 # shortcuts to tar and compress
-alias targz="tar -zcvf"
-alias tarbz2="tar -jcvf"
-alias tarxz="tar -Jcvf"
+alias targz='tar -zcvf'
+alias tarbz2='tar -jcvf'
+alias tarxz='tar -Jcvf'
 # extract tar archive even if it has been compressed (e.g. .gz, .xz, bz2)
-alias untar="tar -xvf"
+alias untar='tar -xvf'
 
-alias df="df -h"
-alias du="du -hc"
+alias df='df -h'
+alias du='du -hc'
 # disk usage sorted
-alias dus="du -hsxc *(D) | sort -rh"
+alias dus='du -hsxc *(D) | sort -rh'
 
-alias g="git"
-alias gnp="git --no-pager"
+alias g='git'
+alias gnp='git --no-pager'
 alias gcd='cd $(git rev-parse --show-toplevel)'
-alias v="vim"
+alias v='vim'
 
-alias l="ls -paF"
-alias ll="l -lh"
-alias ld="l -d *(/D)"
-alias lld="ld -lh *(/D)"
+alias l='ls -paF'
+alias ll='l -lh'
+alias ld='l -d *(/D)'
+alias lld='ld -lh *(/D)'
 
-alias t="pwd; tree"
-alias tt="t -ph"
-alias td="t -d"
-alias ttd="tt -d"
+alias t='pwd; tree'
+alias tt='t -ph'
+alias td='t -d'
+alias ttd='tt -d'
 
-if [[ "$OSTYPE" == "linux"* ]]; then
+if [[ "${OSTYPE}" == 'linux'* ]]; then
     alias open="xdg-open"
-elif [[ "$OSTYPE" == "cygwin" ]]; then
+elif [[ "${OSTYPE}" == 'cygwin' ]]; then
     alias open="cygstart"
-elif [[ "$OSTYPE" == "win32" ]]; then
+elif [[ "${OSTYPE}" == 'win32' ]]; then
     alias open="start"
 fi
 
-if [[ "$OSTYPE" == "linux"* ]]; then
-    alias rsyncp="rsync -aHAX"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    alias rsyncp="rsync -aHE"
+if [[ "${OSTYPE}" == 'linux'* ]]; then
+    alias rsyncp='rsync -aHAX'
+elif [[ "${OSTYPE}" == 'darwin'* ]]; then
+    alias rsyncp='rsync -aHE'
 fi
 
 # GLOBAL ABBERVIATIONS {{{2
 typeset -Ag abbreviations
 abbreviations=(
-"\\h"   "HEAD__CURSOR__"
-"Ia"    "| awk"
-"Ig"    "| grep -P"
-"Igv"   "| grep -Pv" #inverse match
-"Ih"    "| head"
-"Im"    "| more"
-"Ip"    "| $PAGER"
-"Is"    "| sort"
-"Ist"   "| sed"
-"It"    "| tail"
-"Iv"    "| vim -R -"
-"Iw"    "| wc"
-"Ix"    "| xargs"
+'\\h'   'HEAD__CURSOR__'
+'Ia'    '| awk'
+'Ig'    '| grep -P'
+'Igv'   '| grep -Pv' #inverse match
+'Ih'    '| head'
+'Im'    '| more'
+'Ip'    '| ${PAGER}'
+'Is'    '| sort'
+'Ist'   '| sed'
+'It'    '| tail'
+'Iv'    '| vim -R -'
+'Iw'    '| wc'
+'Ix'    '| xargs'
 )
 
 magic-abbrev-expand() {
     local MATCH
     LBUFFER=${LBUFFER%%(#m)[_a-zA-Z0-9\\]#}
-    command=${abbreviations[$MATCH]}
-    LBUFFER+=${command:-$MATCH}
+    command=${abbreviations[${MATCH}]}
+    LBUFFER+=${command:-${MATCH}}
 
-    if [[ "${command}" =~ "__CURSOR__" ]]
+    if [[ "${command}" =~ '__CURSOR__' ]]
     then
         RBUFFER=${LBUFFER[(ws:__CURSOR__:)2]}
         LBUFFER=${LBUFFER[(ws:__CURSOR__:)1]}
@@ -375,9 +376,9 @@ no-magic-abbrev-expand() {
 }
 zle -N no-magic-abbrev-expand
 
-bindkey -M viins " " magic-abbrev-expand
-bindkey -M viins "^ " no-magic-abbrev-expand
-bindkey -M isearch " " self-insert
+bindkey -M viins ' ' magic-abbrev-expand
+bindkey -M viins '^ ' no-magic-abbrev-expand
+bindkey -M isearch ' ' self-insert
 # }}}2
 
 # run a command until it fails
@@ -393,8 +394,8 @@ untilfail()
 _nmod()
 {
     local umask=$(umask)
-    local permissions="$(($1 - $umask))"
-    local expression="chmod "$permissions" ${@:2}"
+    local permissions="$(($1 - ${umask}))"
+    local expression="chmod ${permissions} ${@:2}"
     print $expression
     eval $expression
 }
@@ -457,17 +458,17 @@ VI_OTHER_MODES='            '
 
 set-prompt () { # {{{2
     case ${KEYMAP} in
-      (viins|main) VI_MODE=$VI_INSERT_MODE ;;
-      (*)          VI_MODE=$VI_OTHER_MODES ;;
+      (viins|main) VI_MODE=${VI_INSERT_MODE} ;;
+      (*)          VI_MODE=${VI_OTHER_MODES} ;;
     esac
-    PROMPT="%{$MOVE_CURSOR_DOWN$VI_MODE$RESTORE_CURSOR%}%~ %# "
+    PROMPT="%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ %# "
 } # }}}2
 
 precmd () { # {{{2
     vcs_info
     print -rP "
 %n%F{blue}@%m%f ${vcs_info_msg_0_}"
-    PROMPT="%{$MOVE_CURSOR_DOWN$VI_INSERT_MODE$RESTORE_CURSOR%}%~ %# "
+    PROMPT="%{${MOVE_CURSOR_DOWN}${VI_INSERT_MODE}${RESTORE_CURSOR}%}%~ %# "
 } # }}}2
 
 zle-line-init() zle-keymap-select() { # {{{2
@@ -478,17 +479,21 @@ zle -N zle-line-init
 zle -N zle-keymap-select
 # }}}2
 
-preexec () { print -rn -- $terminfo[el]; }
+preexec () {
+    print -rn -- "$terminfo[el]";
+}
 
 ###########################################################################}}}
 # MISC                                                                     {{{
 ##############################################################################
+# shellcheck source=/dev/null
 source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 
 # stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
 stty -ixon
 stty stop undef
 
+# shellcheck source=/dev/null
 source ~/.zshrc_local
 
 ###########################################################################}}}

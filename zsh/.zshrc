@@ -79,7 +79,7 @@ if [[ ${TERM} == 'xterm' ]]; then
 fi
 
 if which pyenv > /dev/null; then
-    eval '$(pyenv init -)';
+    eval "$(pyenv init -)";
 fi
 
 f="${HOME}/Dropbox/"

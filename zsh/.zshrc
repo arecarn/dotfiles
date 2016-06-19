@@ -289,6 +289,7 @@ alias evim='${EDITOR} ~/.vimrc'
 alias eviml='${EDITOR} ~/.vimrc_local'
 alias etmux='${EDITOR} ~/.tmux.conf'
 alias etodo='${EDITOR} ~/Dropbox/notes/todo.txt'
+alias einbox='${EDITOR} ~/Dropbox/notes/inbox.md'
 
 alias mk='mkdir'
 alias rd='rmdir'

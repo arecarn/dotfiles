@@ -310,6 +310,7 @@ alias g='git'
 alias gnp='git --no-pager'
 alias gcd='cd $(git rev-parse --show-toplevel)'
 alias v='vim'
+alias m="make"
 
 alias l='ls -paF'
 alias ll='l -lh'

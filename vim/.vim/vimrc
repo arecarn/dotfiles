@@ -524,6 +524,7 @@ command! -range=0 Eviml edit ~/.vimrc_local
 command! -range=0 Sovim source $MYVIMRC
 command! -range=0 Etmux edit ~/.tmux.conf
 command! -range=0 Etodo edit ~/Dropbox/notes/todo.txt
+command! -range=0 Einbox edit ~/Dropbox/notes/inbox.md
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{

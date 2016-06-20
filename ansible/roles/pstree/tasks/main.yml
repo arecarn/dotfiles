@@ -1,0 +1,5 @@
+- name: pstree
+  homebrew:
+    name: pstree
+    state: latest
+  when: ansible_distribution == 'MacOSX'

@@ -1,0 +1,6 @@
+- name: firefox
+  homebrew_cask:
+    name: firefox
+    state: present
+  when: ansible_distribution == 'MacOSX'
+

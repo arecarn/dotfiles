@@ -1,0 +1,6 @@
+- name: sdl
+  homebrew:
+    name: "{{item.name}}"
+    state: latest
+  with_items: "{{homebrew_packages}}"
+  when: ansible_distribution == 'MacOSX'

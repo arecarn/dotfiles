@@ -5,5 +5,5 @@
     version: "{{item.version}}"
     force: no
     update: no
-  with_items: git_repositories
+  with_items: "{{git_repositories}}"
   ignore_errors: yes

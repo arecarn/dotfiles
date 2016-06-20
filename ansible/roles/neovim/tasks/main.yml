@@ -1,0 +1,5 @@
+- name: neovim
+  homebrew:
+    name: neovim/neovim/neovim
+    state: latest
+  when: ansible_distribution == 'MacOSX'

@@ -1,0 +1,5 @@
+- name: curl
+  homebrew:
+    name: curl
+    state: latest
+  when: ansible_distribution == 'MacOSX'

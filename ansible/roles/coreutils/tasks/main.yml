@@ -1,0 +1,6 @@
+- name: coreutils
+  homebrew:
+    name: coreutils
+    state: latest
+  when: ansible_distribution == 'MacOSX'
+

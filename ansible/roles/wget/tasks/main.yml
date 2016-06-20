@@ -1,0 +1,5 @@
+- name: wget
+  homebrew:
+    name: wget
+    state: latest
+  when: ansible_distribution == 'MacOSX'

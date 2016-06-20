@@ -5,56 +5,14 @@ homebrew_taps:
   - homebrew/dupes
 
 homebrew_packages:
-  - {name: 'ack'}
-  - {name: 'ag'}
-
-  - {name: 'curl'}
-  - {name: 'httpie'}
-  - {name: 'wget'}
-
-  - {name: 'git'}
-  - {name: 'hg'}
-
-  - {name: 'htop'}
-  - {name: 'pstree'}
-
-  - {name: 'moreutils'}
-  - {name: 'mutt'}
-  - {name: 'scons'}
-  - {name: 'tmux'}
-  - {name: 'zsh'}
-  - {name: 'tree'}
-
-  - {name: 'lua'}
-  - {name: 'ruby'}
-  - {name: 'python'}
-  - {name: 'python3'}
-
-  - {name: 'vim', options: 'with-lua'}
-  - {name: 'neovim/neovim/neovim'}
-  - {name: 'cscope'}
 
     # mac specific
-  - {name: 'reattach-to-user-namespace'}
   - {name: 'coreutils'}
+  - {name: 'git'}
 
     # for pygame
   - {name: 'portmidi'}
-  - {name: 'sdl'}
-  - {name: 'sdl_image'}
-  - {name: 'sdl_mixer'}
-  - {name: 'sdl_ttf'}
 
 homebrew_cask_packages:
-  - appcleaner
-  - dash
-  - dropbox
-  - firefox
-  - google-chrome
-  - iterm2
-  - licecap
-  - skype
-  - spectacle
-  - transmission
   - vlc
-  - xquartz
+  - transmission

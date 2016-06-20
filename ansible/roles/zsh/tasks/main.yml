@@ -1,0 +1,5 @@
+- name: zsh
+  homebrew:
+    name: zsh
+    state: latest
+  when: ansible_distribution == 'MacOSX'

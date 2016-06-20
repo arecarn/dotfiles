@@ -1,0 +1,5 @@
+- name: xquartz
+  homebrew_cask:
+    name: xquartz
+    state: present
+  when: ansible_distribution == 'MacOSX'

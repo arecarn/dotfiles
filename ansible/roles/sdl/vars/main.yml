@@ -1,0 +1,6 @@
+---
+homebrew_packages:
+  - {name: 'sdl'}
+  - {name: 'sdl_image'}
+  - {name: 'sdl_mixer'}
+  - {name: 'sdl_ttf'}

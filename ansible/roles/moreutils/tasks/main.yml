@@ -1,0 +1,5 @@
+- name: moreutils
+  homebrew:
+    name: moreutils
+    state: latest
+  when: ansible_distribution == 'MacOSX'

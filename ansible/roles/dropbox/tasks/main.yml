@@ -1,0 +1,6 @@
+- name: dropbox
+  homebrew_cask:
+    name: dropbox
+    state: present
+  when: ansible_distribution == 'MacOSX'
+

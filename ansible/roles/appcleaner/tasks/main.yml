@@ -1,0 +1,6 @@
+---
+- name: appcleaner
+  homebrew_cask:
+    name: appcleaner
+    state: present
+  when: ansible_distribution == 'MacOSX'

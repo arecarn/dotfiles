@@ -2,19 +2,19 @@
   homebrew: update_homebrew=yes
 
 - name: Add Taps
-  homebrew_tap: name={{item}} state=present
-  with_items: homebrew_taps
+  homebrew_tap: name="{{item}}" state=present
+  with_items: "{{homebrew_taps}}"
 
 - name: Install packages with homebrew
   homebrew:
     name: "{{item.name}}"
     options: "{{item.options|default()}}"
     state: latest
-  with_items: homebrew_packages
+  with_items: "{{homebrew_packages}}"
 
 - name: Install packages with homebrew cask
-  homebrew_cask: name={{item}} state=installed
-  with_items: homebrew_cask_packages
+  homebrew_cask: name="{{item}}" state=installed
+  with_items: "{{homebrew_cask_packages}}"
 
 - name: Update all packages
   homebrew: update_homebrew=yes

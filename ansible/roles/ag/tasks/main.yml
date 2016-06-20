@@ -1,0 +1,5 @@
+- name: ag
+  homebrew:
+    name: ag
+    state: latest
+  when: ansible_distribution == 'MacOSX'

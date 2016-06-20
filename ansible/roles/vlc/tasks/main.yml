@@ -1,0 +1,5 @@
+- name: vlc
+  homebrew_cask:
+    name: vlc
+    state: present
+  when: ansible_distribution == 'MacOSX'

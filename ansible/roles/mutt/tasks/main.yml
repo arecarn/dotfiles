@@ -1,0 +1,5 @@
+- name: mutt
+  homebrew:
+    name: mutt
+    state: latest
+  when: ansible_distribution == 'MacOSX'

@@ -1,0 +1,5 @@
+- name: licecap
+  homebrew_cask:
+    name: licecap
+    state: present
+  when: ansible_distribution == 'MacOSX'

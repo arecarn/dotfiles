@@ -1,0 +1,5 @@
+- name: tree
+  homebrew:
+    name: tree
+    state: latest
+  when: ansible_distribution == 'MacOSX'

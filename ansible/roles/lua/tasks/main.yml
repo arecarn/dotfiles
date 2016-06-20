@@ -1,0 +1,5 @@
+- name: lua
+  homebrew:
+    name: lua
+    state: latest
+  when: ansible_distribution == 'MacOSX'

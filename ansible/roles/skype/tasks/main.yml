@@ -1,0 +1,5 @@
+- name: skype
+  homebrew_cask:
+   name: skype
+   state: present
+  when: ansible_distribution == 'MacOSX'

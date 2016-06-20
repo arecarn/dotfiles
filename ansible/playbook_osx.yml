@@ -1,13 +1,50 @@
 ---
 - hosts: all
   connection: local
-  gather_facts: false
   vars_prompt:
      - name: "username"
        prompt: "USERNAME"
   vars:
     system: 'osx'
   roles:
-      - pip
+      - ack
+      - ag
+      - appcleaner
+      - chrome
+      - coreutils
+      - cscope
+      - curl
+      - dash
+      - dropbox
+      - firefox
+      - git
+      - hg
       - homebrew
-      - set-default-shell-osx
+      - htop
+      - httpie
+      - iterm2
+      - licecap
+      - lua
+      - moreutils
+      - mutt
+      - neovim
+      - pip
+      - pstree
+      - pygame
+      - python2
+      - python3
+      - reattach-to-user-namespace
+      - ruby
+      - sdl
+      - set_default_shell_osx
+      - skype
+      - spectacle
+      - tmp
+      - tmux
+      - transmission
+      - tree
+      - vim
+      - vlc
+      - wget
+      - xquartz
+      - zsh

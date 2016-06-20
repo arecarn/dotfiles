@@ -1,0 +1,5 @@
+- name: transmission
+  homebrew_cask:
+    name: transmission
+    state: present
+  when: ansible_distribution == 'MacOSX'

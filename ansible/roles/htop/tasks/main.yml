@@ -1,0 +1,5 @@
+- name: htop
+  homebrew:
+    name: htop
+    state: latest
+  when: ansible_distribution == 'MacOSX'

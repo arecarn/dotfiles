@@ -1,0 +1,5 @@
+- name: spectacle
+  homebrew_cask:
+    name: spectacle
+    state: present
+  when: ansible_distribution == 'MacOSX'

@@ -1,0 +1,6 @@
+- name: vim
+  homebrew:
+    name: vim
+    options: with-lua
+    state: latest
+  when: ansible_distribution == 'MacOSX'

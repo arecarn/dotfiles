@@ -1,0 +1,5 @@
+- name: dash
+  homebrew_cask:
+    name: dash
+    state: present
+  when: ansible_distribution == 'MacOSX'

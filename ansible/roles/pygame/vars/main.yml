@@ -1,0 +1,5 @@
+pip_modules_mac:
+  - 'hg+http://bitbucket.org/pygame/pygame#egg=pygame'
+
+homebrew_packages:
+  - portmidi

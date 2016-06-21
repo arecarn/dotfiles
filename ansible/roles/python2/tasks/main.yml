@@ -1,5 +1,0 @@
-- name: python2
-  homebrew:
-    name: python
-    state: latest
-  when: ansible_distribution == 'MacOSX'

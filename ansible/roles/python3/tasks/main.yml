@@ -1,6 +1,0 @@
-- name: python3
-  homebrew:
-    name: python3
-    state: latest
-  when: ansible_distribution == 'MacOSX'
-

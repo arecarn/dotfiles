@@ -1,18 +1,13 @@
 ---
 pip_modules:
-  # python 3 prefered
+  - gitpython
+
+pip2_modules:
+  - scons
+  - ansible
+
+pip3_modules:
   - dploy
   - pylint
   - invoke
-
-  # both
-  - gitpython
-
-
-  # python 2 only
-  # - scons
-  # - ansible
-
-pip_modules_osx:
-  # - 'hg+http://bitbucket.org/pygame/pygame#egg=pygame'
 

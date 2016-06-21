@@ -1,0 +1,7 @@
+- name: python
+  homebrew:
+    name: "{{item}}"
+    state: latest
+  with_items: "{{homebrew_packages}}"
+  when: ansible_distribution == 'MacOSX'
+

@@ -31,15 +31,13 @@
       - pip
       - pstree
       - pygame
-      - python2
-      - python3
+      - python
       - reattach-to-user-namespace
       - ruby
       - sdl
       - set_default_shell_osx
       - skype
       - spectacle
-      - tmp
       - tmux
       - transmission
       - tree

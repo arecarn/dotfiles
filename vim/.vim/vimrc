@@ -100,12 +100,28 @@ set noswapfile
 " BACKUP                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set backup
-" Make the back up file extension year-month-day_hour ex: file.txt_13-02-24_15
-let backupext = "_" . strftime("%y-%m-%d_%H")
-execute "set backupext=" . backupext
+
 call s:make_data_directory('backup')
 let s:backupdir = s:make_data_path('backup') . '//'
 execute 'set backupdir=' . s:backupdir
+
+" Double slash does not actually work for backupdir, here's a fix that appends
+" the path separated by percents and a time stamp
+function! s:backupext() abort
+    let time = "_" . strftime("%Y-%m-%d-%H")
+    let path_forward_slash_as_percent = substitute(expand('%:p:h'), '/', '%', 'g')
+    let path_back_slash_as_percent = substitute(path_forward_slash_as_percent , '\', '%', 'g')
+    let path_colon_removed = substitute(path_back_slash_as_percent, ':', '', 'g')
+    let path = path_colon_removed
+    return '@' . path . time
+endfunction
+
+if has("autocmd")
+    augroup backupext
+        autocmd!
+        autocmd BufWritePre * let &backupext=s:backupext()
+    augroup END
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                            {{{

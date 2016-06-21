@@ -35,7 +35,7 @@
       - reattach-to-user-namespace
       - ruby
       - sdl
-      - set_default_shell_osx
+      - set_default_shell
       - skype
       - spectacle
       - tmux

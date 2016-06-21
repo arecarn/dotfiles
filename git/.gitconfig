@@ -3,6 +3,7 @@
 
 [commit]
     template = ~/.config/git/gitmessage
+    verbose = true
 
 [diff]
     tool = vimdiff

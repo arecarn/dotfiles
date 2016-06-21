@@ -132,12 +132,14 @@
     pr = pull --rebase
 
 
-    cln = clean --force --interactive -d
+    cln = clean --interactive
+    # CLeaN Deep
+    clnd = clean --interactive -d -x
 
     # check if a file  exist in the repository?
     exists = ls-files --error-unmatch
 
-    chcm = !git change-commits
+
 [push]
     # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
     # only pushes current branch to the one that git pull would pull from only

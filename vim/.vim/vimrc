@@ -10,13 +10,20 @@ set encoding=utf-8 "make Vim use UTF-8 by default
 let s:has_windows = has("win16") || has("win32") || has("win64")
 
 if s:has_windows
-    let s:vim_path = $HOME . "/vimfiles"
+    let s:vim_path = $HOME . '/vimfiles'
 else
-    let s:vim_path = $HOME . "/.vim"
+    let s:vim_path = $HOME . '/.vim'
 endif
 
-let s:cache_path = $HOME . "/.cache/vim/"
-let s:data_path = $HOME . "/.local/share/vim/"
+if empty($XDG_CACHE_HOME)
+    let $XDG_CACHE_HOME = $HOME . '/.cache'
+endif
+let s:cache_path = $XDG_CACHE_HOME . '/vim/'
+
+if empty($XDG_DATA_HOME)
+    let $XDG_DATA_HOME = $HOME . '/.local/share'
+endif
+let s:data_path = $XDG_DATA_HOME . '/vim/'
 
 function! s:make_private_directory(path) abort
     if !isdirectory(a:path)
@@ -87,6 +94,7 @@ execute 'set undodir=' . s:make_data_path('undo') . '//'
 set undolevels=20000
 set undoreload=20000
 set noswapfile
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                   {{{

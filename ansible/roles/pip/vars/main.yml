@@ -11,3 +11,10 @@ pip3_modules:
   - pylint
   - invoke
 
+pip2_executable:
+  macosx: pip2
+  opensuse: pip2
+
+pip3_executable:
+  macosx: pip3
+  opensuse: pip

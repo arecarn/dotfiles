@@ -1,15 +1,15 @@
 - name: python 2 packages
-  pip: name="{{item}}"
+  pip: name="{{item}}" executable="{{pip2_executable[ansible_distribution | lower] | default([pip2])}}"
   with_items: "{{pip_modules}}"
 
+- name: python 2 only packages
+  pip: name="{{item}}" executable="{{pip2_executable[ansible_distribution|lower] | default([pip2])}}"
+  with_items: "{{pip2_modules}}"
+
 - name: python 3 packages
-  pip: name="{{item}}"
+  pip: name="{{item}}" executable="{{pip3_executable[ansible_distribution|lower] | default([pip3])}}"
   with_items: "{{pip_modules}}"
 
 - name: python 3 only packages
-  pip: name="{{item}}" executable=pip3
+  pip: name="{{item}}" executable="{{pip3_executable[ansible_distribution|lower] | default([pip3])}}"
   with_items: "{{pip3_modules}}"
-
-- name: python 2 only packages
-  pip: name="{{item}}" executable=pip2
-  with_items: "{{pip2_modules}}"

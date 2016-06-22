@@ -1,0 +1,5 @@
+---
+zypper_packages:
+  - vlc
+  - vlc-codecs
+

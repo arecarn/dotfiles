@@ -1,9 +1,7 @@
-- name: Update homebrew
-  homebrew: update_homebrew=yes
-
 - name: Add Taps
   homebrew_tap: name="{{item}}" state=present
   with_items: "{{homebrew_taps}}"
+  when: ansible_distribution == 'MacOSX'
 
 - name: Install packages with homebrew
   homebrew:
@@ -11,10 +9,13 @@
     options: "{{item.options|default()}}"
     state: latest
   with_items: "{{homebrew_packages}}"
+  when: ansible_distribution == 'MacOSX'
 
 - name: Install packages with homebrew cask
   homebrew_cask: name="{{item}}" state=installed
   with_items: "{{homebrew_cask_packages}}"
+  when: ansible_distribution == 'MacOSX'
 
 - name: Update all packages
   homebrew: update_homebrew=yes
+  when: ansible_distribution == 'MacOSX'

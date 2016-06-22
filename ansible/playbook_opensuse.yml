@@ -8,6 +8,49 @@
   vars:
     system: 'open suse 13.1'
   roles:
-    - pip
-    - zypper
+    - ack
+    - ag
+    - appcleaner
+    - chrome
+    - coreutils
+    - cscope
+    - curl
+    - dash
+    - dirdiff
+    - dropbox
+    - firefox
     - git
+    - git_repos
+    - haskell
+    - hg
+    - homebrew
+    - htop
+    - httpie
+    - iterm2
+    - licecap
+    - lua
+    - moreutils
+    - mutt
+    - neovim
+    - picocom
+    - pip
+    - pstree
+    - pygame
+    - python
+    - reattach-to-user-namespace
+    - ruby
+    - sdl
+    - set_default_shell
+    - skype
+    - spectacle
+    - tmux
+    - transmission
+    - tree
+    - vim
+    - vlc
+    - vlc-codecs
+    - wget
+    - xclip
+    - xquartz
+    - zsh
+    - zypper

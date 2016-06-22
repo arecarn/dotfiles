@@ -1,13 +1,13 @@
-- name: httpie
+- name: picocom
   homebrew:
-    name: httpie
+    name: picocom
     state: latest
   when: ansible_distribution == 'MacOSX'
 
-
-- name: httpie
+- name: picocom
   zypper:
-    name: httpie
+    name: picocom
     state: latest
     disable_recommends: no
   when: ansible_distribution == 'OpenSuse'
+

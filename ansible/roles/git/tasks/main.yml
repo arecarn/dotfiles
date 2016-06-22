@@ -1,9 +1,12 @@
-- name: Clone or Update Git Repositories
-  git:
-    repo: "{{item.repo}}"
-    dest: "{{item.dest}}"
-    version: "{{item.version}}"
-    force: no
-    update: no
-  with_items: "{{git_repositories}}"
-  ignore_errors: yes
+- name: htop
+  homebrew:
+    name: git
+    state: latest
+  when: ansible_distribution == 'MacOSX'
+
+- name: htop
+  zypper:
+    name: git
+    state: latest
+    disable_recommends: no
+  when: ansible_distribution == 'OpenSuse'

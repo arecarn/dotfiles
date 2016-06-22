@@ -1,3 +1,4 @@
 dependencies:
   - sdl
   - python
+  - hg

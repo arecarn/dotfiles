@@ -122,12 +122,14 @@
     # SubModule Update Remote
     smur = !git smu --remote && git smco
 
-    # better CLONe repo and its submodules and make sure they are
-    # initialized/updated
+    # a better CLone of a repo making sure it's submodules are initialized and
+    # updated
     cl = "!f() { git clone --recursive \"$@\" && git smu; }; f"
-    # better PULl only if a fast forward is possible, then  make sure
+    # better Pull of a repo only if a fast forward is possible, then make sure
     # submodules are updated
-    pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
+    p = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
+    pr = pull --rebase
+
 
     cln = clean --force --interactive -d
 

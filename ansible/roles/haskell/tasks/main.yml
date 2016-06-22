@@ -1,12 +1,5 @@
-- name: haskell
+- name: MacOSX
   homebrew:
     name: haskell-stack
     state: latest
   when: ansible_distribution == 'MacOSX'
-
-- name: haskell
-  zypper:
-    name: haskell-platform
-    state: latest
-    disable_recommends: no
-  when: ansible_distribution == 'OpenSuse'

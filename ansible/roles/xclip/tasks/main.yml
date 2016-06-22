@@ -1,6 +1,7 @@
-- name: xclip
+- name: openSUSE
+  become: true
   zypper:
     name: xclip
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'OpenSuse'
+  when: ansible_distribution == 'openSUSE'

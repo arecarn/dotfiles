@@ -1,4 +1,4 @@
-- name: firefox
+- name: MacOSX
   homebrew_cask:
     name: firefox
     state: present

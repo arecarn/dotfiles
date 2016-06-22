@@ -1,4 +1,4 @@
-- name: moreutils
+- name: MacOSX
   homebrew:
     name: moreutils
     state: latest

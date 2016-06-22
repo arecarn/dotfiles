@@ -8,17 +8,9 @@ zypper_repositories:
     }
 
 zypper_packages:
-  - dropbox
-  - picocom
-  - xclip
-  - haskell-platform
-  - httpie
-  - git
   - python-pip
-  - dirdiff
-  - htop
-  - vlc
-  - vlc-codecs
+  - python3-pip
+  - ShellCheck
 
 zypper_specifc_packages:
   - http://download.opensuse.org/repositories/systemsmanagement/openSUSE_13.1/noarch/ansible-1.9.4-42.2.noarch.rpm

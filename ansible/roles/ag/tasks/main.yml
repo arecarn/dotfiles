@@ -1,4 +1,4 @@
-- name: ag
+- name: MacOSX
   homebrew:
     name: ag
     state: latest

@@ -1,4 +1,4 @@
-- name: ack
+- name: MacOSX
   homebrew:
     name: ack
     state: latest

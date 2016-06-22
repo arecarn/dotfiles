@@ -1,4 +1,4 @@
-- name: curl
+- name: MacOSX
   homebrew:
     name: curl
     state: latest

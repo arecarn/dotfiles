@@ -1,4 +1,4 @@
-- name: hg
+- name: MacOSX
   homebrew:
     name: hg
     state: latest

@@ -1,13 +1,14 @@
-- name: picocom
+- name: MacOSX
   homebrew:
     name: picocom
     state: latest
   when: ansible_distribution == 'MacOSX'
 
-- name: picocom
+- name: openSUSE
+  become: true
   zypper:
     name: picocom
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'OpenSuse'
+  when: ansible_distribution == 'openSUSE'
 

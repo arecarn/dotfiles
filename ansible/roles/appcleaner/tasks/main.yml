@@ -1,5 +1,4 @@
----
-- name: appcleaner
+- name: MacOSX
   homebrew_cask:
     name: appcleaner
     state: present

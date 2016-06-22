@@ -1,4 +1,4 @@
-- name: lua
+- name: MacOSX
   homebrew:
     name: lua
     state: latest

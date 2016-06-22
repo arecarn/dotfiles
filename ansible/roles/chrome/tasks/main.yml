@@ -1,4 +1,4 @@
-- name: chrome
+- name: MacOSX
   homebrew_cask:
     name: google-chrome
     state: present

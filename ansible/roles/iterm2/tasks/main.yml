@@ -1,4 +1,4 @@
-- name: iterm2
+- name: MacOSX
   homebrew_cask:
     name: iterm2
     state: present

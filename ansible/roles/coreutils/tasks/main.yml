@@ -1,4 +1,4 @@
-- name: coreutils
+- name: MacOSX
   homebrew:
     name: coreutils
     state: latest

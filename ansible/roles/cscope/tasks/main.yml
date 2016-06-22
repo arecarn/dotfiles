@@ -1,4 +1,4 @@
-- name: cscope
+- name: MacOSX
   homebrew:
     name: cscope
     state: latest

@@ -1,4 +1,4 @@
-- name: licecap
+- name: MacOSX
   homebrew_cask:
     name: licecap
     state: present

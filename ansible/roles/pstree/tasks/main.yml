@@ -1,4 +1,4 @@
-- name: pstree
+- name: MacOSX
   homebrew:
     name: pstree
     state: latest

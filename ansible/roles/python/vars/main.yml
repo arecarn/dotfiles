@@ -1,4 +1,4 @@
-homebrew_packages:
+packages:
   - python
   - python3
 

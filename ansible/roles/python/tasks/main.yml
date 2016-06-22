@@ -1,7 +1,15 @@
-- name: python
+- name: MacOSX
   homebrew:
     name: "{{item}}"
     state: latest
-  with_items: "{{homebrew_packages}}"
+  with_items: "{{packages}}"
   when: ansible_distribution == 'MacOSX'
 
+- name: openSUSE
+  become: true
+  zypper:
+    name: "{{item}}"
+    state: present
+    disable_recommends: no
+  with_items: "{{packages}}"
+  when: ansible_distribution == "openSUSE"

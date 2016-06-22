@@ -1,4 +1,4 @@
-- name: dash
+- name: MacOSX
   homebrew_cask:
     name: dash
     state: present

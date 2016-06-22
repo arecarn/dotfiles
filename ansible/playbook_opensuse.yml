@@ -1,12 +1,9 @@
 ---
 - hosts: all
   connection: local
-  gather_facts: false
   vars_prompt:
      - name: "username"
        prompt: "USERNAME"
-  vars:
-    system: 'open suse 13.1'
   roles:
     - ack
     - ag
@@ -48,7 +45,6 @@
     - tree
     - vim
     - vlc
-    - vlc-codecs
     - wget
     - xclip
     - xquartz

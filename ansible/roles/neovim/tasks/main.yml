@@ -1,4 +1,4 @@
-- name: neovim
+- name: MacOSX
   homebrew:
     name: neovim/neovim/neovim
     state: latest

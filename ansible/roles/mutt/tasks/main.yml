@@ -1,4 +1,4 @@
-- name: mutt
+- name: MacOSX
   homebrew:
     name: mutt
     state: latest

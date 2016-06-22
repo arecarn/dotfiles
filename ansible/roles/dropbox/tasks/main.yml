@@ -4,3 +4,10 @@
     state: present
   when: ansible_distribution == 'MacOSX'
 
+- name: dropbox
+  zypper:
+    name: dropbox
+    state: latest
+    disable_recommends: no
+  when: ansible_distribution == 'OpenSuse'
+

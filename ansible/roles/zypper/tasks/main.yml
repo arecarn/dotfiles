@@ -4,13 +4,16 @@
     refresh: yes
     repo: "{{item.repo}}"
     state: present
-  with_items: zypper_repositories
+  with_items: "{{zypper_repositories}}"
+  when: ansible_distribution == "OpenSuse"
 
 - name: Zypper Install General Packages
-  zypper: name={{item}} state=latest disable_recommends=no
-  with_items: zypper_packages
+  zypper: name="{{item}}" state=latest disable_recommends=no
+  with_items: "{{zypper_packages}}"
+  when: ansible_distribution == "OpenSuse"
 
 - name: Zypper Install Specific Packages
-  zypper: name={{item}} state=present disable_recommends=no
-  with_items: zypper_specifc_packages
+  zypper: name="{{item}}" state=present disable_recommends=no
+  with_items: "{{zypper_specifc_packages}}"
   ignore_errors: yes
+  when: ansible_distribution == "OpenSuse"

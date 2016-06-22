@@ -1,13 +1,12 @@
-- name: httpie
+- name: haskell
   homebrew:
-    name: httpie
+    name: haskell-stack
     state: latest
   when: ansible_distribution == 'MacOSX'
 
-
-- name: httpie
+- name: haskell
   zypper:
-    name: httpie
+    name: haskell-platform
     state: latest
     disable_recommends: no
   when: ansible_distribution == 'OpenSuse'

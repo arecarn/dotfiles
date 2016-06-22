@@ -3,3 +3,11 @@
     name: htop
     state: latest
   when: ansible_distribution == 'MacOSX'
+
+
+- name: htop
+  zypper:
+    name: htop
+    state: latest
+    disable_recommends: no
+  when: ansible_distribution == 'OpenSuse'

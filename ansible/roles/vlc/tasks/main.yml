@@ -1,5 +1,14 @@
-- name: vlc
+- name: MacOSX
   homebrew_cask:
     name: vlc
     state: present
   when: ansible_distribution == 'MacOSX'
+
+
+- name: OpenSuse
+  zypper:
+    name: "{{item}}"
+    state: latest
+    disable_recommends: no
+  with_items: "{{zypper_packages}}"
+  when: ansible_distribution == 'OpenSuse'

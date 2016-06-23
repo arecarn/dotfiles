@@ -1,3 +1,26 @@
+[user]
+    name = Ryan Carney
+
+[push]
+    # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
+    # only pushes current branch to the one that git pull would pull from only
+    # if the names match.  The old default before v2.0 was `matching` option
+    # means git will push all of your local branches to matching one in the
+    # remote. For these older version of git the `current` mode is most similar
+    # it pushes to or creates-then-pushes-to same-named branches on the remote
+    # repo for you if they don't exist already
+    default = simple
+
+[merge]
+    conflictstyle = diff3
+    tool = vimdiff
+
+[mergetool]
+    prompt = false
+
+[fetch]
+    prune = true
+
 [core]
     excludesfile = ~/.config/git/gitignore_global
 
@@ -131,7 +154,6 @@
     p = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
     pr = pull --rebase
 
-
     cln = clean --interactive
     # CLeaN Deep
     clnd = clean --interactive -d -x
@@ -139,29 +161,5 @@
     # check if a file  exist in the repository?
     exists = ls-files --error-unmatch
 
-
-[push]
-    # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
-    # only pushes current branch to the one that git pull would pull from only
-    # if the names match.  The old default before v2.0 was `matching` option
-    # means git will push all of your local branches to matching one in the
-    # remote. For these older version of git the `current` mode is most similar
-    # it pushes to or creates-then-pushes-to same-named branches on the remote
-    # repo for you if they don't exist already
-    default = simple
-
-[user]
-    name = Ryan Carney
-
 [include]
     path = ~/.gitconfig_local
-
-[merge]
-    conflictstyle = diff3
-    tool = vimdiff
-
-[mergetool]
-    prompt = false
-
-[fetch]
-    prune = true

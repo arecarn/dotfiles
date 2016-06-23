@@ -13,10 +13,3 @@
   zypper: name="{{item}}" state=latest disable_recommends=no
   with_items: "{{zypper_packages}}"
   when: ansible_distribution == "openSUSE"
-
-- name: Zypper Install Specific Packages
-  become: yes
-  zypper: name="{{item}}" state=present disable_recommends=no
-  with_items: "{{zypper_specifc_packages}}"
-  ignore_errors: yes
-  when: ansible_distribution == "openSUSE"

@@ -1,14 +1,14 @@
 - name: MacOSX
-  homebrew_cask:
-    name: vlc
-    state: present
+  become: true
+  pip:
+    name: scons
+    executable: pip2
   when: ansible_distribution == 'MacOSX'
-
 
 - name: openSUSE
   become: true
   zypper:
-    name: vlc
+    name: scons
     state: latest
     disable_recommends: no
   when: ansible_distribution == 'openSUSE'

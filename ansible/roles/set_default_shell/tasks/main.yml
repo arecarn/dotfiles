@@ -1,4 +1,3 @@
----
 - name: Assure the shell we want is a allowed
   lineinfile: dest=/etc/shells line={{default_shell}}
   when: ansible_distribution == 'MacOSX'

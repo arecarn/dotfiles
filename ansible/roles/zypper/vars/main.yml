@@ -1,4 +1,3 @@
----
 become: true
 
 zypper_repositories:
@@ -11,11 +10,3 @@ zypper_packages:
   - python-pip
   - python3-pip
   - ShellCheck
-
-zypper_specifc_packages:
-  - http://download.opensuse.org/repositories/systemsmanagement/openSUSE_13.1/noarch/ansible-1.9.4-42.2.noarch.rpm
-  - http://download.opensuse.org/repositories/utilities/openSUSE_13.1/x86_64/the_silver_searcher-0.31.0-10.1.x86_64.rpm
-  - http://download.opensuse.org/repositories/utilities/openSUSE_13.1/x86_64/tmux-2.1-4.1.x86_64.rpm
-  - http://download.opensuse.org/repositories/editors/openSUSE_13.1/x86_64/vim-7.4.1294-313.1.x86_64.rpm
-  - http://download.opensuse.org/repositories/home:/marec2000/openSUSE_13.1/x86_64/eclipse-4.5.1-7.1.x86_64.rpm
-  - http://download.opensuse.org/repositories/shells/openSUSE_13.1/x86_64/zsh-5.2-154.1.x86_64.rpm

@@ -1,4 +1,3 @@
----
 - hosts: all
   connection: local
   vars_prompt:
@@ -36,6 +35,7 @@
     - python
     - reattach-to-user-namespace
     - ruby
+    - scons
     - sdl
     - set_default_shell
     - skype

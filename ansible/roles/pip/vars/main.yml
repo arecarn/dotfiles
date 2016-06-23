@@ -1,9 +1,7 @@
----
 pip_modules:
   - gitpython
 
 pip2_modules:
-  - scons
   - ansible
 
 pip3_modules:

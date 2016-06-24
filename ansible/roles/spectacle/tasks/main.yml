@@ -1,4 +1,4 @@
-- name: spectacle
+- name: MacOSX
   homebrew_cask:
     name: spectacle
     state: present

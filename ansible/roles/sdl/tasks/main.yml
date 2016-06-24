@@ -1,4 +1,4 @@
-- name: sdl
+- name: MacOSX
   homebrew:
     name: "{{item.name}}"
     state: latest

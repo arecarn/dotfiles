@@ -1,4 +1,4 @@
-- name: wget
+- name: MacOSX
   homebrew:
     name: wget
     state: latest

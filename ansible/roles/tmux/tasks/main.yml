@@ -1,4 +1,4 @@
-- name: tmux
+- name: MacOSX
   homebrew:
     name: tmux
     state: latest

@@ -1,4 +1,4 @@
-- name: transmission
+- name: MacOSX
   homebrew_cask:
     name: transmission
     state: present

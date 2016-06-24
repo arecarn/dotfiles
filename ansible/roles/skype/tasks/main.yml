@@ -1,4 +1,4 @@
-- name: skype
+- name: MacOSX
   homebrew_cask:
    name: skype
    state: present

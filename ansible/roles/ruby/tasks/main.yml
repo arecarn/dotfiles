@@ -1,4 +1,4 @@
-- name: ruby
+- name: MacOSX
   homebrew:
     name: ruby
     state: latest

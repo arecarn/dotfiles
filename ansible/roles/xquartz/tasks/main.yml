@@ -1,4 +1,4 @@
-- name: xquartz
+- name: MacOSX
   homebrew_cask:
     name: xquartz
     state: present

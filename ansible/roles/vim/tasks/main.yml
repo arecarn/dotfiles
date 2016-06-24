@@ -1,4 +1,4 @@
-- name: vim
+- name: MacOSX
   homebrew:
     name: vim
     options: with-lua

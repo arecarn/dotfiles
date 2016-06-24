@@ -1,4 +1,4 @@
-- name: tree
+- name: MacOSX
   homebrew:
     name: tree
     state: latest

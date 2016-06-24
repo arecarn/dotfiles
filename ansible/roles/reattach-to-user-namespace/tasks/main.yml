@@ -1,4 +1,4 @@
-- name: reattach-to-user-namespace
+- name: MacOSX
   homebrew:
     name: reattach-to-user-namespace
     state: latest

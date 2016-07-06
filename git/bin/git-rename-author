@@ -2,12 +2,39 @@
 
 print_usage() {
     echo "\
-usage: git rename-author [-f|--force] <new-name> <new-email> [options]
+NAME
+    git-rename-author - rename / change the git commiter and author of commits
 
-    -r, --range <commit-range>     commit range to limit rename to e.g.
-                                   \"HEAD~2..HEAD\" uses the last two commits
-    -n, --old-name <old-name>      old author name to limit rename to
-    -e, --old-email <old-email>    old author email to limit rename to
+SYNOPSIS
+    git-rename-author [<options>...] <new-name> <new-email> [<revision-range>]
+
+DESCRIPTION
+    Rename or change the git commiter and author of commits using
+    git-filter-branch. By default the git-rename-author performs the rename on
+    all commits the current branch, but can be limited certain commits in the
+    current branch using various OPTIONS.
+
+OPTIONS
+    -n, --old-name <old-name>
+        old author name to limit rename to
+
+    -e, --old-email <old-email>
+        old author email to limit rename to
+
+    -f, --force
+        git rename-author uses git filter-branch which refuses to start with
+        an existing temporary directory or when there are already refs
+        starting with refs/original/, unless forced.
+
+    <revision-range>
+        Operate only on commits in the specified revision range. When no
+        <revision-range> is specified, it defaults to HEAD (i.e. the whole
+        history leading to the current commit).  origin..HEAD specifies all
+        the commits reachable from the current commit (i.e.  HEAD), but not
+        from origin. For a complete list of ways to spell <revision range>,
+        see the Specifying Ranges section of gitrevisions(7).
+
+
 "
 }
 
@@ -21,8 +48,6 @@ handle_other_argument(){
 
 # default values
 force=''
-range=''
-use_config=0
 old_email=''
 old_name=''
 
@@ -30,10 +55,6 @@ while [ "$#" -gt 0 ]; do
     case "$1" in
         -f|--force)
             force='-f';;
-
-        -c|--use-config)
-            use_config="$2";
-            shift 1;;
 
         -n|--old-name)
             old_name="$2";
@@ -43,9 +64,9 @@ while [ "$#" -gt 0 ]; do
             old_email="$2";
             shift 1;;
 
-        -r|--range)
-            range="$2";
-            shift 1;;
+        -h|--help)
+            print_usage;
+            exit 0;;
 
         -*)
             echo "unknown option: $1" >&2;
@@ -62,6 +83,8 @@ eval set -- "${other_args}"
 
 new_name="$1"
 new_email="$2"
+shift 2
+revision_range="$@"
 all_authors=0
 
 if [ -z "${new_email}" ] || [ -z "${new_name}" ]; then
@@ -114,4 +137,4 @@ filter='
 '
 
 git filter-branch "${force}" --env-filter "${filter}" --tag-name-filter cat \
-    -- "${range}" --branches --tags
+    -- ${revision_range} --branches --tags

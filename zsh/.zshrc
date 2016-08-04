@@ -169,6 +169,8 @@ REPORTTIME=10
 bindkey -v
 export KEYTIMEOUT=1
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 # Vim Mode (Ins Mode) {{{2
 _backward-kill-word-and-split-undo() {
     zle backward-kill-word
@@ -201,7 +203,7 @@ bindkey -M viins '^E'    end-of-line
 bindkey -M viins '^K'    kill-line
 bindkey -M viins '^P'    history-beginning-search-backward
 bindkey -M viins '^N'    history-beginning-search-forward
-bindkey -M viins '^_'    undo
+bindkey -M viins '^/'    undo
 bindkey -M viins '^W'    _backward-kill-word-and-split-undo
 bindkey -M viins '^U'    _backward-kill-line-and-split-undo
 bindkey -M viins '^H'    _backward-delete-char-and-split-undo
@@ -230,7 +232,7 @@ bindkey -M vicmd '^W'    backward-kill-word
 bindkey -M vicmd '^U'    backward-kill-line
 bindkey -M vicmd '/'     history-incremental-pattern-search-backward
 bindkey -M vicmd '?'     history-incremental-pattern-search-forward
-bindkey -M vicmd '^_'    undo
+bindkey -M vicmd '^/'    undo
 bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
 bindkey -M vicmd '^F'    forward-character
@@ -250,12 +252,16 @@ _complete_menu() {
 zle -N _complete_menu
 
 bindkey '^F' _complete_menu
-bindkey -M menuselect '/' accept-and-infer-next-history
-bindkey -M menuselect '^?' undo
-bindkey -M menuselect '*' history-incremental-search-forward
-bindkey -M menuselect '^[[Z' reverse-menu-complete # Shift Tab }}}2
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+bindkey -M menuselect '^S' history-incremental-search-forward
+bindkey -M menuselect '^R' history-incremental-search-backward
+bindkey -M menuselect '^?' backward-delete-char
+bindkey -M menuselect '^/' undo
+bindkey -M menuselect '^[[Z' reverse-menu-complete # Shift Tab
+bindkey -M menuselect '^Y' accept-and-infer-next-history
+bindkey -M menuselect '^N' down-line-or-history
+bindkey -M menuselect '^P' up-line-or-history
+bindkey -M menuselect '^B' backward-char
+bindkey -M menuselect '^F' forward-char # }}}2
 
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{

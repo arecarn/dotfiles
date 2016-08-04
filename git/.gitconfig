@@ -12,7 +12,6 @@
     default = simple
 
 [merge]
-    conflictstyle = diff3
     tool = vimdiff
 
 [mergetool]

@@ -280,22 +280,22 @@ alias -g ...="../../"
 
 alias gp='grep -P'
 alias py='python'
-alias p='${PAGER}'
+alias p="${PAGER}"
 
 alias so='source'
 alias sozsh='source ~/.zshrc'
 alias sotmux='tmux source-file ~/.tmux.conf'
 
-alias e='${EDITOR}'
-alias ezsh='${EDITOR} ~/.zshrc'
-alias ezshl='${EDITOR} ~/.zshrc_local'
-alias egit='${EDITOR} ~/.gitconfig'
-alias egitl='${EDITOR} ~/.gitconfig_local'
-alias evim='${EDITOR} ~/.vimrc'
-alias eviml='${EDITOR} ~/.vimrc_local'
-alias etmux='${EDITOR} ~/.tmux.conf'
-alias etodo='${EDITOR} ~/Dropbox/notes/todo.txt'
-alias einbox='${EDITOR} ~/Dropbox/notes/inbox.md'
+alias e="${EDITOR}"
+alias ezsh="${EDITOR} ~/.zshrc"
+alias ezshl="${EDITOR} ~/.zshrc_local"
+alias egit="${EDITOR} ~/.gitconfig"
+alias egitl="${EDITOR} ~/.gitconfig_local"
+alias evim="${EDITOR} ~/.vimrc"
+alias eviml="${EDITOR} ~/.vimrc_local"
+alias etmux="${EDITOR} ~/.tmux.conf"
+alias etodo="${EDITOR} ~/Dropbox/notes/todo.txt"
+alias einbox="${EDITOR} ~/Dropbox/notes/inbox.md"
 
 alias mk='mkdir'
 alias rd='rmdir'

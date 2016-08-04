@@ -329,6 +329,24 @@ alias tt='t -ph'
 alias td='t -d'
 alias ttd='tt -d'
 
+# follow a symbolic link
+lnfl()
+{
+    local link="$*"
+
+    if [ -z "${link}" ]; then
+        link=$(pwd)
+    fi
+
+    if [ ! -d "${link}" ] || [ ! -L "${link}" ]; then
+        echo "lnfl: ${link} is not a valid link"
+        return 1
+    fi
+
+    local link_location=$(readlink -f "${link}")
+    cd "${link_location}" || return 1
+}
+
 if [[ "${OSTYPE}" == 'linux'* ]]; then
     alias open="xdg-open"
 elif [[ "${OSTYPE}" == 'cygwin' ]]; then

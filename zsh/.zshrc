@@ -42,7 +42,7 @@ if _is_installed 'plugins/ssh-agent'; then
 fi
 
 if _is_installed 'rupa/z'; then
-    local _Z_DATA_DIR="${HOME}/.cache/zsh/z" 
+    local _Z_DATA_DIR="${HOME}/.cache/zsh/z"
     mkdir -p $_Z_DATA_DIR
     export _Z_DATA="${_Z_DATA_DIR}/data"
 fi
@@ -450,31 +450,31 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-aheadbehind git-st
 zstyle ':vcs_info:*' enable git
 
 +vi-git-untracked() { # {{{2
-    local number_of_untracked_files=$(git ls-files --other --directory --exclude-standard --no-empty-directory 2> /dev/null | wc -l | tr -d ' ')
+local number_of_untracked_files=$(git ls-files --other --directory --exclude-standard --no-empty-directory 2> /dev/null | wc -l | tr -d ' ')
 
-    if [[ $number_of_untracked_files != 0 ]]; then
-        hook_com[unstaged]+='%F{red}??%f'
-    fi
+if [[ $number_of_untracked_files != 0 ]]; then
+    hook_com[unstaged]+='%F{red}??%f'
+fi
 } # }}}2
 
 ### git: Show +N/-N when your local branch is ahead-of or behind remote HEAD.
 # Make sure you have added misc to your 'formats': %m
 +vi-git-aheadbehind() { # {{{2
-    local ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2> /dev/null | wc -l | tr -d ' ')
-    local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2> /dev/null | wc -l | tr -d ' ')
-    local -a gitstatus
+local ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2> /dev/null | wc -l | tr -d ' ')
+local behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2> /dev/null | wc -l | tr -d ' ')
+local -a gitstatus
 
-    (($ahead)) && gitstatus+=(" %B%F{blue}+${ahead}%f%b")
-    (($behind)) && gitstatus+=("%B%F{red}-${behind}%f%b")
-    hook_com[misc]+=${(j::)gitstatus}
+(($ahead)) && gitstatus+=(" %B%F{blue}+${ahead}%f%b")
+(($behind)) && gitstatus+=("%B%F{red}-${behind}%f%b")
+hook_com[misc]+=${(j::)gitstatus}
 } # }}}2
 
 # Show count of stashed changes
 +vi-git-stash() { # {{{2
-    if [[ -s ${hook_com[base]}/.git/refs/stash ]]; then
-        local stashes=$(git stash list 2> /dev/null | wc -l | tr -d ' ')
-        hook_com[misc]+=" %F{yellow}#${stashes}%f"
-    fi
+if [[ -s ${hook_com[base]}/.git/refs/stash ]]; then
+    local stashes=$(git stash list 2> /dev/null | wc -l | tr -d ' ')
+    hook_com[misc]+=" %F{yellow}#${stashes}%f"
+fi
 } # }}}2
 
 MOVE_CURSOR_DOWN=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
@@ -484,8 +484,10 @@ VI_OTHER_MODES='            '
 
 set-prompt () { # {{{2
     case ${KEYMAP} in
-      (viins|main) VI_MODE=${VI_INSERT_MODE} ;;
-      (*)          VI_MODE=${VI_OTHER_MODES} ;;
+        viins|main)
+            VI_MODE=${VI_INSERT_MODE};;
+        *)
+            VI_MODE=${VI_OTHER_MODES};;
     esac
     PROMPT="%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ %# "
 } # }}}2
@@ -493,13 +495,13 @@ set-prompt () { # {{{2
 precmd () { # {{{2
     vcs_info
     print -rP "
-%n%F{blue}@%m%f ${vcs_info_msg_0_}"
+    %n%F{blue}@%m%f ${vcs_info_msg_0_}"
     PROMPT="%{${MOVE_CURSOR_DOWN}${VI_INSERT_MODE}${RESTORE_CURSOR}%}%~ %# "
 } # }}}2
 
 zle-line-init() zle-keymap-select() { # {{{2
-    set-prompt
-    zle reset-prompt
+set-prompt
+zle reset-prompt
 }
 zle -N zle-line-init
 zle -N zle-keymap-select

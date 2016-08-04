@@ -96,8 +96,8 @@ zmodload zsh/complist
 setopt share_history # adds history incrementally and share
 setopt hist_ignore_dups # ignore duplicates in history
 HISTFILE=~/.zsh_history
-HISTSIZE=50000
-SAVEHIST=50000
+HISTSIZE=500000
+SAVEHIST=500000
 
 ###########################################################################}}}
 # COMPLETION OPTIONS                                                       {{{

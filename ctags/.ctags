@@ -1,2 +1,4 @@
 --python-kinds=-i
---exclude=build
+--c++-kinds=+p
+--fields=+iaS
+--extra=+q

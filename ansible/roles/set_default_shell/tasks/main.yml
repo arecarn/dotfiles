@@ -1,6 +1,6 @@
 - name: Assure the shell we want is a allowed
-  lineinfile: dest=/etc/shells line={{default_shell}}
+  lineinfile: dest=/etc/shells line="{{default_shell}}"
   when: ansible_distribution == 'MacOSX'
 - name: Set our default shell
-  command: chpass -s {{default_shell}} {{username}}
+  command: chpass -s "{{default_shell}}" "{{lookup('env','USER')}}"
   when: ansible_distribution == 'MacOSX'

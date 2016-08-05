@@ -1,8 +1,5 @@
 - hosts: all
   connection: local
-  vars_prompt:
-     - name: "username"
-       prompt: "USERNAME"
   roles:
     - ack
     - ag

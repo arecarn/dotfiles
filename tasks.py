@@ -3,12 +3,16 @@ import dploy
 import os
 
 @task
-def clean():
-    run("git clean -x -d --force" % pattern)
+def provision(ctx):
+    ctx.run('ansible-playbook -i ansible/hosts ansible/site.yml --ask-become-pass', pty=True)
 
 @task
-def setup():
-    run('pip install -r requirements.txt')
+def clean(ctx):
+    ctx.run("git clean -x -d --force" % pattern)
+
+@task
+def setup(ctx):
+    ctx.run('pip install -r requirements.txt')
 
 class Dploy():
     def __init__(self):
@@ -44,11 +48,9 @@ class Dploy():
         dploy.unstow(self.packages, self.home)
 
 @task(name="dploy")
-def _dploy():
+def _dploy(ctx):
     Dploy().do()
 
 @task(name="undploy")
-def _undploy():
+def _undploy(ctx):
     Dploy().undo()
-
-

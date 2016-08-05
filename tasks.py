@@ -4,7 +4,8 @@ import os
 
 @task
 def provision(ctx):
-    ctx.run('ansible-playbook -i ansible/hosts ansible/site.yml --ask-become-pass', pty=True)
+    os.chdir('ansible')
+    ctx.run('ansible-playbook site.yml', pty=True)
 
 @task
 def clean(ctx):

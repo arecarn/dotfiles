@@ -24,6 +24,7 @@
     - httpie
     - iterm2
     - licecap
+    - llvm
     - lua
     - moreutils
     - mutt

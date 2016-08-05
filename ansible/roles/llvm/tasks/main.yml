@@ -1,0 +1,17 @@
+- name: MacOSX
+  homebrew:
+    name: "{{item.name}}"
+    state: latest
+    options: "{{item.options | default()}}"
+  with_items: "{{packages[ansible_distribution | lower]}}"
+  when: ansible_distribution == 'MacOSX'
+
+- name: openSUSE
+  zypper:
+    name: "{{item.name}}"
+    state: latest
+    disable_recommends: no
+  with_items: "{{packages[ansible_distribution | lower]}}"
+  when: ansible_distribution == 'openSUSE'
+  become: true
+

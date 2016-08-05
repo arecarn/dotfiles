@@ -1,0 +1,7 @@
+packages:
+  opensuse:
+    - {name: 'llvm'}
+    - {name: 'clang'}
+  macosx:
+    - {name: 'llvm', options: 'with-clang'}
+    - {name: 'clang-format'}

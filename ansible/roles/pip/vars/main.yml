@@ -1,3 +1,5 @@
+become: true
+
 pip_modules:
   - gitpython
 

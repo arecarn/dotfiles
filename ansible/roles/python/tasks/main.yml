@@ -8,7 +8,7 @@
 
 - name: openSUSE
   tags: python
-  become: true
+  become: yes
   when: ansible_distribution == "openSUSE"
   with_items: "{{packages}}"
   zypper:

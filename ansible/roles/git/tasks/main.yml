@@ -7,7 +7,7 @@
 
 - name: openSUSE
   tags: git
-  become: true
+  become: yes
   zypper:
     name: git
     state: latest

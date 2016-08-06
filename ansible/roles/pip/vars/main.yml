@@ -1,4 +1,4 @@
-become: true
+become: yes
 
 pip_modules:
   - gitpython

@@ -7,7 +7,7 @@
 
 - name: openSUSE
   tags: picocom
-  become: true
+  become: yes
   when: ansible_distribution == 'openSUSE'
   zypper:
     name: picocom

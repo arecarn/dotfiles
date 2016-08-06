@@ -1,14 +1,16 @@
 - name: MacOSX
+  tags: dropbox
+  when: ansible_distribution == 'MacOSX'
   homebrew_cask:
     name: dropbox
     state: present
-  when: ansible_distribution == 'MacOSX'
 
 - name: openSUSE
+  tags: dropbox
   become: true
+  when: ansible_distribution == 'openSUSE'
   zypper:
     name: dropbox
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'openSUSE'
 

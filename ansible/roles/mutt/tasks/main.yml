@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: mutt
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: mutt
     state: latest
-  when: ansible_distribution == 'MacOSX'

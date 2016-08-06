@@ -1,9 +1,10 @@
 - name: Clone or Update Git Repositories
+  tags: git_repos
+  ignore_errors: true
+  with_items: "{{git_repositories}}"
   git:
     repo: "{{item.repo}}"
     dest: "{{item.dest}}"
     version: "{{item.version}}"
     force: no
     update: no
-  with_items: "{{git_repositories}}"
-  ignore_errors: yes

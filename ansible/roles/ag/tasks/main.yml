@@ -1,13 +1,15 @@
 - name: MacOSX
+  tags: ag
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: ag
     state: latest
-  when: ansible_distribution == 'MacOSX'
 
 - name: openSUSE
+  tags: ag
   become: true
+  when: ansible_distribution == 'openSUSE'
   zypper:
     name: http://download.opensuse.org/repositories/utilities/openSUSE_13.1/x86_64/the_silver_searcher-0.31.0-10.1.x86_64.rpm
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'openSUSE'

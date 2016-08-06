@@ -1,14 +1,16 @@
 - name: MacOSX
+  tags: scons
   become: true
+  when: ansible_distribution == 'MacOSX'
   pip:
     name: scons
     executable: pip2
-  when: ansible_distribution == 'MacOSX'
 
 - name: openSUSE
+  tags: scons
   become: true
+  when: ansible_distribution == 'openSUSE'
   zypper:
     name: scons
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'openSUSE'

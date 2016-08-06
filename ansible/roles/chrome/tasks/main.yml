@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: chrome
+  when: ansible_distribution == 'MacOSX'
   homebrew_cask:
     name: google-chrome
     state: present
-  when: ansible_distribution == 'MacOSX'

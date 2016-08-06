@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: skype
+  when: ansible_distribution == 'MacOSX'
   homebrew_cask:
    name: skype
    state: present
-  when: ansible_distribution == 'MacOSX'

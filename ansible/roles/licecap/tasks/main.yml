@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: licecap
+  when: ansible_distribution == 'MacOSX'
   homebrew_cask:
     name: licecap
     state: present
-  when: ansible_distribution == 'MacOSX'

@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: cscope
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: cscope
     state: latest
-  when: ansible_distribution == 'MacOSX'

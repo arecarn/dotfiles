@@ -3,13 +3,13 @@ import dploy
 import os
 
 @task
-def provision(ctx):
+def provision(ctx, args=''):
     os.chdir('ansible')
-    ctx.run('ansible-playbook site.yml', pty=True)
+    ctx.run('ansible-playbook site.yml' + ' ' + args, pty=True)
 
 @task
 def clean(ctx):
-    ctx.run("git clean -x -d --force" % pattern)
+    ctx.run('git clean -x -d --force' % pattern)
 
 @task
 def setup(ctx):
@@ -48,10 +48,10 @@ class Dploy():
 
         dploy.unstow(self.packages, self.home)
 
-@task(name="dploy")
+@task(name='dploy')
 def _dploy(ctx):
     Dploy().do()
 
-@task(name="undploy")
+@task(name='undploy')
 def _undploy(ctx):
     Dploy().undo()

@@ -1,0 +1,15 @@
+- name: MacOSX
+  tags: shellcheck
+  when: ansible_distribution == 'MacOSX'
+  homebrew:
+    name: shellcheck
+    state: latest
+
+- name: openSUSE
+  tags: shellcheck
+  become: yes
+  when: ansible_distribution == 'openSUSE'
+  zypper:
+    name: ShellCheck
+    state: latest
+    disable_recommends: no

@@ -7,4 +7,3 @@ zypper_repositories:
 zypper_packages:
   - python-pip
   - python3-pip
-  - ShellCheck

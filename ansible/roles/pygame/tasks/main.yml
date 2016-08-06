@@ -14,6 +14,7 @@
   pip:
     name: "{{item}}"
     executable: pip3
+    editable: no
 
 - name: MacOSX python 2
   tags: pygame
@@ -23,3 +24,4 @@
   pip:
     name: "{{item}}"
     executable: pip2
+    editable: no

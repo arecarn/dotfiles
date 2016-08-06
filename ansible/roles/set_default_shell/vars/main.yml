@@ -1,2 +1,9 @@
-become: true
-default_shell: /usr/local/bin/zsh
+shell:
+  macosx: /usr/local/bin/zsh
+  opensuse: /bin/zsh
+  default: /bin/zsh
+
+group:
+  macosx: staff
+  default: ''
+

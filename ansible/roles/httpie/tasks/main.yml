@@ -8,7 +8,7 @@
 
 - name: openSUSE
   tags: httpie
-  become: true
+  become: yes
   when: ansible_distribution == 'openSUSE'
   zypper:
     name: httpie

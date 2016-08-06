@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: lua
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: lua
     state: latest
-  when: ansible_distribution == 'MacOSX'

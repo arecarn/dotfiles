@@ -1,14 +1,16 @@
 - name: MacOSX
+  tags: httpie
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: httpie
     state: latest
-  when: ansible_distribution == 'MacOSX'
 
 
 - name: openSUSE
+  tags: httpie
   become: true
+  when: ansible_distribution == 'openSUSE'
   zypper:
     name: httpie
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'openSUSE'

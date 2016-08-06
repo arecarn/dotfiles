@@ -1,14 +1,16 @@
 - name: MacOSX
+  tags: vlc
+  when: ansible_distribution == 'MacOSX'
   homebrew_cask:
     name: vlc
     state: present
-  when: ansible_distribution == 'MacOSX'
 
 
 - name: openSUSE
+  tags: vlc
   become: true
+  when: ansible_distribution == 'openSUSE'
   zypper:
     name: vlc
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'openSUSE'

@@ -1,4 +1,6 @@
 - name: MacOSX
+  tags: ack
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: ack
     state: latest

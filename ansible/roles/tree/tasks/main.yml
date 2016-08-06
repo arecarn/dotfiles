@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: tree
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: tree
     state: latest
-  when: ansible_distribution == 'MacOSX'

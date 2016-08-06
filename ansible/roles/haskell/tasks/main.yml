@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: haskell
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: haskell-stack
     state: latest
-  when: ansible_distribution == 'MacOSX'

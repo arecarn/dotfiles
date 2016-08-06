@@ -1,16 +1,25 @@
 - name: MacOSX hombrew
+  tags: pygame
+  when: ansible_distribution == 'MacOSX'
+  with_items: "{{homebrew_packages}}"
   homebrew:
     name: "{{item}}"
     state: latest
-  with_items: "{{homebrew_packages}}"
-  when: ansible_distribution == 'MacOSX'
 
 - name: MacOSX python 3
-  pip: name="{{item}}" executable=pip3
-  with_items: "{{pip_modules_mac}}"
+  tags: pygame
+  become: yes
   when: ansible_distribution == 'MacOSX'
+  with_items: "{{pip_modules_mac}}"
+  pip:
+    name: "{{item}}"
+    executable: pip3
 
 - name: MacOSX python 2
-  pip: name="{{item}}" executable=pip2
-  with_items: "{{pip_modules_mac}}"
+  tags: pygame
+  become: yes
   when: ansible_distribution == 'MacOSX'
+  with_items: "{{pip_modules_mac}}"
+  pip:
+    name: "{{item}}"
+    executable: pip2

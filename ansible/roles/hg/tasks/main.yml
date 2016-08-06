@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: hg
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: hg
     state: latest
-  when: ansible_distribution == 'MacOSX'

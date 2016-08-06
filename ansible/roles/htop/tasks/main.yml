@@ -1,14 +1,16 @@
 - name: MacOSX
+  tags: htop
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: htop
     state: latest
-  when: ansible_distribution == 'MacOSX'
 
 
 - name: openSUSE
+  tags: htop
   become: true
+  when: ansible_distribution == 'openSUSE'
   zypper:
     name: htop
     state: latest
     disable_recommends: no
-  when: ansible_distribution == 'openSUSE'

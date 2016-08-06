@@ -1,21 +1,25 @@
 - name: Add Taps
-  homebrew_tap: name="{{item}}" state=present
-  with_items: "{{homebrew_taps}}"
+  tags: homebrew
   when: ansible_distribution == 'MacOSX'
+  with_items: "{{homebrew_taps}}"
+  homebrew_tap: name="{{item}}" state=present
 
 - name: Install packages with homebrew
+  tags: homebrew
+  when: ansible_distribution == 'MacOSX'
+  with_items: "{{homebrew_packages}}"
   homebrew:
     name: "{{item.name}}"
     options: "{{item.options|default()}}"
     state: latest
-  with_items: "{{homebrew_packages}}"
-  when: ansible_distribution == 'MacOSX'
 
 - name: Install packages with homebrew cask
-  homebrew_cask: name="{{item}}" state=installed
-  with_items: "{{homebrew_cask_packages}}"
+  tags: homebrew
   when: ansible_distribution == 'MacOSX'
+  with_items: "{{homebrew_cask_packages}}"
+  homebrew_cask: name="{{item}}" state=installed
 
 - name: Update all packages
-  homebrew: update_homebrew=yes
+  tags: homebrew
   when: ansible_distribution == 'MacOSX'
+  homebrew: update_homebrew=yes

@@ -1,15 +1,17 @@
 - name: MacOSX
+  tags: python
+  when: ansible_distribution == 'MacOSX'
+  with_items: "{{packages}}"
   homebrew:
     name: "{{item}}"
     state: latest
-  with_items: "{{packages}}"
-  when: ansible_distribution == 'MacOSX'
 
 - name: openSUSE
+  tags: python
   become: true
+  when: ansible_distribution == "openSUSE"
+  with_items: "{{packages}}"
   zypper:
     name: "{{item}}"
     state: present
     disable_recommends: no
-  with_items: "{{packages}}"
-  when: ansible_distribution == "openSUSE"

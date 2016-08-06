@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: moreutils
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: moreutils
     state: latest
-  when: ansible_distribution == 'MacOSX'

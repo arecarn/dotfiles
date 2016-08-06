@@ -1,5 +1,6 @@
 - name: MacOSX
+  tags: neovim
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: neovim/neovim/neovim
     state: latest
-  when: ansible_distribution == 'MacOSX'

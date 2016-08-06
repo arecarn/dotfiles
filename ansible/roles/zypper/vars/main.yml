@@ -1,5 +1,3 @@
-become: true
-
 zypper_repositories:
   - {
       name : 'packman',

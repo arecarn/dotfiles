@@ -356,7 +356,9 @@ xmap go [myleader]
 cnoremap [cmdleader] <Nop>
 cmap <C-j> [cmdleader]
 
-set grepprg=ack\ -H\ --nocolor\ --nogroup
+set grepprg=ag\ --vimgrep\ $*
+set grepformat=%f:%l:%c:%m
+
 
 command! -nargs=+ Grep call s:grep(<q-args>)
 function! s:grep(args) abort

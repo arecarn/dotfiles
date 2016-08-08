@@ -270,15 +270,7 @@ bindkey -M menuselect '^F' forward-char # }}}2
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{
 ##############################################################################
-
-# check if a command exits
-exits() {
-    command -v "$1" > /dev/null 2>&1
-}
-
-weather() {
-    curl wttr.in/"$1"
-}
+source ~/.config/zsh/functions.sh
 
 alias -g ...="../../"
 
@@ -332,24 +324,6 @@ alias t='pwd; tree'
 alias tt='t -ph'
 alias td='t -d'
 alias ttd='tt -d'
-
-# follow a symbolic link
-lnfl()
-{
-    local link="$*"
-
-    if [ -z "${link}" ]; then
-        link=$(pwd)
-    fi
-
-    if [ ! -d "${link}" ] || [ ! -L "${link}" ]; then
-        echo "lnfl: ${link} is not a valid link"
-        return 1
-    fi
-
-    local link_location=$(readlink -f "${link}")
-    cd "${link_location}" || return 1
-}
 
 if [[ "${OSTYPE}" == 'linux'* ]]; then
     alias open="xdg-open"
@@ -410,35 +384,6 @@ bindkey -M viins ' ' magic-abbrev-expand
 bindkey -M viins '^ ' no-magic-abbrev-expand
 bindkey -M isearch ' ' self-insert
 # }}}2
-
-# run a command until it fails
-untilfail()
-{
-    while "$@";
-    do :
-    done
-}
-
-
-# normalize permissions for files and directories by referring to umask
-_nmod()
-{
-    local umask=$(umask)
-    local permissions="$(($1 - ${umask}))"
-    local expression="chmod ${permissions} ${@:2}"
-    print $expression
-    eval $expression
-}
-
-chmodnd()
-{
-    _nmod 777 "$@"
-}
-
-chmodnf()
-{
-    _nmod 666 "$@"
-}
 
 ###########################################################################}}}
 # PROMPT                                                                   {{{

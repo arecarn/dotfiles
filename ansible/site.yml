@@ -40,6 +40,7 @@
     - scons
     - sdl
     - set_default_shell
+    - shellcheck
     - skype
     - spectacle
     - tmux

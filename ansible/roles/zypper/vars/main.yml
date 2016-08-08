@@ -1,9 +1,3 @@
 zypper_repositories:
-  - {
-      name : 'packman',
-      repo : 'http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_13.1/'
-    }
-
-zypper_packages:
-  - python-pip
-  - python3-pip
+  - name: 'packman'
+    repo: 'http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_13.1/'

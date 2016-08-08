@@ -3,6 +3,7 @@
   roles:
     - ack
     - ag
+    - ansible
     - appcleaner
     - chrome
     - coreutils
@@ -10,6 +11,7 @@
     - curl
     - dash
     - dirdiff
+    - dploy
     - dropbox
     - firefox
     - git
@@ -19,6 +21,7 @@
     - homebrew
     - htop
     - httpie
+    - invoke
     - iterm2
     - licecap
     - llvm
@@ -30,7 +33,9 @@
     - pip
     - pstree
     - pygame
+    - pylint
     - python
+    - python_git
     - reattach-to-user-namespace
     - ruby
     - scons

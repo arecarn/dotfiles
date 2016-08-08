@@ -482,33 +482,34 @@ MOVE_CURSOR_DOWN=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
 RESTORE_CURSOR=$terminfo[rc]
 VI_INSERT_MODE='-- INSERT --'
 VI_OTHER_MODES='            '
+PROMPT_VALUE='%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ %# '
 
-set-prompt () { # {{{2
+set-prompt(){ # {{{2
     case ${KEYMAP} in
         viins|main)
-            VI_MODE=${VI_INSERT_MODE};;
+            VI_MODE="${VI_INSERT_MODE}";;
         *)
-            VI_MODE=${VI_OTHER_MODES};;
+            VI_MODE="${VI_OTHER_MODES}";;
     esac
-    PROMPT="%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ %# "
+    PROMPT="${PROMPT_VALUE}"
 } # }}}2
 
-precmd () { # {{{2
+precmd(){ # {{{2
     vcs_info
-    print -rP "
-    %n%F{blue}@%m%f ${vcs_info_msg_0_}"
-    PROMPT="%{${MOVE_CURSOR_DOWN}${VI_INSERT_MODE}${RESTORE_CURSOR}%}%~ %# "
+    print -rP "%n%F{blue}@%m%f ${vcs_info_msg_0_}"
+    VI_MODE="${VI_INSERT_MODE}"
+    PROMPT="${PROMPT_VALUE}"
 } # }}}2
 
 zle-line-init() zle-keymap-select() { # {{{2
-set-prompt
-zle reset-prompt
+    set-prompt
+    zle reset-prompt
 }
 zle -N zle-line-init
 zle -N zle-keymap-select
 # }}}2
 
-preexec () {
+preexec(){
     print -rn -- "$terminfo[el]";
 }
 

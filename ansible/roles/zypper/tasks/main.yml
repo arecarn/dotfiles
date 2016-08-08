@@ -8,13 +8,3 @@
     refresh: yes
     repo: "{{item.repo}}"
     state: present
-
-- name: Zypper Install General Packages
-  tags: zypper
-  become: yes
-  with_items: "{{zypper_packages}}"
-  when: ansible_distribution == "openSUSE"
-  zypper:
-    name: "{{item}}"
-    state: latest
-    disable_recommends: no

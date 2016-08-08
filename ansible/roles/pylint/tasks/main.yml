@@ -1,0 +1,13 @@
+- name: python 2 package
+  tags: pylint
+  become: yes
+  pip:
+    name: pylint
+    executable: "{{pip2_executable[ansible_distribution | lower] | default([pip2])}}"
+
+- name: python 3 package
+  tags: pylint
+  become: yes
+  pip:
+    name: pylint
+    executable: "{{pip3_executable[ansible_distribution | lower] | default([pip3])}}"

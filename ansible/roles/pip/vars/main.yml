@@ -1,16 +1,3 @@
-become: yes
-
-pip_modules:
-  - gitpython
-
-pip2_modules:
-  - ansible
-
-pip3_modules:
-  - dploy
-  - pylint
-  - invoke
-
 pip2_executable:
   macosx: pip2
   opensuse: pip2
@@ -18,3 +5,7 @@ pip2_executable:
 pip3_executable:
   macosx: pip3
   opensuse: pip
+
+packagess:
+  - python-pip
+  - python3-pip

@@ -128,7 +128,7 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nowrap
 set linebreak
-set textwidth=78
+set textwidth=80
 if exists('+breakindent')
     set breakindent
 endif

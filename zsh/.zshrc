@@ -334,9 +334,9 @@ elif [[ "${OSTYPE}" == 'win32' ]]; then
 fi
 
 if [[ "${OSTYPE}" == 'linux'* ]]; then
-    alias rsyncp='rsync -aHAX'
+    alias rcp='rsync --archive --progress --hard-links --acls --xattrs'
 elif [[ "${OSTYPE}" == 'darwin'* ]]; then
-    alias rsyncp='rsync -aHE'
+    alias rcp='rsync -aHE'
 fi
 
 # GLOBAL ABBERVIATIONS {{{2

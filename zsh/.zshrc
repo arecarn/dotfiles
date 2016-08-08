@@ -348,7 +348,7 @@ abbreviations=(
 'Igv'   '| grep -Pv' #inverse match
 'Ih'    '| head'
 'Im'    '| more'
-'Ip'    '| ${PAGER}'
+'Ip'    '| "${PAGER}"'
 'Is'    '| sort'
 'Ist'   '| sed'
 'It'    '| tail'

@@ -4,4 +4,3 @@
   homebrew:
     name: ack
     state: latest
-  when: ansible_distribution == 'MacOSX'

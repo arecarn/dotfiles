@@ -6,4 +6,6 @@
 #
 # Note GIT_PREFIX is empty at repository root
 
-test -n "$GIT_PREFIX" && cd $GIT_PREFIX;
+if [ -n "$GIT_PREFIX" ]; then
+    cd "$GIT_PREFIX" || return 1;
+fi

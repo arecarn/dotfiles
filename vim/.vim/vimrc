@@ -302,7 +302,7 @@ set listchars=trail:·,tab:→-,extends:▶,precedes:◀
 
 " Maximize Window on Startup
 if has ("gui_running") && has("autocmd") && s:has_windows
-    augroup windowsgui:
+    augroup windowsgui
         autocmd!
         autocmd GUIEnter * simalt ~x " maximize in windows
     augroup END
@@ -710,21 +710,15 @@ NeoBundle 'osyo-manga/vim-textobj-multiblock'
 
 " unite {{{2
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/unite-ssh' , {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'Shougo/unite-outline', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'Shougo/unite-session', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'Shougo/neomru.vim', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'Shougo/neoyank.vim', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'tsukkee/unite-help', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'ujihisa/unite-colorscheme', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'kmnk/unite-command', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'majkinetor/unite-cmdmatch', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'voi/unite-ctags', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/unite-tag', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'thinca/vim-unite-history', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'kopischke/unite-spell-suggest', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'kmnk/vim-unite-giti', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'hewes/unite-gtags', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
 NeoBundle 'junegunn/fzf', {
             \ 'base' : '~/.config/fzf',
@@ -743,7 +737,6 @@ NeoBundle 'tpope/vim-repeat' "}}}2
 
 
 " Folds
-NeoBundle 'Konfekt/FastFold'
 NeoBundle 'arecarn/clean-fold.vim'
 NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
 
@@ -799,13 +792,11 @@ NeoBundle 'int3/vim-extradite', {'depends' : 'tpope/vim-fugitive'}
 NeoBundle 'jreybert/vimagit'
 NeoBundle 'airblade/vim-rooter'
 NeoBundle 'cohama/agit.vim'
-NeoBundle 'arecarn/git-diff-cached-preview.vim'
 NeoBundle 'mhinz/vim-signify'
 
 
 " Diff
 NeoBundle 'AndrewRadev/linediff.vim'
-NeoBundle 'chrisbra/vim-diff-enhanced'
 NeoBundle 'diffchanges.vim'
 NeoBundle 'arecarn/diff-utils.vim'
 
@@ -841,9 +832,8 @@ NeoBundle 'qstrahl/vim-matchmaker'
 
 " Search
 NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'}
-NeoBundle 'osyo-manga/vim-anzu'
 
-" Utilitys
+" Utilities
 NeoBundle 'talek/obvious-resize'
 NeoBundle 'vim-scripts/cmdalias.vim'
 NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
@@ -862,7 +852,6 @@ NeoBundle 'wesQ3/vim-windowswap'
 NeoBundle 'arecarn/binascii.vim'
 NeoBundle 'arecarn/frisk.vim'
 NeoBundle 'ludovicchabant/vim-gutentags'
-NeoBundle 'roman/golden-ratio'
 NeoBundleFetch 'arecarn/template.vim'
 call neobundle#end()
 NeoBundleCheck
@@ -1517,6 +1506,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         endtry
 
         " update time
+        " TODO fix issue where search pattern leaks into search history
         nnoremap <localleader>ud :s/\d\d\d\d-\d\d\-\d\d/\=strftime("%Y-%m-%d")/<CR>
 
         setlocal foldmethod=expr

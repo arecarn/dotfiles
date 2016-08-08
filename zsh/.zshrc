@@ -12,10 +12,6 @@ fi
 # shellcheck source=/dev/null
 source "${zplug_file}"
 
-# configure oh-my-zsh ssh-agent plugin/script before it is run
-zstyle :omz:plugins:ssh-agent agent-forwarding on
-zstyle :omz:plugins:ssh-agent identities id_rsa
-
 zplug 'plugins/command-not-found', from:oh-my-zsh
 zplug 'plugins/tmux', from:oh-my-zsh
 zplug 'plugins/ssh-agent', from:oh-my-zsh
@@ -32,20 +28,27 @@ if ! zplug check --verbose; then
     fi
 fi
 
+# Configure Installed plugins
+
 # checks if a plugin is installed via zplug
 _is_installed() {
     zplug list | grep -q "$@"
 }
-
-# Then, source plugins and add commands to ${PATH}
-zplug load
-
 
 if _is_installed 'rupa/z'; then
     local _Z_DATA_DIR="${HOME}/.cache/zsh/z"
     mkdir -p $_Z_DATA_DIR
     export _Z_DATA="${_Z_DATA_DIR}/data"
 fi
+
+if _is_installed 'plugins/ssh-agent'; then
+    zstyle :omz:plugins:ssh-agent agent-forwarding on
+    zstyle :omz:plugins:ssh-agent identities id_rsa
+fi
+
+# Finally, source plugins and add commands to ${PATH}
+zplug load
+
 
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{

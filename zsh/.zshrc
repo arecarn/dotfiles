@@ -91,9 +91,6 @@ n="${HOME}/Dropbox/notes/"
 df="${HOME}/dotfiles/"
 dfl="${HOME}/dotfiles_local/"
 
-autoload -Uz compinit  && compinit -d ~/.zcompdump
-zmodload zsh/complist
-
 ###########################################################################}}}
 # HISTORY OPTIONS                                                          {{{
 ##############################################################################
@@ -106,6 +103,9 @@ SAVEHIST=500000
 ###########################################################################}}}
 # COMPLETION OPTIONS                                                       {{{
 ##############################################################################
+autoload -Uz compinit  && compinit -d ~/.zcompdump
+zmodload zsh/complist
+
 unsetopt menu_complete # unset as to not to collide with auto_menu
 setopt auto_menu # use menu completion after the second consecutive request for completion
 setopt complete_in_word # keep the cursor in place until a completion

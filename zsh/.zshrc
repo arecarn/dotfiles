@@ -307,7 +307,7 @@ alias untar='tar -xvf'
 alias df='df -h'
 alias du='du -hc'
 # disk usage sorted
-alias dus='du -hsxc *(D) | sort -rh'
+alias dus='du -hsxc ./* | sort -rh'
 
 alias g='git'
 alias gnp='git --no-pager'

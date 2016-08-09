@@ -52,5 +52,6 @@
     - wget
     - xclip
     - xquartz
+    - yamllint
     - zsh
     - zypper

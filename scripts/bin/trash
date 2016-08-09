@@ -6,21 +6,27 @@ if [ $# -eq 0 ]; then
 fi
 
 trash_directory="$HOME/.trash"
-if [ ! -d "$trash_directory" ]; then
-    mkdir $trash_directory
+if [ ! -d "${trash_directory}" ]; then
+    mkdir "${trash_directory}"
 fi
 
 for file in "$@"; do
-    # get just file name
-    destfile="$(basename \"$file\")"
+    # supress: "warning: dest_file appears unused. Verify it or export it."
+    # shellcheck disable=SC2034
+    dest_file=$(basename "${file}")
     suffix=''
     i=0
 
-    trash_file_path='$trash_directory/${destfile}${suffix}'
+    # suppress "note: Expressions don't expand in single quotes, use double
+    #           quotes"
+    # shellcheck disable=SC2016
+    trash_file_path='${trash_directory}/${dest_file}${suffix}'
     # If that file already exists, change the name
-    while [ -e $(eval echo \"$trash_file_path\") ]; do
-        suffix=" - $i";
-        i=$(expr $i + 1)
+    while [ -e "$(eval echo "${trash_file_path}")" ]; do
+        # suppress: warning: suffix appears unused. Verify it or export it.
+        # shellcheck disable=SC2034
+        suffix="-${i}";
+        i=$((i + 1))
     done
 
     eval mv -vi "$file" "$trash_file_path"

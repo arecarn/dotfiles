@@ -1,6 +1,38 @@
 from invoke import task, run
 import dploy
 import os
+import glob
+
+@task
+def lint_vim(ctx):
+    files = [
+        os.path.join('vim', '.vim', 'vimrc'),
+        os.path.join('vim', '.vim', 'autoload', '*.vim'),
+    ]
+    files_string = " ".join(files)
+    print(files_string)
+    ctx.run('vint {files}'.format(files=files_string), pty=True)
+
+@task
+def lint_shell(ctx):
+    files = [
+        os.path.join('git', ' bin', ' *'),
+        os.path.join('scripts', 'bin', '*.sh'),
+        os.path.join('scripts', 'bin', 'trash'),
+    ]
+    files_string = " ".join(files)
+    print(files_string)
+    ctx.run('shellcheck {files}'.format(files=files_string), pty=True)
+
+@task
+def lint_yaml(ctx):
+    files = [f for f in glob.iglob(os.path.join('**', '*.yml'), recursive=True)]
+    files_string = " ".join(files)
+    ctx.run('yamllint {files}'.format(files=files_string), pty=True)
+
+@task(lint_vim, lint_shell, lint_yaml)
+def lint(ctx):
+    pass
 
 @task
 def provision(ctx, args=''):

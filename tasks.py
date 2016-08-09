@@ -10,8 +10,11 @@ def lint_vim(ctx):
         os.path.join('vim', '.vim', 'autoload', '*.vim'),
     ]
     files_string = " ".join(files)
-    print(files_string)
-    ctx.run('vint {files}'.format(files=files_string), pty=True)
+
+    cmd = 'vint {files}'
+    cmdf = cmd.format(files=files_string)
+    print(cmdf)
+    ctx.run(cmdf, pty=True)
 
 @task
 def lint_shell(ctx):
@@ -21,22 +24,33 @@ def lint_shell(ctx):
         os.path.join('scripts', 'bin', 'trash'),
     ]
     files_string = ' '.join(files)
-    print('shellcheck --format gcc {files}'.format(files=files_string))
-    ctx.run('shellcheck --format gcc {files}'.format(files=files_string), pty=True)
+
+    cmd = 'shellcheck --format gcc {files}'
+    cmdf = cmd.format(files=files_string)
+    print(cmdf)
+    ctx.run(cmdf, pty=True)
 
 @task
 def lint_yaml(ctx):
     files = [f for f in glob.iglob(os.path.join('**', '*.yml'), recursive=True)]
     files_string = " ".join(files)
-    ctx.run('yamllint --format parsable {files}'.format(files=files_string), pty=True)
+
+    cmd = 'yamllint --format parsable {files}'
+    cmdf = cmd.format(files=files_string)
+    print(cmdf)
+    ctx.run(cmdf, pty=True)
 
 @task
 def lint_python(ctx):
     files = [
         'tasks.py',
     ]
+
     files_string = ' '.join(files)
-    ctx.run('python3 -m pylint --output-format=parseable {files}'.format(files=files_string), pty=True)
+    cmd = 'python3 -m pylint --output-format=parseable {files}'
+    cmdf = cmd.format(files=files_string)
+    print(cmdf)
+    ctx.run(cmdf, pty=True)
 
 @task(lint_vim, lint_shell, lint_yaml, lint_python)
 def lint(ctx):

@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: iterm2
   when: ansible_distribution == 'MacOSX'

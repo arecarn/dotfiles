@@ -1,3 +1,4 @@
+---
 - name: Zypper Add Additional Repositories
   tags: zypper
   become: yes

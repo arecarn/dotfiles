@@ -1,3 +1,4 @@
+---
 - name: Set our default shell
   tags: set_default_shell
   become: yes

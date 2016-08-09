@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: shellcheck
   when: ansible_distribution == 'MacOSX'

@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: python
   when: ansible_distribution == 'MacOSX'

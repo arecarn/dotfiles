@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: hg
   when: ansible_distribution == 'MacOSX'

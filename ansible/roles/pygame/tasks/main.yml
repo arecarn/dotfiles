@@ -1,3 +1,4 @@
+---
 - name: MacOSX hombrew
   tags: pygame
   when: ansible_distribution == 'MacOSX'

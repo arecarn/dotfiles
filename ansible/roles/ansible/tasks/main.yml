@@ -1,6 +1,8 @@
+---
 - name: python 2 package
   tags: ansible
   become: yes
   pip:
     name: ansible
-    executable: "{{pip2_executable[ansible_distribution | lower] | default([pip2])}}"
+    executable: "{{pip2_executable[ansible_distribution | lower]\
+                 | default([pip2])}}"

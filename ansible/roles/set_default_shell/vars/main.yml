@@ -1,3 +1,4 @@
+---
 shell:
   macosx: /usr/local/bin/zsh
   opensuse: /bin/zsh
@@ -6,4 +7,3 @@ shell:
 group:
   macosx: staff
   default: ''
-

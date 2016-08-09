@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: appcleaner
   when: ansible_distribution == 'MacOSX'

@@ -1,3 +1,4 @@
+---
 homebrew_packages:
   - {name: 'libvorbis'}
   - {name: 'sdl'}

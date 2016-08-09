@@ -1,7 +1,17 @@
 from invoke import task, run
 import dploy
 import os
-import glob
+import fnmatch
+
+# The Python 3.5 glob module supports recursive globs, and the python 3.4
+# pathlib module also does, but for version 2.2 to 3.3 this is the work around.
+# source: http://stackoverflow.com/a/2186673
+def find_files(directory, pattern):
+    for root, _, files in os.walk(directory):
+        for basename in files:
+            if fnmatch.fnmatch(basename, pattern):
+                filename = os.path.join(root, basename)
+                yield filename
 
 @task
 def lint_vim(ctx):
@@ -32,7 +42,8 @@ def lint_shell(ctx):
 
 @task
 def lint_yaml(ctx):
-    files = [f for f in glob.iglob(os.path.join('**', '*.yml'), recursive=True)]
+    files = []
+    files.extend(find_files(directory='ansible', pattern='*.yml'))
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'

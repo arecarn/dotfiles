@@ -1,0 +1,6 @@
+- name: python 3 package
+  tags: yamllint
+  become: yes
+  pip:
+    name: yamllint
+    executable: "{{pip3_executable[ansible_distribution | lower] | default([pip3])}}"

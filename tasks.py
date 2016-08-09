@@ -1,7 +1,7 @@
-from invoke import task, run
-import dploy
 import os
 import fnmatch
+from invoke import task
+import dploy
 
 # The Python 3.5 glob module supports recursive globs, and the python 3.4
 # pathlib module also does, but for version 2.2 to 3.3 this is the work around.
@@ -74,7 +74,7 @@ def provision(ctx, args=''):
 
 @task
 def clean(ctx):
-    ctx.run('git clean -x -d --force' % pattern)
+    ctx.run('git clean -x -d --force')
 
 @task
 def setup(ctx):
@@ -108,7 +108,7 @@ class Dploy():
             dploy.link(os.path.join(*src), os.path.join(*dest))
 
     def undo(self):
-        for _ , dest in reversed(self.links):
+        for _, dest in reversed(self.links):
             os.unlink(os.path.join(*dest))
 
         dploy.unstow(self.packages, self.home)

@@ -1,13 +1,14 @@
 " -                                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
-set fileformats=unix,dos
 set encoding=utf-8 "make Vim use UTF-8 by default
+scriptencoding utf-8
+set fileformats=unix,dos
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:has_windows = has("win16") || has("win32") || has("win64")
+let s:has_windows = has('win16') || has('win32') || has('win64')
 
 if s:has_windows
     let s:vim_path = $HOME . '/vimfiles'
@@ -27,7 +28,7 @@ let s:data_path = $XDG_DATA_HOME . '/vim/'
 
 function! s:make_private_directory(path) abort
     if !isdirectory(a:path)
-        call mkdir(a:path, "p", 0700)
+        call mkdir(a:path, 'p', 0700)
     endif
 endfunction
 
@@ -108,7 +109,7 @@ execute 'set backupdir=' . s:backupdir
 " Double slash does not actually work for backupdir, here's a fix that appends
 " the path separated by percents and a time stamp
 function! s:backupext() abort
-    let time = "_" . strftime("%Y-%m-%d-%H")
+    let time = '_' . strftime('%Y-%m-%d-%H')
     let path_forward_slash_as_percent = substitute(expand('%:p:h'), '/', '%', 'g')
     let path_back_slash_as_percent = substitute(path_forward_slash_as_percent , '\', '%', 'g')
     let path_colon_removed = substitute(path_back_slash_as_percent, ':', '', 'g')
@@ -116,7 +117,7 @@ function! s:backupext() abort
     return '@' . path . time
 endfunction
 
-if has("autocmd")
+if has('autocmd')
     augroup backupext
         autocmd!
         autocmd BufWritePre * let &backupext=s:backupext()
@@ -167,7 +168,7 @@ set foldlevelstart=99
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AUTOCMDS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has("autocmd")
+if has('autocmd')
     augroup vimrc
         autocmd!
         autocmd BufWritePost *vimrc* source %
@@ -243,17 +244,17 @@ set cscoperelative
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 
 function! PrintCscopeOptions()
-    echo "g: Definition"
-    echo "c: Functions calling this function"
-    echo "d: Functions called by this function"
-    echo "f: This file"
-    echo "i: Files #including this file"
-    echo "s: This C symbol"
-    echo "t: This text string"
-    echo "e: This egrep pattern"
+    echo 'g: Definition'
+    echo 'c: Functions calling this function'
+    echo 'd: Functions called by this function'
+    echo 'f: This file'
+    echo 'i: Files #including this file'
+    echo 's: This C symbol'
+    echo 't: This text string'
+    echo 'e: This egrep pattern'
 endfunction
-execute "nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find "
-execute "nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>".repeat('<Right>',8)
+execute 'nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find '
+execute 'nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>' . repeat('<Right>',8)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                         {{{
@@ -263,7 +264,7 @@ set clipboard=unnamedplus,unnamed
 set splitright
 
 " disable dang error{visual}bells for good
-if has("autocmd")
+if has('autocmd')
     augroup noBells
         autocmd!
         autocmd GUIEnter * set vb t_vb=
@@ -282,7 +283,7 @@ set modeline
 " UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set color column based on 'textwidth'
-if has("autocmd")
+if has('autocmd')
     augroup colorcolumn
         autocmd!
         autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
@@ -301,15 +302,15 @@ set list
 set listchars=trail:·,tab:→-,extends:▶,precedes:◀
 
 " Maximize Window on Startup
-if has ("gui_running") && has("autocmd") && s:has_windows
-    augroup windowsgui
+if has ('gui_running') && has('autocmd') && s:has_windows
+    augroup windowsgui:
         autocmd!
         autocmd GUIEnter * simalt ~x " maximize in windows
     augroup END
 endif
 
 " Highlight TODO, FIXME, NOTE, etc.
-if has("autocmd") && v:version > 701
+if has('autocmd') && v:version > 701
     augroup todo
         autocmd!
         autocmd Syntax * call matchadd(
@@ -320,7 +321,7 @@ if has("autocmd") && v:version > 701
 endif
 
 " gui settings {{{2
-if has ("gui_running")
+if has ('gui_running')
     " Make GVim more like Terminal Vim
     set guioptions-=T "remove toolbar
     set guioptions-=r "remove right-hand scroll bar
@@ -364,7 +365,7 @@ command! -nargs=+ Grep call s:grep(<q-args>)
 function! s:grep(args) abort
     execute 'silent grep! ' . a:args
     redraw!
-    execute "normal! /<C-l>"
+    execute 'normal! /<C-l>'
 endfunction
 
 " Navigation
@@ -430,12 +431,12 @@ function! s:format_options_toggle(options) abort
     let options = split(a:options, '\zs')
 
     for option in options
-        if s:in(formatoptions, option)
-            let add_or_subtract = "+="
+        if s:in(&formatoptions, option)
+            let add_or_subtract = '+='
         else
-            let add_or_subtract = "-="
+            let add_or_subtract = '-='
         endif
-        execute "set formatoptions" . add_or_subtract . option
+        execute 'set formatoptions' . add_or_subtract . option
     endfor
     set formatoptions?
 endfunction
@@ -524,14 +525,14 @@ let maps = [
     \ {'str' : 'rofp', 'func' : "expand('%<') . '.'"},
     \ {'str' : 'dp',   'func' : "expand('%:p:h') . '/'"},
     \ {'str' : 'rdp',  'func' : "expand('%:h') . '/'"},
-    \ {'str' : 'pwd',  'func' : "getcwd()"}
+    \ {'str' : 'pwd',  'func' : 'getcwd()'}
     \ ]
 for map in maps
-    execute "nnoremap <silent> <Leader>y".map.str.
-                \ " :let @*=".map.func.
-                \ "\<CR>:let @+=".map.func.
-                \ "\<CR>:let @\"=".map.func."\<CR>"
-    execute "cnoremap %".map.str." \<C-r>=".map.func."\<CR>"
+    execute 'nnoremap <silent> <Leader>y' . map.str . ' ' .
+                \ ':let @*=' . map.func . '<CR>' .
+                \ ':let @+=' . map.func . '<CR>' .
+                \ ':let @"=' . map.func . '<CR>'
+    execute 'cnoremap %' . map.str . ' \<C-r>=' . map.func . '\<CR>'
 endfor
 
 " accept completion (requires "set wild charm = <TAB>)
@@ -556,9 +557,9 @@ command! -range=0 Einbox edit ~/Dropbox/notes/inbox.md
 " SCRIPTS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap <leader>m  :call SearchPosition()<CR>
-nnoremap <leader>M  :let @/ = ""<CR>
+nnoremap <leader>M  :let @/ = ''<CR>
 function! SearchPosition()
-    if @/ !~ '\v(\\\%\d+[lc](\\\|)?)+'
+    if @/ !~# '\v(\\\%\d+[lc](\\\|)?)+'
         let @/ = ''
         " echo "pattern didn't match = ".@/
     else
@@ -568,20 +569,20 @@ function! SearchPosition()
 
     let line = getpos('.')[1]
     let col = getpos('.')[2]
-    execute "let @/ .= '\\%".line."l'"
-    execute "let @/ .= '\\%".col."c'"
+    execute "let @/ .= '\\%" . line . "l'"
+    execute "let @/ .= '\\%" . col . "c'"
 endfunction
 
 nnoremap g** :<C-U>call AddToSearch('n')<CR>
 xnoremap g* :<C-U>call AddToSearch('x')<CR>
 function! AddToSearch(mode)
     let save_reg = @@
-    if @/ != ''
+    if @/ !=# ''
         let @/ .= '\|'
     endif
-    if a:mode == 'x'
+    if a:mode ==# 'x'
         normal! gvy
-    elseif a:mode == 'n'
+    elseif a:mode ==# 'n'
         normal! yiw
     else
         let @@ = save_reg
@@ -611,7 +612,7 @@ function! Seq(count, first_line, last_line, cmdInput, bang) abort
     let rg_expr = '`\(.\{-1,}\)`'
 
     " 1 index if ! is used
-    if a:bang != '!'
+    if a:bang !=# '!'
         let x = 0
     else
         let x = 1
@@ -636,7 +637,7 @@ command! -nargs=* -range=0 -bang Renumber
 function! s:renumber(first_line, last_line, bang) abort
     let num_expr = '\v\C^.{-}\zs\d+\ze'
     " 0 index if ! is used
-    if a:bang != '!'
+    if a:bang !=# '!'
         let s:renumber_index = 1
     else
         let s:renumber_index = 0
@@ -947,7 +948,7 @@ if neobundle#is_installed('neocomplete') "{{{2
     " For smart TAB completion.
     function! s:check_back_space() "{{{
         let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~ '\s'
+        return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
     imap <expr><TAB>
                 \ pumvisible() ? "\<C-n>" :
@@ -961,12 +962,15 @@ if neobundle#is_installed('neocomplete') "{{{2
     inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : "\<CR>"
     inoremap <expr><C-e>  neocomplete#cancel_popup()
 
-    " Enable omni completion.
-    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+    augroup omni_completion
+        autocmd!
+        " Enable omni completion.
+        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+        autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+        autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+    augroup END
 
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
@@ -999,7 +1003,7 @@ if neobundle#is_installed('neosnippet-snippets') "{{{2
 
     function! s:check_back_space() "{{{
         let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~ '\s'
+        return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
 
     if has('conceal')
@@ -1160,8 +1164,11 @@ if neobundle#is_installed('unite.vim') "{{{2
     endif
 
     " toggle the preview window when I press the "p" key.
-    autocmd FileType unite call s:unite_my_settings()
-    function! s:unite_my_settings()
+    augroup unite_settings
+        autocmd!
+        autocmd FileType unite call s:unite_settings()
+    augroup END
+    function! s:unite_settings()
         nnoremap <silent><buffer><expr> p
                     \ empty(filter(range(1, winnr('$')),
                     \ 'getwinvar(v:val, "&previewwindow") != 0')) ?
@@ -1207,7 +1214,7 @@ if neobundle#is_installed('vimshell.vim') "{{{2
     command! -nargs=* VshSend call RunInVimShell('<Args>') "{{{3
     function! RunInVimShell(cmd)
         VimShellBufferDir -popup
-        execute "VimShellSendString " . a:cmd
+        execute 'VimShellSendString ' . a:cmd
     endfunction "}}}3
 
 endif "}}}2
@@ -1240,7 +1247,7 @@ if neobundle#is_installed('vim-fugitive') "{{{2
     fun! AutojumpLastPosition()
         if ! exists('b:autojumped_init')
             let b:autojumped_init = 1
-            if &ft != 'gitcommit' && &ft != 'diff' && ! &diff && line("'\"") <= line("$") && line("'\"") > 0
+            if &ft !=# 'gitcommit' && &ft !=# 'diff' && ! &diff && line("'\"") <=# line('$') && line("'\"") > 0
                 " NOTE: `zv` is ignored with foldlevel in modeline.
                 exe 'normal! g`"zv'
             endif
@@ -1257,11 +1264,11 @@ if neobundle#is_installed('vim-fugitive') "{{{2
         if exists('w:no_resolve_symlink') && w:no_resolve_symlink
             return
         endif
-        if &ft == 'help'
+        if &ft ==# 'help'
             return
         endif
         let fname = a:0 ? a:1 : expand('%')
-        if fname =~ '^\w\+:/'
+        if fname =~# '^\w\+:/'
             " Do not mess with 'fugitive://' etc.
             return
         endif
@@ -1437,13 +1444,16 @@ if neobundle#is_installed('goyo.vim') "{{{2
         let &list = b:list_cache
     endfunction
 
-    autocmd! User GoyoEnter nested call <SID>goyo_enter()
-    autocmd! User GoyoLeave nested call <SID>goyo_leave()
+    augroup augroup_name
+        autocmd!
+        autocmd User GoyoEnter nested call <SID>goyo_enter()
+        autocmd User GoyoLeave nested call <SID>goyo_leave()
+    augroup END
     function! SetGoyo(num)
         if a:num == 0
             Goyo
         else
-            execute "Goyo ".string(a:num)
+            execute 'Goyo ' . string(a:num)
         endif
 
 
@@ -1476,7 +1486,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
     function! Todo_fold_text(foldchar) "{{{3
         let line = s:get_context(v:foldstart)
         let lines_count = v:foldend - v:foldstart + 1
-        let lines_count_text = '| ' . printf("%10s", lines_count . ' todos') . ' |'
+        let lines_count_text = '| ' . printf('%10s', lines_count . ' todos') . ' |'
         let foldtextstart = strpart(line, 0, (winwidth(0)*2)/3)
         let foldtextend = lines_count_text . repeat(a:foldchar, 8)
         let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn

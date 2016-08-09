@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: dropbox
   when: ansible_distribution == 'MacOSX'
@@ -13,4 +14,3 @@
     name: dropbox
     state: latest
     disable_recommends: no
-

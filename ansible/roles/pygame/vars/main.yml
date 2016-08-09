@@ -1,3 +1,4 @@
+---
 pip_modules_mac:
   - 'hg+https://bitbucket.org/pygame/pygame'
 

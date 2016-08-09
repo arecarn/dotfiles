@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: zsh
   when: ansible_distribution == 'MacOSX'
@@ -10,6 +11,7 @@
   become: yes
   when: ansible_distribution == 'openSUSE'
   zypper:
-    name: http://download.opensuse.org/repositories/shells/openSUSE_13.1/x86_64/zsh-5.2-154.1.x86_64.rpm
+    name: "http://download.opensuse.org/repositories/shells/openSUSE_13.1\
+           /x86_64/zsh-5.2-154.1.x86_64.rpm"
     state: present
     disable_recommends: no

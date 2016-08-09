@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: skype
   when: ansible_distribution == 'MacOSX'

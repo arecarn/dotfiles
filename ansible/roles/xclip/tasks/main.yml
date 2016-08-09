@@ -1,3 +1,4 @@
+---
 - name: openSUSE
   tags: xclip
   become: yes

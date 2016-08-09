@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: llvm
   when: ansible_distribution == 'MacOSX'

@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: tree
   when: ansible_distribution == 'MacOSX'

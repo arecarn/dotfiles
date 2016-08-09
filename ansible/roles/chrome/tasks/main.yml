@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: chrome
   when: ansible_distribution == 'MacOSX'

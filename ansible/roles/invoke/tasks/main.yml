@@ -1,6 +1,8 @@
+---
 - name: python 3 package
   tags: invoke
   become: yes
   pip:
     name: invoke
-    executable: "{{pip3_executable[ansible_distribution | lower] | default([pip3])}}"
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

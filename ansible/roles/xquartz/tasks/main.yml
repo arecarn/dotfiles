@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: xquartz
   when: ansible_distribution == 'MacOSX'

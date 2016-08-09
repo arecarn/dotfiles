@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: transmission
   when: ansible_distribution == 'MacOSX'

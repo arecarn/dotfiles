@@ -1,13 +1,16 @@
+---
 - name: python 2 package
   tags: python_git
   become: yes
   pip:
     name: gitpython
-    executable: "{{pip2_executable[ansible_distribution | lower] | default([pip2])}}"
+    executable: "{{pip2_executable[ansible_distribution | lower]\
+                 | default([pip2])}}"
 
 - name: python 3 package
   tags: python_git
   become: yes
   pip:
     name: gitpython
-    executable: "{{pip3_executable[ansible_distribution | lower] | default([pip3])}}"
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

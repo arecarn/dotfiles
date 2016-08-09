@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: neovim
   when: ansible_distribution == 'MacOSX'

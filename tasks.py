@@ -30,7 +30,15 @@ def lint_yaml(ctx):
     files_string = " ".join(files)
     ctx.run('yamllint --format parsable {files}'.format(files=files_string), pty=True)
 
-@task(lint_vim, lint_shell, lint_yaml)
+@task
+def lint_python(ctx):
+    files = [
+        'tasks.py',
+    ]
+    files_string = ' '.join(files)
+    ctx.run('python3 -m pylint --output-format=parseable {files}'.format(files=files_string), pty=True)
+
+@task(lint_vim, lint_shell, lint_yaml, lint_python)
 def lint(ctx):
     pass
 

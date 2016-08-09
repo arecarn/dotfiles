@@ -16,13 +16,13 @@ def lint_vim(ctx):
 @task
 def lint_shell(ctx):
     files = [
-        os.path.join('git', ' bin', ' *'),
+        os.path.join('git', 'bin', '*'),
         os.path.join('scripts', 'bin', '*.sh'),
         os.path.join('scripts', 'bin', 'trash'),
     ]
-    files_string = " ".join(files)
-    print(files_string)
-    ctx.run('shellcheck {files}'.format(files=files_string), pty=True)
+    files_string = ' '.join(files)
+    print('shellcheck --format gcc {files}'.format(files=files_string))
+    ctx.run('shellcheck --format gcc {files}'.format(files=files_string), pty=True)
 
 @task
 def lint_yaml(ctx):

@@ -28,7 +28,7 @@ def lint_shell(ctx):
 def lint_yaml(ctx):
     files = [f for f in glob.iglob(os.path.join('**', '*.yml'), recursive=True)]
     files_string = " ".join(files)
-    ctx.run('yamllint {files}'.format(files=files_string), pty=True)
+    ctx.run('yamllint --format parsable {files}'.format(files=files_string), pty=True)
 
 @task(lint_vim, lint_shell, lint_yaml)
 def lint(ctx):

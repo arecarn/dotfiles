@@ -506,7 +506,6 @@ cnoremap <C-e> <END>
 " find files easier
 cnoremap <C-e> e <C-r>=expand('%:p:h') . '/'<CR>
 
-" fn File Name (trail) (foo.txt)
 " fp File Path  (/something/src/foo.txt)
 " fpr File Path relative  (src/foo.txt)
 " ofn Other File Name (trail)
@@ -517,22 +516,51 @@ cnoremap <C-e> e <C-r>=expand('%:p:h') . '/'<CR>
 " pwd Present Working Directory
 let extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
 let maps = [
-    \ {'str' : 'fn',   'func' : "expand('%:t')"},
-    \ {'str' : 'fp',   'func' : "expand('%:p')"},
-    \ {'str' : 'rfp',  'func' : "expand('%')"},
-    \ {'str' : 'ofn',  'func' : "substitute(expand('%:t'),     '".extension_patter."', '\\2', 'g')"},
-    \ {'str' : 'ofp',  'func' : "substitute(expand('%:p:r:.'), '".extension_patter."', '\\2', 'g')"},
-    \ {'str' : 'rofp', 'func' : "expand('%<') . '.'"},
-    \ {'str' : 'dp',   'func' : "expand('%:p:h') . '/'"},
-    \ {'str' : 'rdp',  'func' : "expand('%:h') . '/'"},
-    \ {'str' : 'pwd',  'func' : 'getcwd()'}
-    \ ]
+    \     {
+    \         'str': 'fn',
+    \         'func': "expand('%:t')"
+    \     },
+    \     {
+    \         'str': 'fp',
+    \         'func': "expand('%:p')"
+    \     },
+    \     {
+    \         'str': 'rfp',
+    \         'func': "expand('%')"
+    \     },
+    \     {
+    \         'str': 'ofn',
+    \         'func': "substitute(expand('%:t'), '"
+    \         . extension_patter . "', '\\2', 'g')"
+    \     },
+    \     {
+    \         'str': 'ofp',
+    \         'func': "substitute(expand('%:p:r:.'), '"
+    \         . extension_patter . "', '\\2', 'g')"
+    \     },
+    \     {
+    \         'str': 'rofp',
+    \         'func': "expand('%<') . '.'"
+    \     },
+    \     {
+    \         'str': 'dp',
+    \         'func': "expand('%:p:h') . '/'"
+    \     },
+    \     {
+    \         'str': 'rdp',
+    \         'func': "expand('%:h') . '/'"
+    \     },
+    \     {
+    \         'str': 'pwd',
+    \         'func': 'getcwd()'
+    \     }
+    \  ]
 for map in maps
     execute 'nnoremap <silent> <Leader>y' . map.str . ' ' .
                 \ ':let @*=' . map.func . '<CR>' .
                 \ ':let @+=' . map.func . '<CR>' .
                 \ ':let @"=' . map.func . '<CR>'
-    execute 'cnoremap %' . map.str . ' \<C-r>=' . map.func . '\<CR>'
+    execute 'cnoremap %' . map.str . ' <C-r>=' . map.func . '<CR>'
 endfor
 
 " accept completion (requires "set wild charm = <TAB>)

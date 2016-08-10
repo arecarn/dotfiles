@@ -63,10 +63,6 @@ def lint_python(ctx):
     print(cmdf)
     ctx.run(cmdf, pty=True)
 
-@task(lint_vim, lint_shell, lint_yaml, lint_python)
-def lint(ctx):
-    pass
-
 @task
 def provision(ctx, args=''):
     os.chdir('ansible')
@@ -120,3 +116,6 @@ def _dploy(ctx):
 @task(name='undploy')
 def _undploy(ctx):
     Dploy().undo()
+@task(lint_vim, lint_shell, lint_yaml, lint_python, default=True)
+def lint(ctx):
+    pass

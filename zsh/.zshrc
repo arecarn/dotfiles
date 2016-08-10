@@ -13,12 +13,11 @@ fi
 source "${zplug_file}"
 
 zplug 'plugins/command-not-found', from:oh-my-zsh
-zplug 'plugins/tmux', from:oh-my-zsh
 zplug 'plugins/ssh-agent', from:oh-my-zsh
-
-zplug 'zsh-users/zsh-completions'
-zplug 'zsh-users/zsh-syntax-highlighting'
+zplug 'plugins/tmux', from:oh-my-zsh, nice:10
 zplug 'rupa/z', use:'*.sh'
+zplug 'zsh-users/zsh-completions'
+zplug 'zsh-users/zsh-syntax-highlighting', nice:11
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then

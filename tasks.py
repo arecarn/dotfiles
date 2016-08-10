@@ -116,6 +116,11 @@ def _dploy(ctx):
 @task(name='undploy')
 def _undploy(ctx):
     Dploy().undo()
+
+@task(provision, _dploy)
+def install(ctx):
+    pass
+
 @task(lint_vim, lint_shell, lint_yaml, lint_python, default=True)
 def lint(ctx):
     pass

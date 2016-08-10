@@ -74,7 +74,7 @@ def provision(ctx, args=''):
 
 @task
 def clean(ctx):
-    ctx.run('git clean -x -d --force')
+    ctx.run('git clean --interactive', pty=True)
 
 @task
 def setup(ctx):

@@ -1,0 +1,16 @@
+---
+- name: MacOSX
+  tags: cmake
+  homebrew:
+    name: cmake
+    state: latest
+  when: ansible_distribution == 'MacOSX'
+
+- name: openSUSE
+  tags: cmake
+  become: yes
+  zypper:
+    name: cmake
+    state: latest
+    disable_recommends: no
+  when: ansible_distribution == 'openSUSE'

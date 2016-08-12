@@ -1,0 +1,11 @@
+#!/bin/sh
+
+exit_code=0
+
+pre_commit_white_space_check.sh
+exit_code=$((exit_code + $?))
+
+pre_commit_ascii_filename_check.sh
+exit_code=$((exit_code + $?))
+
+exit $exit_code

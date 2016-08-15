@@ -18,22 +18,27 @@ exec 1>&2
 # Cross platform projects tend to avoid non-ASCII filenames; prevent
 # them from being added to the repository. We exploit the fact that the
 # printable range starts at the space character and ends with tilde.
-if [ "$allownonascii" != "true" ] &&
+if [ "$allownonascii" != "true" ]; then
+    file_list=$(git diff --cached --name-only --diff-filter=A -z "${against}")
     # Note that the use of brackets around a tr range is ok here, (it's even
     # required, for portability to Solaris 10's /usr/bin/tr), since the square
     # bracket bytes happen to fall in the designated range.
-    test "$(git diff --cached --name-only --diff-filter=A -z $against |
-      LC_ALL=C tr -d '[ -~]\0' | wc -c)" != 0
-then
-    cat <<\EOF
+    non_ascii_chars=$(printf "%s" "${file_list}" | LC_ALL=C tr -d '[ -~]\0')
+    num_non_ascii_chars=$(printf "%s" "${non_ascii_chars}" | wc -c )
+    num_non_ascii_chars_spaces_trimed=$(printf "%s" "${num_non_ascii_chars}" | tr -d ' ')
+
+    if [ "${num_non_ascii_chars_spaces_trimed}" != "0" ]; then
+        cat <<\EOF
 pre-commit: Aborting commit due to non-ASCII file name.
 
 This can cause problems if you want to work with people on other platforms. To
 be portable it is advisable to rename the file. If you know what you are doing
 you can disable this check using:
 
-  git config hooks.allownonascii true
+git config hooks.allownonascii true
 
 EOF
-    exit 1
+        exit 1
+    fi
+
 fi

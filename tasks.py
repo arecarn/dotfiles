@@ -1,12 +1,20 @@
+"""
+Project Tasks that can be invoked using using the program "invoke" or "inv"
+"""
+
 import os
 import fnmatch
 from invoke import task
 import dploy
 
-# The Python 3.5 glob module supports recursive globs, and the python 3.4
-# pathlib module also does, but for version 2.2 to 3.3 this is the work around.
-# source: http://stackoverflow.com/a/2186673
 def find_files(directory, pattern):
+    """
+    Recursively find files in directory using the glob expression pattern
+
+    The Python 3.5 glob module supports recursive globs, and the python 3.4
+    pathlib module also does, but for version 2.2 to 3.3 this is the work around.
+    source: http://stackoverflow.com/a/2186673
+    """
     for root, _, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, pattern):
@@ -15,6 +23,9 @@ def find_files(directory, pattern):
 
 @task
 def lint_vim(ctx):
+    """
+    Run Vint vim linter on .vimrc and other supporting files
+    """
     files = [
         os.path.join('vim', '.vim', 'vimrc'),
         os.path.join('vim', '.vim', 'autoload', '*.vim'),
@@ -28,6 +39,10 @@ def lint_vim(ctx):
 
 @task
 def lint_shell(ctx):
+    """
+    Run ShellCheck on shell files
+    """
+
     files = [
         os.path.join('git', 'bin', '*'),
         os.path.join('scripts', 'bin', '*.sh'),
@@ -42,6 +57,9 @@ def lint_shell(ctx):
 
 @task
 def lint_yaml(ctx):
+    """
+    Run yamllint on YAML Ansible configuration files
+    """
     files = []
     files.extend(find_files(directory='ansible', pattern='*.yml'))
     files_string = " ".join(files)
@@ -53,6 +71,9 @@ def lint_yaml(ctx):
 
 @task
 def lint_python(ctx):
+    """
+    Run pylint on this file
+    """
     files = [
         'tasks.py',
     ]
@@ -65,18 +86,30 @@ def lint_python(ctx):
 
 @task
 def provision(ctx, args=''):
+    """
+    Provision this and other system using ansible
+    """
     os.chdir('ansible')
     ctx.run('ansible-playbook site.yml' + ' ' + args, pty=True)
 
 @task
 def clean(ctx):
+    """
+    Clean repository using git
+    """
     ctx.run('git clean --interactive', pty=True)
 
 @task
 def setup(ctx):
+    """
+    Install python requirements
+    """
     ctx.run('pip install -r requirements.txt')
 
 class Dploy():
+    """
+    Class to handle logic and data to stow and unstow using dploy
+    """
     def __init__(self):
         self.home = os.environ['HOME']
         self.packages = [
@@ -98,29 +131,52 @@ class Dploy():
             ((self.home, '.vim'), (self.home, '.config', 'nvim')),
         ]
 
-    def do(self):
+    def stow(self):
+        """
+        stow and link the specified files
+        """
+        # pylint: disable=invalid-name
         dploy.stow(self.packages, self.home)
         for src, dest in self.links:
             dploy.link(os.path.join(*src), os.path.join(*dest))
 
-    def undo(self):
+    def unstow(self):
+        """
+        unstow and link the specified files
+        """
         for _, dest in reversed(self.links):
             os.unlink(os.path.join(*dest))
 
         dploy.unstow(self.packages, self.home)
 
-@task(name='dploy')
-def _dploy(ctx):
-    Dploy().do()
+@task
+def stow(ctx):
+    """
+    Run dploy unstow unlink all files into their respective repositories
+    """
+    # pylint: disable=unused-argument
+    Dploy().stow()
 
-@task(name='undploy')
-def _undploy(ctx):
-    Dploy().undo()
+@task
+def unstow(ctx):
+    """
+    Run dploy stow link all files into their respective repositories
+    """
+    # pylint: disable=unused-argument
+    Dploy().unstow()
 
-@task(provision, _dploy)
+@task(provision, stow)
 def install(ctx):
+    """
+    Install task
+    """
+    # pylint: disable=unused-argument
     pass
 
 @task(lint_vim, lint_shell, lint_yaml, lint_python, default=True)
 def lint(ctx):
+    """
+    Lint task
+    """
+    # pylint: disable=unused-argument
     pass

@@ -1,4 +1,5 @@
 " -                                                                        {{{
+"
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
 set encoding=utf-8 "make Vim use UTF-8 by default
@@ -171,7 +172,7 @@ set foldlevelstart=99
 if has('autocmd')
     augroup vimrc
         autocmd!
-        autocmd BufWritePost *vimrc* source %
+        autocmd BufWritePost *vimrc* nested source $MYVIMRC
     augroup END
 
 
@@ -300,6 +301,7 @@ set lazyredraw
 set laststatus=2
 set list
 set listchars=trail:·,tab:→-,extends:▶,precedes:◀
+set noshowmode
 
 " Maximize Window on Startup
 if has ('gui_running') && has('autocmd') && s:has_windows
@@ -771,7 +773,7 @@ NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
 
 
 " Visual Enhancements
-NeoBundle 'bling/vim-airline'
+NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'chreekat/vim-paren-crosshairs'
 NeoBundle 'edkolev/tmuxline.vim'
 NeoBundle 'junegunn/goyo.vim'
@@ -1654,20 +1656,14 @@ if neobundle#is_installed('gruvbox') "{{{2
     colorscheme gruvbox
 endif "}}}2
 
-if neobundle#is_installed('vim-airline') "{{{2
-    let g:airline#extensions#tabline#enabled = 1
-    let g:airline#extensions#tabline#tab_nr_type = 1
-    let g:airline#extensions#tabline#buffer_nr_show = 1
-    let g:airline_powerline_fonts = 1
-    let g:airline_inactive_collapse = 0
-
-    if neobundle#is_installed('gruvbox') "{{{3
-        let g:airline_theme='gruvbox'
-    endif "}}}3
-
-    if !has('vim_starting') && g:loaded_airline
-        AirlineRefresh "refresh  when it starts looking wonky
-    endif
+if neobundle#is_installed('tmuxline.vim') "{{{2
+    let g:tmuxline_powerline_separators = 0
+    let g:tmuxline_separators = {
+                \ 'left' : '',
+                \ 'left_alt': '|',
+                \ 'right' : '',
+                \ 'right_alt' : '|',
+                \ 'space' : ' '}
 endif "}}}2
 
 if neobundle#is_installed('vim-easy-align') "{{{2

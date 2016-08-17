@@ -837,6 +837,7 @@ NeoBundle 'arecarn/diff-utils.vim'
 NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'Shougo/vimshell.vim', {'depends' : 'Shougo/vimproc.vim'}
 NeoBundle 'idanarye/vim-vebugger', {'depends' : 'shougo/vimproc.vim'}
+NeoBundle 'metakirby5/codi.vim'
 
 
 " Text Manipulation Commands / Mappings

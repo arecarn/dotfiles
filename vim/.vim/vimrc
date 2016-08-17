@@ -299,6 +299,7 @@ set relativenumber
 set showcmd
 set lazyredraw
 set laststatus=2
+set showtabline=2
 set list
 set listchars=trail:·,tab:→-,extends:▶,precedes:◀
 set noshowmode
@@ -518,45 +519,45 @@ cnoremap <C-e> e <C-r>=expand('%:p:h') . '/'<CR>
 " pwd Present Working Directory
 let extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
 let maps = [
-    \     {
-    \         'str': 'fn',
-    \         'func': "expand('%:t')"
-    \     },
-    \     {
-    \         'str': 'fp',
-    \         'func': "expand('%:p')"
-    \     },
-    \     {
-    \         'str': 'rfp',
-    \         'func': "expand('%')"
-    \     },
-    \     {
-    \         'str': 'ofn',
-    \         'func': "substitute(expand('%:t'), '"
-    \         . extension_patter . "', '\\2', 'g')"
-    \     },
-    \     {
-    \         'str': 'ofp',
-    \         'func': "substitute(expand('%:p:r:.'), '"
-    \         . extension_patter . "', '\\2', 'g')"
-    \     },
-    \     {
-    \         'str': 'rofp',
-    \         'func': "expand('%<') . '.'"
-    \     },
-    \     {
-    \         'str': 'dp',
-    \         'func': "expand('%:p:h') . '/'"
-    \     },
-    \     {
-    \         'str': 'rdp',
-    \         'func': "expand('%:h') . '/'"
-    \     },
-    \     {
-    \         'str': 'pwd',
-    \         'func': 'getcwd()'
-    \     }
-    \  ]
+            \     {
+            \         'str': 'fn',
+            \         'func': "expand('%:t')"
+            \     },
+            \     {
+            \         'str': 'fp',
+            \         'func': "expand('%:p')"
+            \     },
+            \     {
+            \         'str': 'rfp',
+            \         'func': "expand('%')"
+            \     },
+            \     {
+            \         'str': 'ofn',
+            \         'func': "substitute(expand('%:t'), '"
+            \         . extension_patter . "', '\\2', 'g')"
+            \     },
+            \     {
+            \         'str': 'ofp',
+            \         'func': "substitute(expand('%:p:r:.'), '"
+            \         . extension_patter . "', '\\2', 'g')"
+            \     },
+            \     {
+            \         'str': 'rofp',
+            \         'func': "expand('%<') . '.'"
+            \     },
+            \     {
+            \         'str': 'dp',
+            \         'func': "expand('%:p:h') . '/'"
+            \     },
+            \     {
+            \         'str': 'rdp',
+            \         'func': "expand('%:h') . '/'"
+            \     },
+            \     {
+            \         'str': 'pwd',
+            \         'func': 'getcwd()'
+            \     }
+            \  ]
 for map in maps
     execute 'nnoremap <silent> <Leader>y' . map.str . ' ' .
                 \ ':let @*=' . map.func . '<CR>' .
@@ -1222,7 +1223,6 @@ else
     " setup netrw
     " set up line numbering and other good stuff
     let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
-" netrw }}}2
 
 endif "}}}2
 
@@ -1506,11 +1506,11 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
     augroup END
 
     function! s:get_context(line) abort "{{{3
-         return matchstr(getline(a:line), '@[^ ]\+')
+        return matchstr(getline(a:line), '@[^ ]\+')
     endfunction "}}}3
 
     function! s:get_project(line) abort "{{{3
-         return matchstr(getline(a:line), '+[^ ]\+')
+        return matchstr(getline(a:line), '+[^ ]\+')
     endfunction "}}}3
 
     function! Todo_fold_text(foldchar) "{{{3

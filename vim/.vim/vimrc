@@ -1656,6 +1656,65 @@ if neobundle#is_installed('gruvbox') "{{{2
     colorscheme gruvbox
 endif "}}}2
 
+if neobundle#is_installed('lightline.vim') "{{{2
+    let g:lightline = {
+                \ 'colorscheme': 'default',
+                \ 'active': {
+                \     'left': [['mode', 'paste'], ['fugitive', 'filename']]
+                \ },
+                \ 'component_function': {
+                \     'modified': 'Lightline_modified',
+                \     'readonly': 'Lightline_readonly',
+                \     'fugitive': 'Lightline_fugitive',
+                \     'filename': 'Lightline_filename',
+                \     'fileformat': 'Lightline_fileformat',
+                \     'filetype': 'Lightline_filetype',
+                \     'fileencoding': 'Lightline_fileencoding',
+                \     'mode': 'Lightline_mode',
+                \ }}
+
+    function! Lightline_modified() abort
+        return &ft =~ 'help\|vimfiler' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+    endfunction
+
+    function! Lightline_readonly() abort
+        return &ft !~? 'help\|vimfiler' && &readonly ? 'RO' : ''
+    endfunction
+
+    function! Lightline_filename() abort
+        return ('' != Lightline_readonly() ? Lightline_readonly() . ' ' : '') .
+                    \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
+                    \  &ft == 'unite' ? unite#get_status_string() :
+                    \  &ft == 'vimshell' ? vimshell#get_status_string() :
+                    \ '' != expand('%') ? expand('%') : '[No Name]') .
+                    \ ('' != Lightline_modified() ? ' ' . Lightline_modified() : '')
+    endfunction
+
+    function! Lightline_fugitive() abort
+        if &ft !~? 'vimfiler' && exists("*fugitive#head")
+            let branch = fugitive#head()
+            return branch !=# '' ? '±'.branch : ''
+        endif
+        return ''
+    endfunction
+
+    function! Lightline_fileformat() abort
+        return winwidth(0) > 70 ? &fileformat : ''
+    endfunction
+
+    function! Lightline_filetype() abort
+        return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+    endfunction
+
+    function! Lightline_fileencoding() abort
+        return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
+    endfunction
+
+    function! Lightline_mode() abort
+        return winwidth(0) > 70 ? lightline#mode() : ''
+    endfunction
+endif "}}}2
+
 if neobundle#is_installed('tmuxline.vim') "{{{2
     let g:tmuxline_powerline_separators = 0
     let g:tmuxline_separators = {

@@ -1723,6 +1723,18 @@ if neobundle#is_installed('tmuxline.vim') "{{{2
                 \ 'right' : '',
                 \ 'right_alt' : '|',
                 \ 'space' : ' '}
+
+    augroup tmuxline
+        autocmd!
+        autocmd VimEnter * call s:set_up_tmuxline()
+    augroup END
+
+    function! s:set_up_tmuxline() abort
+        if ($TERM ==# "screen" || $TERM ==# "screen-256color") && !empty($TMUX)
+            Tmuxline lightline
+            TmuxlineSnapshot! ~/.cache/tmux/statusline.conf
+        endif
+    endfunction
 endif "}}}2
 
 if neobundle#is_installed('vim-easy-align') "{{{2

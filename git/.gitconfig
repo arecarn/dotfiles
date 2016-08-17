@@ -150,10 +150,11 @@
     # a better CLone of a repo making sure it's submodules are initialized and
     # updated
     cl = "!f() { git clone --recursive \"$@\" && git smu; }; f"
+
     # better Pull of a repo only if a fast forward is possible, then make sure
     # submodules are updated
-    p = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
-    pr = pull --rebase
+    pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
+    plr = pl --rebase
 
     cln = clean --interactive
     # CLeaN Deep

@@ -156,6 +156,9 @@
     pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
     plr = pl --rebase
 
+    pu = push
+    puf = push --force-with-lease
+
     cln = clean --interactive
     # CLeaN Deep
     clnd = clean --interactive -d -x

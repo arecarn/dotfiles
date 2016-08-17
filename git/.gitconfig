@@ -62,7 +62,7 @@
     cmm = !git cm --message
     cmfu = !git cm --fixup
     cmsq = !git cm --squash
-    cma = !git cm --amend
+    cma = !git cm --amend --reset-author
 
     f = fetch
     co = checkout

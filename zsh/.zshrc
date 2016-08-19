@@ -27,7 +27,9 @@ if ! zplug check --verbose; then
     fi
 fi
 
-# Configure Installed plugins
+###########################################################################}}}
+# PLUGIN CONFIG                                                            {{{
+##############################################################################
 
 # checks if a plugin is installed via zplug
 _is_installed() {
@@ -47,7 +49,6 @@ fi
 
 # Finally, source plugins and add commands to ${PATH}
 zplug load
-
 
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{

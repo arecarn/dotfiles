@@ -776,7 +776,7 @@ NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
 " Visual Enhancements
 NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'chreekat/vim-paren-crosshairs'
-NeoBundle 'edkolev/tmuxline.vim'
+NeoBundle 'maman/tmuxline.vim'
 NeoBundle 'junegunn/goyo.vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 

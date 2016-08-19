@@ -85,12 +85,22 @@ def lint_python(ctx):
     ctx.run(cmdf, pty=True)
 
 @task
+def provision_all(ctx, args=''):
+    """
+    Provision this and other system using ansible
+    """
+    os.chdir('ansible')
+    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory hosts' + ' ' + args,
+            pty=True)
+
+@task
 def provision(ctx, args=''):
     """
     Provision this and other system using ansible
     """
     os.chdir('ansible')
-    ctx.run('ansible-playbook site.yml' + ' ' + args, pty=True)
+    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost --ask-become-pass ' + ' ' + args,
+            pty=True)
 
 @task
 def clean(ctx):

@@ -1,6 +1,5 @@
 ---
 - hosts: all
-  connection: local
   roles:
     - ack
     - ag

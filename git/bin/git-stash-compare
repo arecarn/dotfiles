@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Returns the number of untracked files
+is_git_repo_dirty(){
+    git status --porcelain 2>/dev/null| grep -v "^??"
+}
+
+if [ ! -z "$(is_git_repo_dirty)" ]; then
+    eval "$*" > after
+    git stash
+    eval "$*" > before
+    git stash pop --index
+
+    diff_tool="$(git config diff.tool)"
+    if [ -z "${diff_tool}" ]; then
+        diff_tool="$(git config merge.tool)"
+    fi
+
+    "${diff_tool}" before after
+else
+    echo "No tracked local changes to compare"
+fi

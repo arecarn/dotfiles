@@ -60,8 +60,10 @@ def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files = []
-    files.extend(find_files(directory='ansible', pattern='*.yml'))
+    files = [
+        os.path.join('ansible', '*.yml' ),
+    ]
+    files.extend(find_files(directory='ansible/roles', pattern='*.yml'))
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'

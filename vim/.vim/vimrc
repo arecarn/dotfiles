@@ -1675,7 +1675,7 @@ if neobundle#is_installed('lightline.vim') "{{{2
                 \ }}
 
     function! Lightline_modified() abort
-        return &ft =~ 'help\|vimfiler' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+        return &ft =~# 'help\|vimfiler' ? '' : &modified ? '+' : &modifiable ? '' : '-'
     endfunction
 
     function! Lightline_readonly() abort
@@ -1683,16 +1683,16 @@ if neobundle#is_installed('lightline.vim') "{{{2
     endfunction
 
     function! Lightline_filename() abort
-        return ('' != Lightline_readonly() ? Lightline_readonly() . ' ' : '') .
-                    \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
-                    \  &ft == 'unite' ? unite#get_status_string() :
-                    \  &ft == 'vimshell' ? vimshell#get_status_string() :
-                    \ '' != expand('%') ? expand('%') : '[No Name]') .
-                    \ ('' != Lightline_modified() ? ' ' . Lightline_modified() : '')
+        return ('' !=# Lightline_readonly() ? Lightline_readonly() . ' ' : '') .
+                    \ (&ft ==# 'vimfiler' ? vimfiler#get_status_string() :
+                    \  &ft ==# 'unite' ? unite#get_status_string() :
+                    \  &ft ==# 'vimshell' ? vimshell#get_status_string() :
+                    \ '' !=# expand('%') ? expand('%') : '[No Name]') .
+                    \ ('' !=# Lightline_modified() ? ' ' . Lightline_modified() : '')
     endfunction
 
     function! Lightline_fugitive() abort
-        if &ft !~? 'vimfiler' && exists("*fugitive#head")
+        if &ft !~? 'vimfiler' && exists('*fugitive#head')
             let branch = fugitive#head()
             return branch !=# '' ? '±'.branch : ''
         endif
@@ -1731,7 +1731,7 @@ if neobundle#is_installed('tmuxline.vim') "{{{2
     augroup END
 
     function! s:set_up_tmuxline() abort
-        if ($TERM ==# "screen" || $TERM ==# "screen-256color") && !empty($TMUX)
+        if ($TERM ==# 'screen' || $TERM ==# 'screen-256color') && !empty($TMUX)
             Tmuxline lightline
             TmuxlineSnapshot! ~/.cache/tmux/statusline.conf
         endif

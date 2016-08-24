@@ -156,10 +156,10 @@
     # better Pull of a repo only if a fast forward is possible, then make sure
     # submodules are updated
     pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
-    plr = pl --rebase
+    plr = !git pl --rebase
 
-    pu = push
-    puf = push --force-with-lease
+    ps = push
+    psf = !git ps --force-with-lease
 
     cln = clean --interactive
     # CLeaN Deep

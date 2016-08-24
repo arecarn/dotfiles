@@ -97,6 +97,10 @@ if [ -z "${old_email}" ] && [ -z "${old_name}" ]; then
     all_authors=1
 fi
 
+if [ -z "${revision_range}" ]; then
+    revision_range='HEAD'
+fi
+
 
 export old_email old_name new_email new_name all_authors
 # shellcheck disable=SC2016

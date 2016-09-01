@@ -73,7 +73,7 @@
     stp = stash pop --index
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
-    stl = !git stash-list-pretty
+    stl = !git --no-pager stash-list-pretty
     stc = stash-compare # see ~/bin for script
 
 

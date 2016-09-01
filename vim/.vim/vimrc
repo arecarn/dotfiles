@@ -1556,7 +1556,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         setlocal iskeyword+=+,-,.
         setlocal iskeyword+=@-@ " add literal @
 
-        if neobundle#is_installed('neocomplete') "{{{2
+        if neobundle#is_installed('neocomplete') "{{{3
             " use iskeyword characters in neocompletion
             let keyword_patterns = {}
             let keyword_patterns.todo = '\k\+'
@@ -1716,7 +1716,10 @@ if neobundle#is_installed('lightline.vim') "{{{2
     endfunction
 endif "}}}2
 
-if neobundle#is_installed('tmuxline.vim') "{{{2
+if neobundle#is_installed('tmuxline.vim')
+            \ && ($TERM ==# 'screen' || $TERM ==# 'screen-256color')
+            \ && !empty($TMUX)  "{{{2
+
     let g:tmuxline_powerline_separators = 0
     let g:tmuxline_separators = {
                 \ 'left' : '',
@@ -1731,10 +1734,8 @@ if neobundle#is_installed('tmuxline.vim') "{{{2
     augroup END
 
     function! s:set_up_tmuxline() abort
-        if ($TERM ==# 'screen' || $TERM ==# 'screen-256color') && !empty($TMUX)
             Tmuxline lightline
             TmuxlineSnapshot! ~/.cache/tmux/statusline.conf
-        endif
     endfunction
 endif "}}}2
 

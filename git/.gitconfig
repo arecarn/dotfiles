@@ -80,16 +80,12 @@
     s = status-short # see ~/bin for script
     sl = status-long # see ~/bin for script
 
-    a = add
-    # Add Staged files that need to be updated: files that need to be updated
-    as = update-index --again
-
-    # run these two as external commands so they operate at the toplevel dir
-    # (this is the default in v2.0+)
-    # Add All
-    aa = !git add --all
-    # Add Modified files
-    amd = !git add --update :/
+    # Add files
+    a = add-enhanced # see ~/bin for script
+    # Add All files
+    aa = add-enhanced --all
+    # Stage already staged files that need to be Updated in the staging area
+    au = update-index --again
 
     rs = reset
     rsh = reset --hard

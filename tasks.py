@@ -8,9 +8,13 @@ from invoke import task
 import dploy
 import os
 
-is_pty = True
 if os.name == 'nt':
     is_pty = False
+    stow_location = 'USERPROFILE'
+else:
+    is_pty = True
+    stow_location = 'HOME'
+
 
 
 
@@ -122,7 +126,7 @@ class Dploy():
     Class to handle logic and data to stow and unstow using dploy
     """
     def __init__(self):
-        self.home = os.environ['HOME']
+        self.home = os.environ[stow_location]
         self.packages = [
             'cmd',
             'ctags',

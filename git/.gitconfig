@@ -48,12 +48,12 @@
 
     b = branch
     bl = branch --all --verbose # Branch List
-    bd = branch -d # Branch Delete
+    bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
-    bdu = push origin --delete # Branch Delete Upstream
+    bdr = push origin --delete # Branch Delete Remote
     bc = checkout -b # Branch Create
-    bcu = push origin --set-upstream HEAD # Branch Create Upstream
-    bsu = branch --set-upstream-to # Branch Set Upstream
+    bcr = push origin --set-upstream HEAD # Branch Create Remote
+    bsu = branch --set-remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)
 
     # the --verbose flag is equivalent to setting the commit.verbose option
@@ -92,11 +92,11 @@
     rsh = reset --hard
     rsm = reset --mixed
     rss = reset --soft
-    # ReSet to Upstream tracking branch
-    rsu = reset @{u}
-    rsuh = reset --hard @{u}
-    rsum = reset --mixed @{u}
-    rsus = reset --soft @{u}
+    # ReSet to Remote tracking branch
+    rsr = reset @{u}
+    rsrh = reset --hard @{u}
+    rsrm = reset --mixed @{u}
+    rsrs = reset --soft @{u}
 
     rb = rebase
     rbi = rebase --interactive --autosquash
@@ -110,8 +110,8 @@
     log-pretty = log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short
     # Log short
     l = !git --no-pager log-pretty --max-count=10
-    # Log of differences with Upstream
-    lu = !git --no-pager log-pretty --graph --left-right @{upstream}...HEAD
+    # Log of differences with Remote
+    lr = !git --no-pager log-pretty --graph --left-right @{upstream}...HEAD
     # Log Long
     ll = !git log-pretty
     # Log Long with All branches and refs

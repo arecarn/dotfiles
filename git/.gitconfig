@@ -10,7 +10,9 @@
     # it pushes to or creates-then-pushes-to same-named branches on the remote
     # repo for you if they don't exist already
     default = simple
-    followtags = true # added in v2.4
+
+    # Also Push relevant annotated tags (Added in v2.4.1)
+    followtags = true
 
 [merge]
     tool = vimdiff

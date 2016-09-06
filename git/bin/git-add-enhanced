@@ -8,7 +8,6 @@ cd_to_top_level_of_git_dir(){
     then
         cd "$GIT_TOP" || exit
     fi
-    pwd
 }
 
 if [ $# = 1 ] && [ "$1" = '--all' ]

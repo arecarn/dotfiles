@@ -58,6 +58,13 @@
     bsu = branch --set-remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)
 
+    t = tag
+    ta = tag --annotate
+    tam = tag --annotate -m
+    tl = branch --list # Tag List
+    td = tag --delete
+    tdr = push origin --delete # Tag Delete Remote
+
     # the --verbose flag is equivalent to setting the commit.verbose option
     # but this option is only supported in git v2.9+ so the flag is included in
     # the following aliases instead

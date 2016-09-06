@@ -33,9 +33,7 @@ def lint_vim(ctx):
     files_string = " ".join(files)
 
     cmd = 'vint {files}'
-    cmdf = cmd.format(files=files_string)
-    print(cmdf)
-    ctx.run(cmdf, pty=True)
+    ctx.run(cmd.format(files=files_string), pty=True)
 
 @task
 def lint_shell(ctx):
@@ -51,9 +49,7 @@ def lint_shell(ctx):
     files_string = ' '.join(files)
 
     cmd = 'shellcheck --format gcc {files}'
-    cmdf = cmd.format(files=files_string)
-    print(cmdf)
-    ctx.run(cmdf, pty=True)
+    ctx.run(cmd.format(files=files_string), pty=True)
 
 @task
 def lint_yaml(ctx):
@@ -67,9 +63,7 @@ def lint_yaml(ctx):
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'
-    cmdf = cmd.format(files=files_string)
-    print(cmdf)
-    ctx.run(cmdf, pty=True)
+    ctx.run(cmd.format(files=files_string), pty=True)
 
 @task
 def lint_python(ctx):
@@ -82,9 +76,7 @@ def lint_python(ctx):
 
     files_string = ' '.join(files)
     cmd = 'python3 -m pylint --output-format=parseable {files}'
-    cmdf = cmd.format(files=files_string)
-    print(cmdf)
-    ctx.run(cmdf, pty=True)
+    ctx.run(cmd.format(files=files_string), pty=True)
 
 @task
 def provision_all(ctx, args=''):
@@ -116,7 +108,7 @@ def setup(ctx):
     """
     Install python requirements
     """
-    ctx.run('pip install -r requirements.txt')
+    ctx.run('pip install --requirement requirements.txt')
 
 class Dploy():
     """

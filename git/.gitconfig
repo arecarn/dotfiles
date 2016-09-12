@@ -79,7 +79,10 @@
     sh = show --decorate --stat --patch
 
     st = stash
-    sts = stash show --patch --stat
+    stka = stash --keep-index # Stash Keep Added
+    sta = stash --include-untracked # Stash All including untracked files
+    stA = stash --all # Stash All incline untracked and ignored files
+    stsh = stash show --patch --stat
     stp = stash pop --index
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'

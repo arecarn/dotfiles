@@ -40,10 +40,10 @@
 
 [alias]
     d = diff --color
-    ds = diff --color --cached # Diff Staged
+    da = diff --color --cached # Diff Added
 
     dt = difftool
-    dts = difftool --cached # Diff Tool Staged
+    dta = difftool --cached # Diff Tool Added
 
     m = merge
     mt = mergetool
@@ -94,7 +94,7 @@
     a = add-enhanced # see ~/bin for script
     # Add All files
     aa = add-enhanced --all
-    # Stage already staged files that need to be Updated in the staging area
+    # Add already staged files that need to be Updated in the staging area
     au = update-index --again
 
     rs = reset

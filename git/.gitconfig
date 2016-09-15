@@ -38,6 +38,10 @@
 [difftool]
     prompt = false
 
+[credential]
+    # don't re-prompt for credentials for N seconds
+    helper = cache --timeout=1600
+
 [alias]
     d = diff --color
     da = diff --color --cached # Diff Added

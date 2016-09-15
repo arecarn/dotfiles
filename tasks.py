@@ -151,9 +151,9 @@ class Dploy():
         stow and link the specified files
         """
         # pylint: disable=invalid-name
-        dploy.stow(self.packages, self.home)
+        dploy.stow(self.packages, self.home, is_silent=False)
         for src, dest in self.links:
-            dploy.link(os.path.join(*src), os.path.join(*dest))
+            dploy.link(os.path.join(*src), os.path.join(*dest), is_silent=False)
 
     def unstow(self):
         """
@@ -162,7 +162,7 @@ class Dploy():
         for _, dest in reversed(self.links):
             os.unlink(os.path.join(*dest))
 
-        dploy.unstow(self.packages, self.home)
+        dploy.unstow(self.packages, self.home, is_silent=False)
 
 @task
 def stow(ctx):

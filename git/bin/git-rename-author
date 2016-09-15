@@ -39,7 +39,7 @@ OPTIONS
 }
 
 
-other_args=''
+other_args=
 handle_other_argument(){
     # save all the non-named arguments so they can be reinserted back into the
     # positional parameters at the end of the argument parsing
@@ -47,9 +47,9 @@ handle_other_argument(){
 }
 
 # default values
-force=''
-old_email=''
-old_name=''
+force=
+old_email=
+old_name=
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -143,5 +143,5 @@ filter='
     fi
 '
 
-git filter-branch "${force}" --env-filter "${filter}" --tag-name-filter cat \
+git filter-branch --env-filter "${filter}" --tag-name-filter cat ${force} \
     -- "${revision_range}" --branches --tags

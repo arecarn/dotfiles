@@ -346,3 +346,5 @@ pylint
 OSX
 Coverity
 Vint
+namespace
+shmup

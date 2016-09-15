@@ -6,7 +6,6 @@ import os
 import fnmatch
 from invoke import task
 import dploy
-import os
 
 if os.name == 'nt':
     is_pty = False

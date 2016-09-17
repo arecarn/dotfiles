@@ -203,13 +203,9 @@ if has('autocmd')
 
     function! s:quick_fix_list_settings() abort
         nnoremap <buffer> q  <C-W>q
-        nnoremap <buffer> t  <C-W><CR><C-W>TgT<C-W>j
-        nnoremap <buffer> T  <C-W><CR><C-W>T
         nnoremap <buffer> o  <CR><C-W>p
         nnoremap <buffer> S  <C-W><CR><C-W>K
         nnoremap <buffer> s  <C-W><CR><C-W>K<C-W>b
-        nnoremap <buffer> v  <C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t
-        nnoremap <buffer> gv <C-W><CR><C-W>H<C-W>b<C-W>J
     endfunction
 
     if s:has_windows

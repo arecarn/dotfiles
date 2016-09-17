@@ -118,7 +118,7 @@
     rsrs = reset --soft @{u}
 
     rb = rebase
-    rbi = rebase --interactive --autosquash
+    rbi = rebase --interactive --autosquash --autostash
     rbc = rebase --continue
     rba = rebase --abort
 

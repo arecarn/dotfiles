@@ -18,6 +18,9 @@
     tool = vimdiff
     conflictstyle = diff3
 
+[rebase]
+    autostash = true
+
 [mergetool]
     prompt = false
 

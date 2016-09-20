@@ -220,8 +220,8 @@ bindkey -M viins '^X^R'  redisplay
 bindkey -M viins '\eOH'  beginning-of-line # Home
 bindkey -M viins '\eOF'  end-of-line # End
 bindkey -M viins '\e[2~' overwrite-mode # Insert
-bindkey -M viins '^F'    forward-character
-bindkey -M viins '^B'    back-character
+bindkey -M viins '^F'    forward-char
+bindkey -M viins '^B'    backward-char
 bindkey -M viins '^V'    edit-command-line
 # }}}
 
@@ -239,8 +239,8 @@ bindkey -M vicmd '?'     history-incremental-pattern-search-forward
 bindkey -M vicmd '^/'    undo
 bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
-bindkey -M vicmd '^F'    forward-character
-bindkey -M vicmd '^B'    back-character
+bindkey -M vicmd '^F'    forward-char
+bindkey -M vicmd '^B'    backward-char
 bindkey -M viins g~      vi-oper-swap-case
 bindkey -M vicmd gg      beginning-of-buffer-or-history
 bindkey -M vicmd G       end-of-buffer-or-history

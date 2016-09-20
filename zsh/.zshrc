@@ -202,6 +202,14 @@ zle -N _insert-next-word
 autoload -Uz edit-command-line
 zle -N edit-command-line
 
+zle -C complete-menu menu-select _generic
+_complete_menu() {
+    setopt localoptions alwayslastprompt
+    zle complete-menu
+}
+zle -N _complete_menu
+
+
 bindkey -M viins '^A'    beginning-of-line
 bindkey -M viins '^E'    end-of-line
 bindkey -M viins '^K'    kill-line
@@ -223,6 +231,7 @@ bindkey -M viins '\e[2~' overwrite-mode # Insert
 bindkey -M viins '^F'    forward-char
 bindkey -M viins '^B'    backward-char
 bindkey -M viins '^V'    edit-command-line
+bindkey -M viins '^G'    _complete_menu
 # }}}
 
 # Vim Mode (Cmd Mode) {{{2
@@ -248,14 +257,6 @@ bindkey -M vicmd '^V'    edit-command-line
 # }}}2
 
 # Menu Selection {{{2
-zle -C complete-menu menu-select _generic
-_complete_menu() {
-    setopt localoptions alwayslastprompt
-    zle complete-menu
-}
-zle -N _complete_menu
-
-bindkey '^F' _complete_menu
 bindkey -M menuselect '^S' history-incremental-search-forward
 bindkey -M menuselect '^R' history-incremental-search-backward
 bindkey -M menuselect '^?' backward-delete-char

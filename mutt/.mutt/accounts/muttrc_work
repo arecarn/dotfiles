@@ -10,4 +10,3 @@ mailboxes `echo -n "+ "; for file in ~/Maildir/*; do box=$(basename "$file"); ec
 set spoolfile="~/Maildir/work/INBOX"
 set postponed="+Drafts"
 set record="+work/Sent"
-

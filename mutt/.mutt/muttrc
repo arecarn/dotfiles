@@ -1,13 +1,11 @@
- 
 # Setup your favorite editor to write email bodies
 set editor = "vim"
- 
+
 # Basic config, you can leave this as is
 set imap_check_subscribed
 set mail_check = 120
 set timeout = 300
 set imap_keepalive = 300
-
 
 # Where to put stuff
 set header_cache=~/.mutt/cache/headers
@@ -44,7 +42,7 @@ set imap_keepalive = 300
 # how often to check for new mail (time in seconds)
 set mail_check = 120
 
-source ~/.mutt/accounts/personal.muttrc
+source ~/.mutt/accounts/muttrc_personal
 ##############################################################################
 # MAPPINGS / MACROS
 ##############################################################################

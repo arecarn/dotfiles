@@ -1,11 +1,15 @@
+set realname = "Ryan Carney"
 set from = "arecarn@gmail.com"
-set sendmail = "usr/bin/msmtp -a personal"
 
 set imap_user = "arecarn@gmail.com"
-set hostname = gmail.com
-set smtp_url = "smtp://arecarn@smtp.gmail.com:587/"
-set realname = "Ryan Carney"
+set imap_keepalive = 30
+unset imap_passive # allow mutt to open new imap connection automatically
 set folder = "imaps://imap.gmail.com:993"
+
+set use_from = yes
+set smtp_url = "smtp://arecarn@gmail.com@smtp.gmail.com:587/"
+set ssl_force_tls = yes
+set ssl_starttls = yes
 
 # My mailboxes
 mailboxes +[Gmail]/INBOX

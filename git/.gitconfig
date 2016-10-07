@@ -13,6 +13,7 @@
 
     # Also Push relevant annotated tags (Added in v2.4.1)
     followtags = true
+    recurseSubmodules = on-demand
 
 [merge]
     tool = vimdiff

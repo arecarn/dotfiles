@@ -328,15 +328,16 @@ if has ('gui_running')
     set guioptions=c "makes dialogs boxes appear like they do in console vim
 
     " Set Font
-    if s:has_windows
-        set guifont=DejaVu_Sans_Mono_For_Powerline:h10:cANSI
-        " set guifont=DejaVu_Sans_Mono:h10:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
-    elseif has('mac')
-        set guifont=DejaVu\ Sans\ Mono\ For\ Powerline:h11
-        " set guifont=Monaco:h12
-    elseif has('unix') && !has('mac') "linux
-        set guifont=DejaVu\ Sans\ Mono\ 10
-    endif
+    try
+        if s:has_windows
+            set guifont=DejaVu_Sans_Mono:h9:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
+        elseif has('mac')
+            set guifont=DejaVu\ Sans\ Mono:h11,Monaco:h11
+        elseif has('unix') && !has('mac') "linux
+            set guifont=DejaVu\ Sans\ Mono\ 10
+        endif
+    catch
+    endtry
 endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

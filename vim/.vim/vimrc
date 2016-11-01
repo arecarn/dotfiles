@@ -357,8 +357,10 @@ xmap go [myleader]
 cnoremap [cmdleader] <Nop>
 cmap <C-j> [cmdleader]
 
-set grepprg=ag\ --vimgrep\ $*
-set grepformat=%f:%l:%c:%m
+if executable('ag')
+    set grepprg=ag\ --vimgrep\ $*
+    set grepformat=%f:%l:%c:%m
+endif
 
 
 command! -nargs=+ Grep call s:grep(<q-args>)

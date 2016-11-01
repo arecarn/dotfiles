@@ -373,9 +373,17 @@ pylint
 OSX
 Coverity
 Vint
+<<<<<<< eed0965e6636ba7f62aec230b03779209727f5b3
 namespace
 Fortive
 shmup
 refactor
 indices
 debounce
+||||||| merged common ancestors
+=======
+Amprobe
+T5
+multimeter
+Megger
+>>>>>>> spell: update

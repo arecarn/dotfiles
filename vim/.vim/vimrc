@@ -1397,12 +1397,10 @@ if neobundle#is_installed('vim-textmanip') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vim-quickhl') "{{{2
-    nmap m <Plug>(quickhl-manual-this)
-    nnoremap gm m
-    nnoremap gm m
-    xmap m <Plug>(quickhl-manual-this)
-    nmap M <Plug>(quickhl-manual-reset)
-    xmap M <Plug>(quickhl-manual-reset)
+    nmap gm <Plug>(quickhl-manual-this)
+    xmap gm <Plug>(quickhl-manual-this)
+    nmap gmx <Plug>(quickhl-manual-reset)
+    xmap gmx <Plug>(quickhl-manual-reset)
 endif "}}}2
 
 if neobundle#is_installed('vim-easymotion') "{{{2

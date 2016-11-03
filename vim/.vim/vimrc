@@ -511,6 +511,7 @@ cnoremap <C-b> <LEFT>
 cnoremap <C-f> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
+cnoremap <C-s> <C-f>
 
 " find files easier
 cnoremap <C-e> e <C-r>=expand('%:p:h') . '/'<CR>

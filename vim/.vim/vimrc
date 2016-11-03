@@ -208,21 +208,6 @@ if has('autocmd')
         nnoremap <buffer> s  <C-W><CR><C-W>K<C-W>b
     endfunction
 
-    if s:has_windows
-        augroup TEX
-            autocmd!
-            autocmd BufEnter *.tex setf tex
-            " autocmd BufWritePost *.tex cd %:p:h | !start /min pdflatex %:t
-            autocmd BufWritePost *.tex cd %:p:h | !start pdflatex %:t
-            autocmd BufEnter *.tex setlocal concealcursor=
-        augroup END
-    else
-        augroup TEX
-            autocmd!
-            autocmd BufWritePost *.tex cd %:p:h | !pdflatex %:t
-            autocmd BufEnter *.tex setlocal concealcursor=
-        augroup END
-    endif
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

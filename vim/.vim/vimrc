@@ -1581,9 +1581,9 @@ endif "}}}2
 
 if neobundle#is_installed('Preserve.vim') "{{{2
     command! -range=% Dlead :PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
-    nnoremap <silent><leader>dl :Dlead<CR>
+    noremap <silent><leader>dl :Dlead<CR>
     command! -range=% Dtrail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
-    nnoremap <silent><leader>dt :Dtrail<CR>
+    noremap <silent><leader>dt :Dtrail<CR>
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>

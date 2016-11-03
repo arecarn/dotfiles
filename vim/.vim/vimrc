@@ -385,6 +385,8 @@ nnoremap gj j
 " replace selection with spaces and enter replace mode
 xnoremap gr r<space>gvo<esc>R
 
+noremap <silent><leader>rt :retab<CR>
+
 nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
 nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>

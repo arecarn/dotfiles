@@ -723,15 +723,15 @@ call neobundle#begin(expand(s:vim_path.'/bundle'))
 NeoBundleFetch 'Shougo/neobundle.vim' "}}}2
 
 " vimproc.vim {{{2
-" NeoBundle 'Shougo/vimproc.vim', {
-"             \ 'build' : {
-"             \     'windows' : 'tools\\update-dll-mingw',
-"             \     'cygwin' : 'make -f make_cygwin.mak',
-"             \     'mac' : 'make',
-"             \     'linux' : 'make',
-"             \     'unix' : 'gmake',
-"             \    },
-"             \ } "}}}2
+NeoBundle 'Shougo/vimproc.vim', {
+            \ 'build' : {
+            \     'windows' : 'tools\\update-dll-mingw',
+            \     'cygwin' : 'make -f make_cygwin.mak',
+            \     'mac' : 'make',
+            \     'linux' : 'make',
+            \     'unix' : 'gmake',
+            \    },
+            \ } "}}}2
 
 " text objects {{{2
 NeoBundle 'kana/vim-textobj-user'

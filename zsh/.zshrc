@@ -472,8 +472,11 @@ source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 stty -ixon
 stty stop undef
 
-# shellcheck source=/dev/null
-source ~/.zshrc_local
+zshrc_local="${HOME}/.zshrc_local"
+if [[ -e "${zshrc_local}" ]] then;
+    # shellcheck source=/dev/null
+    source "${zshrc_local}"
+fi
 
 ###########################################################################}}}
 # -                                                                        {{{

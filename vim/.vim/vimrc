@@ -1524,7 +1524,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         setlocal foldmethod=expr
         setlocal foldexpr=Todo_fold(v:lnum)
         setlocal foldtext=Todo_fold_text('_')
-        setlocal iskeyword+=+,-,.
+        setlocal iskeyword+=+,_,.
         setlocal iskeyword+=@-@ " add literal @
 
         if neobundle#is_installed('neocomplete') "{{{3

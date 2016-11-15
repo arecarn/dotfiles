@@ -174,40 +174,13 @@ if has('autocmd')
         autocmd!
         autocmd BufWritePost *vimrc* nested source $MYVIMRC
     augroup END
+endif
 
-
+if has('autocmd')
     augroup AllFiles
         autocmd!
         autocmd FocusLost * silent! wall
     augroup END
-
-    augroup QuickFix
-        autocmd!
-        " opens quick fix window on the bottom of all screens
-        autocmd FileType qf wincmd J
-
-        " Automatically open, but do not go to (if there are errors) the
-        " quickfix / location list window, or close it when is has become
-        " empty.
-        "
-        " Note: Must allow nesting of autocmds to enable any customizations for
-        " quickfix buffers.
-        "
-        " Note: Normally, :cwindow jumps to the quickfix window if the command
-        " opens it (but not if it's already open). However, as part of the
-        " autocmd, this doesn't seem to happen.
-        autocmd QuickFixCmdPost [^l]* nested cwindow
-        autocmd QuickFixCmdPost    l* nested lwindow
-        autocmd FileType qf call s:quick_fix_list_settings()
-    augroup END
-
-    function! s:quick_fix_list_settings() abort
-        nnoremap <buffer> q  <C-W>q
-        nnoremap <buffer> o  <CR><C-W>p
-        nnoremap <buffer> S  <C-W><CR><C-W>K
-        nnoremap <buffer> s  <C-W><CR><C-W>K<C-W>b
-    endfunction
-
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -801,6 +774,7 @@ NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'dbeniamine/todo.txt-vim'
 NeoBundle 'vim-scripts/scons.vim'
 NeoBundle 'hynek/vim-python-pep8-indent'
+NeoBundle 'romainl/vim-qf'
 
 
 " Colors
@@ -1713,6 +1687,10 @@ if neobundle#is_installed('lightline.vim') "{{{2
     function! Lightline_mode() abort
         return winwidth(0) > 70 ? lightline#mode() : ''
     endfunction
+endif "}}}2
+
+if neobundle#is_installed('vim-qf') "{{{2
+    let g:qf_mapping_ack_style = 1
 endif "}}}2
 
 if neobundle#is_installed('tmuxline.vim')

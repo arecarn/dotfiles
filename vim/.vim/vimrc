@@ -679,6 +679,14 @@ endfunction
 cabbrev numend s/$/\=1-line("'<")+line(".")/c
 cabbrev numfront s/^/\=1-line("'<")+line(".")/c
 
+function! Git_status() abort
+    let output = system('git status --porcelain')
+    let escaped = escape(output, ' ')
+    let subbed_start = substitute(escaped, '^...\', '', 'g')
+    let subbed = substitute(subbed_start, '\n...', ' ', 'g')
+    execute 'args ' . subbed
+endfunction
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BEFORE PLUGINS                                                           {{{

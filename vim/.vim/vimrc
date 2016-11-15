@@ -322,10 +322,15 @@ elseif executable('ack')
     set grepprg=ack\ -H\ --nocolor\ --nogroup
 endif
 
+xnoremap [myleader]g  y:<C-u>Grep "<C-r>=expand(@@)<CR>"<CR>
+nnoremap [myleader]g  :<C-u>Grep<space>""<left>
+nnoremap [myleader]gw :<C-u>Grep "\b<C-r><C-w>\b"<CR>
+
 
 nnoremap [myleader]m :silent make!<CR>:redraw!<CR>
 
-command! -nargs=+ Grep call s:grep(<q-args>)
+
+comman! -nargs=+ Grep call s:grep(<q-args>)
 function! s:grep(args) abort
     execute 'silent grep! ' . a:args
     redraw!
@@ -1110,9 +1115,9 @@ if neobundle#is_installed('unite.vim') "{{{2
                 \   ['ipython', 'VimShellInteractive ipython --colors=NoColor'],
                 \ ]
 
-    xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
-    nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
-    nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
+    " xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
+    " nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
+    " nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
     nnoremap [myleader]f :<C-u>Unite file_rec/git file_rec/async -start-insert -unique -input=<CR>
     nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
     nnoremap [myleader]b  :<C-u>Unite buffer:! -start-insert<CR>

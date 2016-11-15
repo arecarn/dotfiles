@@ -323,8 +323,7 @@ elseif executable('ack')
 endif
 
 
-nnoremap [myleader]m :make!<CR>
-
+nnoremap [myleader]m :silent make!<CR>:redraw!<CR>
 
 command! -nargs=+ Grep call s:grep(<q-args>)
 function! s:grep(args) abort

@@ -704,14 +704,17 @@ NeoBundle 'Shougo/vimproc.vim', {
 NeoBundle 'kana/vim-textobj-user'
 NeoBundle 'saihoooooooo/vim-textobj-space'
 NeoBundle 'Julian/vim-textobj-variable-segment'
-NeoBundle 'coderifous/textobj-word-column.vim'
 NeoBundle 'kana/vim-textobj-entire'
 NeoBundle 'kana/vim-textobj-indent'
 NeoBundle 'kana/vim-textobj-line'
+NeoBundle 'kana/vim-textobj-syntax'
 NeoBundle 'mattn/vim-textobj-url'
 NeoBundle 'glts/vim-textobj-comment'
 NeoBundle 'thinca/vim-textobj-between'
 NeoBundle 'osyo-manga/vim-textobj-multiblock'
+NeoBundle 'kana/vim-textobj-function'
+NeoBundle 'sgur/vim-textobj-parameter'
+NeoBundle 'osyo-manga/vim-textobj-blockwise'
 "}}}2
 
 " unite {{{2
@@ -1408,22 +1411,13 @@ if neobundle#is_installed('linediff.vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vim-textobj-between') "{{{2
-    if neobundle#is_installed('vim-textobj-between')
-        let g:textobj_between_no_default_key_mappings = 1
-        xmap am <Plug>(textobj-between-a)
-        omap am <Plug>(textobj-between-a)
-        xmap im <Plug>(textobj-between-i)
-        omap im <Plug>(textobj-between-i)
-    endif
+    let g:textobj_between_no_default_key_mappings = 1
+    xmap am <Plug>(textobj-between-a)
+    omap am <Plug>(textobj-between-a)
+    xmap im <Plug>(textobj-between-i)
+    omap im <Plug>(textobj-between-i)
 endif "}}}2
 
-if neobundle#is_installed('vim-textobj-comment') "{{{2
-    let g:textobj_comment_no_default_key_mappings = 1
-    xmap a# <Plug>(textobj-comment-a)
-    omap a# <Plug>(textobj-comment-a)
-    xmap i# <Plug>(textobj-comment-i)
-    omap i# <Plug>(textobj-comment-i)
-endif "}}}2
 
 if neobundle#is_installed('vim-table-mode') "{{{2
     let g:table_mode_separator = '|'

@@ -1634,7 +1634,10 @@ if neobundle#is_installed('lightline.vim') "{{{2
     let g:lightline = {
                 \ 'colorscheme': 'default',
                 \ 'active': {
-                \     'left': [['mode', 'paste'], ['fugitive', 'filename']]
+                \     'left': [['winnr', 'mode', 'paste'], ['fugitive', 'filename']]
+                \ },
+                \ 'inactive' : {
+                \     'left': [['winnr', 'filename']],
                 \ },
                 \ 'component_function': {
                 \     'modified': 'Lightline_modified',
@@ -1645,6 +1648,7 @@ if neobundle#is_installed('lightline.vim') "{{{2
                 \     'filetype': 'Lightline_filetype',
                 \     'fileencoding': 'Lightline_fileencoding',
                 \     'mode': 'Lightline_mode',
+                \     'winnr': 'Lightline_winnr',
                 \ }}
 
     function! Lightline_modified() abort
@@ -1686,6 +1690,10 @@ if neobundle#is_installed('lightline.vim') "{{{2
 
     function! Lightline_mode() abort
         return winwidth(0) > 70 ? lightline#mode() : ''
+    endfunction
+
+    function! Lightline_winnr() abort
+        return winnr()
     endfunction
 endif "}}}2
 

@@ -13,8 +13,10 @@ let s:has_windows = has('win16') || has('win32') || has('win64')
 
 if s:has_windows
     let s:vim_path = $HOME . '/vimfiles'
+    let s:path_sep = '\'
 else
     let s:vim_path = $HOME . '/.vim'
+    let s:path_sep = '/'
 endif
 
 if empty($XDG_CACHE_HOME)
@@ -733,10 +735,12 @@ NeoBundle 'voi/unite-ctags', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'tsukkee/unite-tag', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'thinca/vim-unite-history', {'depends' : 'Shougo/unite.vim'}
 NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
-NeoBundle 'junegunn/fzf', {
-            \ 'base' : '~/.config/fzf',
-            \ 'build' : './install --all'
-            \ }
+if !s:has_windows
+    NeoBundle 'junegunn/fzf', {
+                \ 'base' : '~/.config/fzf',
+                \ 'build' : './install --all'
+                \ }
+endif
 NeoBundle 'dyng/ctrlsf.vim'
 
 

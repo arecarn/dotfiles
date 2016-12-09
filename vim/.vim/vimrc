@@ -1579,11 +1579,6 @@ if neobundle#is_installed('crunch.vim') "{{{2
     let g:crunch_result_type_append = 2
 endif "}}}2
 
-if neobundle#is_installed('golden-ratio') "{{{2
-    let g:golden_ratio_autocommand = 0
-    nmap <silent> <C-w>g <Plug>(golden_ratio_resize)
-endif "}}}2
-
 if neobundle#is_installed('vim-surround') "{{{2
     " custom surround using :
     let g:surround_58 = "\1Surround\1\r\1\1"
@@ -1610,10 +1605,6 @@ if neobundle#is_installed('vim-rooter') "{{{2
     let g:rooter_disable_map = 1
     let g:rooter_use_lcd = 0
     map <silent> cdp <Plug>RooterChangeToRootDirectory
-endif "}}}2
-
-if neobundle#is_installed('vim-unite-giti') "{{{2
-    nnoremap [myleader]git :<C-u>Unite giti -start-insert<CR>
 endif "}}}2
 
 if neobundle#is_installed('fold-cycle.vim') "{{{2

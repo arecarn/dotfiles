@@ -747,7 +747,8 @@ NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'
 NeoBundle 'tpope/vim-commentary'
-NeoBundle 'tpope/vim-repeat' "}}}2
+NeoBundle 'tpope/vim-repeat'
+NeoBundle 'visualrepeat' "}}}2
 
 
 " Folds

@@ -355,11 +355,6 @@ nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
 nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
 
-" go to the next number
-nnoremap <silent> g<C-a> /\d\+<CR>
-" go to the previous number
-nnoremap <silent> g<C-x> ?\d\+<CR>
-
 " list spelling corrections
 nnoremap sl viW<Esc>a<C-x><C-s><C-p>
 map [sl [ssl

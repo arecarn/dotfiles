@@ -178,9 +178,9 @@
     ps = push
     psf = !git ps --force-with-lease
 
-    cln = clean --interactive
+    cln = !git clean --interactive
     # CLeaN Deep
-    clnd = clean --interactive -d -x
+    clnd = !git clean --interactive -d -x
 
     # check if a file  exist in the repository?
     exists = ls-files --error-unmatch

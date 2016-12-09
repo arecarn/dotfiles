@@ -1,0 +1,10 @@
+.git
+.gitignore
+.pylintrc
+.vimrc_project
+ansible
+modules.py
+README.md
+requirements.txt
+tags
+tasks.py

@@ -361,7 +361,7 @@ map [sl [ssl
 map ]sl ]ssl
 
 " underline current line with character of choice
-nnoremap <silent> _ :call <SID>under_line()<CR>
+nnoremap <silent> <leader>u :call <SID>under_line()<CR>
 function! s:under_line() abort
     let char = escape(nr2char(getchar()), '\')
     normal! yyp
@@ -1611,7 +1611,7 @@ if neobundle#is_installed('fold-cycle.vim') "{{{2
 endif "}}}2
 
 if neobundle#is_installed('vim-operator-replace') "{{{2
-    map g" <Plug>(operator-replace)
+    map _ <Plug>(operator-replace)
 endif "}}}2
 
 if neobundle#is_installed('gruvbox') "{{{2

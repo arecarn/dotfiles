@@ -412,7 +412,8 @@ nnoremap cotw :<C-U>call <SID>format_options_toggle('t')<CR>
 nnoremap copw :<C-U>call <SID>format_options_toggle('aw')<CR>
 
 " reselect pasted or last changed text
-nnoremap <expr> gvp '`[' . strpart(getregtype(), 0, 1) . '`]'
+nnoremap <expr> g<c-v> '`[' . getregtype()[0] . '`]'
+
 
 " redraw even harder
 nnoremap <silent><C-l> :redraw!<CR><C-l>

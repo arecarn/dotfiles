@@ -165,7 +165,7 @@ enum
 API
 OTA
 codebase
-ble
+#le
 TODOs
 refactor
 pullup
@@ -363,10 +363,14 @@ DeWALT
 Wiggy
 Panasonic
 Eevee
-#nime
 anime
 dploy's
 Refactored
 refactored
 Tmux
 pythonic
+BLE
+bolded
+Ikea
+modularize
+modularity

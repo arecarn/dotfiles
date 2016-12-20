@@ -741,7 +741,7 @@ NeoBundle 'dyng/ctrlsf.vim'
 
 
 " Operators
-NeoBundle 'arecarn/mixed-case-operator.vim'
+NeoBundle 'arecarn/vim-operator-mixed-case'
 NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'
@@ -751,8 +751,8 @@ NeoBundle 'visualrepeat' "}}}2
 
 
 " Folds
-NeoBundle 'arecarn/clean-fold.vim'
-NeoBundle 'arecarn/fold-cycle.vim' ",  {'rev' : 'topics/global_fold_cycling'}
+NeoBundle 'arecarn/vim-clean-fold'
+NeoBundle 'arecarn/vim-fold-cycle' ",  {'rev' : 'topics/global_fold_cycling'}
 
 
 " Visual Enhancements
@@ -813,7 +813,7 @@ NeoBundle 'mhinz/vim-signify'
 " Diff
 NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'diffchanges.vim'
-NeoBundle 'arecarn/diff-utils.vim'
+NeoBundle 'arecarn/vim-diff-utils'
 
 
 " Applications
@@ -826,7 +826,7 @@ NeoBundle 'metakirby5/codi.vim'
 " Text Manipulation Commands / Mappings
 NeoBundle 'junegunn/vim-easy-align'
 NeoBundle 'godlygeek/tabular'
-NeoBundle 'arecarn/split-join.vim'
+NeoBundle 'arecarn/vim-split-join'
 NeoBundle 't9md/vim-textmanip'
 NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
 
@@ -835,11 +835,11 @@ NeoBundle 'kana/vim-niceblock'
 NeoBundle 'tpope/vim-speeddating'
 NeoBundle 'tpope/vim-unimpaired'
 NeoBundle 'vim-scripts/UnconditionalPaste'
-NeoBundle 'arecarn/go-to-buffer.vim'
-NeoBundle 'arecarn/auto-autoread.vim'
+NeoBundle 'arecarn/vim-go-to-buffer'
+NeoBundle 'arecarn/vim-auto-autoread'
 NeoBundle 'thinca/vim-qfreplace'
 NeoBundle 'tpope/vim-eunuch'
-NeoBundle 'arecarn/spell-utils.vim'
+NeoBundle 'arecarn/vim-spell-utils'
 NeoBundle 'tpope/vim-abolish'
 
 " Word Under the Cursor Highlighting
@@ -857,7 +857,7 @@ NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
 " Interactive Tools/Modes
 NeoBundle 'dhruvasagar/vim-table-mode'
 NeoBundle 'vim-scripts/DrawIt'
-NeoBundle 'arecarn/crunch.vim', {'depends' : 'arecarn/selection.vim'}
+NeoBundle 'arecarn/vim-crunch', {'depends' : 'arecarn/vim-selection'}
 NeoBundle 'chrisbra/NrrwRgn'
 NeoBundle 'mbbill/undotree'
 
@@ -865,10 +865,10 @@ NeoBundle 'mbbill/undotree'
 NeoBundle 't9md/vim-choosewin'
 NeoBundle 'wesQ3/vim-windowswap'
 
-NeoBundle 'arecarn/binascii.vim'
-NeoBundle 'arecarn/frisk.vim'
+NeoBundle 'arecarn/vim-binascii'
+NeoBundle 'arecarn/vim-frisk'
 NeoBundle 'ludovicchabant/vim-gutentags'
-NeoBundleFetch 'arecarn/template.vim'
+NeoBundleFetch 'arecarn/vim-template'
 call neobundle#end()
 NeoBundleCheck
 filetype plugin indent on

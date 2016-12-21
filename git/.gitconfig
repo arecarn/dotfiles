@@ -12,15 +12,15 @@
     default = simple
 
     # Also Push relevant annotated tags (Added in v2.4.1)
-    followtags = true
+    followTags = true
     recurseSubmodules = on-demand
 
 [merge]
     tool = vimdiff
-    conflictstyle = diff3
+    conflictStyle = diff3
 
 [rebase]
-    autostash = true
+    autoStash = true
 
 [mergetool]
     prompt = false
@@ -29,8 +29,8 @@
     prune = true
 
 [core]
-    excludesfile = ~/.config/git/gitignore_global
-    hookspath = ~/.config/git/hooks
+    excludesFile = ~/.config/git/gitignore_global
+    hooksPath = ~/.config/git/hooks
 
 [commit]
     template = ~/.config/git/gitmessage

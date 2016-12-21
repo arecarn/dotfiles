@@ -1,6 +1,9 @@
 [user]
     name = Ryan Carney
 
+    # in v2.8+ get user.name and user.email only from the config
+    useConfigOnly = true
+
 [push]
     # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
     # only pushes current branch to the one that git pull would pull from only

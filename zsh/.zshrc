@@ -284,15 +284,15 @@ alias sotmux='tmux source-file ~/.tmux.conf'
 
 alias e="${EDITOR}"
 
-zsh="${HOME}/.zshrc"
-zshl="${HOME}/.zshrc_local"
-git="${HOME}/.gitconfig"
-gitl="${HOME}/.gitconfig_local"
-vim="${HOME}/.vimrc"
-viml="${HOME}/.vimrc_local"
-tmux="${HOME}/.tmux.conf"
-td="${HOME}/Dropbox/notes/todo.txt"
-i="${HOME}/Dropbox/notes/inbox.md"
+export zsh="${HOME}/.zshrc"
+export zshl="${HOME}/.zshrc_local"
+export git="${HOME}/.gitconfig"
+export gitl="${HOME}/.gitconfig_local"
+export vim="${HOME}/.vimrc"
+export viml="${HOME}/.vimrc_local"
+export tmux="${HOME}/.tmux.conf"
+export t="${HOME}/Dropbox/notes/todo.txt"
+export i="${HOME}/Dropbox/notes/inbox.md"
 
 alias mk='mkdir'
 alias rd='rmdir'

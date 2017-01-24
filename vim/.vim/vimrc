@@ -541,15 +541,15 @@ cnoremap ~f ~/Dropbox
 cnoremap ~n ~/Dropbox/notes
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
-cnoremap $zsh ~/.zshrc
-cnoremap $zshl ~/.zshrc_local
-cnoremap $git ~/.gitconfig
-cnoremap $viml ~/.vimrc_local
-cnoremap $vim $MYVIMRC
-cnoremap $gitl ~/.gitconfig_local
-cnoremap $tmux ~/.tmux.conf
-cnoremap $td ~/Dropbox/notes/todo.txt
-cnoremap $i ~/Dropbox/notes/inbox.md
+let $zsh = '~/.zshrc'
+let $zshl = '~/.zshrc_local'
+let $git = '~/.gitconfig'
+let $viml = '~/.vimrc_local'
+let $vim = '$MYVIMRC'
+let $gitl = '~/.gitconfig_local'
+let $tmux = '~/.tmux.conf'
+let $t = '~/Dropbox/notes/todo.txt'
+let $i = '~/Dropbox/notes/inbox.md'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{

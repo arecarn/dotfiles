@@ -765,6 +765,7 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
 
 NeoBundle 'scrooloose/syntastic'
 
+NeoBundle 'vimwiki/vimwiki'
 
 " Vim script Development
 NeoBundle 'vim-jp/vital.vim'
@@ -863,7 +864,6 @@ NeoBundle 'mbbill/undotree'
 
 " Window Management
 NeoBundle 't9md/vim-choosewin'
-NeoBundle 'wesQ3/vim-windowswap'
 
 NeoBundle 'arecarn/vim-binascii'
 NeoBundle 'arecarn/vim-frisk'

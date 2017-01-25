@@ -537,6 +537,8 @@ endfor
 " accept completion (requires "set wild charm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
 
+cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
+
 cnoremap ~f ~/Dropbox
 cnoremap ~n ~/Dropbox/notes
 cnoremap ~df ~/dotfiles
@@ -761,7 +763,6 @@ NeoBundle 'chreekat/vim-paren-crosshairs'
 NeoBundle 'maman/tmuxline.vim'
 NeoBundle 'junegunn/goyo.vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
-
 
 NeoBundle 'scrooloose/syntastic'
 

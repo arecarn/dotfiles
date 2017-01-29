@@ -75,7 +75,7 @@ elif [[ "${OSTYPE}" == 'darwin'* ]]; then
     export MANPATH="${MANPATH}:/usr/local/man"
     export MANPATH="${MANPATH}:/opt/homebrew/bin"
     export PATH="/usr/local/bin:${PATH}"
-    export PATH="/usr/local/opt/llvm/bin/:${PATH}"
+    export PATH="/usr/local/opt/llvm/bin:${PATH}"
 fi
 
 if [[ ${TERM} == 'xterm' ]]; then

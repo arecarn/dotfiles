@@ -100,7 +100,7 @@ def provision_all(ctx, args=''):
 @task
 def provision(ctx, args=''):
     """
-    Provision this and other system using ansible
+    Provision this system using ansible
     """
     os.chdir('ansible')
     ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost --ask-become-pass ' + ' ' + args,

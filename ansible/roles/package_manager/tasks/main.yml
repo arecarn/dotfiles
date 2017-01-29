@@ -1,0 +1,6 @@
+- name: MacOSX
+  tags: package_manager
+  when: ansible_distribution == 'MacOSX'
+  homebrew:
+    update_homebrew: yes
+    upgrade_all: yes

@@ -106,8 +106,8 @@ SAVEHIST=500000
 autoload -Uz compinit  && compinit -d ~/.zcompdump
 zmodload zsh/complist
 
-unsetopt menu_complete # unset as to not to collide with auto_menu
-setopt auto_menu # use menu completion after the second consecutive request for completion
+setopt menu_complete # unset as to not to collide with auto_menu
+# setopt auto_menu # use menu completion after the second consecutive request for completion
 setopt complete_in_word # keep the cursor in place until a completion
 setopt always_to_end # move the cursor to end after completion
 setopt auto_param_slash # add a trailing slash instead of a space
@@ -119,7 +119,7 @@ setopt glob_dots # do not require a leading `.' in filename to be matched
 
 # use completion menu, where select is the number of items needed for the menu
 # to open
-zstyle ':completion:*' menu select=1 _complete _ignored _approximate
+zstyle ':completion:*' menu yes select _complete _ignored _approximate
 
 # list of completion types to use
 zstyle ':completion:*::::' completer _expand _complete _ignored _approximate

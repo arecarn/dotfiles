@@ -28,6 +28,7 @@
     - moreutils
     - mutt
     - neovim
+    - pandoc
     - picocom
     - pip
     - pstree

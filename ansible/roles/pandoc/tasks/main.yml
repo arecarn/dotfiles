@@ -1,0 +1,7 @@
+---
+- name: MacOSX
+  tags: pandoc
+  homebrew:
+    name: pandoc
+    state: latest
+  when: ansible_distribution == 'MacOSX'

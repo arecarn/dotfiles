@@ -803,7 +803,7 @@ else
 endif
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'Shougo/neosnippet.vim'
-NeoBundle 'Shougo/echodoc.vim'
+" NeoBundle 'Shougo/echodoc.vim'
 
 
 " Git / VCS

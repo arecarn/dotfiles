@@ -1483,6 +1483,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         autocmd BufNewFile,BufRead *todo.txt,*done.txt set filetype=todo
         autocmd BufNewFile,BufRead todo*.txt,done*.txt set filetype=todo
         autocmd FileType todo call s:todo_txt_settings()
+        autocmd FileType todo setlocal formatoptions-=t
     augroup END
 
     function! s:get_context(line) abort "{{{3

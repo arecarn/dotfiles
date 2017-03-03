@@ -395,21 +395,24 @@ function! s:scratch_toggle() abort
         set buftype+=nofile
     endif
 endfunction
-function! s:format_options_toggle(options) abort
+function! s:format_options_toggle(options, message) abort
     let options = split(a:options, '\zs')
 
     for option in options
         if s:in(&formatoptions, option)
             let add_or_subtract = '+='
+            let message = printf("on: %s", a:message)
         else
             let add_or_subtract = '-='
+            let message =  printf("off: %s", a:message)
         endif
         execute 'set formatoptions' . add_or_subtract . option
     endfor
     set formatoptions?
+    echo message
 endfunction
-nnoremap cotw :<C-U>call <SID>format_options_toggle('t')<CR>
-nnoremap copw :<C-U>call <SID>format_options_toggle('aw')<CR>
+nnoremap cotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
+nnoremap copw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
 
 " reselect pasted or last changed text
 nnoremap <expr> g<c-v> '`[' . getregtype()[0] . '`]'

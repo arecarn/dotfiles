@@ -1427,6 +1427,9 @@ if neobundle#is_installed('vim-textobj-between') "{{{2
     omap im <Plug>(textobj-between-i)
 endif "}}}2
 
+if neobundle#is_installed('vim-markdown') "{{{2
+    let g:vim_markdown_conceal = 0
+endif "}}}2
 
 if neobundle#is_installed('vim-table-mode') "{{{2
     let g:table_mode_separator = '|'

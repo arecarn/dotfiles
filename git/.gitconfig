@@ -39,6 +39,9 @@
     template = ~/.config/git/gitmessage
     verbose = true
 
+[rerere]
+    enabled = true
+
 [diff]
     tool = vimdiff
 

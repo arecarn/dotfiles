@@ -138,12 +138,14 @@ if exists('+breakindent')
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SPELLING - THESAURUS                                                     {{{
+" SPELLING - THESAURUS - Docs                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set spell
 set spelllang=en_us
 let &spellfile = s:vim_path . '/utils/spell/spellfile.add'
 let &thesaurus = s:vim_path . '/utils/thesaurus/thesaurus.txt'
+
+execute 'helptags ' . s:vim_path . '/doc'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                         {{{

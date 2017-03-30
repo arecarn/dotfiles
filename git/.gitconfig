@@ -24,6 +24,7 @@
 
 [rebase]
     autoStash = true
+    autoSquash = true
 
 [mergetool]
     prompt = false
@@ -125,7 +126,7 @@
     rsrs = reset --soft @{u}
 
     rb = rebase
-    rbi = rebase --interactive --autosquash --autostash
+    rbi = rebase --interactive --autostash
     rbc = rebase --continue
     rba = rebase --abort
 

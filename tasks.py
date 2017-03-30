@@ -7,14 +7,14 @@ import fnmatch
 from invoke import task
 import dploy
 
-if os.name == 'nt':
-    is_pty = False
+isWindows = os.name == 'nt'
+if isWindows:
+    # setting 'shell' is a work around for issue #345 of invoke
+    run_args = {'is_pty': False, 'shell': 'C:\Windows\System32\cmd.exe'}
     stow_location = 'USERPROFILE'
 else:
-    is_pty = True
+    run_args = {'is_pty': True}
     stow_location = 'HOME'
-
-
 
 
 def find_files(directory, pattern):
@@ -43,7 +43,7 @@ def lint_vim(ctx):
     files_string = " ".join(files)
 
     cmd = 'vint {files}'
-    ctx.run(cmd.format(files=files_string), pty=is_pty)
+    ctx.run(cmd.format(files=files_string), **run_args)
 
 @task
 def lint_shell(ctx):
@@ -59,7 +59,7 @@ def lint_shell(ctx):
     files_string = ' '.join(files)
 
     cmd = 'shellcheck --format gcc {files}'
-    ctx.run(cmd.format(files=files_string), pty=is_pty)
+    ctx.run(cmd.format(files=files_string), **run_args)
 
 @task
 def lint_yaml(ctx):
@@ -73,7 +73,7 @@ def lint_yaml(ctx):
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'
-    ctx.run(cmd.format(files=files_string), pty=is_pty)
+    ctx.run(cmd.format(files=files_string), **run_args)
 
 @task
 def lint_python(ctx):
@@ -86,7 +86,7 @@ def lint_python(ctx):
 
     files_string = ' '.join(files)
     cmd = 'python3 -m pylint --output-format=parseable {files}'
-    ctx.run(cmd.format(files=files_string), pty=is_pty)
+    ctx.run(cmd.format(files=files_string), **run_args)
 
 @task
 def provision_all(ctx, args=''):
@@ -95,7 +95,7 @@ def provision_all(ctx, args=''):
     """
     os.chdir('ansible')
     ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory hosts' + ' ' + args,
-            pty=is_pty)
+            **run_args)
 
 @task
 def provision(ctx, args=''):
@@ -104,21 +104,21 @@ def provision(ctx, args=''):
     """
     os.chdir('ansible')
     ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost --ask-become-pass ' + ' ' + args,
-            pty=is_pty)
+            **run_args)
 
 @task
 def clean(ctx):
     """
     Clean repository using git
     """
-    ctx.run('git clean --interactive', pty=is_pty)
+    ctx.run('git clean --interactive', **run_args)
 
 @task
 def setup(ctx):
     """
     Install python requirements
     """
-    ctx.run('pip install --requirement requirements.txt')
+    ctx.run('pip install --requirement requirements.txt', **run_args)
 
 class Dploy():
     """

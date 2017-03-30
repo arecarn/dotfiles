@@ -1,0 +1,7 @@
+---
+- name: MacOSX
+  tags: latex
+  homebrew_cask:
+    name: basictex
+    state: present
+  when: ansible_distribution == 'MacOSX'

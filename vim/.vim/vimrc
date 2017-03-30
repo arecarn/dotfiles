@@ -770,6 +770,7 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'vimwiki/vimwiki'
+let g:vimwiki_list = [{'path': '~/Dropbox/wiki', 'index': 'main'}]
 
 " Vim script Development
 NeoBundle 'vim-jp/vital.vim'

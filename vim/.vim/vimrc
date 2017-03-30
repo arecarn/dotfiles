@@ -787,9 +787,10 @@ NeoBundle 'confluencewiki.vim'
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'dbeniamine/todo.txt-vim'
 NeoBundle 'vim-scripts/scons.vim'
-NeoBundle 'hynek/vim-python-pep8-indent'
 NeoBundle 'romainl/vim-qf'
 
+NeoBundle 'hynek/vim-python-pep8-indent'
+NeoBundle 'python-rope/ropevim'
 
 " Colors
 NeoBundle 'morhetz/gruvbox'

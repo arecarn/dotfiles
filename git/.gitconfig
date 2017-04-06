@@ -64,7 +64,7 @@
     mt = mergetool
 
     b = branch
-    bl = branch --all --verbose # Branch List
+    bl = branch --all --verbose --verbose # Branch List
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
     bdr = push origin --delete # Branch Delete Remote

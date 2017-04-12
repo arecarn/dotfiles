@@ -159,7 +159,10 @@ class Dploy():
         unstow and link the specified files
         """
         for _, dest in reversed(self.links):
-            os.unlink(os.path.join(*dest))
+            try:
+                os.unlink(os.path.join(*dest))
+            except FileNotFoundError:
+                pass
 
         dploy.unstow(self.packages, self.home, is_silent=False)
 

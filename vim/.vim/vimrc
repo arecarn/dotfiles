@@ -1624,6 +1624,9 @@ if neobundle#is_installed('vim-fold-cycle') "{{{2
     let g:fold_cycle_default_mapping = 0
     nmap zo <Plug>(fold-cycle-open)
     nmap zc <Plug>(fold-cycle-close)
+    nmap zO <Plug>(fold-cycle-open-all)
+    nmap zC <Plug>(fold-cycle-close-all)
+    nmap zA <Plug>(fold-cycle-toggle-all)
     " nmap zr <Plug>(fold-cycle-open-global)
     " nmap zm <Plug>(fold-cycle-close-global)
 endif "}}}2

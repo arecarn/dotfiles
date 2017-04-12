@@ -1320,7 +1320,7 @@ if neobundle#is_installed('vim-fugitive') "{{{2
     command! -bar FollowSymlink call MyFollowSymlink()
 endif "}}}2
 
-if neobundle#is_installed('frisk.vim') "{{{2
+if neobundle#is_installed('vim-frisk') "{{{2
     call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
     command! Rfrisk call ReloadFrisk()
@@ -1583,7 +1583,7 @@ if neobundle#is_installed('confluencewiki.vim') "{{{2
     augroup END
 endif "}}}2
 
-if neobundle#is_installed('crunch.vim') "{{{2
+if neobundle#is_installed('vim-crunch') "{{{2
     let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
     let g:crunch_result_type_append = 2
 endif "}}}2
@@ -1593,7 +1593,7 @@ if neobundle#is_installed('vim-surround') "{{{2
     let g:surround_58 = "\1Surround\1\r\1\1"
 endif "}}}2
 
-if neobundle#is_installed('clean-fold.vim') "{{{2
+if neobundle#is_installed('vim-clean-fold') "{{{2
     set foldmethod=expr
     set foldtext=clean_fold#fold_text_minimal()
     set foldexpr=clean_fold#fold_expr(v:lnum)
@@ -1616,7 +1616,7 @@ if neobundle#is_installed('vim-rooter') "{{{2
     map <silent> cdp <Plug>RooterChangeToRootDirectory
 endif "}}}2
 
-if neobundle#is_installed('fold-cycle.vim') "{{{2
+if neobundle#is_installed('vim-fold-cycle') "{{{2
     let g:fold_cycle_default_mapping = 0
     nmap zo <Plug>(fold-cycle-open)
     nmap zc <Plug>(fold-cycle-close)

@@ -238,6 +238,10 @@ set backspace=indent,eol,start
 set virtualedit+=all
 set modeline
 
+if has('nvim')
+    set inccommand=split
+endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

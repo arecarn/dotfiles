@@ -5,3 +5,11 @@
   homebrew:
     name: neovim/neovim/neovim
     state: latest
+
+- name: python 3 package
+  tags: dploy
+  become: yes
+  pip:
+    name: dploy
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

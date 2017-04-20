@@ -137,7 +137,7 @@ if exists('+breakindent')
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SPELLING - THESAURUS - Docs                                              {{{
+" SPELLING - THESAURUS - DOCS                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set spell
 set spelllang=en_us
@@ -356,9 +356,6 @@ xnoremap gr r<space>gvo<esc>R
 
 noremap <silent><leader>rt :retab<CR>
 
-nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
-nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
-nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
 
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>
@@ -744,6 +741,7 @@ NeoBundle 'dyng/ctrlsf.vim'
 
 " Operators
 NeoBundle 'arecarn/vim-operator-mixed-case'
+NeoBundle 'milsen/vim-operator-substitute', {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tommcdo/vim-exchange'
@@ -1143,6 +1141,12 @@ endif "}}}2
 
 if neobundle#is_installed('vim-oblique') "{{{2
     let g:oblique#incsearch_highlight_all = 1
+endif "}}}2
+
+if neobundle#is_installed('vim-operator-substitute') "{{{2
+    map s <Plug>(operator-substitute)
+    map & <Plug>(operator-substitute-repeat)
+    map g& <Plug>(operator-substitute-repeat-no-flags)
 endif "}}}2
 
 if neobundle#is_installed('vim-fugitive') "{{{2

@@ -360,11 +360,6 @@ nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
 nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
 
-" list spelling corrections
-nnoremap sl viW<Esc>a<C-x><C-s><C-p>
-map [sl [ssl
-map ]sl ]ssl
-
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>
 function! s:under_line() abort

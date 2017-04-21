@@ -73,6 +73,7 @@
     bcr = push origin --set-upstream HEAD # Branch Create Remote
     bsu = branch --set-remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)
+    bm = "!f() { echo 'Merged:' && git branch --all --merged \"$@\"; echo 'Not Merged:' && git branch --all --no-merged \"$@\"; }; f" # Branch Merge
 
     t = tag
     ta = tag --annotate

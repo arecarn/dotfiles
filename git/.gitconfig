@@ -44,9 +44,10 @@
     enabled = true
 
 [diff]
-    tool = vimdiff
+  tool = default-difftool
 
-[difftool]
+[difftool "default-difftool"]
+    cmd = "vim -f '+next' '+execute \"DirDiff\" argv(0) argv(1)' $LOCAL $REMOTE"
     prompt = false
 
 [credential]
@@ -57,8 +58,8 @@
     d = diff --color
     da = diff --color --cached # Diff Added
 
-    dt = difftool
-    dta = difftool --cached # Diff Tool Added
+    dt = difftool --dir-diff
+    dta = !git dt --cached # Diff Tool Added
 
     m = merge
     mt = mergetool

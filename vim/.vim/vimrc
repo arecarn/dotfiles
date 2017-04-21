@@ -815,6 +815,7 @@ NeoBundle 'mhinz/vim-signify'
 NeoBundle 'AndrewRadev/linediff.vim'
 NeoBundle 'diffchanges.vim'
 NeoBundle 'arecarn/vim-diff-utils'
+NeoBundle 'will133/vim-dirdiff'
 
 
 " Applications

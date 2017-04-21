@@ -93,10 +93,10 @@
     co = checkout
     sh = show --decorate --stat --patch
 
-    st = stash
-    stka = stash --keep-index # Stash Keep Added (keep files in the staging area)
-    sta = stash --include-untracked # Stash All including untracked files
-    stA = stash --all # Stash All incline untracked and ignored files
+    st = stash save
+    stka = stash save --keep-index # Stash Keep Added (keep files in the staging area)
+    sta = stash save --include-untracked # Stash All including untracked files
+    stA = stash save --all # Stash All incline untracked and ignored files
     stsh = stash show --patch --stat
     stp = stash pop
     std = stash drop

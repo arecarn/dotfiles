@@ -335,16 +335,14 @@ xnoremap [myleader]g  y:<C-u>Grep "<C-r>=expand(@@)<CR>"<CR>
 nnoremap [myleader]g  :<C-u>Grep<space>""<left>
 nnoremap [myleader]gw :<C-u>Grep "\b<C-r><C-w>\b"<CR>
 
-
-nnoremap [myleader]m :silent make!<CR>:redraw!<CR>
-
-
 comman! -nargs=+ Grep call s:grep(<q-args>)
 function! s:grep(args) abort
     execute 'silent grep! ' . a:args
     redraw!
     execute 'normal! /<C-l>'
 endfunction
+
+nnoremap [myleader]m :silent make!<CR>:redraw!<CR>
 
 " Navigation
 " make navigation more intuitive
@@ -381,7 +379,7 @@ function! s:in(group, item) abort
 endfunction
 
 " think of "co" as "change option"
-nnoremap como :<C-U>set modifiable!<CR>:set modifiable?<CR>
+nnoremap comd :<C-U>set modifiable!<CR>:set modifiable?<CR>
 nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
 nnoremap cot :<C-U>set textwidth=
 nnoremap cocl :<C-U>setlocal conceallevel=

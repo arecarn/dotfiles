@@ -275,6 +275,9 @@ source ~/.config/zsh/functions.sh
 
 alias -g ...="../../"
 
+alias -g send-right="tmux send-keys -t right"
+alias -g send-left="tmux send-keys -t left"
+
 alias gp='grep -P'
 alias py='python'
 alias p="${PAGER}"

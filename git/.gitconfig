@@ -87,8 +87,8 @@
     # the following aliases instead
     cm = commit --verbose
     cmm = !git cm --message
-    cmfu = !git cm --fixup
-    cmsq = !git cm --squash
+    cmfu = "!f() { git cm --fixup \"$@\" && git rbi; }; f"
+    cmsq = "!f() { git cm --squash \"$@\" && git rbi; }; f"
     cma = !git cm --amend --reset-author
 
     f = fetch

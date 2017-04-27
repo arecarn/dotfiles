@@ -490,13 +490,13 @@ cnoremap <C-s> <C-f>
 " find files easier
 cnoremap <C-t> <C-r>=expand('%:p:h') . '/'<CR>
 
-" fp File Path  (/something/src/foo.txt)
-" fpr File Path relative  (src/foo.txt)
+" afp File Path  (/something/src/foo.txt)
+" fp File Path relative  (src/foo.txt)
 " ofn Other File Name (trail)
-" ofp Other File Path
-" ofpr Other File Path Relative to pwd
-" dp Directory Path (head) (/something/src)
-" dpr Directory Path Relative to pwd (head) (/something/src)
+" aofp Other File Path
+" ofp Other File Path Relative to pwd
+" adp Directory Path (head) (/something/src)
+" dp Directory Path Relative to pwd (head) (/something/src)
 " pwd Present Working Directory
 let extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
 let maps = [
@@ -505,11 +505,11 @@ let maps = [
             \         'func': "expand('%:t')"
             \     },
             \     {
-            \         'str': 'fp',
+            \         'str': 'afp',
             \         'func': "expand('%:p')"
             \     },
             \     {
-            \         'str': 'rfp',
+            \         'str': 'fp',
             \         'func': "expand('%')"
             \     },
             \     {
@@ -518,20 +518,20 @@ let maps = [
             \         . extension_patter . "', '\\2', 'g')"
             \     },
             \     {
-            \         'str': 'ofp',
+            \         'str': 'aofp',
             \         'func': "substitute(expand('%:p:r:.'), '"
             \         . extension_patter . "', '\\2', 'g')"
             \     },
             \     {
-            \         'str': 'rofp',
+            \         'str': 'ofp',
             \         'func': "expand('%<') . '.'"
             \     },
             \     {
-            \         'str': 'dp',
+            \         'str': 'adp',
             \         'func': "expand('%:p:h') . '/'"
             \     },
             \     {
-            \         'str': 'rdp',
+            \         'str': 'dp',
             \         'func': "expand('%:h') . '/'"
             \     },
             \     {
@@ -547,7 +547,7 @@ for map in maps
     execute 'cnoremap %' . map.str . ' <C-r>=' . map.func . '<CR>'
 endfor
 
-" accept completion (requires "set wild charm = <TAB>)
+" accept completion (requires "set wildcharm = <TAB>)
 cnoremap <C-y> <SPACE><BS><TAB>
 
 cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>

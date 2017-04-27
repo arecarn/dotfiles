@@ -13,10 +13,10 @@ let s:has_windows = has('win16') || has('win32') || has('win64')
 
 if s:has_windows
     let s:vim_path = $HOME . '/vimfiles'
-    let s:path_sep = '\'
+    let g:path_sep = '\'
 else
     let s:vim_path = $HOME . '/.vim'
-    let s:path_sep = '/'
+    let g:path_sep = '/'
 endif
 
 if empty($XDG_CACHE_HOME)
@@ -350,6 +350,19 @@ nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
 nnoremap gj j
+
+nnoremap <leader>f :find<Space>
+nnoremap <leader>s :sfind<Space>
+nnoremap <leader>v :vert sfind<Space>
+nnoremap <leader>t :tabfind<Space>
+
+nnoremap <leader>F :find <C-R>=expand('%:h') . g:path_sep<CR>
+nnoremap <leader>S :sfind <C-R>=expand('%:h') . g:path_sep<CR>
+nnoremap <leader>V :vert sfind <C-R>=expand('%:h') . g:path_sep<CR>
+nnoremap <leader>T :tabfind <C-R>=expand('%:h') . g:path_sep<CR>
+
+nnoremap <leader>b :buffer <TAB><S-Tab>
+nnoremap <leader>B :sbuffer <TAB><S-Tab>
 
 " replace selection with spaces and enter replace mode
 xnoremap gr r<space>gvo<esc>R

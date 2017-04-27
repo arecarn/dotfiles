@@ -431,7 +431,7 @@ MOVE_CURSOR_DOWN=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
 RESTORE_CURSOR=$terminfo[rc]
 VI_INSERT_MODE='-- INSERT --'
 VI_OTHER_MODES='            '
-PROMPT_VALUE='%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ %# '
+PROMPT_VALUE='%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ ${TIME_STAMP} %# '
 
 set-prompt(){ # {{{2
     case ${KEYMAP} in
@@ -445,8 +445,10 @@ set-prompt(){ # {{{2
 
 precmd(){ # {{{2
     vcs_info
+    print ""
     print -rP "%n%F{blue}@%m%f ${vcs_info_msg_0_}"
     VI_MODE="${VI_INSERT_MODE}"
+    TIME_STAMP=$(date +"%T")
     PROMPT="${PROMPT_VALUE}"
 } # }}}2
 

@@ -241,6 +241,8 @@ if has('nvim')
     set inccommand=split
 endif
 
+set diffopt+=vertical "always open diff side by side
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

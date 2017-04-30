@@ -779,7 +779,12 @@ NeoBundle 'scrooloose/syntastic'
 NeoBundle 'janko-m/vim-test'
 
 NeoBundle 'vimwiki/vimwiki'
-let g:vimwiki_list = [{'path': '~/Dropbox/wiki', 'index': 'main'}]
+let g:vimwiki_list = [{
+            \ 'path': '~/Dropbox/wiki',
+            \ 'index': 'main',
+            \ 'sysntax': 'markdown',
+            \ 'ext': '.md',
+            \ }]
 
 
 " Vim script Development

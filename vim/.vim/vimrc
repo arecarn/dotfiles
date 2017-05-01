@@ -779,13 +779,6 @@ NeoBundle 'scrooloose/syntastic'
 NeoBundle 'janko-m/vim-test'
 
 NeoBundle 'vimwiki/vimwiki'
-let g:vimwiki_list = [{
-            \ 'path': '~/Dropbox/wiki',
-            \ 'index': 'main',
-            \ 'sysntax': 'markdown',
-            \ 'ext': '.md',
-            \ }]
-
 
 " Vim script Development
 NeoBundle 'vim-jp/vital.vim'
@@ -1600,9 +1593,19 @@ if neobundle#is_installed('vim-qf') "{{{2
     let g:qf_mapping_ack_style = 1
 endif "}}}2
 
-if neobundle#is_installed('tmuxline.vim')
+if neobundle#is_installed('vimwiki') "}}}2
+    let g:vimwiki_list = [{
+                \ 'path': '~/Dropbox/wiki',
+                \ 'index': 'main',
+                \ 'sysntax': 'markdown',
+                \ 'ext': '.md',
+                \ }]
+endif "}}}2
+
+
+if neobundle#is_installed('tmuxline.vim') "}}}2
             \ && ($TERM ==# 'screen' || $TERM ==# 'screen-256color')
-            \ && !empty($TMUX)  "{{{2
+            \ && !empty($TMUX)
 
     let g:tmuxline_powerline_separators = 0
     let g:tmuxline_separators = {

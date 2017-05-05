@@ -68,7 +68,7 @@
     bl = branch --all --verbose --verbose # Branch List
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
-    bdr = push origin --delete # Branch Delete Remote
+    bdr = push --delete # Branch Delete Remote
     bc = checkout -b # Branch Create
     bcr = push origin --set-upstream HEAD # Branch Create Remote
     bsu = branch --set-remote
@@ -80,7 +80,7 @@
     tam = tag --annotate -m
     tl = branch --list # Tag List
     td = tag --delete
-    tdr = push origin --delete # Tag Delete Remote
+    tdr = push --delete # Tag Delete Remote
 
     # the --verbose flag is equivalent to setting the commit.verbose option
     # but this option is only supported in git v2.9+ so the flag is included in

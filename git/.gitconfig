@@ -70,7 +70,7 @@
     bD = branch -D # Branch Delete
     bdr = push --delete # Branch Delete Remote
     bc = checkout -b # Branch Create
-    bcr = push origin --set-upstream HEAD # Branch Create Remote
+    bcr = push --set-upstream # Branch Create Remote
     bsu = branch --set-remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)
     # Branches that are Merged

@@ -425,7 +425,9 @@ nnoremap cotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwi
 nnoremap copw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
 
 " reselect pasted or last changed text
-nnoremap <expr> g<c-v> '`[' . getregtype()[0] . '`]'
+nnoremap <expr> g<C-v> '`[' . getregtype()[0] . '`]'
+
+nnoremap <C-w>Q :tabclose<CR>
 
 
 " redraw even harder

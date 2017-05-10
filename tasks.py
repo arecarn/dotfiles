@@ -142,8 +142,12 @@ class Dploy():
             ((self.home, '.vim', 'vimrc'), (self.home, '.vimrc')),
             ((self.home, '.vim'), (self.home, 'vimfiles')),
             ((self.home, '.vim', 'vimrc'), (self.home, '.vim', 'init.vim')),
+            ((self.home, '.vim', 'vimrc'), (self.home, '.vim', 'init.vim')),
             ((self.home, '.vim'), (self.home, '.config', 'nvim')),
         ]
+        if isWindows:
+            self.links += [((self.home, '.vim'), (self.home, 'AppData', 'Local', 'nvim'))]
+
 
     def stow(self):
         """

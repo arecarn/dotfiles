@@ -175,7 +175,7 @@ set foldlevelstart=99
 if has('autocmd')
     augroup vimrc
         autocmd!
-        autocmd BufWritePost *vimrc* nested source $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
+        autocmd BufWritePost *vimrc* nested source $MYVIMRC
     augroup END
 endif
 

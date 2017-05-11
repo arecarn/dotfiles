@@ -18,6 +18,7 @@ zplug 'plugins/tmux', from:oh-my-zsh, nice:10
 zplug 'rupa/z', use:'*.sh'
 zplug 'zsh-users/zsh-completions'
 zplug 'zsh-users/zsh-syntax-highlighting', nice:11
+zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
 zplug 'junegunn/fzf',  hook-build:'./install --all'
 
 # Install plugins if there are plugins that have not been installed
@@ -474,8 +475,6 @@ preexec(){
 ###########################################################################}}}
 # MISC                                                                     {{{
 ##############################################################################
-# shellcheck source=/dev/null
-source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 
 # stop flow control in Tmux e.g. freeze with <C-s> and resume with <C-q>
 stty -ixon

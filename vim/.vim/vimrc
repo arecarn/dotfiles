@@ -694,203 +694,201 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" neobundle {{{2
-let s:neobundle_path = s:vim_path.'/bundle/neobundle.vim'
-if !isdirectory(s:neobundle_path)
-    execute '!git clone https://github.com/Shougo/neobundle.vim '
-                \ . s:neobundle_path
+let s:dein_path = s:vim_path . '/bundle/dein.vim'
+if !isdirectory(s:dein_path)
+    execute '!git clone https://github.com/Shougo/dein.vim ' . s:dein_path
 endif
+
 if has('vim_starting')
-    execute 'set runtimepath+='.s:neobundle_path.'/'
+    execute 'set runtimepath+='.s:dein_path.'/'
 endif
 
-call neobundle#begin(expand(s:vim_path.'/bundle'))
-" Let NeoBundle manage NeoBundle
-NeoBundleFetch 'Shougo/neobundle.vim' "}}}2
+let s:dein_path_plugins = s:vim_path . '/bundle'
 
-" vimproc.vim {{{2
-NeoBundle 'Shougo/vimproc.vim', {
-            \ 'build' : {
-            \     'windows' : 'tools\\update-dll-mingw',
-            \     'cygwin' : 'make -f make_cygwin.mak',
-            \     'mac' : 'make',
-            \     'linux' : 'make',
-            \     'unix' : 'gmake',
-            \    },
-            \ } "}}}2
+if dein#load_state(s:dein_path_plugins)
+    call dein#begin(s:dein_path_plugins)
 
-" text objects {{{2
-NeoBundle 'kana/vim-textobj-user'
-NeoBundle 'saihoooooooo/vim-textobj-space'
-NeoBundle 'Julian/vim-textobj-variable-segment'
-NeoBundle 'kana/vim-textobj-entire'
-NeoBundle 'kana/vim-textobj-indent'
-NeoBundle 'kana/vim-textobj-line'
-NeoBundle 'kana/vim-textobj-syntax'
-NeoBundle 'mattn/vim-textobj-url'
-NeoBundle 'glts/vim-textobj-comment'
-NeoBundle 'thinca/vim-textobj-between'
-NeoBundle 'osyo-manga/vim-textobj-multiblock'
-NeoBundle 'kana/vim-textobj-function'
-NeoBundle 'sgur/vim-textobj-parameter'
-NeoBundle 'osyo-manga/vim-textobj-blockwise'
-"}}}2
+    call dein#add(s:dein_path)
+    call dein#add('Shougo/vimproc.vim', {'build': 'make'})
 
-" unite {{{2
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/unite-outline', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'Shougo/neomru.vim', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'Shougo/neoyank.vim', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'kmnk/unite-command', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'majkinetor/unite-cmdmatch', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'thinca/vim-unite-history', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'} "}}}2
-if !s:has_windows
-    NeoBundle 'junegunn/fzf', {
-                \ 'base' : '~/.config/fzf',
-                \ 'build' : './install --all'
-                \ }
+    " text objects {{{2
+    call dein#add('kana/vim-textobj-user')
+    call dein#add('saihoooooooo/vim-textobj-space')
+    call dein#add('Julian/vim-textobj-variable-segment')
+    call dein#add('kana/vim-textobj-entire')
+    call dein#add('kana/vim-textobj-indent')
+    call dein#add('kana/vim-textobj-line')
+    call dein#add('kana/vim-textobj-syntax')
+    call dein#add('mattn/vim-textobj-url')
+    call dein#add('glts/vim-textobj-comment')
+    call dein#add('thinca/vim-textobj-between')
+    call dein#add('osyo-manga/vim-textobj-multiblock')
+    call dein#add('kana/vim-textobj-function')
+    call dein#add('sgur/vim-textobj-parameter')
+    call dein#add('osyo-manga/vim-textobj-blockwise')
+    "}}}2
+
+    " unite {{{2
+    call dein#add('Shougo/unite.vim')
+    call dein#add('Shougo/unite-outline', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('Shougo/neomru.vim', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('Shougo/neoyank.vim', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('kmnk/unite-command', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('majkinetor/unite-cmdmatch', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('thinca/vim-unite-history', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'})
+    " }}}2
+
+    call dein#add('dyng/ctrlsf.vim')
+
+    " Operators
+    call dein#add('kana/vim-operator-user')
+    call dein#add('arecarn/vim-operator-mixed-case')
+    call dein#add('milsen/vim-operator-substitute', {'depends' : 'kana/vim-operator-user'})
+    call dein#add('kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'})
+    call dein#add('tpope/vim-surround')
+    call dein#add('tommcdo/vim-exchange')
+    call dein#add('tpope/vim-commentary')
+    call dein#add('tpope/vim-repeat')
+    call dein#add('vim-scripts/visualrepeat')
+    "}}}2
+
+    " Folds
+    call dein#add('arecarn/vim-clean-fold')
+    call dein#add('arecarn/vim-fold-cycle') "  {'rev' : 'topics/global_fold_cycling'})
+
+
+    " Visual Enhancements
+    call dein#add('itchyny/lightline.vim')
+    call dein#add('chreekat/vim-paren-crosshairs')
+    call dein#add('junegunn/goyo.vim')
+    call dein#add('nathanaelkane/vim-indent-guides')
+    if !s:has_windows
+        call dein#add('maman/tmuxline.vim')
+    endif
+
+    call dein#add('scrooloose/syntastic')
+    call dein#add('janko-m/vim-test')
+
+
+    " Vim script Development
+    call dein#add('vim-jp/vital.vim')
+    call dein#add('tpope/vim-scriptease')
+    call dein#add('junegunn/vader.vim')
+    call dein#add('vim-scripts/Decho')
+    call dein#add('dbakker/vim-lint', {'depends' : 'scrooloose/syntastic'})
+
+
+    " File Type
+    call dein#add('stephpy/vim-yaml') "and alternative yaml sicne the built in one is slow
+    call dein#add('lopter/moin.vim')
+    call dein#add('vim-scripts/confluencewiki.vim')
+    call dein#add('plasticboy/vim-markdown')
+    call dein#add('dbeniamine/todo.txt-vim')
+    call dein#add('vim-scripts/scons.vim')
+    call dein#add('romainl/vim-qf')
+
+    call dein#add('hynek/vim-python-pep8-indent')
+    call dein#add('python-rope/ropevim')
+
+    " Colors
+    call dein#add('morhetz/gruvbox')
+
+
+    " Completion
+    if has('nvim')
+        call dein#add('Shougo/deoplete.nvim')
+    else
+        call dein#add('Shougo/neocomplete')
+    endif
+    call dein#add('Shougo/neosnippet-snippets')
+    call dein#add('Shougo/neosnippet.vim')
+
+
+    " Git / VCS
+    call dein#add('tpope/vim-fugitive')
+    call dein#add('jreybert/vimagit')
+    call dein#add('airblade/vim-rooter')
+    call dein#add('cohama/agit.vim')
+    call dein#add('mhinz/vim-signify')
+
+
+    " Diff
+    call dein#add('AndrewRadev/linediff.vim')
+    call dein#add('vim-scripts/diffchanges.vim')
+    call dein#add('arecarn/vim-diff-utils')
+    call dein#add('will133/vim-dirdiff')
+
+
+    " Applications
+    call dein#add('Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('idanarye/vim-vebugger', {'depends' : 'Shougo/vimproc.vim'})
+    call dein#add('metakirby5/codi.vim')
+    call dein#add('vimwiki/vimwiki')
+
+
+    " Text Manipulation Commands / Mappings
+    call dein#add('junegunn/vim-easy-align')
+    call dein#add('godlygeek/tabular')
+    call dein#add('arecarn/vim-split-join')
+    call dein#add('t9md/vim-textmanip')
+    call dein#add('vim-scripts/ingo-library')
+    call dein#add('vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'})
+
+    " Enhancements
+    call dein#add('kana/vim-niceblock')
+    call dein#add('tpope/vim-speeddating')
+    call dein#add('tpope/vim-unimpaired')
+    call dein#add('vim-scripts/UnconditionalPaste')
+    call dein#add('arecarn/vim-go-to-buffer')
+    call dein#add('arecarn/vim-auto-autoread')
+    call dein#add('thinca/vim-qfreplace')
+    call dein#add('tpope/vim-eunuch')
+    call dein#add('arecarn/vim-spell-utils')
+    call dein#add('tpope/vim-abolish')
+
+    " Word Under the Cursor Highlighting
+    call dein#add('t9md/vim-quickhl')
+    call dein#add('qstrahl/vim-matchmaker')
+
+    " Search
+    call dein#add('junegunn/vim-pseudocl')
+    call dein#add('junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'})
+
+    " Utilities
+    call dein#add('talek/obvious-resize')
+    call dein#add('vim-scripts/cmdalias.vim')
+    call dein#add('arecarn/Preserve.vim') "TODO Merge into the true one
+
+    " Interactive Tools/Modes
+    call dein#add('dhruvasagar/vim-table-mode')
+    call dein#add('vim-scripts/DrawIt')
+    call dein#add('arecarn/vim-selection')
+    call dein#add('arecarn/vim-crunch', {'depends' : 'arecarn/vim-selection'})
+    call dein#add('chrisbra/NrrwRgn')
+    call dein#add('mbbill/undotree')
+
+    call dein#add('arecarn/vim-binascii')
+    call dein#add('arecarn/vim-frisk')
+    call dein#add('ludovicchabant/vim-gutentags')
+    call dein#add('arecarn/vim-template', {'rtp': ''})
+
+    call dein#end()
+    call dein#save_state()
 endif
-NeoBundle 'dyng/ctrlsf.vim'
 
+command! DeinInstall if dein#check_install() | call dein#install() | endif
 
-" Operators
-NeoBundle 'arecarn/vim-operator-mixed-case'
-NeoBundle 'milsen/vim-operator-substitute', {'depends' : 'kana/vim-operator-user'}
-NeoBundle 'kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'}
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'tommcdo/vim-exchange'
-NeoBundle 'tpope/vim-commentary'
-NeoBundle 'tpope/vim-repeat'
-NeoBundle 'visualrepeat' "}}}2
-
-
-" Folds
-NeoBundle 'arecarn/vim-clean-fold'
-NeoBundle 'arecarn/vim-fold-cycle' ",  {'rev' : 'topics/global_fold_cycling'}
-
-
-" Visual Enhancements
-NeoBundle 'itchyny/lightline.vim'
-NeoBundle 'chreekat/vim-paren-crosshairs'
-NeoBundle 'maman/tmuxline.vim'
-NeoBundle 'junegunn/goyo.vim'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'janko-m/vim-test'
-
-NeoBundle 'vimwiki/vimwiki'
-
-" Vim script Development
-NeoBundle 'vim-jp/vital.vim'
-NeoBundle 'tpope/vim-scriptease'
-NeoBundle 'junegunn/vader.vim'
-NeoBundle 'Decho'
-NeoBundle 'dbakker/vim-lint', {'depends' : 'scrooloose/syntastic'}
-
-
-" File Type
-NeoBundle 'stephpy/vim-yaml' "and alternative yaml sicne the built in one is slow
-NeoBundle 'lopter/moin.vim'
-NeoBundle 'confluencewiki.vim'
-NeoBundle 'plasticboy/vim-markdown'
-NeoBundle 'dbeniamine/todo.txt-vim'
-NeoBundle 'vim-scripts/scons.vim'
-NeoBundle 'romainl/vim-qf'
-
-NeoBundle 'hynek/vim-python-pep8-indent'
-NeoBundle 'python-rope/ropevim'
-
-" Colors
-NeoBundle 'morhetz/gruvbox'
-
-
-" Completion
-if has('nvim')
-    NeoBundle 'Shougo/deoplete.nvim'
-else
-    NeoBundle 'Shougo/neocomplete'
-endif
-NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'Shougo/neosnippet.vim'
-
-
-" Git / VCS
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'jreybert/vimagit'
-NeoBundle 'airblade/vim-rooter'
-NeoBundle 'cohama/agit.vim'
-NeoBundle 'mhinz/vim-signify'
-
-
-" Diff
-NeoBundle 'AndrewRadev/linediff.vim'
-NeoBundle 'diffchanges.vim'
-NeoBundle 'arecarn/vim-diff-utils'
-NeoBundle 'will133/vim-dirdiff'
-
-
-" Applications
-NeoBundle 'Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'}
-NeoBundle 'idanarye/vim-vebugger', {'depends' : 'shougo/vimproc.vim'}
-NeoBundle 'metakirby5/codi.vim'
-
-
-" Text Manipulation Commands / Mappings
-NeoBundle 'junegunn/vim-easy-align'
-NeoBundle 'godlygeek/tabular'
-NeoBundle 'arecarn/vim-split-join'
-NeoBundle 't9md/vim-textmanip'
-NeoBundle 'vim-scripts/FormatToWidth', {'depends' : 'vim-scripts/ingo-library'}
-
-" Enhancements
-NeoBundle 'kana/vim-niceblock'
-NeoBundle 'tpope/vim-speeddating'
-NeoBundle 'tpope/vim-unimpaired'
-NeoBundle 'vim-scripts/UnconditionalPaste'
-NeoBundle 'arecarn/vim-go-to-buffer'
-NeoBundle 'arecarn/vim-auto-autoread'
-NeoBundle 'thinca/vim-qfreplace'
-NeoBundle 'tpope/vim-eunuch'
-NeoBundle 'arecarn/vim-spell-utils'
-NeoBundle 'tpope/vim-abolish'
-
-" Word Under the Cursor Highlighting
-NeoBundle 't9md/vim-quickhl'
-NeoBundle 'qstrahl/vim-matchmaker'
-
-" Search
-NeoBundle 'junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'}
-
-" Utilities
-NeoBundle 'talek/obvious-resize'
-NeoBundle 'vim-scripts/cmdalias.vim'
-NeoBundle 'arecarn/Preserve.vim' "TODO Merge into the true one
-
-" Interactive Tools/Modes
-NeoBundle 'dhruvasagar/vim-table-mode'
-NeoBundle 'vim-scripts/DrawIt'
-NeoBundle 'arecarn/vim-crunch', {'depends' : 'arecarn/vim-selection'}
-NeoBundle 'chrisbra/NrrwRgn'
-NeoBundle 'mbbill/undotree'
-
-NeoBundle 'arecarn/vim-binascii'
-NeoBundle 'arecarn/vim-frisk'
-NeoBundle 'ludovicchabant/vim-gutentags'
-NeoBundleFetch 'arecarn/vim-template'
-call neobundle#end()
-NeoBundleCheck
 filetype plugin indent on
-
+syntax enable
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if neobundle#is_installed('deoplete.vim') "{{{2
+if dein#tap('deoplete.vim') "{{{2
     call deoplete#enable()
 endif "}}}2
 
-if neobundle#is_installed('neocomplete') "{{{2
+if dein#tap('neocomplete') "{{{2
     " Use neocomplete.
     let g:neocomplete#enable_at_startup = 1
 
@@ -959,7 +957,7 @@ if neobundle#is_installed('neocomplete') "{{{2
 
 endif "}}}2
 
-if neobundle#is_installed('neosnippet-snippets') "{{{2
+if dein#tap('neosnippet-snippets') "{{{2
     imap <C-e> <Plug>(neosnippet_expand_or_jump)
     smap <C-e> <Plug>(neosnippet_expand_or_jump)
     xmap <C-e> <Plug>(neosnippet_expand_target)
@@ -987,7 +985,7 @@ if neobundle#is_installed('neosnippet-snippets') "{{{2
     let g:neosnippet#data_directory = s:make_cache_path('neosnippet')
 endif "}}}2
 
-if neobundle#is_installed('unite.vim') "{{{2
+if dein#tap('unite.vim') "{{{2
     let g:unite_data_directory = s:make_cache_path('unite')
     let g:unite_winheight = 10
     let g:unite_source_history_yank_enable = 1
@@ -1075,49 +1073,49 @@ if neobundle#is_installed('unite.vim') "{{{2
     nnoremap [myleader]ur :<C-u>UniteResume<CR>
     command! Messages Unite output:message
 
-    if neobundle#is_installed('neomru.vim')
+    if dein#tap('neomru.vim')
         nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
 
         let g:neomru#file_mru_path = s:make_cache_path('neomru/file')
         let g:neomru#directory_mru_path = s:make_cache_path('neomru/directory')
     endif
 
-    if neobundle#is_installed('unite-outline')
+    if dein#tap('unite-outline')
         nnoremap [myleader]o  :<C-u>Unite outline<CR>
     endif
 
-    if neobundle#is_installed('unite-help')
+    if dein#tap('unite-help')
         nnoremap [myleader]h  :<C-u>Unite help -start-insert<CR>
     endif
 
-    if neobundle#is_installed('unite-cmdmatch')
+    if dein#tap('unite-cmdmatch')
         nnoremap [myleader]hc :<C-u>Unite cmdmatch history/command<CR>
     endif
 
     nnoremap [myleader]hs :<C-u>Unite history/search<CR>
 
-    if neobundle#is_installed('neoyank.vim')
+    if dein#tap('neoyank.vim')
         nnoremap [myleader]p  :<C-u>Unite history/yank<CR>
         xnoremap [myleader]p  dk:<C-u>Unite history/yank<CR>
 
         let g:neoyank#file = s:make_data_path('neoyank/history')
     endif
 
-    if neobundle#is_installed('neobundle.vim')
+    if dein#tap('neobundle.vim')
         nnoremap [myleader]up :<C-u>Unite neobundle/update -tab<CR>
     endif
 
-    if neobundle#is_installed('unite-tag')
+    if dein#tap('unite-tag')
         nnoremap [myleader]t  :<C-u>UniteWithCursorWord tag<CR>
     endif
 
 
-    if neobundle#is_installed('unite-spell-suggest')
+    if dein#tap('unite-spell-suggest')
         nnoremap [myleader]gs  :<C-u>Unite spell_suggest<CR>
     endif
 
 
-    if neobundle#is_installed('unite-digraphs')
+    if dein#tap('unite-digraphs')
         command! Digraphs Unite digraphs
     endif
 
@@ -1135,7 +1133,7 @@ if neobundle#is_installed('unite.vim') "{{{2
     endfunction
 endif "}}}2
 
-if neobundle#is_installed('vimfiler.vim') "{{{2
+if dein#tap('vimfiler.vim') "{{{2
     " Replace entry commands with Vimfiler
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
@@ -1153,17 +1151,17 @@ else
 
 endif "}}}2
 
-if neobundle#is_installed('vim-oblique') "{{{2
+if dein#tap('vim-oblique') "{{{2
     let g:oblique#incsearch_highlight_all = 1
 endif "}}}2
 
-if neobundle#is_installed('vim-operator-substitute') "{{{2
+if dein#tap('vim-operator-substitute') "{{{2
     map s <Plug>(operator-substitute)
     map & <Plug>(operator-substitute-repeat)
     map g& <Plug>(operator-substitute-repeat-no-flags)
 endif "}}}2
 
-if neobundle#is_installed('vim-fugitive') "{{{2
+if dein#tap('vim-fugitive') "{{{2
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
     nnoremap <Leader>gc :Gcommit<CR>
@@ -1232,7 +1230,7 @@ if neobundle#is_installed('vim-fugitive') "{{{2
     command! -bar FollowSymlink call MyFollowSymlink()
 endif "}}}2
 
-if neobundle#is_installed('vim-frisk') "{{{2
+if dein#tap('vim-frisk') "{{{2
     call frisk#AddEngine('yahoo', 'http://search.yahoo.com/search?p=')
 
     command! Rfrisk call ReloadFrisk()
@@ -1244,16 +1242,16 @@ if neobundle#is_installed('vim-frisk') "{{{2
     endfunction
 endif "}}}2
 
-if neobundle#is_installed('tabular') "{{{2
+if dein#tap('tabular') "{{{2
     nnoremap <Leader>a :Tabularize/
     xnoremap <Leader>a :Tabularize/
 endif "}}}2
 
-if neobundle#is_installed('vim-table-mode') "{{{2
+if dein#tap('vim-table-mode') "{{{2
     let g:table_mode_corner = '|'
 endif "}}}2
 
-if neobundle#is_installed('vim-indent-guides') "{{{2
+if dein#tap('vim-indent-guides') "{{{2
     nmap <silent> coig <Plug>IndentGuidesToggle
     let g:indent_guides_enable_on_vim_startup = 0
     let g:indent_guides_default_mapping = 0
@@ -1261,14 +1259,14 @@ if neobundle#is_installed('vim-indent-guides') "{{{2
     let g:indent_guides_start_level = 2
 endif "}}}2
 
-if neobundle#is_installed('syntastic') "{{{2
+if dein#tap('syntastic') "{{{2
     let g:syntastic_check_on_open = 0
     " let g:syntastic_python_checkers = ['python', 'pylint']
     let g:syntastic_python_checkers = ['python']
     nnoremap cost :SyntasticToggleMode<CR>
 endif "}}}2
 
-if neobundle#is_installed('vim-textmanip') "{{{2
+if dein#tap('vim-textmanip') "{{{2
     xmap <C-j> <Plug>(textmanip-move-down)
     xmap <C-k> <Plug>(textmanip-move-up)
     xmap <C-h> <Plug>(textmanip-move-left)
@@ -1286,14 +1284,14 @@ if neobundle#is_installed('vim-textmanip') "{{{2
     nmap cotm <Plug>(textmanip-toggle-mode)
 endif "}}}2
 
-if neobundle#is_installed('vim-quickhl') "{{{2
+if dein#tap('vim-quickhl') "{{{2
     nmap gm <Plug>(quickhl-manual-this)
     xmap gm <Plug>(quickhl-manual-this)
     nmap gmx <Plug>(quickhl-manual-reset)
     xmap gmx <Plug>(quickhl-manual-reset)
 endif "}}}2
 
-if neobundle#is_installed('cmdalias.vim') "{{{2
+if dein#tap('cmdalias.vim') "{{{2
     command! Pwf echo expand('%:p')
     augroup VIMRC_aliases
         autocmd!
@@ -1305,15 +1303,15 @@ if neobundle#is_installed('cmdalias.vim') "{{{2
     augroup END
 endif "}}}2
 
-if neobundle#is_installed('FormatToWidth') "{{{2
+if dein#tap('FormatToWidth') "{{{2
     xmap gQ <Plug>FormatToWidth
 endif "}}}2
 
-if neobundle#is_installed('linediff.vim') "{{{2
+if dein#tap('linediff.vim') "{{{2
     xnoremap <Leader>ld :Linediff<CR>
 endif "}}}2
 
-if neobundle#is_installed('vim-textobj-between') "{{{2
+if dein#tap('vim-textobj-between') "{{{2
     let g:textobj_between_no_default_key_mappings = 1
     xmap am <Plug>(textobj-between-a)
     omap am <Plug>(textobj-between-a)
@@ -1321,19 +1319,19 @@ if neobundle#is_installed('vim-textobj-between') "{{{2
     omap im <Plug>(textobj-between-i)
 endif "}}}2
 
-if neobundle#is_installed('vim-markdown') "{{{2
+if dein#tap('vim-markdown') "{{{2
     let g:vim_markdown_conceal = 0
 endif "}}}2
 
-if neobundle#is_installed('vim-table-mode') "{{{2
+if dein#tap('vim-table-mode') "{{{2
     let g:table_mode_separator = '|'
 endif "}}}2
 
-if neobundle#is_installed('undotree') "{{{2
+if dein#tap('undotree') "{{{2
     nnoremap [myleader]ut :UndotreeToggle<CR>:UndotreeFocus<CR>
 endif "}}}2
 
-if neobundle#is_installed('goyo.vim') "{{{2
+if dein#tap('goyo.vim') "{{{2
     nnoremap cof :<C-u>call SetGoyo(v:count)<CR>
 
     function! s:goyo_enter()
@@ -1364,14 +1362,14 @@ if neobundle#is_installed('goyo.vim') "{{{2
     endfunction
 endif "}}}2
 
-if neobundle#is_installed('scons.vim') "{{{2
+if dein#tap('scons.vim') "{{{2
     augroup SCONS
         autocmd!
         autocmd BufNewFile,BufRead SCons*,scons* set filetype=scons
     augroup END
 endif "}}}2
 
-if neobundle#is_installed('todo.txt-vim') "{{{2
+if dein#tap('todo.txt-vim') "{{{2
     augroup TODO_TXT
         autocmd!
         autocmd BufNewFile,BufRead *todo.txt,*done.txt set filetype=todo
@@ -1430,7 +1428,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
         setlocal iskeyword+=+,_,.
         setlocal iskeyword+=@-@ " add literal @
 
-        if neobundle#is_installed('neocomplete') "{{{3
+        if dein#tap('neocomplete') "{{{3
             " use iskeyword characters in neocompletion
             let keyword_patterns = {}
             let keyword_patterns.todo = '\k\+'
@@ -1440,7 +1438,7 @@ if neobundle#is_installed('todo.txt-vim') "{{{2
     endfunction "}}}3
 endif "}}}2
 
-if neobundle#is_installed('obvious-resize') "{{{2
+if dein#tap('obvious-resize') "{{{2
     " map F9 - F12 (like hjkl) to resize windows
     nnoremap  <silent><F9>  :ObviousResizeLeft<CR>
     nnoremap  <silent><F10> :ObviousResizeDown<CR>
@@ -1448,7 +1446,7 @@ if neobundle#is_installed('obvious-resize') "{{{2
     nnoremap  <silent><F12> :ObviousResizeRight<CR>
 endif "}}}2
 
-if neobundle#is_installed('Preserve.vim') "{{{2
+if dein#tap('Preserve.vim') "{{{2
     command! -range=% Dlead :PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
     noremap <silent><leader>dl :Dlead<CR>
     command! -range=% Dtrail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
@@ -1459,31 +1457,31 @@ if neobundle#is_installed('Preserve.vim') "{{{2
     nnoremap yie :call Preserve("normal! ggyG")<CR>
 endif "}}}2
 
-if neobundle#is_installed('moin.vim') "{{{2
+if dein#tap('moin.vim') "{{{2
     augroup MOIN
         autocmd!
         autocmd BufNewFile,BufRead *.moin set filetype=moin
     augroup END
 endif "}}}2
 
-if neobundle#is_installed('confluencewiki.vim') "{{{2
+if dein#tap('confluencewiki.vim') "{{{2
     augroup MOIN
         autocmd!
         autocmd BufNewFile,BufRead *.jira set filetype=confluencewiki
     augroup END
 endif "}}}2
 
-if neobundle#is_installed('vim-crunch') "{{{2
+if dein#tap('vim-crunch') "{{{2
     let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
     let g:crunch_result_type_append = 2
 endif "}}}2
 
-if neobundle#is_installed('vim-surround') "{{{2
+if dein#tap('vim-surround') "{{{2
     " custom surround using :
     let g:surround_58 = "\1Surround\1\r\1\1"
 endif "}}}2
 
-if neobundle#is_installed('vim-clean-fold') "{{{2
+if dein#tap('vim-clean-fold') "{{{2
     set foldmethod=expr
     set foldtext=clean_fold#fold_text_minimal()
     set foldexpr=clean_fold#fold_expr(v:lnum)
@@ -1491,7 +1489,7 @@ else
     set foldmethod=indent
 endif "}}}2
 
-if neobundle#is_installed('vim-matchmaker') "{{{2
+if dein#tap('vim-matchmaker') "{{{2
     nnoremap comm :MatchmakerToggle<CR>
     augroup match_maker
         autocmd!
@@ -1499,14 +1497,14 @@ if neobundle#is_installed('vim-matchmaker') "{{{2
     augroup END
 endif "}}}2
 
-if neobundle#is_installed('vim-rooter') "{{{2
+if dein#tap('vim-rooter') "{{{2
     let g:rooter_manual_only = 1
     let g:rooter_disable_map = 1
     let g:rooter_use_lcd = 0
     map <silent> cdp <Plug>RooterChangeToRootDirectory
 endif "}}}2
 
-if neobundle#is_installed('vim-fold-cycle') "{{{2
+if dein#tap('vim-fold-cycle') "{{{2
     let g:fold_cycle_default_mapping = 0
     nmap zo <Plug>(fold-cycle-open)
     nmap zc <Plug>(fold-cycle-close)
@@ -1517,15 +1515,15 @@ if neobundle#is_installed('vim-fold-cycle') "{{{2
     " nmap zm <Plug>(fold-cycle-close-global)
 endif "}}}2
 
-if neobundle#is_installed('vim-operator-replace') "{{{2
+if dein#tap('vim-operator-replace') "{{{2
     map _ <Plug>(operator-replace)
 endif "}}}2
 
-if neobundle#is_installed('gruvbox') "{{{2
+if dein#tap('gruvbox') "{{{2
     colorscheme gruvbox
 endif "}}}2
 
-if neobundle#is_installed('lightline.vim') "{{{2
+if dein#tap('lightline.vim') "{{{2
     let g:lightline = {
                 \ 'colorscheme': 'default',
                 \ 'active': {
@@ -1591,11 +1589,11 @@ if neobundle#is_installed('lightline.vim') "{{{2
     endfunction
 endif "}}}2
 
-if neobundle#is_installed('vim-qf') "{{{2
+if dein#tap('vim-qf') "{{{2
     let g:qf_mapping_ack_style = 1
 endif "}}}2
 
-if neobundle#is_installed('vimwiki') "}}}2
+if dein#tap('vimwiki') "}}}2
     let g:vimwiki_list = [{
                 \ 'path': '~/Dropbox/wiki',
                 \ 'index': 'main',
@@ -1605,30 +1603,31 @@ if neobundle#is_installed('vimwiki') "}}}2
 endif "}}}2
 
 
-if neobundle#is_installed('tmuxline.vim') "}}}2
-            \ && ($TERM ==# 'screen' || $TERM ==# 'screen-256color')
-            \ && !empty($TMUX)
+if dein#tap('tmuxline.vim')
+    if ($TERM ==# 'screen' || $TERM ==# 'screen-256color')
+                \ && !empty($TMUX)
 
-    let g:tmuxline_powerline_separators = 0
-    let g:tmuxline_separators = {
-                \ 'left' : '',
-                \ 'left_alt': '|',
-                \ 'right' : '',
-                \ 'right_alt' : '|',
-                \ 'space' : ' '}
+        let g:tmuxline_powerline_separators = 0
+        let g:tmuxline_separators = {
+                    \ 'left' : '',
+                    \ 'left_alt': '|',
+                    \ 'right' : '',
+                    \ 'right_alt' : '|',
+                    \ 'space' : ' '}
 
-    augroup tmuxline
-        autocmd!
-        autocmd VimEnter * call s:set_up_tmuxline()
-    augroup END
+        augroup tmuxline
+            autocmd!
+            autocmd VimEnter * call s:set_up_tmuxline()
+        augroup END
 
-    function! s:set_up_tmuxline() abort
+        function! s:set_up_tmuxline() abort
             Tmuxline lightline
             TmuxlineSnapshot! ~/.cache/tmux/statusline.conf
-    endfunction
+        endfunction
+    endif
 endif "}}}2
 
-if neobundle#is_installed('vim-easy-align') "{{{2
+if dein#tap('vim-easy-align') "{{{2
     " Start interactive EasyAlign in visual mode (e.g. vipga)
     xmap ga <Plug>(EasyAlign)
     " Start interactive EasyAlign for a motion/text object (e.g. gaip)

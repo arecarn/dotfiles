@@ -18,6 +18,7 @@ zplug 'plugins/tmux', from:oh-my-zsh, nice:10
 zplug 'rupa/z', use:'*.sh'
 zplug 'zsh-users/zsh-completions'
 zplug 'zsh-users/zsh-syntax-highlighting', nice:11
+zplug 'junegunn/fzf',  hook-build:'./install --all'
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -46,6 +47,11 @@ if _is_installed 'plugins/ssh-agent'; then
     zstyle :omz:plugins:ssh-agent agent-forwarding on
     zstyle :omz:plugins:ssh-agent identities id_rsa
 fi
+
+if _is_installed 'junegunn/fzf'; then
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+fi
+
 
 # Finally, source plugins and add commands to ${PATH}
 zplug load
@@ -172,8 +178,6 @@ REPORTTIME=10
 # vi like settings
 bindkey -v
 export KEYTIMEOUT=1
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Vim Mode (Ins Mode) {{{2
 _backward-kill-word-and-split-undo() {

@@ -12,22 +12,51 @@ set fileformats=unix,dos
 let s:has_windows = has('win16') || has('win32') || has('win64')
 
 if s:has_windows
-    let s:vim_path = $HOME . '/vimfiles'
     let g:path_sep = '\'
 else
-    let s:vim_path = $HOME . '/.vim'
     let g:path_sep = '/'
 endif
 
-if empty($XDG_CACHE_HOME)
-    let $XDG_CACHE_HOME = $HOME . '/.cache'
-endif
-let s:cache_path = $XDG_CACHE_HOME . '/vim/'
+let g:app = has('nvim') ?  'nvim' : 'vim'
 
-if empty($XDG_DATA_HOME)
-    let $XDG_DATA_HOME = $HOME . '/.local/share'
+if s:has_windows
+    let g:config_path = $LOCALAPPDATA . '\' . g:app . '\'
+    let g:data_path = $LOCALAPPDATA . '\'
+    let g:cache_path = $LOCALAPPDATA . '\' . g:app . '\Cache\'
+else
+    if empty($XDG_CONFIG_HOME)
+        let g:config_path = $HOME . '.config/' . g:app . '/'
+    else
+        let g:cache_path = $XDG_CONFIG_HOME . g:app . '/'
+    endif
+
+    if empty($XDG_DATA_HOME)
+        let g:data_path = $HOME . '.local/share' . g:app . '/'
+    else
+        let g:cache_path = $XDG_DATA_HOME . g:app . '/'
+    endif
+
+    if empty($XDG_CACHE_HOME)
+        let g:cache_path = $HOME . '.cache/' .g:app
+    else
+        let g:cache_path = $XDG_CACHE_HOME . g:app . '/'
+    endif
 endif
-let s:data_path = $XDG_DATA_HOME . '/vim/'
+
+
+if s:has_windows
+    if has('nvim')
+        let s:app_path = g:config_path
+    else
+        let s:app_path = $HOME . '/vimfiles/'
+    endif
+else
+    if has('nvim')
+        let s:app_path = g:config_path
+    else
+        let s:app_path = $HOME . '/.vim/'
+    endif
+endif
 
 function! s:make_private_directory(path) abort
     if !isdirectory(a:path)
@@ -36,11 +65,11 @@ function! s:make_private_directory(path) abort
 endfunction
 
 function! s:make_cache_path(name) abort
-    return s:cache_path . a:name
+    return g:cache_path . a:name
 endfunction
 
 function! s:make_data_path(name) abort
-    return s:data_path . a:name
+    return g:data_path . a:name
 endfunction
 
 function! s:make_cache_directory(path) abort
@@ -141,10 +170,10 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set spell
 set spelllang=en_us
-let &spellfile = s:vim_path . '/utils/spell/spellfile.add'
-let &thesaurus = s:vim_path . '/utils/thesaurus/thesaurus.txt'
+let &spellfile = s:app_path . 'utils/spell/spellfile.add'
+let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
 
-execute 'helptags ' . s:vim_path . '/doc'
+execute 'helptags ' . s:app_path . 'doc'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                         {{{
@@ -175,7 +204,7 @@ set foldlevelstart=99
 if has('autocmd')
     augroup vimrc
         autocmd!
-        autocmd BufWritePost *vimrc* nested source $MYVIMRC
+        autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
     augroup END
 endif
 
@@ -694,7 +723,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:dein_path = s:vim_path . '/bundle/dein.vim'
+let s:dein_path = s:app_path . 'bundle/dein.vim'
 if !isdirectory(s:dein_path)
     execute '!git clone https://github.com/Shougo/dein.vim ' . s:dein_path
 endif
@@ -703,7 +732,7 @@ if has('vim_starting')
     execute 'set runtimepath+='.s:dein_path.'/'
 endif
 
-let s:dein_path_plugins = s:vim_path . '/bundle'
+let s:dein_path_plugins = s:app_path . 'bundle'
 
 if dein#load_state(s:dein_path_plugins)
     call dein#begin(s:dein_path_plugins)
@@ -981,7 +1010,7 @@ if dein#tap('neosnippet-snippets') "{{{2
         set conceallevel=2 concealcursor=i
     endif
 
-    let g:neosnippet#snippets_directory = s:vim_path.'/utils/snippets'
+    let g:neosnippet#snippets_directory = s:app_path . 'utils/snippets'
     let g:neosnippet#data_directory = s:make_cache_path('neosnippet')
 endif "}}}2
 

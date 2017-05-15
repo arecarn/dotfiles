@@ -25,19 +25,19 @@ if s:has_windows
     let g:cache_path = $LOCALAPPDATA . '\' . g:app . '\Cache\'
 else
     if empty($XDG_CONFIG_HOME)
-        let g:config_path = $HOME . '.config/' . g:app . '/'
+        let g:config_path = $HOME . '/.config/' . g:app . '/'
     else
-        let g:cache_path = $XDG_CONFIG_HOME . g:app . '/'
+        let g:config_path = $XDG_CONFIG_HOME . g:app . '/'
     endif
 
     if empty($XDG_DATA_HOME)
-        let g:data_path = $HOME . '.local/share' . g:app . '/'
+        let g:data_path = $HOME . '/.local/share/' . g:app . '/'
     else
-        let g:cache_path = $XDG_DATA_HOME . g:app . '/'
+        let g:data_path = $XDG_DATA_HOME . g:app . '/'
     endif
 
     if empty($XDG_CACHE_HOME)
-        let g:cache_path = $HOME . '.cache/' .g:app
+        let g:cache_path = $HOME . '/.cache/' .g:app
     else
         let g:cache_path = $XDG_CACHE_HOME . g:app . '/'
     endif

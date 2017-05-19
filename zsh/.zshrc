@@ -14,12 +14,13 @@ source "${zplug_file}"
 
 zplug 'plugins/command-not-found', from:oh-my-zsh
 zplug 'plugins/ssh-agent', from:oh-my-zsh
-zplug 'plugins/tmux', from:oh-my-zsh, nice:10
+zplug 'plugins/tmux', from:oh-my-zsh, defer:1
 zplug 'rupa/z', use:'*.sh'
 zplug 'zsh-users/zsh-completions'
-zplug 'zsh-users/zsh-syntax-highlighting', nice:11
+zplug 'zsh-users/zsh-syntax-highlighting', defer:1
 zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
 zplug 'junegunn/fzf',  hook-build:'./install --all'
+zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -51,8 +52,12 @@ fi
 
 if _is_installed 'junegunn/fzf'; then
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-fi
 
+    # the bindings are not set for viins mode so we have to do it here
+    bindkey -M viins '^T' fzf-file-widget
+    bindkey -M viins '\ec' fzf-cd-widget
+    bindkey -M viins '^R' fzf-history-widget
+fi
 
 # Finally, source plugins and add commands to ${PATH}
 zplug load

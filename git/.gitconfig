@@ -25,6 +25,10 @@
 [log]
     decorate = short
 
+[stash]
+    # This doesn't seem to work when --stat is also passed to git show stash
+    showPatch = true
+
 [rebase]
     autoStash = true
     autoSquash = true

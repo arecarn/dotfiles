@@ -441,6 +441,7 @@ fi
 } # }}}2
 
 MOVE_CURSOR_DOWN=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
+CLEAR_TO_END_OF_LINE=$terminfo[el]
 RESTORE_CURSOR=$terminfo[rc]
 VI_INSERT_MODE='-- INSERT --'
 VI_OTHER_MODES='            '
@@ -474,7 +475,7 @@ zle -N zle-keymap-select
 # }}}2
 
 preexec(){
-    print -rn -- "$terminfo[el]";
+    print -rn -- "${CLEAR_TO_END_OF_LINE}";
 }
 
 ###########################################################################}}}

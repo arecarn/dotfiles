@@ -133,10 +133,16 @@
     rsrm = reset --mixed @{u}
     rsrs = reset --soft @{u}
 
+    # ReBase
     rb = rebase
     rbi = rebase --interactive --autostash
     rbc = rebase --continue
     rba = rebase --abort
+    # During a rebase it can be difficult to remember what the original intent
+    # of a specific commit is when it's mixed with conflict markers. This shows
+    # the original commit being rebased.
+    # ReBase Show Original
+    rbsho = original "!git show $(cat .git/rebase-apply/original-commit)"
 
     rl =  !git --no-pager reflog --max-count=20
     # RefLog Long

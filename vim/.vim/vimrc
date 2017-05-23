@@ -9,7 +9,7 @@ set fileformats=unix,dos
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:has_windows = has('win16') || has('win32') || has('win64')
+let s:has_windows = has('win32') || has('win64')
 
 if s:has_windows
     let g:path_sep = '\'

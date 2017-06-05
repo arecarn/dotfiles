@@ -10,10 +10,10 @@ import dploy
 isWindows = os.name == 'nt'
 if isWindows:
     # setting 'shell' is a work around for issue #345 of invoke
-    run_args = {'is_pty': False, 'shell': 'C:\Windows\System32\cmd.exe'}
+    run_args = {'pty': False, 'shell': 'C:\Windows\System32\cmd.exe'}
     stow_location = 'USERPROFILE'
 else:
-    run_args = {'is_pty': True}
+    run_args = {'pty': True}
     stow_location = 'HOME'
 
 

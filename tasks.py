@@ -114,11 +114,11 @@ def clean(ctx):
     ctx.run('git clean --interactive', **run_args)
 
 @task
-def setup(ctx):
+def setup(ctx, args=''):
     """
     Install python requirements
     """
-    ctx.run('pip install --requirement requirements.txt', **run_args)
+    ctx.run('pip install ' + args + ' --requirement requirements.txt', **run_args)
 
 class Dploy():
     """

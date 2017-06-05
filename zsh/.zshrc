@@ -20,6 +20,7 @@ zplug 'zsh-users/zsh-completions'
 zplug 'zsh-users/zsh-syntax-highlighting', defer:1
 zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
 zplug 'junegunn/fzf',  hook-build:'./install --all'
+zplug 'pyenv/pyenv', as:"command", use:"bin/*"
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 
 # Install plugins if there are plugins that have not been installed
@@ -61,6 +62,14 @@ fi
 
 # Finally, source plugins and add commands to ${PATH}
 zplug load
+
+if _is_installed 'pyenv/pyenv'; then
+    # TODO this might be able to be turned into a hook-load cmd
+    # This must happen after 'zplug load' since the pyenv may not be available
+    # yet
+    export PYENV_ROOT="${ZPLUG_HOME}/repos/pyenv/pyenv"
+    eval "$(pyenv init -)"
+fi
 
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{

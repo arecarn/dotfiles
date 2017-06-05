@@ -88,7 +88,7 @@
     t = tag
     ta = tag --annotate
     tam = tag --annotate -m
-    tl = branch --list # Tag List
+    tl = tag --list
     td = tag --delete
     tdr = push --delete # Tag Delete Remote
 

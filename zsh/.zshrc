@@ -19,7 +19,9 @@ zplug 'rupa/z', use:'*.sh'
 zplug 'zsh-users/zsh-completions'
 zplug 'zsh-users/zsh-syntax-highlighting', defer:1
 zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
-zplug 'junegunn/fzf',  hook-build:'./install --all'
+zplug 'junegunn/fzf', \
+    use:"shell", \
+    hook-build:'./install --all --no-update-rc --no-key-bindings'
 zplug 'pyenv/pyenv', as:"command", use:"bin/*"
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 
@@ -52,11 +54,8 @@ if _is_installed 'plugins/ssh-agent'; then
 fi
 
 if _is_installed 'junegunn/fzf'; then
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-    # the bindings are not set for viins mode so we have to do it here
     bindkey -M viins '^T' fzf-file-widget
-    bindkey -M viins '\ec' fzf-cd-widget
+    bindkey -M viins '^Y' fzf-cd-widget
     bindkey -M viins '^R' fzf-history-widget
 fi
 

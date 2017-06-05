@@ -155,8 +155,10 @@
     log-pretty = log --pretty=tformat:'%><(9)%C(yellow)%h%Creset %Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %s%C(auto)%d%Creset' --boundary --date=short
     # Log short
     l = !git --no-pager log-pretty --max-count=10
-    # Log of differences with Remote
-    lr = !git --no-pager log-pretty --graph --left-right @{upstream}...HEAD
+    # Log Comparison
+    lc = !git --no-pager log-pretty --graph --left-right # branch...other_branch
+    # Log Comparison with Remote branch
+    lcr = lc @{upstream}...HEAD
     # Log Long
     ll = !git log-pretty
     # Log Long with All branches and refs

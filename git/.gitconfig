@@ -146,7 +146,7 @@
     # of a specific commit is when it's mixed with conflict markers. This shows
     # the original commit being rebased.
     # ReBase Show Original
-    rbsho = original "!git show $(cat .git/rebase-apply/original-commit)"
+    rbsho = !git show $(cat .git/rebase-apply/original-commit)
 
     rl =  !git --no-pager reflog --max-count=20
     # RefLog Long

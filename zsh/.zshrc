@@ -23,7 +23,6 @@ zplug 'junegunn/fzf', \
     use:"shell", \
     hook-build:'./install --all --no-update-rc --no-key-bindings'
 zplug 'pyenv/pyenv', as:"command", use:"bin/*"
-zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -36,6 +35,11 @@ fi
 ###########################################################################}}}
 # PLUGIN CONFIG                                                            {{{
 ##############################################################################
+
+zplug-update() {
+    cd ${ZPLUG_HOME} || exit
+    git pull
+}
 
 # checks if a plugin is installed via zplug
 _is_installed() {

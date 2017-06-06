@@ -22,6 +22,7 @@ zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
 zplug 'junegunn/fzf', \
     use:"shell", \
     hook-build:'./install --all --no-update-rc --no-key-bindings'
+zplug 'junegunn/fzf', as:"command", use:"bin/*"
 zplug 'pyenv/pyenv', as:"command", use:"bin/*"
 
 # Install plugins if there are plugins that have not been installed

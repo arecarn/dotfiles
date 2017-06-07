@@ -9,7 +9,12 @@ if [[ ! -d "${ZPLUG_HOME}" ]]; then
     git clone https://github.com/zplug/zplug "${ZPLUG_HOME}"
 fi
 
-# shellcheck source=/dev/null
+zplug-update() {
+    cd "${ZPLUG_HOME}"
+    git pull
+    cd -
+}
+
 source "${zplug_file}"
 
 zplug 'plugins/command-not-found', from:oh-my-zsh
@@ -36,11 +41,6 @@ fi
 ###########################################################################}}}
 # PLUGIN CONFIG                                                            {{{
 ##############################################################################
-
-zplug-update() {
-    cd ${ZPLUG_HOME} || exit
-    git pull
-}
 
 # checks if a plugin is installed via zplug
 _is_installed() {

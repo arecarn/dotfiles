@@ -107,10 +107,6 @@ if [[ ${TERM} == 'xterm' ]]; then
     export TERM=xterm-256color
 fi
 
-if which pyenv > /dev/null; then
-    eval "$(pyenv init -)";
-fi
-
 f="${HOME}/Dropbox/"
 n="${HOME}/Dropbox/notes/"
 df="${HOME}/dotfiles/"

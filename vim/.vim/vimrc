@@ -1194,9 +1194,9 @@ endif "}}}2
 if dein#tap('vim-fugitive') "{{{2
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
-    nnoremap <Leader>gc :Gcommit<CR>
-    nmap <Leader>gj <C-W>P<C-N>D
-    nmap <Leader>gk <C-W>P<C-P>D
+    nmap <Leader>gc :Gstatus<CR>cc<C-w>T:vs<CR>/>8<CR>z<CR><C-w>p
+    nmap <Leader>gj :Gstatus<CR><C-w>K<C-n>D
+    nmap <Leader>gk :Gstatus<CR><C-w>K<C-p>D
 
     " Jump to last known cursor position on BufReadPost {{{
     " Don't do it when the position is invalid or when inside an event handler

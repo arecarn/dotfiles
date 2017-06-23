@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# check if a command exits
-exits(){
+# check if a command exists
+exists(){
     command -v "$1" > /dev/null 2>&1
 }
 

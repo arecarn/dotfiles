@@ -130,7 +130,7 @@ dfl="${HOME}/dotfiles_local/"
 ##############################################################################
 setopt share_history # adds history incrementally and share
 setopt hist_ignore_dups # ignore duplicates in history
-HISTFILE=~/.zsh_history
+HISTFILE=${ZSH_DATA_DIR}/history
 HISTSIZE=500000
 SAVEHIST=500000
 

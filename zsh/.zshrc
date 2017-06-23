@@ -1,8 +1,21 @@
 # -                                                                        {{{
 ###########################################################################}}}
+# DIRECTORIES
+##############################################################################
+export ZSH_DATA_DIR="${HOME}/.local/share/zsh"
+export ZSH_CACHE_DIR="${HOME}/.cache/zsh"
+export ZSH_CONFIG_DIR="${HOME}/.config/zsh"
+
+mkdir -p ${ZSH_CONFIG_DIR}
+mkdir -p ${ZSH_DATA_DIR}
+mkdir -p ${ZSH_CACHE_DIR}
+
+###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
-export ZPLUG_HOME="${HOME}/.cache/zsh/zplug"
+source ${ZSH_CONFIG_DIR}/functions.sh
+
+export ZPLUG_HOME="${ZSH_CACHE_DIR}/zplug"
 zplug_file="${ZPLUG_HOME}/init.zsh"
 
 if [[ ! -d "${ZPLUG_HOME}" ]]; then
@@ -48,7 +61,7 @@ _is_installed() {
 }
 
 if _is_installed 'rupa/z'; then
-    local _Z_DATA_DIR="${HOME}/.cache/zsh/z"
+    local _Z_DATA_DIR="${ZSH_DATA_DIR}/z"
     mkdir -p $_Z_DATA_DIR
     export _Z_DATA="${_Z_DATA_DIR}/data"
 fi
@@ -290,8 +303,6 @@ bindkey -M menuselect '^F' forward-char # }}}2
 ###########################################################################}}}
 # ALIASES AND SMALL SCRIPTS                                                {{{
 ##############################################################################
-source ~/.config/zsh/functions.sh
-
 alias -g ...="../../"
 
 alias -g send-right="tmux send-keys -t right"
@@ -497,7 +508,6 @@ stty stop undef
 
 zshrc_local="${HOME}/.zshrc_local"
 if [[ -e "${zshrc_local}" ]] then;
-    # shellcheck source=/dev/null
     source "${zshrc_local}"
 fi
 

@@ -5,3 +5,4 @@ cscope.out
 .DS_Store
 .cache
 .dropbox.attr
+__*

@@ -1,4 +1,5 @@
 .vimrc_project
+.projections.json
 tags*
 cscope.out
 *.log

@@ -419,3 +419,6 @@ Appveyor
 preprocessors
 rebased
 inline
+dependant
+CMSIS
+mutex

@@ -456,6 +456,50 @@ endfunction
 inoremap <C-F> <ESC>gw{zea
 
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
+nnoremap <leader>o :call PreviewWord()<CR>
+nnoremap <leader>c :pclose<CR>
+
+function! PreviewWord() abort
+    if &previewwindow
+        return
+    endif
+
+    let word_under_cursor = expand("<cword>")
+    let is_word_under_cursor_a_letter = word_under_cursor =~ '\a'
+
+    if is_word_under_cursor_a_letter
+
+        " Delete any existing highlight before showing another tag
+        silent! wincmd P  " jump to preview window
+        if &previewwindow " if we really get there...
+            match none    " delete existing highlight
+            wincmd p      " back to old window
+        endif
+
+        " Try displaying a matching tag for the word under the cursor
+        try
+            execute ":ptag " . word_under_cursor
+        catch
+            return
+        endtry
+
+        silent! wincmd P " jump to preview window
+        if &previewwindow " if we really get there...
+            if has("folding")
+                silent! .foldopen  " don't want a closed fold
+            endif
+            call search("$", "b")  " to end of previous line
+            let word_under_cursor = substitute(word_under_cursor, '\\', '\\\\', "")
+            call search('\<\V' . word_under_cursor . '\>')  " position cursor on match
+            " Add a match highlight to the word at this position
+            hi previewWord term=underline cterm=reverse gui=reverse
+            execute 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
+            wincmd p " back to old window
+        endif
+    endif
+endfun
+
+
 
 " TODO add to util set
 function! s:in(group, item) abort

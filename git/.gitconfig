@@ -152,7 +152,7 @@
     # RefLog Long
     rll = reflog
 
-    log-pretty = log --pretty=tformat:'%Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %><(9)%C(yellow)%h%Creset%s%C(auto)%d%Creset' --boundary --date=short
+    log-pretty = log --pretty=tformat:'%Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %><(9)%C(yellow)%h%Creset%s%C(auto)%d%Creset' --boundary --date=short --graph
     # Log short
     l = !git --no-pager log-pretty --max-count=10
     # Log Comparison
@@ -162,12 +162,12 @@
     # Log Long
     ll = !git log-pretty
     # Log Long with All branches and refs
-    lla = !git log-pretty --graph --all
+    lla = !git log-pretty --all
 
     # better LoG
     lg =  log --boundary --stat --pretty=fuller
     # better LoG with All branches and refs
-    lga = !git lg --graph --all
+    lga = !git lg --all
 
     rmt = remote
     rmta = remote add

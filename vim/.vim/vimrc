@@ -1284,6 +1284,7 @@ if dein#tap('vim-operator-substitute') "{{{2
 endif "}}}2
 
 if dein#tap('vim-fugitive') "{{{2
+    command! -nargs=* G :Git <Args>
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
     nmap <Leader>gc :Gstatus<CR>cc<C-w>T:vs<CR>/>8<CR>z<CR><C-w>p

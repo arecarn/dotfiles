@@ -1186,7 +1186,7 @@ if dein#tap('unite.vim') "{{{2
     " xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
     " nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
     " nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
-    nnoremap [myleader]f :<C-u>Unite file_rec/git file_rec/async -start-insert -unique -input=<CR>
+    nnoremap [myleader]f :<C-u>Unite file_rec/async -start-insert<CR>
     nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
     nnoremap [myleader]b  :<C-u>Unite buffer:! -start-insert<CR>
     nnoremap [myleader]i  :<C-u>Unite menu:interpreters<CR>

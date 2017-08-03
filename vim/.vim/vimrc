@@ -1681,15 +1681,24 @@ if dein#tap('lightline.vim') "{{{2
     endfunction
 
     function! Lightline_filename() abort
+        let file_name = bufname('%')
+
+        if file_name == ''
+            let file_name = '[No Name]'
+        else
+            if winwidth(0) - len(file_name) < 40
+                let file_name = substitute(file_name, '\v([^/\\:])[^/\\:]*([/\\])', '\1\2', 'g' )
+            endif
+        endif
+
         return ('' !=# Lightline_readonly() ? Lightline_readonly() . ' ' : '') .
                     \ (&ft ==# 'vimfiler' ? vimfiler#get_status_string() :
-                    \  &ft ==# 'unite' ? unite#get_status_string() :
-                    \ '' !=# expand('%') ? expand('%') : '[No Name]') .
+                    \  &ft ==# 'unite' ? unite#get_status_string() : file_name ).
                     \ ('' !=# Lightline_modified() ? ' ' . Lightline_modified() : '')
     endfunction
 
     function! Lightline_fugitive() abort
-        if &ft !~? 'vimfiler' && exists('*fugitive#head')
+        if &ft !~? 'vimfiler' && exists('*fugitive#head') && (winwidth(0) > 80)
             let branch = fugitive#head()
             return branch !=# '' ? '±'.branch : ''
         endif
@@ -1697,19 +1706,19 @@ if dein#tap('lightline.vim') "{{{2
     endfunction
 
     function! Lightline_fileformat() abort
-        return winwidth(0) > 70 ? &fileformat : ''
+        return winwidth(0) > 80 ? &fileformat : ''
     endfunction
 
     function! Lightline_filetype() abort
-        return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+        return winwidth(0) > 80 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
     endfunction
 
     function! Lightline_fileencoding() abort
-        return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
+        return winwidth(0) > 80 ? (&fenc !=# '' ? &fenc : &enc) : ''
     endfunction
 
     function! Lightline_mode() abort
-        return winwidth(0) > 70 ? lightline#mode() : ''
+        return winwidth(0) > 80 ? lightline#mode() : ''
     endfunction
 
     function! Lightline_winnr() abort

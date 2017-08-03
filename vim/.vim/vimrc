@@ -1534,7 +1534,9 @@ if dein#tap('todo.txt-vim') "{{{2
     endfunction "}}}3
 
     nnoremap <localleader>w :s/\(\d\d\d\d-\d\d\-\d\d\)\zs\(\s*\)\ze[^@]/ @work /<CR>
+    xnoremap <localleader>w :s/\(\d\d\d\d-\d\d\-\d\d\)\zs\(\s*\)\ze[^@]/ @work /<CR>
     nnoremap <localleader>h :s/\(\d\d\d\d-\d\d\-\d\d\)\zs\(\s*\)\ze[^@]/ @home /<CR>
+    xnoremap <localleader>h :s/\(\d\d\d\d-\d\d\-\d\d\)\zs\(\s*\)\ze[^@]/ @home /<CR>
 
     function! s:todo_txt_settings() abort "{{{3
         try

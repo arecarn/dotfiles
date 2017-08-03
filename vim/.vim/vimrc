@@ -1654,10 +1654,10 @@ if dein#tap('lightline.vim') "{{{2
     let g:lightline = {
                 \ 'colorscheme': 'default',
                 \ 'active': {
-                \     'left': [['winnr', 'mode', 'paste'], ['fugitive', 'filename']]
+                \     'left': [['winnr', 'bufnr', 'mode', 'paste'], ['fugitive', 'filename']]
                 \ },
                 \ 'inactive' : {
-                \     'left': [['winnr', 'filename']],
+                \     'left': [['winnr', 'bufnr', 'filename']],
                 \ },
                 \ 'component_function': {
                 \     'modified': 'Lightline_modified',
@@ -1669,6 +1669,7 @@ if dein#tap('lightline.vim') "{{{2
                 \     'fileencoding': 'Lightline_fileencoding',
                 \     'mode': 'Lightline_mode',
                 \     'winnr': 'Lightline_winnr',
+                \     'bufnr': 'Lightline_bufnr',
                 \ }}
 
     function! Lightline_modified() abort
@@ -1713,6 +1714,10 @@ if dein#tap('lightline.vim') "{{{2
 
     function! Lightline_winnr() abort
         return winnr()
+    endfunction
+
+    function! Lightline_bufnr() abort
+        return "b:" . bufnr('%')
     endfunction
 endif "}}}2
 

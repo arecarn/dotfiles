@@ -111,6 +111,7 @@
     stA = stash save --all # Stash All incline untracked and ignored files
     stsh = stash show --patch --stat
     stp = stash pop
+    stpf = checkout stash -- . #Stash Pop Force even if there would be merge conflicts
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%C(yellow)%gd%Creset %s'
     stl = !git --no-pager stash-list-pretty

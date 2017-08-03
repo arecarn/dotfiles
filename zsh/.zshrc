@@ -75,6 +75,12 @@ if _is_installed 'junegunn/fzf'; then
     bindkey -M viins '^T' fzf-file-widget
     bindkey -M viins '^Y' fzf-cd-widget
     bindkey -M viins '^R' fzf-history-widget
+
+    if exists ag; then
+        export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+    else
+        export FZF_DEFAULT_COMMAND='find .'
+    fi
 fi
 
 # Finally, source plugins and add commands to ${PATH}

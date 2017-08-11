@@ -304,6 +304,7 @@ if has('autocmd')
     augroup END
 endif
 
+set nostartofline
 set switchbuf=usetab
 set autowriteall
 set autoread

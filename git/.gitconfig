@@ -103,7 +103,9 @@
 
     f = fetch
     co = checkout
-    sh = show --decorate --stat --patch
+
+    sh = show --decorate --stat --patch # Show
+    shdt = !git dt $1~..$1  # Show with Diff Tool
 
     st = stash save
     stka = stash save --keep-index # Stash Keep Added (keep files in the staging area)

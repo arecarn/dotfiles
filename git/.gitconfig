@@ -77,7 +77,10 @@
     bD = branch -D # Branch Delete
     bdr = push --delete # Branch Delete Remote
     bc = checkout -b # Branch Create
-    bcr = push --set-upstream # Branch Create Remote
+
+    # Branch Create Remote
+    bcr = "!f() { git push --set-upstream \"$1\" $(git rev-parse --abbrev-ref HEAD 2>/dev/null); }; f"
+
     bsr = branch --set-upstream-to # Branch Set Remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)
     # Branches that are Merged

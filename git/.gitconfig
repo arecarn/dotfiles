@@ -85,8 +85,8 @@
     bco = checkout --orphan # Branch Create Orphan (empty branch)
     # Branches that are Merged
     bm =  !echo 'Merged Branches:'     && git branch --all --merged
-    # Branches that are Not Merged
-    bnm = !echo 'Not Merged Branches:' && git branch --all --no-merged
+    # Branches that are  Un-Merged
+    bum = !echo ' Unmerged Branches:' && git branch --all --no-merged
 
     t = tag
     ta = tag --annotate

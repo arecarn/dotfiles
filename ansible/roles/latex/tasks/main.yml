@@ -1,7 +1,14 @@
 ---
+
 - name: MacOSX
   tags: latex
-  homebrew_cask:
-    name: miktex
+  homebrew_tap:
+    name: miktex/miktex
     state: present
+
+- name: MacOSX
+  tags: latex
+  homebrew:
+    name: miktex
+    state: latest
   when: ansible_distribution == 'MacOSX'

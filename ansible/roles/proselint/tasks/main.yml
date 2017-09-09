@@ -1,0 +1,8 @@
+---
+- name: python 3 package
+  tags: proselint
+  become: yes
+  pip:
+    name: proselint
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

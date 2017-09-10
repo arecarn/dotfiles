@@ -104,7 +104,7 @@
     cmsq = !git cm --squash
     cma = !git cm --amend --reset-author
 
-    f = fetch
+    f = fetch --all
     co = checkout
 
     sh = show --decorate --stat --patch # Show

@@ -132,6 +132,8 @@
     aa = add-enhanced --all
     # Add already staged files that need to be Updated in the staging area
     au = update-index --again
+    # UnAdd
+    ua = reset HEAD ---
 
     rs = reset
     rsh = reset --hard

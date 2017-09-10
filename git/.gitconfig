@@ -160,6 +160,11 @@
     # ReBase Show Original
     rbsho = !git show $(cat .git/rebase-apply/original-commit)
 
+    # Cherry Pick
+    cpc = cherry-pick --continue
+    cpq = cherry-pick --quit
+    cpa = cherry-pick --abort
+
     rl =  !git --no-pager reflog --max-count=20
     # RefLog Long
     rll = reflog

@@ -136,7 +136,11 @@
     ua = reset HEAD ---
 
     rs = reset
+    rs1 = reset HEAD~
+    rs2 = reset HEAD~~
     rsh = reset --hard
+    rsh1 = reset --hard HEAD~
+    rsh2 = reset --hard HEAD~~
     rsm = reset --mixed
     rss = reset --soft
     # ReSet to Remote tracking branch

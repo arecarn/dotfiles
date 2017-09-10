@@ -1,0 +1,10 @@
+---
+- name: MacOSX
+  tags: lastpass
+  when: ansible_distribution == 'MacOSX'
+  homebrew:
+    name: lastpass-cli
+    options:
+      - with-pinentry
+      - with-doc
+    state: latest

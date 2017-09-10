@@ -440,10 +440,9 @@ nnoremap <leader>b :buffer <TAB><S-Tab>
 nnoremap <leader>B :sbuffer <TAB><S-Tab>
 
 " replace selection with spaces and enter replace mode
-xnoremap gr r<space>gvo<esc>R
+xnoremap gr r<Space>gvo<Esc>R
 
 noremap <silent><leader>rt :retab<CR>
-
 
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>

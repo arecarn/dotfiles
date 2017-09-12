@@ -161,6 +161,7 @@
     rbsho = !git show $(cat .git/rebase-apply/original-commit)
 
     # Cherry Pick
+    cp = cherry-pick
     cpc = cherry-pick --continue
     cpq = cherry-pick --quit
     cpa = cherry-pick --abort

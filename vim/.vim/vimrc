@@ -154,49 +154,44 @@ endfunction
 set backup
 
 call s:make_data_directory('backup')
-let s:backupdir = s:make_data_path('backup') . '//'
-execute 'set backupdir=' . s:backupdir
+let g:backupdir = s:make_data_path('backup')
 
-" Double slash does not actually work for backupdir, here's a fix that appends
-" the path separated by percents and a time stamp
-function! s:backupext() abort
-    let time = '_' . strftime('%Y-%m-%d-%H')
-    let path_forward_slash_as_percent = substitute(expand('%:p:h'), '/', '%', 'g')
-    let path_back_slash_as_percent = substitute(path_forward_slash_as_percent , '\', '%', 'g')
-    let path_colon_removed = substitute(path_back_slash_as_percent, ':', '', 'g')
+
+function! GetBackupDir() abort
+    let basic_path = expand('%:p:h')
+    let path_colon_removed = substitute(basic_path, ':', '', 'g')
     let path = path_colon_removed
-    return '@' . path . time
+    return g:backupdir . path
+endfunction
+
+function! SetupBackup() abort
+    let &backupdir=GetBackupDir()
+    if !isdirectory(&backupdir)
+        call mkdir(&backupdir, 'p', 0700)
+    endif
+    let &backupext = '_' . strftime('%Y-%m-%d-%H')
 endfunction
 
 if has('autocmd')
     augroup backupext
         autocmd!
-        autocmd BufWritePre * let &backupext=s:backupext()
+        autocmd BufWritePre * call SetupBackup()
     augroup END
 endif
 
-function! Backup_clean() abort
-    let files = globpath(&backupdir, '*')
-    let filess = split(files, '\n')
-    for file in filess
-        let rfile = substitute(file, escape(&backupdir, '\/'), '', 'g')
-        let rfile = substitute(rfile, '_\d\d\d\d-\d\d-\d\d-\d\d$', '', 'g')
-        let rfile = substitute(rfile, '\v(.*)\@(\%.*)', '\2%\1', 'g')
-        let rfile = substitute(rfile, '%', '/', 'g')
-        let rfile = substitute(rfile, '%', '\', 'g')
+function! OpenCurrentBackupDir() abort
+    let backupdir = GetBackupDir()
+    if isdirectory(backupdir)
+        execute ':vsplit ' . backupdir
+    endif
+endfunction
 
-        if has('win32') || has('win64')
-            let rfile = substitute(rfile, '%', '\', 'g')
-            return
-            "TODO need to test on windows
-        else
-            let rfile = substitute(rfile, '%', '/', 'g')
-        endif
+function! OpenBackUpDir() abort
+    execute ':vsplit ' . g:backupdir
+endfunction
 
-        if !filereadable(rfile)
-            call delete(file)
-        endif
-    endfor
+" Todo
+function! BackupClean() abort
 endfunction
 
 

@@ -161,6 +161,7 @@ function! GetBackupDir() abort
     let basic_path = expand('%:p:h')
     let path_colon_removed = substitute(basic_path, ':', '', 'g')
     let path = path_colon_removed
+    " TODO non-windows should add path seperator
     return g:backupdir . path
 endfunction
 
@@ -192,6 +193,26 @@ endfunction
 
 " Todo
 function! BackupClean() abort
+    let files = split(globpath(g:backupdir, '**', 1), '\n')
+    let files += split(globpath(g:backupdir, '**/.*', 1), '\n')
+
+    let i = len(files)
+    while i > 0
+        if isdirectory(files[i - 1])
+            call remove(files, i - 1)
+            let i = i - 2
+            continue
+        endif
+
+        let rfile = substitute(files[i - 1], escape(g:backupdir, '\/'), '', 'g')
+        let rfile = substitute(rfile, '_\d\d\d\d-\d\d-\d\d-\d\d$', '', 'g')
+        " TODO if is windows handle the drive letter
+
+        if !filereadable(rfile)
+            call delete(file)
+        endif
+        let i = i -1
+    endwhile
 endfunction
 
 

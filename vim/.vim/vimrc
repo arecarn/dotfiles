@@ -291,7 +291,7 @@ set tags=tags;/ "search backwards for the tags
 set cscoperelative
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 
-function! PrintCscopeOptions()
+function! PrintCscopeOptions() abort
     echo 'g: Definition'
     echo 'c: Functions calling this function'
     echo 'd: Functions called by this function'
@@ -307,7 +307,6 @@ execute 'nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syntax on " allow syntax highlighting
 set clipboard=unnamedplus,unnamed
 set splitright
 
@@ -707,7 +706,7 @@ let $i = '~/Dropbox/notes/inbox.md'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nnoremap <leader>m  :call SearchPosition()<CR>
 nnoremap <leader>M  :let @/ = ''<CR>
-function! SearchPosition()
+function! SearchPosition() abort
     if @/ !~# '\v(\\\%\d+[lc](\\\|)?)+'
         let @/ = ''
         " echo "pattern didn't match = ".@/
@@ -724,7 +723,7 @@ endfunction
 
 nnoremap g** :<C-U>call AddToSearch('n')<CR>
 xnoremap g* :<C-U>call AddToSearch('x')<CR>
-function! AddToSearch(mode)
+function! AddToSearch(mode) abort
     let save_reg = @@
     if @/ !=# ''
         let @/ .= '\|'
@@ -1019,7 +1018,9 @@ endif
 command! DeinInstall if dein#check_install() | call dein#install() | endif
 
 filetype plugin indent on
-syntax enable
+if !exists("g:syntax_on")
+    syntax enable
+endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1059,7 +1060,7 @@ if dein#tap('neocomplete') "{{{2
     let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
 
     " For smart TAB completion.
-    function! s:check_back_space() "{{{
+    function! s:check_back_space() abort "{{{
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
@@ -1111,7 +1112,7 @@ if dein#tap('neosnippet-snippets') "{{{2
                 \ ("\<CR>")
 
 
-    function! s:check_back_space() "{{{
+    function! s:check_back_space() abort "{{{
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
@@ -1192,7 +1193,7 @@ if dein#tap('unite.vim') "{{{2
         autocmd!
         autocmd FileType unite call s:unite_settings()
     augroup END
-    function! s:unite_settings()
+    function! s:unite_settings() abort
         nnoremap <silent><buffer><expr> <C-s> unite#do_action('split')
         nnoremap <silent><buffer><expr> <C-v> unite#do_action('vsplit')
         nnoremap <silent><buffer><expr> <C-t> unite#do_action('tabopen')
@@ -1262,7 +1263,7 @@ if dein#tap('unite.vim') "{{{2
         autocmd!
         autocmd FileType unite call s:unite_settings()
     augroup END
-    function! s:unite_settings()
+    function! s:unite_settings() abort
         nnoremap <silent><buffer><expr> p
                     \ empty(filter(range(1, winnr('$')),
                     \ 'getwinvar(v:val, "&previewwindow") != 0')) ?
@@ -1331,7 +1332,7 @@ if dein#tap('vim-fugitive') "{{{2
     " Sources:
     "  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
     "  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
-    function! MyFollowSymlink(...)
+    function! MyFollowSymlink(...) abort
         if exists('w:no_resolve_symlink') && w:no_resolve_symlink
             return
         endif
@@ -1374,7 +1375,7 @@ if dein#tap('vim-frisk') "{{{2
 
     command! Rfrisk call ReloadFrisk()
     " Do the stuff for frisk
-    function! ReloadFrisk()
+    function! ReloadFrisk() abort
         Runtime ~/Dropbox/projects/frisk/gc/frisk/plugin/*.vim
         Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/*.vim
         Runtime ~/Dropbox/projects/frisk/gc/frisk/autoload/frisk/*.vim
@@ -1473,14 +1474,14 @@ endif "}}}2
 if dein#tap('goyo.vim') "{{{2
     nnoremap cof :<C-u>call SetGoyo(v:count)<CR>
 
-    function! s:goyo_enter()
+    function! s:goyo_enter() abort
         let b:wrap_cache = &wrap
         let b:list_cache = &list
         let &wrap = 1
         let &list = 0
     endfunction
 
-    function! s:goyo_leave()
+    function! s:goyo_leave() abort
         let &wrap = b:wrap_cache
         let &list = b:list_cache
     endfunction
@@ -1490,7 +1491,7 @@ if dein#tap('goyo.vim') "{{{2
         autocmd User GoyoEnter nested call <SID>goyo_enter()
         autocmd User GoyoLeave nested call <SID>goyo_leave()
     augroup END
-    function! SetGoyo(num)
+    function! SetGoyo(num) abort
         if a:num == 0
             Goyo
         else
@@ -1525,7 +1526,7 @@ if dein#tap('todo.txt-vim') "{{{2
         return matchstr(getline(a:line), '+[^ ]\+')
     endfunction "}}}3
 
-    function! Todo_fold_text(foldchar) "{{{3
+    function! Todo_fold_text(foldchar) abort "{{{3
         let line = s:get_context(v:foldstart)
         let lines_count = v:foldend - v:foldstart + 1
         let lines_count_text = '| ' . printf('%10s', lines_count . ' todos') . ' |'
@@ -1535,7 +1536,7 @@ if dein#tap('todo.txt-vim') "{{{2
         return foldtextstart . repeat(a:foldchar, winwidth(0)-foldtextlength) . foldtextend
     endfunction "}}}3
 
-    function! Todo_fold(lnum) "{{{3
+    function! Todo_fold(lnum) abort "{{{3
         let this_context = s:get_context(a:lnum)
         let next_context = s:get_context(a:lnum - 1)
 

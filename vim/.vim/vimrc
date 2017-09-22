@@ -600,8 +600,6 @@ xnoremap Q :normal! @q<CR>
 xnoremap . :normal! .<CR>
 " repeat last command then go to the next search position
 nnoremap <C-n> n.
-" repeat last command then go to the previouse search position
-nnoremap <C-p> N.
 " repeat last command-line command
 nnoremap g. @:
 
@@ -860,6 +858,8 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('sgur/vim-textobj-parameter')
     call dein#add('osyo-manga/vim-textobj-blockwise')
     "}}}2
+
+    call dein#add('ctrlpvim/ctrlp.vim')
 
     " unite {{{2
     call dein#add('Shougo/unite.vim')
@@ -1793,6 +1793,9 @@ if dein#tap('vim-easy-align') "{{{2
     nmap ga <Plug>(EasyAlign)
 endif "}}}2
 
+if dein#tap('ctrlp.vim') "{{{2
+    let g:ctrlp_cmd = 'CtrlPMixed'
+endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " -                                                                        {{{

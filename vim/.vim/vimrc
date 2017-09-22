@@ -948,7 +948,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('itchyny/vim-cursorword')
 
     if !s:has_windows
-        call dein#add('maman/tmuxline.vim')
+        call dein#add('darrinholst/tmuxline.vim')
     endif
 
     call dein#add('scrooloose/syntastic')

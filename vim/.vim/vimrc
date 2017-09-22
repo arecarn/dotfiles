@@ -945,6 +945,8 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('chreekat/vim-paren-crosshairs')
     call dein#add('junegunn/goyo.vim')
     call dein#add('nathanaelkane/vim-indent-guides')
+    call dein#add('itchyny/vim-cursorword')
+
     if !s:has_windows
         call dein#add('maman/tmuxline.vim')
     endif
@@ -962,7 +964,7 @@ if dein#load_state(s:dein_path_plugins)
 
 
     " File Type
-    call dein#add('stephpy/vim-yaml') "and alternative yaml sicne the built in one is slow
+    call dein#add('stephpy/vim-yaml') "and alternative YAML sine the built in one is slow
     call dein#add('lopter/moin.vim')
     call dein#add('vim-scripts/confluencewiki.vim')
     call dein#add('plasticboy/vim-markdown')

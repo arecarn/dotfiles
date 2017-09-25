@@ -338,11 +338,12 @@ alias rd='rmdir'
 alias rmr='rm -r'
 
 # shortcuts to tar and compress
+# usage: tar* ARCHIVE DIR
 alias targz='tar -zcvf'
 alias tarbz2='tar -jcvf'
 alias tarxz='tar -Jcvf'
 # extract tar archive even if it has been compressed (e.g. .gz, .xz, bz2)
-alias untar='tar -xvf'
+alias untar='tar -xvf' # usage: untar ARCHIVE
 
 alias df='df -h'
 alias du='du -hc'

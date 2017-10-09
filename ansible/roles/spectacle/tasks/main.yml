@@ -4,6 +4,7 @@
   homebrew_cask:
     name: spectacle
     state: present
+
 - name: MacOSX
   tags: spectacle
   when: ansible_distribution == 'MacOSX'

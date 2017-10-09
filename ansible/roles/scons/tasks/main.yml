@@ -7,11 +7,10 @@
     name: scons
     executable: pip2
 
-- name: openSUSE
+- name: Ubuntu
   tags: scons
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: scons
     state: latest
-    disable_recommends: no

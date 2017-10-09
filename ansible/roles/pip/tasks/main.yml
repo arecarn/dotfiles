@@ -1,10 +1,9 @@
 ---
-- name: openSUSE
+- name: Ubuntu
   tags: pip
   become: yes
-  zypper:
+  when: ansible_distribution == "Ubuntu"
+  with_items: "{{packagess}}"
+  package:
     name: "{{item}}"
     state: latest
-    disable_recommends: no
-  when: ansible_distribution == "openSUSE"
-  with_items: "{{packagess}}"

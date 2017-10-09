@@ -5,3 +5,11 @@
   homebrew:
     name: unrar
     state: latest
+
+- name: Ubuntu
+  tags: unrar
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: unrar
+    state: latest

@@ -10,12 +10,10 @@
     - cscope
     - curl
     - dash
-    - dirdiff
     - dploy
     - dropbox
     - firefox
     - git
-    - git_repos
     - haskell
     - hg
     - htop
@@ -58,4 +56,3 @@
     - xquartz
     - yamllint
     - zsh
-    - zypper

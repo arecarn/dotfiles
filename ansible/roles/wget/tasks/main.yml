@@ -5,3 +5,11 @@
   homebrew:
     name: wget
     state: latest
+
+- name: Ubuntu
+  tags: wget
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: wget
+    state: latest

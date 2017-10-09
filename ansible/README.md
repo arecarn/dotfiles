@@ -18,9 +18,9 @@ Requirements:
     ```
     brew install ansible
     ```
-### openSUSE
+### Ubuntu
 Requirements:
 - install Ansible
   ```
-  zypper install http://download.opensuse.org/repositories/systemsmanagement/openSUSE_13.1/noarch/ansible-1.9.4-42.1.noarch.rpm
+  apt install ansible
   ```

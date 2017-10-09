@@ -8,3 +8,11 @@
       - with-pinentry
       - with-doc
     state: latest
+
+- name: Ubuntu
+  tags: lastpass
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: lastpass-cli
+    state: latest

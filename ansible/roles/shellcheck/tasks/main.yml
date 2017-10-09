@@ -6,11 +6,10 @@
     name: shellcheck
     state: latest
 
-- name: openSUSE
+- name: Ubuntu
   tags: shellcheck
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
-    name: ShellCheck
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: shellcheck
     state: latest
-    disable_recommends: no

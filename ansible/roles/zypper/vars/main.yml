@@ -1,4 +1,0 @@
----
-zypper_repositories:
-  - name: 'packman'
-    repo: 'http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_13.1/'

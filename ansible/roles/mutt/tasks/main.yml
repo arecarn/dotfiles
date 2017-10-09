@@ -5,3 +5,11 @@
   homebrew:
     name: mutt
     state: latest
+
+- name: Ubuntu
+  tags: mutt
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: mutt
+    state: latest

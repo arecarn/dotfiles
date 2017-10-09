@@ -5,3 +5,11 @@
   homebrew:
     name: cscope
     state: latest
+
+- name: Ubuntu
+  tags: cscope
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: cscope
+    state: latest

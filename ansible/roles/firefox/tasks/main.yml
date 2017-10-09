@@ -5,3 +5,11 @@
     name: firefox
     state: present
   when: ansible_distribution == 'MacOSX'
+
+- name: Ubuntu
+  tags: firefox
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: firefox
+    state: latest

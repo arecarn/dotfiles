@@ -5,3 +5,11 @@
   homebrew:
     name: ack
     state: latest
+
+- name: Ubuntu
+  tags: ack
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: ack-grep
+    state: latest

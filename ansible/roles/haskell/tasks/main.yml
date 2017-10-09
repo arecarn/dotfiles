@@ -5,3 +5,11 @@
   homebrew:
     name: haskell-stack
     state: latest
+
+- name: Ubuntu
+  tags: haskell
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: haskell-platform
+    state: latest

@@ -6,12 +6,10 @@
     name: tmux
     state: latest
 
-- name: openSUSE
+- name: Ubuntu
   tags: tmux
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
-    name: "http://download.opensuse.org/repositories/utilities/openSUSE_13.1\
-           /x86_64/tmux-2.1-4.1.x86_64.rpm"
-    state: present
-    disable_recommends: no
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: tmux
+    state: latest

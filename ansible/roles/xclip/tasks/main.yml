@@ -1,9 +1,8 @@
 ---
-- name: openSUSE
+- name: Ubuntu
   tags: xclip
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: xclip
     state: latest
-    disable_recommends: no

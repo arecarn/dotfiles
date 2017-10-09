@@ -7,11 +7,10 @@
     state: present
 
 
-- name: openSUSE
+- name: Ubuntu
   tags: vlc
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: vlc
     state: latest
-    disable_recommends: no

@@ -1,8 +1,9 @@
 ---
 packages:
-  opensuse:
-    - {name: 'llvm'}
-    - {name: 'clang'}
+  ubuntu:
+    - clang
+    - clang-format
+    - clang-tidy
   macosx:
     - {name: 'llvm', options: 'with-clang'}
     - {name: 'clang-format'}

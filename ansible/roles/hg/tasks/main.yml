@@ -5,3 +5,11 @@
   homebrew:
     name: hg
     state: latest
+
+- name: Ubuntu
+  tags: hg
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: mercurial
+    state: latest

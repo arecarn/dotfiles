@@ -6,11 +6,10 @@
     name: dropbox
     state: present
 
-- name: openSUSE
+- name: Ubuntu
   tags: dropbox
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
-    name: dropbox
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: nautilus-dropbox
     state: latest
-    disable_recommends: no

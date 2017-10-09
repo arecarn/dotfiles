@@ -5,3 +5,11 @@
   homebrew:
     name: moreutils
     state: latest
+
+- name: Ubuntu
+  tags: moreutils
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: moreutils
+    state: latest

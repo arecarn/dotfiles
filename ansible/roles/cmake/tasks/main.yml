@@ -6,11 +6,10 @@
     state: latest
   when: ansible_distribution == 'MacOSX'
 
-- name: openSUSE
+- name: Ubuntu
   tags: cmake
   become: yes
-  zypper:
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: cmake
     state: latest
-    disable_recommends: no
-  when: ansible_distribution == 'openSUSE'

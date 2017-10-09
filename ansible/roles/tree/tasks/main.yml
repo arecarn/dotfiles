@@ -5,3 +5,11 @@
   homebrew:
     name: tree
     state: latest
+
+- name: Ubuntu
+  tags: tree
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: tree
+    state: latest

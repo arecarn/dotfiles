@@ -1,7 +1,6 @@
 ---
 shell:
   macosx: /usr/local/bin/zsh
-  opensuse: /bin/zsh
   default: /bin/zsh
 
 group:

@@ -2,13 +2,14 @@
 
 - name: MacOSX
   tags: latex
+  when: ansible_distribution == 'MacOSX'
   homebrew_tap:
     name: miktex/miktex
     state: present
 
 - name: MacOSX
   tags: latex
+  when: ansible_distribution == 'MacOSX'
   homebrew:
     name: miktex
     state: latest
-  when: ansible_distribution == 'MacOSX'

@@ -7,12 +7,11 @@
     name: "{{item}}"
     state: latest
 
-- name: openSUSE
+- name: Ubuntu
   tags: python
   become: yes
-  when: ansible_distribution == "openSUSE"
+  when: ansible_distribution == 'Ubuntu'
   with_items: "{{packages}}"
-  zypper:
+  package:
     name: "{{item}}"
-    state: present
-    disable_recommends: no
+    state: latest

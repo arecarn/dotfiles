@@ -6,12 +6,10 @@
     name: zsh
     state: latest
 
-- name: openSUSE
+- name: Ubuntu
   tags: zsh
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
-    name: "http://download.opensuse.org/repositories/shells/openSUSE_13.1\
-           /x86_64/zsh-5.2-154.1.x86_64.rpm"
-    state: present
-    disable_recommends: no
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: zsh
+    state: latest

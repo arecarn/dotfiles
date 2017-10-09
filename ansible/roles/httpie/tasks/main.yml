@@ -6,12 +6,10 @@
     name: httpie
     state: latest
 
-
-- name: openSUSE
+- name: Ubuntu
   tags: httpie
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: httpie
     state: latest
-    disable_recommends: no

@@ -1,9 +1,0 @@
----
-- name: openSUSE
-  tags: dirdiff
-  become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
-    name: dirdiff
-    state: latest
-    disable_recommends: no

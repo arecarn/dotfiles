@@ -5,3 +5,11 @@
   homebrew_cask:
     name: google-chrome
     state: present
+
+- name: Ubuntu
+  tags: chrome
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: chromium-browser
+    state: latest

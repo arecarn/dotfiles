@@ -5,3 +5,11 @@
   homebrew:
     name: curl
     state: latest
+
+- name: Ubuntu
+  tags: curl
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: curl
+    state: latest

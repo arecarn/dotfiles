@@ -8,12 +8,11 @@
     state: latest
     options: "{{item.options | default()}}"
 
-- name: openSUSE
+- name: Ubuntu
   tags: llvm
   become: yes
-  when: ansible_distribution == 'openSUSE'
+  when: ansible_distribution == 'Ubuntu'
   with_items: "{{packages[ansible_distribution | lower]}}"
-  zypper:
-    name: "{{item.name}}"
+  package:
+    name: "{{item}}"
     state: latest
-    disable_recommends: no

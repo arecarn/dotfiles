@@ -6,11 +6,10 @@
     name: picocom
     state: latest
 
-- name: openSUSE
+- name: Ubuntu
   tags: picocom
   become: yes
-  when: ansible_distribution == 'openSUSE'
-  zypper:
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: picocom
     state: latest
-    disable_recommends: no

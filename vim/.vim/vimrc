@@ -209,7 +209,7 @@ function! BackupClean() abort
         " TODO if is windows handle the drive letter
 
         if !filereadable(rfile)
-            call delete(file)
+            call delete(rfile)
         endif
         let i = i -1
     endwhile

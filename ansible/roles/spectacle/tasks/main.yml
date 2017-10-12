@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: spectacle
   when: ansible_distribution == 'MacOSX'

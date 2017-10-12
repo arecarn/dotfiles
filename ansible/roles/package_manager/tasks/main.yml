@@ -1,3 +1,4 @@
+---
 - name: MacOSX
   tags: package_manager
   when: ansible_distribution == 'MacOSX'

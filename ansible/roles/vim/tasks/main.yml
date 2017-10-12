@@ -8,7 +8,16 @@
     state: latest
 
 - name: Ubuntu
-  tags: vim-gnome
+  tags: vim
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  apt_repository:
+    repo: 'ppa:pi-rho/dev'
+    state: present
+    update_cache: yes
+
+- name: Ubuntu
+  tags: vim
   become: yes
   when: ansible_distribution == 'Ubuntu'
   package:

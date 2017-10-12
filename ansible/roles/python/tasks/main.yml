@@ -2,7 +2,7 @@
 - name: MacOSX
   tags: python
   when: ansible_distribution == 'MacOSX'
-  with_items: "{{packages}}"
+  with_items: "{{packages[ansible_distribution | lower]}}"
   homebrew:
     name: "{{item}}"
     state: latest
@@ -11,7 +11,7 @@
   tags: python
   become: yes
   when: ansible_distribution == 'Ubuntu'
-  with_items: "{{packages}}"
+  with_items: "{{packages[ansible_distribution | lower]}}"
   package:
     name: "{{item}}"
     state: latest

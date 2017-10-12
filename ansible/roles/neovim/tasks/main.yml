@@ -6,4 +6,43 @@
     name: neovim/neovim/neovim
     state: latest
 
-# TODO Ubuntu
+- name: Ubuntu
+  tags: neovim
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: software-properties-common
+    state: latest
+
+- name: Ubuntu
+  tags: neovim
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  apt_repository:
+    repo: 'ppa:neovim-ppa/unstable'
+    state: present
+    update_cache: yes
+
+- name: Ubuntu
+  tags: neovim
+  become: yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: neovim
+    state: latest
+
+- name: python 3 package
+  tags: neovim
+  become: yes
+  pip:
+    name: neovim
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"
+
+- name: python 3 package
+  tags: neovim
+  become: yes
+  pip:
+    name: neovim
+    executable: "{{pip2_executable[ansible_distribution | lower]\
+                 | default([pip2])}}"

@@ -337,6 +337,11 @@ alias mk='mkdir'
 alias rd='rmdir'
 alias rmr='rm -r'
 
+# follow symbolic link
+fln() {
+    cd $(readlink -f "$@")
+}
+
 # shortcuts to tar and compress
 # usage: tar* ARCHIVE DIR
 alias targz='tar -zcvf'

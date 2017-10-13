@@ -361,7 +361,12 @@ alias gcd='cd $(git rev-parse --show-toplevel)'
 alias v='vim'
 alias m="make"
 
-alias ls='ls --color=auto'
+if [[ "${OSTYPE}" == 'linux'* ]]; then
+    alias ls='ls --color=auto'
+elif [[ "${OSTYPE}" == 'darwin'* ]]; then
+    alias ls='ls -G'
+fi
+
 alias l='ls -paF'
 alias ll='l -lh'
 alias ld='l -d *(/D)'

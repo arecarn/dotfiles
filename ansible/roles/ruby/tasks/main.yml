@@ -2,14 +2,16 @@
 - name: MacOSX
   tags: ruby
   when: ansible_distribution == 'MacOSX'
+  with_items: "{{packages[ansible_distribution | lower]}}"
   homebrew:
-    name: ruby
+    name: "{{item}}"
     state: latest
 
 - name: Ubuntu
   tags: ruby
   become: yes
   when: ansible_distribution == 'Ubuntu'
+  with_items: "{{packages[ansible_distribution | lower]}}"
   package:
-    name: ruby
+    name: "{{item}}"
     state: latest

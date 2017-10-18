@@ -1,0 +1,7 @@
+---
+packages:
+  ubuntu:
+    - ruby
+    - ruby-dev
+  macosx:
+    - ruby

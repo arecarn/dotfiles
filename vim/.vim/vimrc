@@ -874,6 +874,8 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ale_emit_conflict_warnings = 0  " has to be run before loading plugins
+
 let s:dein_path = s:app_path . 'bundle/dein.vim'
 if !isdirectory(s:dein_path)
     execute '!git clone https://github.com/Shougo/dein.vim ' . s:dein_path
@@ -951,7 +953,7 @@ if dein#load_state(s:dein_path_plugins)
         call dein#add('darrinholst/tmuxline.vim')
     endif
 
-    call dein#add('scrooloose/syntastic')
+    call dein#add('w0rp/ale')
     call dein#add('neomake/neomake')
     call dein#add('janko-m/vim-test')
 

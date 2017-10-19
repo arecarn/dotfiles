@@ -86,9 +86,13 @@ def lint_python(ctx):
         'tasks.py',
     ]
 
+    cmds = ['pylint --output-format=parseable', 'flake8']
     files_string = ' '.join(files)
-    cmd = 'python3 -m pylint --output-format=parseable {files}'
-    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+    base_cmd = 'python3 -m {cmd} {files}'
+
+    for cmd in cmds:
+        ctx.run(base_cmd.format(cmd=cmd, files=files_string),
+                **RUN_ARGS)
 
 
 @task
@@ -107,7 +111,8 @@ def provision(ctx, args=''):
     Provision this system using ansible
     """
     os.chdir('ansible')
-    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost --ask-become-pass ' + ' ' + args,
+    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost '
+            '--ask-become-pass ' + args,
             **RUN_ARGS)
 
 

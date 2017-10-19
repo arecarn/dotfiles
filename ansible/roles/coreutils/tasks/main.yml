@@ -8,7 +8,7 @@
 
 - name: Ubuntu
   tags: coreutils
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: coreutils

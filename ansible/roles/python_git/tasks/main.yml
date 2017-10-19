@@ -1,7 +1,7 @@
 ---
 - name: python 2 package
   tags: python_git
-  become: yes
+  become: !!bool yes
   pip:
     name: gitpython
     executable: "{{pip2_executable[ansible_distribution | lower]\
@@ -9,7 +9,7 @@
 
 - name: python 3 package
   tags: python_git
-  become: yes
+  become: !!bool yes
   pip:
     name: gitpython
     executable: "{{pip3_executable[ansible_distribution | lower]\

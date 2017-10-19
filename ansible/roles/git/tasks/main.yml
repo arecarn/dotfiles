@@ -8,16 +8,16 @@
 
 - name: Ubuntu
   tags: git
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   apt_repository:
     repo: 'ppa:git-core/ppa'
     state: present
-    update_cache: yes
+    update_cache: !!bool yes
 
 - name: Ubuntu
   tags: git
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: git

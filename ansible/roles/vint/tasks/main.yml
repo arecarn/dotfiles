@@ -1,7 +1,7 @@
 ---
 - name: python 3 package
   tags: vint
-  become: yes
+  become: !!bool yes
   pip:
     name: vim-vint
     executable: "{{pip3_executable[ansible_distribution | lower]\

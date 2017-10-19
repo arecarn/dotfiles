@@ -9,7 +9,7 @@
 
 - name: Ubuntu
   tags: python
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   with_items: "{{packages[ansible_distribution | lower]}}"
   package:

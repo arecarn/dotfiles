@@ -1,7 +1,7 @@
 ---
 - name: MacOSX
   tags: scons
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'MacOSX'
   pip:
     name: scons
@@ -9,7 +9,7 @@
 
 - name: Ubuntu
   tags: scons
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: scons

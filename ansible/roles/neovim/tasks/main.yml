@@ -8,7 +8,7 @@
 
 - name: Ubuntu
   tags: neovim
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: software-properties-common
@@ -16,16 +16,16 @@
 
 - name: Ubuntu
   tags: neovim
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   apt_repository:
     repo: 'ppa:neovim-ppa/unstable'
     state: present
-    update_cache: yes
+    update_cache: !!bool yes
 
 - name: Ubuntu
   tags: neovim
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: neovim
@@ -33,7 +33,7 @@
 
 - name: python 3 package
   tags: neovim
-  become: yes
+  become: !!bool yes
   pip:
     name: neovim
     executable: "{{pip3_executable[ansible_distribution | lower]\
@@ -41,7 +41,7 @@
 
 - name: python 3 package
   tags: neovim
-  become: yes
+  become: !!bool yes
   pip:
     name: neovim
     executable: "{{pip2_executable[ansible_distribution | lower]\
@@ -49,6 +49,6 @@
 
 - name: ruby package
   tags: neovim
-  become: yes
+  become: !!bool yes
   gem:
     name: neovim

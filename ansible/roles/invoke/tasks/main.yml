@@ -1,7 +1,7 @@
 ---
 - name: python 3 package
   tags: invoke
-  become: yes
+  become: !!bool yes
   pip:
     name: invoke
     executable: "{{pip3_executable[ansible_distribution | lower]\

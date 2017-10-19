@@ -1,7 +1,7 @@
 ---
 - name: python 2 package
   tags: ansible
-  become: yes
+  become: !!bool yes
   pip:
     name: ansible
     executable: "{{pip2_executable[ansible_distribution | lower]\

@@ -9,7 +9,7 @@
 
 - name: Ubuntu
   tags: vlc
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: vlc

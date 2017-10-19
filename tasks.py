@@ -7,14 +7,14 @@ import fnmatch
 from invoke import task
 import dploy
 
-isWindows = os.name == 'nt'
-if isWindows:
+IS_WINDOWS = os.name == 'nt'
+if IS_WINDOWS:
     # setting 'shell' is a work around for issue #345 of invoke
-    run_args = {'pty': False, 'shell': 'C:\Windows\System32\cmd.exe'}
-    stow_location = 'USERPROFILE'
+    RUN_ARGS = {'pty': False, 'shell': r'C:\Windows\System32\cmd.exe'}
+    STOW_LOCATION = 'USERPROFILE'
 else:
-    run_args = {'pty': True}
-    stow_location = 'HOME'
+    RUN_ARGS = {'pty': True}
+    STOW_LOCATION = 'HOME'
 
 
 def find_files(directory, pattern):
@@ -22,14 +22,15 @@ def find_files(directory, pattern):
     Recursively find files in directory using the glob expression pattern
 
     The Python 3.5 glob module supports recursive globs, and the python 3.4
-    pathlib module also does, but for version 2.2 to 3.3 this is the work around.
-    source: http://stackoverflow.com/a/2186673
+    pathlib module also does, but for version 2.2 to 3.3 this is the work
+    around.  source: http://stackoverflow.com/a/2186673
     """
     for root, _, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, pattern):
                 filename = os.path.join(root, basename)
                 yield filename
+
 
 @task
 def lint_vim(ctx):
@@ -43,7 +44,8 @@ def lint_vim(ctx):
     files_string = " ".join(files)
 
     cmd = 'vint {files}'
-    ctx.run(cmd.format(files=files_string), **run_args)
+    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+
 
 @task
 def lint_shell(ctx):
@@ -59,21 +61,21 @@ def lint_shell(ctx):
     files_string = ' '.join(files)
 
     cmd = 'shellcheck --format gcc {files}'
-    ctx.run(cmd.format(files=files_string), **run_args)
+    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+
 
 @task
 def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files = [
-        os.path.join('ansible', '*.yml' ),
-    ]
+    files = [os.path.join('ansible', '*.yml')]
     files.extend(find_files(directory='ansible/roles', pattern='*.yml'))
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'
-    ctx.run(cmd.format(files=files_string), **run_args)
+    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+
 
 @task
 def lint_python(ctx):
@@ -86,7 +88,8 @@ def lint_python(ctx):
 
     files_string = ' '.join(files)
     cmd = 'python3 -m pylint --output-format=parseable {files}'
-    ctx.run(cmd.format(files=files_string), **run_args)
+    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+
 
 @task
 def provision_all(ctx, args=''):
@@ -95,7 +98,8 @@ def provision_all(ctx, args=''):
     """
     os.chdir('ansible')
     ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory hosts' + ' ' + args,
-            **run_args)
+            **RUN_ARGS)
+
 
 @task
 def provision(ctx, args=''):
@@ -104,28 +108,31 @@ def provision(ctx, args=''):
     """
     os.chdir('ansible')
     ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost --ask-become-pass ' + ' ' + args,
-            **run_args)
+            **RUN_ARGS)
+
 
 @task
 def clean(ctx):
     """
     Clean repository using git
     """
-    ctx.run('git clean --interactive', **run_args)
+    ctx.run('git clean --interactive', **RUN_ARGS)
+
 
 @task
 def setup(ctx, args=''):
     """
     Install python requirements
     """
-    ctx.run('pip install ' + args + ' --requirement requirements.txt', **run_args)
+    ctx.run('pip install ' + args + ' --requirement requirements.txt', **RUN_ARGS)
+
 
 class Dploy():
     """
     Class to handle logic and data to stow and unstow using dploy
     """
     def __init__(self):
-        self.home = os.environ[stow_location]
+        self.home = os.environ[STOW_LOCATION]
         self.packages = [
             'cmd',
             'ctags',
@@ -145,9 +152,8 @@ class Dploy():
             ((self.home, '.vim', 'vimrc'), (self.home, '.vim', 'init.vim')),
             ((self.home, '.vim'), (self.home, '.config', 'nvim')),
         ]
-        if isWindows:
+        if IS_WINDOWS:
             self.links += [((self.home, '.vim'), (self.home, 'AppData', 'Local', 'nvim'))]
-
 
     def stow(self):
         """
@@ -170,6 +176,7 @@ class Dploy():
 
         dploy.unstow(self.packages, self.home, is_silent=False)
 
+
 @task
 def stow(ctx):
     """
@@ -177,6 +184,7 @@ def stow(ctx):
     """
     # pylint: disable=unused-argument
     Dploy().stow()
+
 
 @task
 def unstow(ctx):
@@ -186,6 +194,7 @@ def unstow(ctx):
     # pylint: disable=unused-argument
     Dploy().unstow()
 
+
 @task(provision, stow)
 def install(ctx):
     """
@@ -193,6 +202,7 @@ def install(ctx):
     """
     # pylint: disable=unused-argument
     pass
+
 
 @task(lint_vim, lint_shell, lint_yaml, lint_python, default=True)
 def lint(ctx):

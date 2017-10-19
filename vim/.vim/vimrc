@@ -952,6 +952,7 @@ if dein#load_state(s:dein_path_plugins)
     endif
 
     call dein#add('scrooloose/syntastic')
+    call dein#add('neomake/neomake')
     call dein#add('janko-m/vim-test')
 
 
@@ -1351,6 +1352,11 @@ if dein#tap('vim-grepper') "{{{2
     xmap [myleader]g <plug>(GrepperOperator)
 endif "}}}2
 
+if dein#tap('neomake') "{{{2
+    let g:neomake_open_list = 1
+
+    nnoremap [myleader]m :Neomake!<CR>
+endif "}}}2
 
 if dein#tap('vim-operator-substitute') "{{{2
     map s <Plug>(operator-substitute)

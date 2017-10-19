@@ -53,7 +53,7 @@
     - vint
     - vlc
     - wget
-    - xclip
     - xquartz
+    - xsel
     - yamllint
     - zsh

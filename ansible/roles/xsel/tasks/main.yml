@@ -1,8 +1,8 @@
 ---
 - name: Ubuntu
-  tags: xclip
+  tags: xsel
   become: yes
   when: ansible_distribution == 'Ubuntu'
   package:
-    name: xclip
+    name: xsel
     state: latest

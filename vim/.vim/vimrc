@@ -421,9 +421,9 @@ elseif executable('ack')
     set grepprg=ack\ -H\ --nocolor\ --nogroup
 endif
 
-xnoremap [myleader]g  y:<C-u>Grep "<C-r>=expand(@@)<CR>"<CR>
-nnoremap [myleader]g  :<C-u>Grep<space>""<left>
-nnoremap [myleader]gw :<C-u>Grep "\b<C-r><C-w>\b"<CR>
+" xnoremap [myleader]g  y:<C-u>Grep "<C-r>=expand(@@)<CR>"<CR>
+" nnoremap [myleader]g  :<C-u>Grep<space>""<left>
+" nnoremap [myleader]gw :<C-u>Grep "\b<C-r><C-w>\b"<CR>
 
 comman! -nargs=+ Grep call s:grep(<q-args>)
 function! s:grep(args) abort
@@ -1040,6 +1040,7 @@ if dein#load_state(s:dein_path_plugins)
     " Search
     call dein#add('junegunn/vim-pseudocl')
     call dein#add('junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'})
+    call dein#add('mhinz/vim-grepper')
 
     " Utilities
     call dein#add('talek/obvious-resize')
@@ -1344,6 +1345,12 @@ endif "}}}2
 if dein#tap('vim-oblique') "{{{2
     let g:oblique#incsearch_highlight_all = 1
 endif "}}}2
+
+if dein#tap('vim-grepper') "{{{2
+    nmap [myleader]g <plug>(GrepperOperator)
+    xmap [myleader]g <plug>(GrepperOperator)
+endif "}}}2
+
 
 if dein#tap('vim-operator-substitute') "{{{2
     map s <Plug>(operator-substitute)

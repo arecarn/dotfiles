@@ -9,16 +9,16 @@
 
 - name: Ubuntu
   tags: vim
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   apt_repository:
     repo: 'ppa:pi-rho/dev'
     state: present
-    update_cache: yes
+    update_cache: !!bool yes
 
 - name: Ubuntu
   tags: vim
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
     name: vim-gnome

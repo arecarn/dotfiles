@@ -1,7 +1,7 @@
 ---
 - name: Ubuntu
   tags: pip
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == "Ubuntu"
   with_items: "{{packagess}}"
   package:

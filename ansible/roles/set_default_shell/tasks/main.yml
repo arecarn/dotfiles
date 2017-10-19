@@ -1,10 +1,10 @@
 ---
 - name: Set our default shell
   tags: set_default_shell
-  become: yes
+  become: !!bool yes
   when: ansible_distribution == 'MacOSX'
   user:
     name: "{{lookup('env','USER')}}"
     shell: "{{shell[ansible_distribution|lower] | default([shell['default']])}}"
     group: "{{group[ansible_distribution|lower] | default([group['default']])}}"
-    append: yes
+    append: !!bool yes

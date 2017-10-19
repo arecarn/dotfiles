@@ -3,5 +3,5 @@
   tags: package_manager
   when: ansible_distribution == 'MacOSX'
   homebrew:
-    update_homebrew: yes
-    upgrade_all: yes
+    update_homebrew: !!bool yes
+    upgrade_all: !!bool yes

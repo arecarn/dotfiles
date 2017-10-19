@@ -1,7 +1,7 @@
 ---
 - name: python 3 package
   tags: dploy
-  become: yes
+  become: !!bool yes
   pip:
     name: dploy
     executable: "{{pip3_executable[ansible_distribution | lower]\

@@ -10,4 +10,4 @@
   tags: spectacle
   when: ansible_distribution == 'MacOSX'
   script: add_to_login_items.sh
-  become: yes
+  become: !!bool yes

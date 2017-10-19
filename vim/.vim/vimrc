@@ -402,6 +402,10 @@ endif "}}}2
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set ttimeout
 set ttimeoutlen=100
+if has('nvim')
+    set ttimeoutlen=0 " this seems to help with slow response to <Esc>
+endif
+
 set updatetime=1000
 
 let mapleader="\<Space>"

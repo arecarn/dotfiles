@@ -204,7 +204,7 @@ def install(ctx):
     pass
 
 
-@task(lint_vim, lint_shell, lint_yaml, lint_python, default=True)
+@task(lint_shell, lint_yaml, lint_python, default=True)
 def lint(ctx):
     """
     Lint task

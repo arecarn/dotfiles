@@ -1354,6 +1354,7 @@ if dein#tap('vim-oblique') "{{{2
 endif "}}}2
 
 if dein#tap('vim-grepper') "{{{2
+    nmap [myleader]g: :Grepper<CR>
     nmap [myleader]g <plug>(GrepperOperator)
     xmap [myleader]g <plug>(GrepperOperator)
 endif "}}}2

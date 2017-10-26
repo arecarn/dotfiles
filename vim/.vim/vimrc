@@ -1360,8 +1360,8 @@ if dein#tap('vim-grepper') "{{{2
 endif "}}}2
 
 if dein#tap('vim-dispatch') "{{{2
-    nnoremap [myleader]m :Make!<CR>
-    nnoremap [myleader]m: :Make!
+    nnoremap [myleader]m :Make<CR>
+    nnoremap [myleader]m: :Make<Space>
 endif "}}}2
 
 if dein#tap('vim-operator-substitute') "{{{2

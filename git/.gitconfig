@@ -230,5 +230,8 @@
     # check if a file  exist in the repository?
     exists = ls-files --error-unmatch
 
+    #White Space Fix
+    wsf = !git diff --cached --no-color > stage.diff && git apply --index -R stage.diff && git apply --index --whitespace=fix stage.diff && rm -f stage.diff
+
 [include]
     path = ~/.gitconfig_local

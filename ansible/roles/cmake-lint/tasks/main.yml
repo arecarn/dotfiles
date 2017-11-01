@@ -1,0 +1,8 @@
+---
+- name: python 3 package
+  tags: cmake-lint
+  become: !!bool yes
+  pip:
+    name: cmakelint
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

@@ -1,0 +1,8 @@
+---
+- name: Ubuntu
+  tags: npm
+  become: !!bool yes
+  when: ansible_distribution == "Ubuntu"
+  package:
+    name: npm
+    state: latest

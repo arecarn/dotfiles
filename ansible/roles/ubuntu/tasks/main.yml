@@ -7,4 +7,4 @@
 - name: Ubuntu - Auto-Lock Screen After 20 Minutes
   tags: ubuntu
   when: ansible_distribution == 'Ubuntu'
-  command: conf write /org/gnome/desktop/session/idle-delay 1200
+  command: dconf write /org/gnome/desktop/session/idle-delay 1200

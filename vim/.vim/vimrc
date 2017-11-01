@@ -64,20 +64,24 @@ function! s:make_private_directory(path) abort
     endif
 endfunction
 
-function! s:make_cache_path(name) abort
+function! s:make_cache_path_str(name) abort
     return g:cache_path . a:name
 endfunction
 
-function! s:make_data_path(name) abort
+function! s:make_data_path_str(name) abort
     return g:data_path . a:name
 endfunction
 
-function! s:make_cache_directory(path) abort
-    call s:make_private_directory(s:make_cache_path(a:path))
+function! s:make_cache_directory(dir_name) abort
+    let path = s:make_cache_path_str(a:dir_name)
+    call s:make_private_directory(path)
+    return path
 endfunction
 
-function! s:make_data_directory(path) abort
-    call s:make_private_directory(s:make_data_path(a:path))
+function! s:make_data_directory(dir_name) abort
+    let path = s:make_data_path_str(a:dir_name)
+    call s:make_private_directory(path)
+    return path
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -122,8 +126,8 @@ endif
 " UNDO & SWAP                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set undofile
-call s:make_data_directory('undo')
-execute 'set undodir=' . s:make_data_path('undo') . '//'
+
+execute 'set undodir=' . s:make_data_directory('undo') . '//'
 set undolevels=20000
 set undoreload=20000
 set noswapfile
@@ -153,8 +157,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set backup
 
-call s:make_data_directory('backup')
-let g:backupdir = s:make_data_path('backup')
+let g:backupdir =  s:make_data_directory('backup')
 
 
 function! GetBackupDir() abort
@@ -880,7 +883,8 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:ale_emit_conflict_warnings = 0  " has to be run before loading plugins
 
-let s:dein_path = s:app_path . 'bundle/dein.vim'
+let s:plugin_path = s:make_cache_directory('plugins')
+let s:dein_path = s:plugin_path . '/dein'
 if !isdirectory(s:dein_path)
     execute '!git clone https://github.com/Shougo/dein.vim ' . s:dein_path
 endif
@@ -889,7 +893,7 @@ if has('vim_starting')
     execute 'set runtimepath+='.s:dein_path.'/'
 endif
 
-let s:dein_path_plugins = s:app_path . 'bundle'
+let s:dein_path_plugins = s:plugin_path . 'bundle'
 
 if dein#load_state(s:dein_path_plugins)
     call dein#begin(s:dein_path_plugins)
@@ -1104,7 +1108,7 @@ if dein#tap('neocomplete') "{{{2
     let g:neocomplete#enable_auto_delimiter = 1
     let g:neocomplete#sources#tags#cache_limit_size = 5000000000000000.0
     let g:neocomplete#max_list = 20
-    let g:neocomplete#data_directory = s:make_cache_path('neocomplete')
+    let g:neocomplete#data_directory = s:make_cache_path_str('neocomplete')
 
     " Define keyword.
     if !exists('g:neocomplete#keyword_patterns')
@@ -1181,11 +1185,11 @@ if dein#tap('neosnippet-snippets') "{{{2
     endif
 
     let g:neosnippet#snippets_directory = s:app_path . 'utils/snippets'
-    let g:neosnippet#data_directory = s:make_cache_path('neosnippet')
+    let g:neosnippet#data_directory = s:make_cache_path_str('neosnippet')
 endif "}}}2
 
 if dein#tap('unite.vim') "{{{2
-    let g:unite_data_directory = s:make_cache_path('unite')
+    let g:unite_data_directory = s:make_cache_path_str('unite')
     let g:unite_winheight = 10
     let g:unite_source_history_yank_enable = 1
     let g:unite_source_history_yank_limit = 100
@@ -1274,8 +1278,8 @@ if dein#tap('unite.vim') "{{{2
     if dein#tap('neomru.vim')
         nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
 
-        let g:neomru#file_mru_path = s:make_cache_path('neomru/file')
-        let g:neomru#directory_mru_path = s:make_cache_path('neomru/directory')
+        let g:neomru#file_mru_path = s:make_cache_path_str('neomru/file')
+        let g:neomru#directory_mru_path = s:make_cache_path_str('neomru/directory')
     endif
 
     if dein#tap('unite-outline')
@@ -1296,7 +1300,7 @@ if dein#tap('unite.vim') "{{{2
         nnoremap [myleader]p  :<C-u>Unite history/yank<CR>
         xnoremap [myleader]p  dk:<C-u>Unite history/yank<CR>
 
-        let g:neoyank#file = s:make_data_path('neoyank/history')
+        let g:neoyank#file = s:make_data_path_str('neoyank/history')
     endif
 
     if dein#tap('neobundle.vim')
@@ -1336,7 +1340,7 @@ if dein#tap('vimfiler.vim') "{{{2
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
     let g:vimfiler_as_default_explorer = 1
-    let g:vimfiler_data_directory = s:make_cache_path('vimfiler')
+    let g:vimfiler_data_directory = s:make_cache_path_str('vimfiler')
 
     command! -nargs=* Explore :VimFilerBufferDir <Args>
     command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>

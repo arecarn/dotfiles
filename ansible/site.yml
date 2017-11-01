@@ -4,15 +4,20 @@
     - ack
     - ag
     - ansible
+    - ansible-lint
     - appcleaner
     - chrome
+    - cmake
+    - cmake-lint
     - coreutils
+    - cppcheck
     - cscope
     - curl
     - dash
     - dploy
     - dropbox
     - firefox
+    - flake8
     - git
     - haskell
     - hg
@@ -21,12 +26,16 @@
     - invoke
     - iterm2
     - lastpass
+    - latex
     - licecap
     - llvm
+    - lmms
     - lua
     - moreutils
     - mutt
     - neovim
+    - npm
+    - package_manager
     - pandoc
     - picocom
     - pip
@@ -49,11 +58,15 @@
     - transmission
     - tree
     - ubuntu
+    - unrar
     - vim
     - vint
     - vlc
     - wget
+    - write-good
+    - xclip
     - xquartz
     - xsel
     - yamllint
+    - yapf
     - zsh

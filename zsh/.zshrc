@@ -107,14 +107,8 @@ export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 # configure path
 export PATH="${PATH}:${HOME}/bin"
 
-if [[ "${OSTYPE}" == 'linux'* ]]; then
-    export PATH="${PATH}:/usr/bin/X11"
-    export PATH="${PATH}:/usr/X11R6/bin"
-    export PATH="${PATH}:/usr/games"
-    export PATH="${PATH}:/opt/kde3/bin"
-    export PATH="${PATH}:/usr/lib/qt3/bin"
-
-elif [[ "${OSTYPE}" == 'darwin'* ]]; then
+if [[ "${OSTYPE}" == 'darwin'* ]]; then
+    # TODO HAVE ansible add these to ~/.profile
     #for homebrew
     export MANPATH="${MANPATH}:/usr/local/man"
     export MANPATH="${MANPATH}:/opt/homebrew/bin"

@@ -12,6 +12,7 @@
     - coreutils
     - cppcheck
     - cscope
+    - ctags
     - curl
     - dash
     - dploy

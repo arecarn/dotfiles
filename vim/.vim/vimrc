@@ -890,10 +890,10 @@ if !isdirectory(s:dein_path)
 endif
 
 if has('vim_starting')
-    execute 'set runtimepath+='.s:dein_path.'/'
+    execute 'set runtimepath+=' . s:dein_path .  '/'
 endif
 
-let s:dein_path_plugins = s:plugin_path . 'bundle'
+let s:dein_path_plugins = s:plugin_path . '/bundle'
 
 if dein#load_state(s:dein_path_plugins)
     call dein#begin(s:dein_path_plugins)

@@ -742,6 +742,7 @@ cnoremap <C-y> <SPACE><BS><TAB>
 cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
 
 cnoremap ~f ~/Dropbox
+cnoremap ~p ~/Dropbox/projects
 cnoremap ~n ~/Dropbox/notes
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local

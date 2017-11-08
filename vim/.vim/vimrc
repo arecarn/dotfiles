@@ -1075,6 +1075,7 @@ endif
 command! DeinInstall if dein#check_install() | call dein#install() | endif
 
 filetype plugin indent on
+syntax on
 if !exists("g:syntax_on")
     syntax enable
 endif

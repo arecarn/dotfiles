@@ -432,19 +432,6 @@ nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
 nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
 
-" xnoremap [myleader]g  y:<C-u>Grep "<C-r>=expand(@@)<CR>"<CR>
-" nnoremap [myleader]g  :<C-u>Grep<space>""<left>
-" nnoremap [myleader]gw :<C-u>Grep "\b<C-r><C-w>\b"<CR>
-
-comman! -nargs=+ Grep call s:grep(<q-args>)
-function! s:grep(args) abort
-    execute 'silent grep! ' . a:args
-    redraw!
-    execute 'normal! /<C-l>'
-endfunction
-
-nnoremap [myleader]m :silent make!<CR>:redraw!<CR>
-
 " Navigation
 " make navigation more intuitive
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')

@@ -331,7 +331,7 @@ set virtualedit+=all
 set modeline
 
 if has('nvim')
-    set inccommand=split
+    set inccommand=nosplit
 endif
 
 set diffopt+=vertical "always open diff side by side

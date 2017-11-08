@@ -1040,8 +1040,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('qstrahl/vim-matchmaker')
 
     " Search
-    call dein#add('junegunn/vim-pseudocl')
-    call dein#add('junegunn/vim-oblique' , {'depends' : 'junegunn/vim-pseudocl'})
+    call dein#add('junegunn/vim-slash')
     call dein#add('mhinz/vim-grepper')
 
     " Utilities
@@ -1346,10 +1345,6 @@ else
     " set up line numbering and other good stuff
     let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
 
-endif "}}}2
-
-if dein#tap('vim-oblique') "{{{2
-    let g:oblique#incsearch_highlight_all = 1
 endif "}}}2
 
 if dein#tap('vim-grepper') "{{{2

@@ -428,6 +428,10 @@ elseif executable('ack')
     set grepprg=ack\ -H\ --nocolor\ --nogroup
 endif
 
+nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
+nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
+nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
+
 " xnoremap [myleader]g  y:<C-u>Grep "<C-r>=expand(@@)<CR>"<CR>
 " nnoremap [myleader]g  :<C-u>Grep<space>""<left>
 " nnoremap [myleader]gw :<C-u>Grep "\b<C-r><C-w>\b"<CR>
@@ -937,7 +941,6 @@ if dein#load_state(s:dein_path_plugins)
     " Operators
     call dein#add('kana/vim-operator-user')
     call dein#add('arecarn/vim-operator-mixed-case')
-    call dein#add('milsen/vim-operator-substitute', {'depends' : 'kana/vim-operator-user'})
     call dein#add('kana/vim-operator-replace' , {'depends' : 'kana/vim-operator-user'})
     call dein#add('tpope/vim-surround')
     call dein#add('tommcdo/vim-exchange')
@@ -1367,12 +1370,6 @@ endif "}}}2
 if dein#tap('vim-dispatch') "{{{2
     nnoremap [myleader]m :Make<CR>
     nnoremap [myleader]m: :Make<Space>
-endif "}}}2
-
-if dein#tap('vim-operator-substitute') "{{{2
-    map s <Plug>(operator-substitute)
-    map & <Plug>(operator-substitute-repeat)
-    map g& <Plug>(operator-substitute-repeat-no-flags)
 endif "}}}2
 
 if dein#tap('vim-fugitive') "{{{2

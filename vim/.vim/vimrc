@@ -1803,8 +1803,6 @@ if dein#tap('vimwiki') "}}}2
     let g:vimwiki_list = [{
                 \ 'path': '~/Dropbox/wiki',
                 \ 'index': 'main',
-                \ 'sysntax': 'markdown',
-                \ 'ext': '.md',
                 \ }]
 endif "}}}2
 

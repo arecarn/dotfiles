@@ -910,17 +910,12 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('osyo-manga/vim-textobj-blockwise')
     "}}}2
 
-    call dein#add('ctrlpvim/ctrlp.vim')
-
-    " unite {{{2
+    " {u,de}nite {{{2
+    call dein#add('Shougo/denite.nvim')
+    call dein#add('Shougo/neoyank.vim', {'depends' : 'Shougo/denite.nvim'})
+    call dein#add('Shougo/neomru.vim', {'depends' : 'Shougo/denite.nvim'})
+    call dein#add('naquad/unite-digraphs', {'depends' : 'Shougo/denite.nvim'})
     call dein#add('Shougo/unite.vim')
-    call dein#add('Shougo/unite-outline', {'depends' : 'Shougo/unite.vim'})
-    call dein#add('Shougo/neomru.vim', {'depends' : 'Shougo/unite.vim'})
-    call dein#add('Shougo/neoyank.vim', {'depends' : 'Shougo/unite.vim'})
-    call dein#add('kmnk/unite-command', {'depends' : 'Shougo/unite.vim'})
-    call dein#add('majkinetor/unite-cmdmatch', {'depends' : 'Shougo/unite.vim'})
-    call dein#add('thinca/vim-unite-history', {'depends' : 'Shougo/unite.vim'})
-    call dein#add('naquad/unite-digraphs', {'depends' : 'Shougo/unite.vim'})
     " }}}2
 
     call dein#add('dyng/ctrlsf.vim')
@@ -1185,149 +1180,39 @@ endif "}}}2
 
 if dein#tap('unite.vim') "{{{2
     let g:unite_data_directory = s:make_cache_path_str('unite')
-    let g:unite_winheight = 10
-    let g:unite_source_history_yank_enable = 1
-    let g:unite_source_history_yank_limit = 100
-    let g:unite_split_rule = 'botright'
-    call unite#filters#sorter_default#use(['sorter_rank'])
-    call unite#custom#source('file_rec/async', 'max_candidates', 0)
-    call unite#custom#profile('files', 'filters', 'sorter_rank')
 
-    let s:unite_sources = 'file_rec/git,file_rec,file_rec/async,file_mru,file,grep'
-    call unite#custom#source(
-                \ s:unite_sources,
-                \ 'ignore_pattern',
-                \ join(
-                \     [
-                \      '\.git.*',
-                \      '\.hg.*',
-                \      '\.svn.*',
-                \      '\.Trash*',
-                \      '*.ini',
-                \      '*.dbx',
-                \      '*.cache',
-                \      'tags.*',
-                \     ],
-                \     '\|'
-                \ ))
+endif "}}}2
 
-    let s:unite_ignore_globs = &wildignore.','.substitute(&suffixes, '\.', '*.', 'g')
-    call unite#custom#source(
-                \ s:unite_sources,
-                \ 'ignore_globs',
-                \ split(s:unite_ignore_globs, ',')
-                \ )
-
-    let s:unite_grep_excludes = substitute(s:unite_ignore_globs, '^\|,', ' --exclude=', 'g')
-    let g:unite_grep_excludes  = s:unite_grep_excludes
-
-    if executable('ag')
-        " Use ag (the silver searcher)
-        " https://github.com/ggreer/the_silver_searcher
-        let g:unite_source_grep_command = 'ag'
-        let g:unite_source_grep_default_opts =
-                    \ '-i --vimgrep --hidden --ignore ' .
-                    \ '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
-        let g:unite_source_grep_recursive_opt = ''
-    elseif executable('grep')
-        let g:unite_source_grep_command = 'grep'
-        let g:unite_source_grep_default_opts = '-InHPR ' . '--exclude-dir={.git,.hg,.svn}'
-        "                                        |||||
-        " -I ignore binary files-----------------+||||
-        " -n print line numbers-------------------+|||
-        " -H print filename with match--------------||
-        " -P Perl Regex-----------------------------+|
-        " -R Recursive-------------------------------+
+if dein#tap('denite.nvim') "{{{2
+    if dein#tap('unite-digraphs')
+        command! Digraphs Denite unite:digraphs
     endif
 
-    if executable('ag')
-        " Using ag as recursive command.
-        let g:unite_source_rec_async_command =
-                    \ ['ag', '--follow', '--nocolor', '--nogroup',
-                    \  '--hidden', '-g', '']
+    if dein#tap('neoyank.vim')
+        nnoremap [myleader]p  :<C-u>Denite -mode=normal neoyank<CR>
+        xnoremap [myleader]p  dk:<C-u>Denit -mode=normale neoyank<CR>
+
+        let g:neoyank#file = s:make_data_path_str('neoyank/history')
     endif
-
-    augroup unite
-        autocmd!
-        autocmd FileType unite call s:unite_settings()
-    augroup END
-    function! s:unite_settings() abort
-        nnoremap <silent><buffer><expr> <C-s> unite#do_action('split')
-        nnoremap <silent><buffer><expr> <C-v> unite#do_action('vsplit')
-        nnoremap <silent><buffer><expr> <C-t> unite#do_action('tabopen')
-        nnoremap <silent><buffer><expr> <C-g> unite#do_action('goto')
-    endfunction
-
-    " xnoremap [myleader]g  y:<C-u>Unite -no-quit grep:.<CR><C-r>=escape(expand(@@), ' ')<CR><CR>
-    " nnoremap [myleader]g  :<C-u>Unite -no-quit grep:.<CR>
-    " nnoremap [myleader]gw :<C-u>UniteWithCursorWord -no-quit grep:.<CR>
-    nnoremap [myleader]f :<C-u>Unite file_rec/async -start-insert<CR>
-    nnoremap [myleader]rg :<C-u>Unite register -vertical<CR>
-    nnoremap [myleader]b  :<C-u>Unite buffer:! -start-insert<CR>
-    nnoremap [myleader]i  :<C-u>Unite menu:interpreters<CR>
-    nnoremap [myleader]l  :<C-u>Unite line -start-insert<CR>
-    nnoremap [myleader]ps :<C-u>Unite process -start-insert<CR>
-    nnoremap [myleader]ur :<C-u>UniteResume<CR>
-    command! Messages Unite output:message
 
     if dein#tap('neomru.vim')
-        nnoremap [myleader]r  :<C-u>Unite file_mru -start-insert<CR>
+        nnoremap [myleader]r :<C-u>Denite file_mru<CR>
 
         let g:neomru#file_mru_path = s:make_cache_path_str('neomru/file')
         let g:neomru#directory_mru_path = s:make_cache_path_str('neomru/directory')
     endif
 
-    if dein#tap('unite-outline')
-        nnoremap [myleader]o  :<C-u>Unite outline<CR>
-    endif
+    nnoremap [myleader]f :<C-u>Denite file_rec<CR>
+    nnoremap [myleader]rg :<C-u>Denite -mode=normal register<CR>
+    nnoremap [myleader]b  :<C-u>Denite buffer<CR>
+    nnoremap [myleader]l  :<C-u>Denite line<CR>
+    nnoremap [myleader]t  :<C-u>Denite tag<CR>
+    nnoremap [myleader]d  :<C-u>Denite<Space><C-d>
+    cnoremap <silent> <C-r><C-r> <C-u>Denite command_history<CR>
+    cnoremap <silent> <C-o> <C-u>Denite command<CR>
 
-    if dein#tap('unite-help')
-        nnoremap [myleader]h  :<C-u>Unite help -start-insert<CR>
-    endif
+    command! Messages Denite -mode=normal output:message
 
-    if dein#tap('unite-cmdmatch')
-        nnoremap [myleader]hc :<C-u>Unite cmdmatch history/command<CR>
-    endif
-
-    nnoremap [myleader]hs :<C-u>Unite history/search<CR>
-
-    if dein#tap('neoyank.vim')
-        nnoremap [myleader]p  :<C-u>Unite history/yank<CR>
-        xnoremap [myleader]p  dk:<C-u>Unite history/yank<CR>
-
-        let g:neoyank#file = s:make_data_path_str('neoyank/history')
-    endif
-
-    if dein#tap('neobundle.vim')
-        nnoremap [myleader]up :<C-u>Unite neobundle/update -tab<CR>
-    endif
-
-    if dein#tap('unite-tag')
-        nnoremap [myleader]t  :<C-u>UniteWithCursorWord tag<CR>
-    endif
-
-
-    if dein#tap('unite-spell-suggest')
-        nnoremap [myleader]gs  :<C-u>Unite spell_suggest<CR>
-    endif
-
-
-    if dein#tap('unite-digraphs')
-        command! Digraphs Unite digraphs
-    endif
-
-    " toggle the preview window when I press the "p" key.
-    augroup unite_settings
-        autocmd!
-        autocmd FileType unite call s:unite_settings()
-    augroup END
-    function! s:unite_settings() abort
-        nnoremap <silent><buffer><expr> p
-                    \ empty(filter(range(1, winnr('$')),
-                    \ 'getwinvar(v:val, "&previewwindow") != 0')) ?
-                    \ unite#do_action('preview') : ":\<C-u>pclose!\<CR>"
-        nnoremap <silent><buffer><expr> O unite#do_action('persist_open')
-    endfunction
 endif "}}}2
 
 if dein#tap('vimfiler.vim') "{{{2

@@ -4,5 +4,6 @@
   become: !!bool yes
   pip:
     name: yamllint
+    state: latest
     executable: "{{pip3_executable[ansible_distribution | lower]\
                  | default([pip3])}}"

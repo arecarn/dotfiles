@@ -35,15 +35,17 @@
   tags: neovim
   become: !!bool yes
   pip:
+    state: latest
     name: neovim
     executable: "{{pip3_executable[ansible_distribution | lower]\
                  | default([pip3])}}"
 
-- name: python 3 package
+- name: python 2 package
   tags: neovim
   become: !!bool yes
   pip:
     name: neovim
+    state: latest
     executable: "{{pip2_executable[ansible_distribution | lower]\
                  | default([pip2])}}"
 
@@ -52,3 +54,4 @@
   become: !!bool yes
   gem:
     name: neovim
+    state: latest

@@ -14,6 +14,7 @@
   with_items: "{{pip_modules_mac}}"
   pip:
     name: "{{item}}"
+    state: latest
     executable: pip3
     editable: !!bool no
 
@@ -24,5 +25,6 @@
   with_items: "{{pip_modules_mac}}"
   pip:
     name: "{{item}}"
+    state: latest
     executable: pip2
     editable: !!bool no

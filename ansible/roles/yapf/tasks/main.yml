@@ -4,6 +4,7 @@
   become: !!bool yes
   pip:
     name: yapf
+    state: latest
     executable: "{{pip2_executable[ansible_distribution | lower]\
                  | default([pip2])}}"
 
@@ -12,5 +13,6 @@
   become: !!bool yes
   pip:
     name: yapf
+    state: latest
     executable: "{{pip3_executable[ansible_distribution | lower]\
                  | default([pip3])}}"

@@ -4,5 +4,6 @@
   become: !!bool yes
   pip:
     name: ansible
+    state: latest
     executable: "{{pip2_executable[ansible_distribution | lower]\
                  | default([pip2])}}"

@@ -5,6 +5,7 @@
   when: ansible_distribution == 'MacOSX'
   pip:
     name: scons
+    state: latest
     executable: pip2
 
 - name: Ubuntu

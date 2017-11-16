@@ -3,4 +3,6 @@ pip_modules_mac:
   - 'hg+https://bitbucket.org/pygame/pygame'
 
 homebrew_packages:
+  - smpeg
   - portmidi
+  - libogg

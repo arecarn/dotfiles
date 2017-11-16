@@ -1,7 +1,7 @@
 ---
 homebrew_packages:
   - {name: 'libvorbis'}
+  - {name: 'sdl_mixer', options: 'with-libvorbis'}
   - {name: 'sdl'}
   - {name: 'sdl_image'}
-  - {name: 'sdl_mixer'}
   - {name: 'sdl_ttf'}

@@ -14,3 +14,9 @@ else
     tmux bind-key -T copy-mode-vi 'y' send-keys -X copy-selection
     tmux bind-key -T copy-mode-vi '|' send-keys -X start-of-line
 fi
+
+if  versionlt "2.6"; then
+    tmux bind-key W choose-tree -u
+else
+    tmux bind-key W choose-tree
+fi

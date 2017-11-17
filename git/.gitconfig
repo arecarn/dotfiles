@@ -79,7 +79,7 @@
     bc = checkout -b # Branch Create
 
     # Branch Create Remote
-    bcr = "!f() { git push --set-upstream \"$1\" $(git rev-parse --abbrev-ref HEAD 2>/dev/null); }; f"
+    bcr = "!f() { git push --set-upstream \"$1\" $(git symbolic-ref --short HEAD); }; f"
 
     bsr = branch --set-upstream-to # Branch Set Remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)

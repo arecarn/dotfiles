@@ -145,6 +145,7 @@ class Dploy():
             'mutt',
             'readline',
             'scripts',
+            'ssh',
             'tmux',
             'vim',
             'zsh'

@@ -1,0 +1,7 @@
+---
+- name: ruby package
+  tags: markdownlint
+  become: !!bool yes
+  gem:
+    name: mdl
+    state: latest

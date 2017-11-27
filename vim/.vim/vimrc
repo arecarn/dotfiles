@@ -440,6 +440,11 @@ nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
 nnoremap gj j
 
+xnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+xnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+xnoremap gk k
+xnoremap gj j
+
 nnoremap <leader>f :find<Space>
 nnoremap <leader>s :sfind<Space>
 nnoremap <leader>v :vert sfind<Space>

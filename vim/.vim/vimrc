@@ -95,7 +95,7 @@ set wildcharm=<TAB>
 
 " File Searching
 " ignored files
-set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,HEAD,*.lst,*.i,*.map,tags*,cscope.out
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,cscope.out
 " lower priority files suffixes
 set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn
 
@@ -118,7 +118,7 @@ endif
 
 set ttyfast
 
-if ! has('nvim')
+if !has('nvim')
     set ttymouse=xterm2
 endif
 

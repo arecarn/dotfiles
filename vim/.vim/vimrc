@@ -1142,12 +1142,13 @@ if dein#tap('denite.nvim') "{{{2
         let g:neomru#directory_mru_path = s:make_cache_path_str('neomru/directory')
     endif
 
+    nnoremap [myleader]d :<C-u>Denite directory_rec<CR>
     nnoremap [myleader]f :<C-u>Denite file_rec<CR>
     nnoremap [myleader]rg :<C-u>Denite -mode=normal register<CR>
     nnoremap [myleader]b  :<C-u>Denite buffer<CR>
     nnoremap [myleader]l  :<C-u>Denite line<CR>
     nnoremap [myleader]t  :<C-u>Denite tag<CR>
-    nnoremap [myleader]d  :<C-u>Denite<Space><C-d>
+    nnoremap [myleader]:  :<C-u>Denite<Space><C-d>
     cnoremap <silent> <C-r><C-r> <C-u>Denite command_history<CR>
     cnoremap <silent> <C-o> <C-u>Denite command<CR>
 

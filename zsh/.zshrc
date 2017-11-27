@@ -354,6 +354,8 @@ alias du='du -hc'
 alias dus='du -hsxc ./* | sort -rh'
 
 alias g='git'
+# Git: current branch
+alias -g gcb='$(git symbolic-ref --short HEAD)'
 alias gnp='git --no-pager'
 alias gcd='cd $(git rev-parse --show-toplevel)'
 alias v='vim'

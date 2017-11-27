@@ -977,13 +977,24 @@ if dein#load_state(s:dein_path_plugins)
 
 
     " Completion
-    if has('nvim')
-        call dein#add('Shougo/deoplete.nvim')
-    else
-        if has('lua')
-            call dein#add('Shougo/neocomplete')
-        endif
-    endif
+    call dein#add('Shougo/deoplete.nvim',
+                \{'depends' :
+                \    ['roxma/vim-hug-neovim-rpc',
+                \    'roxma/nvim-yarp']})
+
+    call dein#add('roxma/vim-hug-neovim-rpc')
+    call dein#add('roxma/nvim-yarp')
+
+    call dein#add('tom95/deoplete-clang2', {'depends' : 'Shougo/deoplete.nvim'})
+
+    call dein#add('zchee/deoplete-jedi', {'depends' : 'Shougo/deoplete.nvim'})
+    call dein#add('Shougo/neco-vim', {'depends' : 'Shougo/deoplete.nvim'})
+    call dein#add('zchee/deoplete-zsh', {'depends' : 'Shougo/deoplete.nvim'})
+    call dein#add('wellle/tmux-complete.vim', {'depends' : 'Shougo/deoplete.nvim'})
+    call dein#add('Shougo/neoinclude.vim', {'depends' : 'Shougo/deoplete.nvim'})
+    call dein#add('Shougo/echodoc.vim')
+
+
     call dein#add('Shougo/neosnippet-snippets')
     call dein#add('Shougo/neosnippet.vim')
 
@@ -1065,6 +1076,7 @@ endif
 
 if dein#check_install()
     call dein#install()
+    call dein#remote_plugins()
 endif
 
 command! DeinInstall if dein#check_install() | call dein#install() | endif
@@ -1077,98 +1089,24 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if dein#tap('deoplete.vim') "{{{2
-    call deoplete#enable()
+if dein#tap('echodoc.vim') "{{{2
+    let g:echodoc#enable_at_startup = 1
+    if &showmode
+        set cmdheight=2
+    endif
+    set completeopt-=preview
+    set shortmess+=c
 endif "}}}2
 
-if dein#tap('neocomplete') "{{{2
-    " Use neocomplete.
-    let g:neocomplete#enable_at_startup = 1
-
-    augroup NEOCOMPLETE
-        autocmd!
-        autocmd FileType gitcommit let g:neocomplete#enable_auto_close_preview = 0
-    augroup END
-
-    nnoremap conc :NeoCompleteToggle<CR>
-
-    let g:neocomplete#enable_smart_case = 1
-    let g:neocomplete#enable_camel_case = 1
-    let g:neocomplete#enable_under_bar = 1
-    let g:neocomplete#enable_auto_delimiter = 1
-    let g:neocomplete#sources#tags#cache_limit_size = 5000000000000000.0
-    let g:neocomplete#max_list = 20
-    let g:neocomplete#data_directory = s:make_cache_path_str('neocomplete')
-
-    " Define keyword.
-    if !exists('g:neocomplete#keyword_patterns')
-        let g:neocomplete#keyword_patterns = {}
-    endif
-    let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-    " Plugin key-mappings
-    inoremap <expr><C-g> neocomplete#undo_completion()
-
-    " Search from neocomplete, omni candidates, vim keywords.
-    let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
-
-    " For smart TAB completion.
-    function! s:check_back_space() abort "{{{
-        let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
-    imap <expr><TAB>
-                \ pumvisible() ? "\<C-n>" :
-                \  (
-                \      <SID>check_back_space() ? "\<TAB>" :
-                \      neocomplete#start_manual_complete()
-                \  )
-
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplete#close_popup()
-    inoremap <expr><CR>  pumvisible() ? neocomplete#close_popup() : "\<CR>"
-    inoremap <expr><C-e>  neocomplete#cancel_popup()
-
-    augroup omni_completion
-        autocmd!
-        " Enable omni completion.
-        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-        autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-        autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    augroup END
-
-    " Enable heavy omni completion.
-    if !exists('g:neocomplete#sources#omni#input_patterns')
-        let g:neocomplete#sources#omni#input_patterns = {}
-    endif
-
-    let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-    let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-    let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
+if dein#tap('deoplete.nvim') "{{{2
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#sources#clang#sort_algo = 'priority'
 endif "}}}2
 
 if dein#tap('neosnippet-snippets') "{{{2
     imap <C-e> <Plug>(neosnippet_expand_or_jump)
     smap <C-e> <Plug>(neosnippet_expand_or_jump)
     xmap <C-e> <Plug>(neosnippet_expand_target)
-
-    imap <expr><CR>
-                \ pumvisible() ?
-                \ (
-                \     neosnippet#expandable() ?
-                \     "\<Plug>(neosnippet_expand)" :
-                \     neocomplete#close_popup()
-                \ ) :
-                \ ("\<CR>")
-
-
-    function! s:check_back_space() abort "{{{
-        let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
 
     if has('conceal')
         set conceallevel=2 concealcursor=i
@@ -1180,7 +1118,9 @@ endif "}}}2
 
 if dein#tap('unite.vim') "{{{2
     let g:unite_data_directory = s:make_cache_path_str('unite')
-
+    let g:unite_winheight = 10
+    let g:unite_split_rule = 'botright'
+    call unite#filters#sorter_default#use(['sorter_rank'])
 endif "}}}2
 
 if dein#tap('denite.nvim') "{{{2
@@ -1721,10 +1661,6 @@ if dein#tap('vim-easy-align') "{{{2
     xmap ga <Plug>(EasyAlign)
     " Start interactive EasyAlign for a motion/text object (e.g. gaip)
     nmap ga <Plug>(EasyAlign)
-endif "}}}2
-
-if dein#tap('ctrlp.vim') "{{{2
-    let g:ctrlp_cmd = 'CtrlPMixed'
 endif "}}}2
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

@@ -94,6 +94,8 @@ if _is_installed 'pyenv/pyenv'; then
     eval "$(pyenv init -)"
 fi
 
+# enable zsh completion in [n]vim via deoplete.nvim and deoplete-zsh
+zmodload zsh/zpty
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{
 ##############################################################################

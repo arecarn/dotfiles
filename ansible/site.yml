@@ -33,6 +33,7 @@
     - llvm
     - lmms
     - lua
+    - markdownlint
     - moreutils
     - mutt
     - neovim

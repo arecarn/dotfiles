@@ -1544,12 +1544,13 @@ if dein#tap('vim-operator-replace') "{{{2
 endif "}}}2
 
 if dein#tap('gruvbox') "{{{2
+    let g:gruvbox_guisp_fallback = 'fg'
     colorscheme gruvbox
 endif "}}}2
 
 if dein#tap('lightline.vim') "{{{2
     let g:lightline = {
-                \ 'colorscheme': 'default',
+                \ 'colorscheme': 'gruvbox',
                 \ 'active': {
                 \     'left': [['winnr', 'bufnr', 'mode', 'paste'], ['fugitive', 'filename']]
                 \ },

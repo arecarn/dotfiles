@@ -1,0 +1,16 @@
+---
+- name: python 2 package
+  tags: jedi
+  become: !!bool yes
+  pip:
+    name: jedi
+    executable: "{{pip2_executable[ansible_distribution | lower]\
+                 | default([pip2])}}"
+
+- name: python 3 package
+  tags: jedi
+  become: !!bool yes
+  pip:
+    name: jedi
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

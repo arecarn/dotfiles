@@ -881,6 +881,7 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:ale_emit_conflict_warnings = 0  " has to be run before loading plugins
 
+let g:dein#types#git#clone_depth = 1
 let s:plugin_path = s:make_cache_directory('plugins')
 let s:dein_path = s:plugin_path . '/dein'
 if !isdirectory(s:dein_path)

@@ -5,7 +5,6 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 import os
 import fnmatch
 from invoke import task
-import dploy
 
 IS_WINDOWS = os.name == 'nt'
 if IS_WINDOWS:
@@ -137,6 +136,10 @@ class Dploy():
     Class to handle logic and data to stow and unstow using dploy
     """
     def __init__(self):
+        # do a file level import so this whole script isn't dependant on dploy
+        # preventing us from installing it using the provision task
+        import dploy
+        self.dploy = dploy
         self.home = os.environ[STOW_LOCATION]
         self.packages = [
             'cmd',
@@ -166,9 +169,9 @@ class Dploy():
         stow and link the specified files
         """
         # pylint: disable=invalid-name
-        dploy.stow(self.packages, self.home, is_silent=False)
+        self.dploy.stow(self.packages, self.home, is_silent=False)
         for src, dest in self.links:
-            dploy.link(os.path.join(*src), os.path.join(*dest), is_silent=False)
+            self.dploy.link(os.path.join(*src), os.path.join(*dest), is_silent=False)
 
     def unstow(self):
         """
@@ -180,7 +183,7 @@ class Dploy():
             except FileNotFoundError:
                 pass
 
-        dploy.unstow(self.packages, self.home, is_silent=False)
+        self.dploy.unstow(self.packages, self.home, is_silent=False)
 
 
 @task

@@ -99,7 +99,12 @@ zmodload zsh/zpty
 ###########################################################################}}}
 # ENVIRONMENT                                                              {{{
 ##############################################################################
-export EDITOR='nvim'
+if exists nvim; then
+    export EDITOR='nvim'
+else
+    export EDITOR='vim'
+fi
+
 
 export LANG='en_US.UTF-8'
 

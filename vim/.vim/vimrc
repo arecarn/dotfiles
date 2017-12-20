@@ -948,7 +948,6 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('chreekat/vim-paren-crosshairs')
     call dein#add('junegunn/goyo.vim')
     call dein#add('nathanaelkane/vim-indent-guides')
-    call dein#add('itchyny/vim-cursorword')
 
     if !s:has_windows
         call dein#add('darrinholst/tmuxline.vim')
@@ -1519,11 +1518,9 @@ else
 endif "}}}2
 
 if dein#tap('vim-matchmaker') "{{{2
-    nnoremap comm :MatchmakerToggle<CR>
-    augroup match_maker
-        autocmd!
-        autocmd Syntax,BufNewFile,BufEnter,BufRead * highlight clear Matchmaker | highlight Matchmaker term=underline cterm=reverse  gui=reverse
-    augroup END
+    let g:matchmaker_enable_startup = 1
+    " change option highlight word
+    nnoremap cohw :MatchmakerToggle<CR>
 endif "}}}2
 
 if dein#tap('vim-rooter') "{{{2

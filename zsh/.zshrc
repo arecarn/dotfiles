@@ -326,6 +326,9 @@ alias -g ...="../../"
 alias -g send-right="tmux send-keys -t right"
 alias -g send-left="tmux send-keys -t left"
 
+# this allows aliases to mostly work when using sudo
+alias sudo='sudo '
+
 alias gp='grep -P'
 alias py='python'
 alias p="${PAGER}"

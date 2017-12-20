@@ -340,7 +340,7 @@ alias e="${EDITOR}"
 
 alias mk='mkdir'
 alias rd='rmdir'
-alias rmr='rm -r'
+alias wipe='rm -rf'
 
 # follow symbolic link
 fln() {

@@ -19,7 +19,7 @@
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   apt_repository:
-    repo: 'ppa:neovim-ppa/unstable'
+    repo: 'ppa:neovim-ppa/stable'
     state: present
     update_cache: !!bool yes
 

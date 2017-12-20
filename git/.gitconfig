@@ -75,14 +75,16 @@
     bl = branch --all --verbose --verbose # Branch List
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
-    bdr = push --delete # Branch Delete Remote
+    # Branch Delete Remote
+    # Usage: git bdr <remote-naem> <branch-name>
+    bdr = push --delete
+
     bc = checkout -b # Branch Create
-
-    # Branch Create Remote
-    bcr = "!f() { git push --set-upstream \"$1\" $(git symbolic-ref --short HEAD); }; f"
-
-    bsr = branch --set-upstream-to # Branch Set Remote
     bco = checkout --orphan # Branch Create Orphan (empty branch)
+    # Branch Create Remote
+    # Usage: git bcr <remote-naem> <branch-name>
+    bcr = "!f() { git push --set-upstream \"$1\" $(git symbolic-ref --short HEAD); }; f"
+    bsr = branch --set-upstream-to # Branch Set Remote
     # Branches that are Merged
     bm =  !echo 'Merged Branches:'     && git branch --all --merged
     # Branches that are  Un-Merged

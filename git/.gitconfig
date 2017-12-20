@@ -155,7 +155,7 @@
 
     # ReBase
     rb = rebase
-    rbi = rebase --interactive --autostash
+    rbi = rebase --interactive --autostash --preserve-merges
     rbc = rebase --continue
     rba = rebase --abort
     # During a rebase it can be difficult to remember what the original intent

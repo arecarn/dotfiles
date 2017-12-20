@@ -214,7 +214,6 @@ zstyle ':completion:*:command-descriptions' command '_call_whatis -l -s 1 -r .\*
 setopt auto_name_dirs # allow special ~dirs for shortcuts
 setopt auto_cd # just by writing a path
 setopt print_exit_value #print non-zero exit codes
-setopt rm_star_wait # add a wait / confirmation when doing a rm *
 setopt interactivecomments # pound sign in interactive prompt
 # Display CPU usage stats for commands taking more than REPORTTIME seconds
 REPORTTIME=10

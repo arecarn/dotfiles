@@ -73,6 +73,11 @@
 
     b = branch
     bl = branch --all --verbose --verbose # Branch List
+    # Branches that are Merged
+    bm =  !echo 'Merged Branches:'    && git bl --merged
+    # Branches that are  Un-Merged
+    bum = !echo ' Unmerged Branches:' && git bl --no-merged
+
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
     # Branch Delete Remote
@@ -85,10 +90,7 @@
     # Usage: git bcr <remote-naem> <branch-name>
     bcr = "!f() { git push --set-upstream \"$1\" $(git symbolic-ref --short HEAD); }; f"
     bsr = branch --set-upstream-to # Branch Set Remote
-    # Branches that are Merged
-    bm =  !echo 'Merged Branches:'     && git branch --all --merged
-    # Branches that are  Un-Merged
-    bum = !echo ' Unmerged Branches:' && git branch --all --no-merged
+
 
     t = tag
     ta = tag --annotate

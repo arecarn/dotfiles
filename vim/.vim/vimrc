@@ -1519,8 +1519,14 @@ endif "}}}2
 
 if dein#tap('vim-matchmaker') "{{{2
     let g:matchmaker_enable_startup = 1
+
     " change option highlight word
     nnoremap cohw :MatchmakerToggle<CR>
+
+    augroup matchmaker
+        autocmd!
+        autocmd ColorScheme * highlight Matchmaker term=underline ctermbg=238 guibg=#444444
+    augroup END
 endif "}}}2
 
 if dein#tap('vim-rooter') "{{{2

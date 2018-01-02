@@ -13,3 +13,12 @@
   package:
     name: zsh
     state: latest
+
+- name: set default shell
+  tags: zsh
+  lineinfile:
+    path: ~/.profile
+    insertafter: EOF
+    line: 'export SHELL=$(which zsh)
+    && [ -z "$ZSH_VERSION" ]
+    && exec "$SHELL" -l # must be last'

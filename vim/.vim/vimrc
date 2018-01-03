@@ -129,27 +129,32 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set undofile
 
-execute 'set undodir=' . s:make_data_directory('undo') . '//'
+if s:has_windows
+    execute 'set undodir=' . s:make_data_directory('undo') . '\\\\'
+else
+    execute 'set undodir=' . s:make_data_directory('undo') . '//'
+endif
+
 set undolevels=20000
 set undoreload=20000
 set noswapfile
 
 function! Undo_clean() abort
-    let files = globpath(&undodir, '*')
-    let filess = split(files, '\n')
-    for file in filess
-        let rfile = substitute(file, escape(&undodir, '\/'), '', 'g')
+    let undo_files_string = globpath(&undodir, '*')
+    let undo_files = split(undo_files_string, '\n')
+    for undo_file in undo_files
+        let real_file = substitute(undo_file, escape(&undodir, '\/\\'), '', 'g')
 
         if has('win32') || has('win64')
-            let rfile = substitute(rfile, '%', '/', 'g')
-            return
-            "TODO need to test on windows
+            let real_file = substitute(real_file, '%%', ':\', 'g')
+            let real_file = substitute(real_file, '%', '\', 'g')
         else
-            let rfile = substitute(rfile, '%', '\', 'g')
+            let real_file = substitute(real_file, '%', '/', 'g')
         endif
 
-        if !filereadable(rfile)
-            call delete(file)
+        if !filereadable(real_file)
+            echo undo_file
+            call delete(undo_file)
         endif
     endfor
 endfunction
@@ -161,12 +166,16 @@ set backup
 
 let g:backupdir =  s:make_data_directory('backup')
 
-
 function! GetBackupDir() abort
     let basic_path = expand('%:p:h')
-    let path_colon_removed = substitute(basic_path, ':', '', 'g')
-    let path = path_colon_removed
-    " TODO non-windows should add path seperator
+    let path = ''
+
+    if s:has_windows
+        let path_colon_removed = substitute(basic_path, ':', '', 'g')
+        let path = '\' . path_colon_removed
+    else
+        let path = basic_path
+    endif
     return g:backupdir . path
 endfunction
 
@@ -196,26 +205,32 @@ function! OpenBackUpDir() abort
     execute ':vsplit ' . g:backupdir
 endfunction
 
-" Todo
+" Remove backups of files that no longer exist.
 function! BackupClean() abort
     let files = split(globpath(g:backupdir, '**', 1), '\n')
     let files += split(globpath(g:backupdir, '**/.*', 1), '\n')
 
     let i = len(files)
     while i > 0
-        if isdirectory(files[i - 1])
+        let backup_file = files[i - 1]
+        if isdirectory(backup_file)
             call remove(files, i - 1)
             let i = i - 2
             continue
         endif
 
-        let rfile = substitute(files[i - 1], escape(g:backupdir, '\/'), '', 'g')
-        let rfile = substitute(rfile, '_\d\d\d\d-\d\d-\d\d-\d\d$', '', 'g')
-        " TODO if is windows handle the drive letter
-
-        if !filereadable(rfile)
-            call delete(rfile)
+        " See if the real backup_file still exists
+        let real_file = substitute(backup_file, escape(g:backupdir, '\/'), '', 'g')
+        let real_file = substitute(real_file, '_\d\d\d\d-\d\d-\d\d-\d\d$', '', 'g')
+        if s:has_windows
+            " converts the drive letter from
+            let real_file = substitute(real_file, '\v^\\(\w)(.*)', '\1:\2', 'g')
         endif
+        if !filereadable(real_file)
+            echo backup_file
+            call delete(backup_file)
+        endif
+
         let i = i -1
     endwhile
 endfunction
@@ -234,6 +249,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" to work around issue in nvim run "nvim -u NORC +set\ spell"
 set spell
 set spelllang=en_us
 let &spellfile = s:app_path . 'utils/spell/spellfile.add'

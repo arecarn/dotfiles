@@ -328,7 +328,8 @@ execute 'nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set clipboard=unnamedplus,unnamed
+" set clipboard=unnamedplus,unnamed
+set clipboard=unnamedplus
 set splitright
 
 " disable dang error{visual}bells for good
@@ -763,6 +764,7 @@ cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
 let $zsh = '~/.zshrc'
 let $zshl = '~/.zshrc_local'
+let $zshf = '~/.config/zsh/functions.sh'
 let $git = '~/.gitconfig'
 let $viml = '~/.vimrc_local'
 let $vim = '$MYVIMRC'
@@ -1001,10 +1003,8 @@ if dein#load_state(s:dein_path_plugins)
 
 
     " Completion
-    call dein#add('Shougo/deoplete.nvim',
-                \{'depends' :
-                \    ['roxma/vim-hug-neovim-rpc',
-                \    'roxma/nvim-yarp']})
+    call dein#add('roxma/nvim-completion-manager',
+                \ {'depends' : 'roxma/vim-hug-neovim-rpc'})
 
     call dein#add('roxma/vim-hug-neovim-rpc')
     call dein#add('roxma/nvim-yarp')

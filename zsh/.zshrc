@@ -129,6 +129,7 @@ fi
 
 export zsh="${HOME}/.zshrc"
 export zshl="${HOME}/.zshrc_local"
+export zshf="${ZSH_CONFIG_DIR}/functions.sh"
 export git="${HOME}/.gitconfig"
 export gitl="${HOME}/.gitconfig_local"
 export vim="${HOME}/.vimrc"

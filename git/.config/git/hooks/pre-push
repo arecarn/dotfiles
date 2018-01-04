@@ -1,0 +1,12 @@
+#!/bin/sh
+
+exit_code=0
+
+pre_push_check_for_fixup_and_wip_commits.sh
+exit_code=$((exit_code + $?))
+
+if [ "${exit_code}" != 0 ]; then
+    echo 'pre-push: pass -n or --no-verify to "git push" to bypass pre-push hooks'
+fi
+
+exit ${exit_code}

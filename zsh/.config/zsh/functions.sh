@@ -7,7 +7,7 @@ exists(){
 
 # check the wather
 weather(){
-    curl wttr.in/"$@"
+    curl wttr.in/"$*"
 }
 
 # follow a symbolic link
@@ -52,11 +52,13 @@ _nmod()
     )
 }
 
+# normalize permissions for directories
 nmodd()
 {
     _nmod 777 "$@"
 }
 
+# normalize permissions for files
 nmodf()
 {
     _nmod 666 "$@"
@@ -74,7 +76,8 @@ testbeep() {
     fi
 }
 
+# start the ssh-agent and your private key
 start-ssh-agent() {
-    eval $(ssh-agent -s)
+    eval "$(ssh-agent -s)"
     ssh-add ~/.ssh/id_rsa
 }

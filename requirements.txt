@@ -1,4 +1,5 @@
 invoke
+gitpython
 dploy
 vim-vint
 yamllint

@@ -16,6 +16,17 @@ else:
     STOW_LOCATION = 'HOME'
 
 
+# try to cd to the root of the git directory because all of the tasks expect
+# to be called from there.
+try:
+    import git
+    GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
+    GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
+    os.chdir(GIT_ROOT)
+except ImportError:
+    pass
+
+
 def find_files(directory, pattern):
     """
     Recursively find files in directory using the glob expression pattern

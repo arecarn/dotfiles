@@ -17,7 +17,7 @@ file_list=$(git diff --cached --name-only "${against}")
 year=$(date +"%Y")
 
 for file in ${file_list}; do
-    grep -i copyright >/dev/null 2>&1 "${file}" || continue
+    grep -iP 'copyright.*\d{4}' >/dev/null 2>&1 "${file}" || continue
 
     if ! grep -i -e "copyright.*${year}" "${file}" >/dev/null 2>&1; then
         missing_copyright_files="${missing_copyright_files} ${file}"
@@ -25,10 +25,9 @@ for file in ${file_list}; do
 done
 
 if [ -n "${missing_copyright_files}" ]; then
-    echo "pre-commit: Aborting commit due to missing or incorrect year in copyright notices"
-    echo "pre-commit: ${year} is missing in the copyright notice of the following files:"
+    echo "pre-commit: Aborting commit due to incorrect year in copyright notices for the following files:"
     for file in ${missing_copyright_files}; do
-        printf '    %s\n' "${file}"
+        printf '    %s\n' "$(grep -i -P -m1 -H -n --color=always "copyright.*\d{4}" "${file}")"
     done
     exit 1
 fi

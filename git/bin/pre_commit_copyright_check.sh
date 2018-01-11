@@ -27,7 +27,12 @@ done
 if [ -n "${missing_copyright_files}" ]; then
     echo "pre-commit: Aborting commit due to incorrect year in copyright notices for the following files:"
     for file in ${missing_copyright_files}; do
-        printf '    %s\n' "$(grep -i -P -m1 -H -n --color=always "copyright.*\d{4}" "${file}")"
+        grep_color="auto"
+        if [ -t 1 ] ; then
+            # if we are in a shell use color otherwise use auto
+            grep_color="always"
+        fi
+        printf '    %s\n' "$(grep -i -P -m1 -H -n --color="${grep_color}" "copyright.*\d{4}" "${file}")"
     done
     exit 1
 fi

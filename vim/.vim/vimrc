@@ -378,7 +378,9 @@ set showtabline=2
 set list
 set listchars=trail:·,tab:→-,extends:▶,precedes:◀
 set noshowmode
-set signcolumn=yes
+if has('signs')
+    set signcolumn=yes
+endif
 
 " Maximize Window on Startup
 if has ('gui_running') && has('autocmd') && s:has_windows

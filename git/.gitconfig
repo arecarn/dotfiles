@@ -87,7 +87,7 @@
     bc = checkout -b # Branch Create
     bco = checkout --orphan # Branch Create Orphan (empty branch)
     # Branch Create Remote
-    # Usage: git bcr <remote-naem> <branch-name>
+    # Usage: git bcr <remote-name> <branch-name>
     bcr = "!f() { first_arg=\"$1\"; shift; git push --set-upstream \"${first_arg}\" $(git symbolic-ref --short HEAD) \"$@\"; }; f"
     bsr = branch --set-upstream-to # Branch Set Remote
 

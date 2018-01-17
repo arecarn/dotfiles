@@ -12,7 +12,7 @@ else
 fi
 
 # Use git diff-index to check for white space errors
-if ! git diff-index --check --cached $against; then
+if ! git diff-index --check --cached ${against}; then
     echo "pre-commit: Aborting commit due to white space errors"
     exit 1
 fi

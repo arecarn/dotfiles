@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Check for bad white spaces
+# Git pre-commit hook to check for bad white spaces
 #
 
 # Check if this is the initial commit

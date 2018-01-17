@@ -1,7 +1,10 @@
 #!/bin/sh
-# Prevents push of commits where the log message starts with "fixup!" or
-# "squash!" (i.e. commits generated with --fixup or --squash) and "WIP" (work in
-# progress).
+
+#
+# Git pre-push hook to prevents pushing commits where the log message starts
+# with "fixup!" or "squash!" (i.e. commits generated with --fixup or --squash)
+# and "WIP" (work in progress).
+#
 
 # This hook is called with the following parameters:
 #

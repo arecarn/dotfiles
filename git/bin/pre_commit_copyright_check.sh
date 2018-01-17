@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Check if copyright statements include the current year
+# Git pre-commit hook to check if copyright statements include the current year
 #
 
 # Check if this is the initial commit

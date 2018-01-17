@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# Git pre-commit hook to check for non-ASCII file names
+#
+
 # Check if this is the initial commit
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then

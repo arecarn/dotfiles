@@ -1,7 +1,8 @@
 #!/bin/sh
 
 #
-# Check for missing shebang in non-binary executable files
+# Git pre-commit hook to check for missing shebang in non-binary executable
+# files
 #
 
 # Check if this is the initial commit

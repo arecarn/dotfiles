@@ -18,7 +18,7 @@ file_list=$(git diff --cached --name-only "${against}")
 for file in ${file_list}; do
     if [ -x "${file}" ]; then
         if ! file -bL --mime "${file}" | grep -q 'binary'; then
-            if [ ! "$(head -c 2 "${file}")" = "#!" ]; then
+            if [ ! "$(git show :"${file}" | head -c 2)" = "#!" ]; then
                 missing_shebang_files="${missing_shebang_files} ${file}"
             fi
         fi

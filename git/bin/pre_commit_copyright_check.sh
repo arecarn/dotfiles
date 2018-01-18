@@ -13,7 +13,8 @@ else
     against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-file_list=$(git diff --cached --name-only "${against}")
+# Note: deleted files are excluded
+file_list=$(git diff --cached --name-only --diff-filter=d "${against}")
 year=$(date +"%Y")
 
 for file in ${file_list}; do

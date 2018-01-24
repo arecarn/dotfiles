@@ -5,6 +5,18 @@ exists(){
     command -v "$1" > /dev/null 2>&1
 }
 
+# add a path to the front (default) or end of $PATH if it is not already in
+# $PATH
+add_to_path () {
+    if ! echo "$PATH" | /bin/grep -Eq "(^|:)$1($|:)" ; then
+        if [ "$2" = "end" ] ; then
+            PATH="$PATH:$1"
+        else
+            PATH="$1:$PATH"
+        fi
+    fi
+}
+
 # check the wather
 weather(){
     curl wttr.in/"$*"
@@ -68,16 +80,20 @@ nmodf()
 # usage "some-comand; testbeep
 testbeep() {
     if [  $? -eq 0 ]; then
-        echo -e '\a'
+        beep
     else
-        echo -e '\a'
-        sleep 0.5
-        echo -e '\a'
+        beep
+        beep
+        beep
     fi
 }
 
-# start the ssh-agent and your private key
-start-ssh-agent() {
-    eval "$(ssh-agent -s)"
-    ssh-add ~/.ssh/id_rsa
+# start the ssh-agent && and prompt for ssh passphrase only after first login
+ssh-start-agent() {
+    if [ ! -S ~/.ssh/ssh_auth_sock ]; then
+      eval "$(ssh-agent)"
+      ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
+    fi
+    export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
+    ssh-add -l > /dev/null || ssh-add
 }

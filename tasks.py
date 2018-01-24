@@ -135,7 +135,7 @@ def clean(ctx):
 
 
 @task
-def setup(ctx, args=''):
+def requirements(ctx, args=''):
     """
     Install python requirements
     """
@@ -159,6 +159,7 @@ class Dploy():
             'mutt',
             'readline',
             'scripts',
+            'shell',
             'ssh',
             'tmux',
             'vim',

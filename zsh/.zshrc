@@ -4,16 +4,15 @@
 ##############################################################################
 export ZSH_DATA_DIR="${HOME}/.local/share/zsh"
 export ZSH_CACHE_DIR="${HOME}/.cache/zsh"
-export ZSH_CONFIG_DIR="${HOME}/.config/zsh"
-
-mkdir -p ${ZSH_CONFIG_DIR}
 mkdir -p ${ZSH_DATA_DIR}
 mkdir -p ${ZSH_CACHE_DIR}
 
+export SH_CONFIG_DIR="${HOME}/.config/shell"
+mkdir -p ${SH_CONFIG_DIR}
 ###########################################################################}}}
 # PLUGINS                                                                  {{{
 ##############################################################################
-source ${ZSH_CONFIG_DIR}/functions.sh
+source "${SH_CONFIG_DIR}"/functions.sh
 
 export ZPLUG_HOME="${ZSH_CACHE_DIR}/zplug"
 zplug_file="${ZPLUG_HOME}/init.zsh"
@@ -115,8 +114,7 @@ export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 export PATH="${PATH}:${HOME}/bin"
 
 if [[ "${OSTYPE}" == 'darwin'* ]]; then
-    # TODO HAVE ansible add these to ~/.profile
-    #for homebrew
+    # TODO HAVE ansible add these to ~/.profile for homebrew
     export MANPATH="${MANPATH}:/usr/local/man"
     export MANPATH="${MANPATH}:/opt/homebrew/bin"
     export PATH="/usr/local/bin:${PATH}"
@@ -129,7 +127,7 @@ fi
 
 export zsh="${HOME}/.zshrc"
 export zshl="${HOME}/.zshrc_local"
-export zshf="${ZSH_CONFIG_DIR}/functions.sh"
+export shf="${SH_CONFIG_DIR}/functions.sh"
 export git="${HOME}/.gitconfig"
 export gitl="${HOME}/.gitconfig_local"
 export vim="${HOME}/.vimrc"
@@ -137,7 +135,6 @@ export viml="${HOME}/.vimrc_local"
 export tmux="${HOME}/.tmux.conf"
 export t="${HOME}/Dropbox/notes/todo.txt"
 export i="${HOME}/Dropbox/notes/inbox.md"
-
 
 f="${HOME}/Dropbox/"
 p="${f}/projects/"

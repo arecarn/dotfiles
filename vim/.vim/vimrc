@@ -759,21 +759,22 @@ cnoremap <C-y> <SPACE><BS><TAB>
 
 cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
 
+let $zsh = '~/.zshrc'
+let $zshl = '~/.zshrc_local'
+let $shf = '~/.config/shell/functions.sh'
+let $git = '~/.gitconfig'
+let $gitl = '~/.gitconfig_local'
+let $vim = '$MYVIMRC'
+let $viml = '~/.vimrc_local'
+let $tmux = '~/.tmux.conf'
+let $t = '~/Dropbox/notes/todo.txt'
+let $i = '~/Dropbox/notes/inbox.md'
+
 cnoremap ~f ~/Dropbox
 cnoremap ~p ~/Dropbox/projects
 cnoremap ~n ~/Dropbox/notes
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
-let $zsh = '~/.zshrc'
-let $zshl = '~/.zshrc_local'
-let $zshf = '~/.config/zsh/functions.sh'
-let $git = '~/.gitconfig'
-let $viml = '~/.vimrc_local'
-let $vim = '$MYVIMRC'
-let $gitl = '~/.gitconfig_local'
-let $tmux = '~/.tmux.conf'
-let $t = '~/Dropbox/notes/todo.txt'
-let $i = '~/Dropbox/notes/inbox.md'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{

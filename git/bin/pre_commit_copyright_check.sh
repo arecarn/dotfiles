@@ -33,7 +33,7 @@ if [ -n "${missing_copyright_files}" ]; then
             # if we are in a shell use color otherwise use auto
             grep_color="always"
         fi
-        printf '    %s:%s\n' ${file} "$(git show :${file} | grep -i -P -m1 -n --color="${grep_color}" "copyright.*\d{4}")"
+        printf '    %s:%s\n' "${file}" "$(git show :"${file}" | grep -i -P -m1 -n --color="${grep_color}" "copyright.*\d{4}")"
     done
     exit 1
 fi

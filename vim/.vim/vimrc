@@ -95,6 +95,7 @@ set wildmode=full
 set wildmenu
 set wildcharm=<TAB>
 
+
 " File Searching
 " ignored files
 set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,cscope.out
@@ -180,7 +181,7 @@ function! GetBackupDir() abort
 endfunction
 
 function! SetupBackup() abort
-    let &backupdir=GetBackupDir()
+    let &backupdir = GetBackupDir()
     if !isdirectory(&backupdir)
         call mkdir(&backupdir, 'p', 0700)
     endif
@@ -190,7 +191,7 @@ endfunction
 if has('autocmd')
     augroup backupext
         autocmd!
-        autocmd BufWritePre * call SetupBackup()
+        autocmd BufWritePre,FileWritePre * call SetupBackup()
     augroup END
 endif
 

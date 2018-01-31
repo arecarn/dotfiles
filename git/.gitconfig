@@ -137,7 +137,7 @@
     # Add already staged files that need to be Updated in the staging area
     au = update-index --again
     # UnAdd
-    ua = reset HEAD ---
+    ua = reset HEAD --
 
     rs = reset
     rs1 = reset HEAD~

@@ -1,4 +1,3 @@
-setlocal textwidth=78
 let &l:commentstring = "// %s"
 setlocal cinoptions=
 setlocal cinoptions+=(s

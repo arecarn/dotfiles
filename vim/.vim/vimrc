@@ -195,15 +195,11 @@ if has('autocmd')
     augroup END
 endif
 
-function! OpenCurrentBackupDir() abort
+function! BackupOpenDirCurrent() abort
     let backupdir = GetBackupDir()
     if isdirectory(backupdir)
         execute ':vsplit ' . backupdir
     endif
-endfunction
-
-function! OpenBackUpDir() abort
-    execute ':vsplit ' . g:backupdir
 endfunction
 
 " Remove backups of files that no longer exist.
@@ -235,6 +231,9 @@ function! BackupClean() abort
         let i = i -1
     endwhile
 endfunction
+
+command! BackupDir execute ':vsplit ' . g:backupdir <CR>
+command! BackupDirCurrent call  BackupOpenDirCurrent()
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

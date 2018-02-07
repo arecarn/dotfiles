@@ -160,81 +160,11 @@ function! Undo_clean() abort
     endfor
 endfunction
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set backup
-
-let g:backupdir =  s:make_data_directory('backup')
-
-function! GetBackupDir() abort
-    let basic_path = expand('%:p:h')
-    let path = ''
-
-    if s:has_windows
-        let path_colon_removed = substitute(basic_path, ':', '', 'g')
-        let path = '\' . path_colon_removed
-    else
-        let path = basic_path
-    endif
-    return g:backupdir . path
-endfunction
-
-function! SetupBackup() abort
-    let &backupdir = GetBackupDir()
-    if !isdirectory(&backupdir)
-        call mkdir(&backupdir, 'p', 0700)
-    endif
-    let &backupext = '_' . strftime('%Y-%m-%d-%H')
-endfunction
-
-if has('autocmd')
-    augroup backupext
-        autocmd!
-        autocmd BufWritePre,FileWritePre * call SetupBackup()
-    augroup END
-endif
-
-function! BackupOpenDirCurrent() abort
-    let backupdir = GetBackupDir()
-    if isdirectory(backupdir)
-        execute ':vsplit ' . backupdir
-    endif
-endfunction
-
-" Remove backups of files that no longer exist.
-function! BackupClean() abort
-    let files = split(globpath(g:backupdir, '**', 1), '\n')
-    let files += split(globpath(g:backupdir, '**/.*', 1), '\n')
-
-    let i = len(files)
-    while i > 0
-        let backup_file = files[i - 1]
-        if isdirectory(backup_file)
-            call remove(files, i - 1)
-            let i = i - 2
-            continue
-        endif
-
-        " See if the real backup_file still exists
-        let real_file = substitute(backup_file, escape(g:backupdir, '\/'), '', 'g')
-        let real_file = substitute(real_file, '_\d\d\d\d-\d\d-\d\d-\d\d$', '', 'g')
-        if s:has_windows
-            " converts the drive letter from
-            let real_file = substitute(real_file, '\v^\\(\w)(.*)', '\1:\2', 'g')
-        endif
-        if !filereadable(real_file)
-            echo backup_file
-            call delete(backup_file)
-        endif
-
-        let i = i -1
-    endwhile
-endfunction
-
-command! BackupDir execute ':vsplit ' . g:backupdir <CR>
-command! BackupDirCurrent call  BackupOpenDirCurrent()
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                            {{{
@@ -1066,6 +996,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('vim-scripts/UnconditionalPaste')
     call dein#add('arecarn/vim-go-to-buffer')
     call dein#add('arecarn/vim-auto-autoread')
+    call dein#add('arecarn/vim-backup-tree')
     call dein#add('thinca/vim-qfreplace')
     call dein#add('tpope/vim-eunuch')
     call dein#add('arecarn/vim-spell-utils')
@@ -1110,6 +1041,7 @@ if dein#check_install()
 endif
 
 command! DeinInstall if dein#check_install() | call dein#install() | endif
+command! DeinUpdate call dein#update()
 
 filetype plugin indent on
 syntax on
@@ -1119,6 +1051,11 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if dein#tap('vim-backup-tree') "{{{2
+    " let g:backup_tree = s:make_data_directory('backup')
+endif "}}}2
+
+
 if dein#tap('echodoc.vim') "{{{2
     let g:echodoc#enable_at_startup = 1
     if &showmode

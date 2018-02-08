@@ -1,5 +1,4 @@
 " -                                                                        {{{
-"
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpo&vim
 set encoding=utf-8 "make Vim use UTF-8 by default
@@ -1052,7 +1051,7 @@ endif
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if dein#tap('vim-backup-tree') "{{{2
-    " let g:backup_tree = s:make_data_directory('backup')
+    let g:backup_tree = s:make_data_directory('backup')
 endif "}}}2
 
 

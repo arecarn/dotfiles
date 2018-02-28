@@ -698,6 +698,7 @@ let $viml = '~/.vimrc_local'
 let $tmux = '~/.tmux.conf'
 let $t = '~/Dropbox/notes/todo.txt'
 let $i = '~/Dropbox/notes/inbox.md'
+let $j = '~/Dropbox/notes/journal.md'
 
 cnoremap ~f ~/Dropbox
 cnoremap ~p ~/Dropbox/projects

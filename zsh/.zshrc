@@ -135,6 +135,7 @@ export viml="${HOME}/.vimrc_local"
 export tmux="${HOME}/.tmux.conf"
 export t="${HOME}/Dropbox/notes/todo.txt"
 export i="${HOME}/Dropbox/notes/inbox.md"
+export j="${HOME}/Dropbox/notes/journal.md"
 
 f="${HOME}/Dropbox/"
 p="${f}/projects/"

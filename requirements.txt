@@ -4,3 +4,4 @@ dploy
 vim-vint
 yamllint
 flake8
+pylint

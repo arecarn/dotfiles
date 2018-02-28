@@ -22,6 +22,9 @@
 # NOTE: if a ref does not yet exist the <remote SHA-1> will be 40 zeros
 zero_40_hash=0000000000000000000000000000000000000000
 
+# shellcheck disable=SC2034
+# local_ref and remote_ref are not used in this pre-push hook but are
+# instructive of what is passed to the script
 while read local_ref local_sha remote_ref remote_sha
 do
   if [ "${local_sha}" = ${zero_40_hash} ]; then

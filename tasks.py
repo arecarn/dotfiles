@@ -6,6 +6,9 @@ import os
 import fnmatch
 from invoke import task
 
+# disable the check for unused-arguments to ignore unused ctx parameter in tasks
+# pylint: disable=unused-argument
+
 IS_WINDOWS = os.name == 'nt'
 if IS_WINDOWS:
     # setting 'shell' is a work around for issue #345 of invoke

@@ -307,7 +307,7 @@ set showtabline=2
 set list
 set listchars=trail:·,tab:→-,extends:▶,precedes:◀
 set noshowmode
-if has('signs')
+if v:version >= 800
     set signcolumn=yes
 endif
 

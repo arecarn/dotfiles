@@ -1,6 +1,6 @@
 " -                                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set cpo&vim
+set cpoptions&vim
 set encoding=utf-8 "make Vim use UTF-8 by default
 scriptencoding utf-8
 set fileformats=unix,dos
@@ -74,15 +74,15 @@ function! s:make_data_path_str(name) abort
 endfunction
 
 function! s:make_cache_directory(dir_name) abort
-    let path = s:make_cache_path_str(a:dir_name)
-    call s:make_private_directory(path)
-    return path
+    let l:path = s:make_cache_path_str(a:dir_name)
+    call s:make_private_directory(l:path)
+    return l:path
 endfunction
 
 function! s:make_data_directory(dir_name) abort
-    let path = s:make_data_path_str(a:dir_name)
-    call s:make_private_directory(path)
-    return path
+    let l:path = s:make_data_path_str(a:dir_name)
+    call s:make_private_directory(l:path)
+    return l:path
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -140,21 +140,21 @@ set undoreload=20000
 set noswapfile
 
 function! Undo_clean() abort
-    let undo_files_string = globpath(&undodir, '*')
-    let undo_files = split(undo_files_string, '\n')
-    for undo_file in undo_files
-        let real_file = substitute(undo_file, escape(&undodir, '\/\\'), '', 'g')
+    let l:undo_files_string = globpath(&undodir, '*')
+    let l:undo_files = split(l:undo_files_string, '\n')
+    for l:undo_file in l:undo_files
+        let l:real_file = substitute(l:undo_file, escape(&undodir, '\/\\'), '', 'g')
 
         if has('win32') || has('win64')
-            let real_file = substitute(real_file, '%%', ':\', 'g')
-            let real_file = substitute(real_file, '%', '\', 'g')
+            let l:real_file = substitute(l:real_file, '%%', ':\', 'g')
+            let l:real_file = substitute(l:real_file, '%', '\', 'g')
         else
-            let real_file = substitute(real_file, '%', '/', 'g')
+            let l:real_file = substitute(l:real_file, '%', '/', 'g')
         endif
 
-        if !filereadable(real_file)
-            echo undo_file
-            call delete(undo_file)
+        if !filereadable(l:real_file)
+            echo l:undo_file
+            call delete(l:undo_file)
         endif
     endfor
 endfunction
@@ -414,43 +414,43 @@ xnoremap gr r<Space>gvo<Esc>R
 noremap <silent><leader>rt :retab<CR>
 
 function! CommandLineCR() abort
-    let cmdline = getcmdline()
+    let l:cmdline = getcmdline()
     command! -bar Z silent set more|delcommand Z
 
-    if cmdline =~ '\v\C^(ls|files|buffers)'
+    if l:cmdline =~# '\v\C^(ls|files|buffers)'
         " like :ls but prompts for a buffer command
         return "\<CR>:b"
 
-    elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+    elseif l:cmdline =~# '\v\C/(#|nu|num|numb|numbe|number)$'
         " like :g//# but prompts for a command
         return "\<CR>:"
 
-    elseif cmdline =~ '\v\C^(dli|il)'
+    elseif l:cmdline =~# '\v\C^(dli|il)'
         " like :dlist or :ilist but prompts for a count for :djump or :ijump
-        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+        return "\<CR>:" . l:cmdline[0] . 'j  ' . split(l:cmdline, ' ')[1] . "\<S-Left>\<Left>"
 
-    elseif cmdline =~ '\v\C^(cli|lli)'
+    elseif l:cmdline =~# '\v\C^(cli|lli)'
         " like :clist or :llist but prompts for an error/location number
-        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+        return "\<CR>:sil " . repeat(l:cmdline[0], 2) . "\<Space>"
 
-    elseif cmdline =~ '\C^old'
+    elseif l:cmdline =~# '\C^old'
         return "\<CR>:Z|e #<"
 
-    elseif cmdline =~ '\C^changes'
+    elseif l:cmdline =~# '\C^changes'
         " like :changes but prompts for a change to jump to
         set nomore
         return "\<CR>:Z|norm! g;\<S-Left>"
 
-    elseif cmdline =~ '\C^ju'
+    elseif l:cmdline =~# '\C^ju'
         " like :jumps but prompts for a position to jump to
         set nomore
         return "\<CR>:Z|norm! \<C-o>\<S-Left>"
 
-    elseif cmdline =~ '\C^marks'
+    elseif l:cmdline =~# '\C^marks'
         " like :marks but prompts for a mark to jump to
         return "\<CR>:norm! `"
 
-    elseif cmdline =~ '\C^undol'
+    elseif l:cmdline =~# '\C^undol'
         " like :undolist but prompts for a change to undo
         return "\<CR>:u "
 
@@ -465,9 +465,9 @@ cnoremap <expr> <CR> CommandLineCR()
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>
 function! s:under_line() abort
-    let char = escape(nr2char(getchar()), '\')
+    let l:char = escape(nr2char(getchar()), '\')
     normal! yyp
-    execute ':s#\m\S.*\S\|\S#\=repeat(''' . char . ''',strlen(submatch(0)))#g'
+    execute ':s#\m\S.*\S\|\S#\=repeat(''' . l:char . ''',strlen(submatch(0)))#g'
 endfunction
 
 " format wile in insert mode
@@ -482,10 +482,10 @@ function! PreviewWord() abort
         return
     endif
 
-    let word_under_cursor = expand("<cword>")
-    let is_word_under_cursor_a_letter = word_under_cursor =~ '\a'
+    let l:word_under_cursor = expand('<cword>')
+    let l:is_word_under_cursor_a_letter = l:word_under_cursor =~# '\a'
 
-    if is_word_under_cursor_a_letter
+    if l:is_word_under_cursor_a_letter
 
         " Delete any existing highlight before showing another tag
         silent! wincmd P  " jump to preview window
@@ -496,22 +496,22 @@ function! PreviewWord() abort
 
         " Try displaying a matching tag for the word under the cursor
         try
-            execute ":ptag " . word_under_cursor
+            execute ':ptag ' . l:word_under_cursor
         catch
             return
         endtry
 
         silent! wincmd P " jump to preview window
         if &previewwindow " if we really get there...
-            if has("folding")
+            if has('folding')
                 silent! .foldopen  " don't want a closed fold
             endif
-            call search("$", "b")  " to end of previous line
-            let word_under_cursor = substitute(word_under_cursor, '\\', '\\\\', "")
-            call search('\<\V' . word_under_cursor . '\>')  " position cursor on match
+            call search('$', 'b')  " to end of previous line
+            let l:word_under_cursor = substitute(l:word_under_cursor, '\\', '\\\\', '')
+            call search('\<\V' . l:word_under_cursor . '\>')  " position cursor on match
             " Add a match highlight to the word at this position
             hi previewWord term=underline cterm=reverse gui=reverse
-            execute 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
+            execute 'match previewWord "\%' . line('.') . 'l\%' . col('.') . 'c\k*"'
             wincmd p " back to old window
         endif
     endif
@@ -522,8 +522,8 @@ endfun
 " TODO add to util set
 function! s:in(group, item) abort
     if type(a:group) == type('')
-        let group = split(a:group, '\zs')
-        return index(group, a:item) <= 0
+        let l:group = split(a:group, '\zs')
+        return index(l:group, a:item) <= 0
     endif
 endfunction
 
@@ -542,20 +542,20 @@ function! s:scratch_toggle() abort
     endif
 endfunction
 function! s:format_options_toggle(options, message) abort
-    let options = split(a:options, '\zs')
+    let l:options = split(a:options, '\zs')
 
-    for option in options
-        if s:in(&formatoptions, option)
-            let add_or_subtract = '+='
-            let message = printf("on: %s", a:message)
+    for l:option in l:options
+        if s:in(&formatoptions, l:option)
+            let l:add_or_subtract = '+='
+            let l:message = printf('on: %s', a:message)
         else
-            let add_or_subtract = '-='
-            let message =  printf("off: %s", a:message)
+            let l:add_or_subtract = '-='
+            let l:message =  printf('off: %s', a:message)
         endif
-        execute 'set formatoptions' . add_or_subtract . option
+        execute 'set formatoptions' . l:add_or_subtract . l:option
     endfor
     set formatoptions?
-    echo message
+    echo l:message
 endfunction
 nnoremap cotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
 nnoremap copw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
@@ -634,8 +634,8 @@ cnoremap <C-t> <C-r>=expand('%:p:h') . '/'<CR>
 " adp Directory Path (head) (/something/src)
 " dp Directory Path Relative to pwd (head) (/something/src)
 " pwd Present Working Directory
-let extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
-let maps = [
+let s:extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
+let s:maps = [
             \     {
             \         'str': 'fn',
             \         'func': "expand('%:t')"
@@ -651,12 +651,12 @@ let maps = [
             \     {
             \         'str': 'ofn',
             \         'func': "substitute(expand('%:t'), '"
-            \         . extension_patter . "', '\\2', 'g')"
+            \         . s:extension_patter . "', '\\2', 'g')"
             \     },
             \     {
             \         'str': 'aofp',
             \         'func': "substitute(expand('%:p:r:.'), '"
-            \         . extension_patter . "', '\\2', 'g')"
+            \         . s:extension_patter . "', '\\2', 'g')"
             \     },
             \     {
             \         'str': 'ofp',
@@ -675,12 +675,12 @@ let maps = [
             \         'func': 'getcwd()'
             \     }
             \  ]
-for map in maps
-    execute 'nnoremap <silent> <Leader>y' . map.str . ' ' .
-                \ ':let @*=' . map.func . '<CR>' .
-                \ ':let @+=' . map.func . '<CR>' .
-                \ ':let @"=' . map.func . '<CR>'
-    execute 'cnoremap %' . map.str . ' <C-r>=' . map.func . '<CR>'
+for s:map in s:maps
+    execute 'nnoremap <silent> <Leader>y' . s:map.str . ' ' .
+                \ ':let @*=' . s:map.func . '<CR>' .
+                \ ':let @+=' . s:map.func . '<CR>' .
+                \ ':let @"=' . s:map.func . '<CR>'
+    execute 'cnoremap %' . s:map.str . ' <C-r>=' . s:map.func . '<CR>'
 endfor
 
 " accept completion (requires "set wildcharm = <TAB>)
@@ -719,16 +719,16 @@ function! SearchPosition() abort
         " echo "added bar = ".@/
     endif
 
-    let line = getpos('.')[1]
-    let col = getpos('.')[2]
-    execute "let @/ .= '\\%" . line . "l'"
-    execute "let @/ .= '\\%" . col . "c'"
+    let l:line = getpos('.')[1]
+    let l:col = getpos('.')[2]
+    execute "let @/ .= '\\%" . l:line . "l'"
+    execute "let @/ .= '\\%" . l:col . "c'"
 endfunction
 
 nnoremap g** :<C-U>call AddToSearch('n')<CR>
 xnoremap g* :<C-U>call AddToSearch('x')<CR>
 function! AddToSearch(mode) abort
-    let save_reg = @@
+    let l:save_reg = @@
     if @/ !=# ''
         let @/ .= '\|'
     endif
@@ -737,10 +737,10 @@ function! AddToSearch(mode) abort
     elseif a:mode ==# 'n'
         normal! yiw
     else
-        let @@ = save_reg
+        let @@ = l:save_reg
     endif
     let @/ .= @@
-    let @@ = save_reg
+    let @@ = l:save_reg
 endfunction
 
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
@@ -761,7 +761,7 @@ command! -nargs=* -range=0 -bang Seq
 
 function! Seq(count, first_line, last_line, cmdInput, bang) abort
     " anything within backticks
-    let rg_expr = '`\(.\{-1,}\)`'
+    let l:rg_expr = '`\(.\{-1,}\)`'
 
     " 1 index if ! is used
     if a:bang !=# '!'
@@ -773,7 +773,7 @@ function! Seq(count, first_line, last_line, cmdInput, bang) abort
     let @a = ''
     let r = ''
     for i in range(0, a:last_line-a:first_line) "TODO fails without a range
-        let l:line = substitute(a:cmdInput, rg_expr, '\=eval(submatch(1))', 'g')
+        let l:line = substitute(a:cmdInput, l:rg_expr, '\=eval(submatch(1))', 'g')
         echomsg l:line
         " call append(i+a:first_line, line)
         let r = r.l:line."\n"

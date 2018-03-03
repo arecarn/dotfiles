@@ -281,6 +281,7 @@ bindkey -M viins '^F'    forward-char
 bindkey -M viins '^B'    backward-char
 bindkey -M viins '^V'    edit-command-line
 bindkey -M viins '^G'    _complete_menu
+bindkey -M viins '^Q'    push-line
 # }}}
 
 # Vim Mode (Cmd Mode) {{{2

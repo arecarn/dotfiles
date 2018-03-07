@@ -36,6 +36,11 @@ cdl()
     )" || return 1
 }
 
+# cd to the physical location avoiding symlinks
+cdp()
+{
+    cd "$(pwd -P)"
+}
 
 # run a command until it fails
 untilfail()

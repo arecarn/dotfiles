@@ -22,25 +22,20 @@ weather(){
     curl wttr.in/"$*"
 }
 
-# follow a symbolic link
-lnfl()
+# cd to the target directory a symbolic link
+cdl()
 {
-    (
+    cd "$(
     link="$*"
 
     if [ -z "${link}" ]; then
         link=$(pwd)
     fi
 
-    if [ ! -d "${link}" ] || [ ! -L "${link}" ]; then
-        echo "lnfl: ${link} is not a valid link"
-        return 1
-    fi
-
-    link_location=$(readlink -f "${link}")
-    cd "${link_location}" || return 1
-    )
+    printf '%s' "$(readlink -f "${link}")"
+    )" || return 1
 }
+
 
 # run a command until it fails
 untilfail()

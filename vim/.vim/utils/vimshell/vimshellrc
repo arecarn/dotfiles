@@ -1,4 +1,0 @@
-alias g = git
-alias l = ls -la
-alias scons = scons -uj5
-

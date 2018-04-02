@@ -89,7 +89,7 @@ testbeep() {
 }
 
 # start the ssh-agent && and prompt for ssh passphrase only after first login
-ssh-start-agent() {
+ssh_start_agent() {
     if [ ! -S ~/.ssh/ssh_auth_sock ]; then
       eval "$(ssh-agent)"
       ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. ~/.config/shell/functions.sh
+
 # set default shell
 if [ "${ZSH_VERSION:-unset}" = "unset" ]; then
     SHELL="$(which zsh)"
@@ -7,10 +9,4 @@ if [ "${ZSH_VERSION:-unset}" = "unset" ]; then
     exec "${SHELL}" -l
 fi
 
-# start the ssh-agent && and prompt for ssh passphrase only after first login
-if [ ! -S ~/.ssh/ssh_auth_sock ]; then
-  eval "$(ssh-agent)"
-  ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
-fi
-export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
-ssh-add -l > /dev/null || ssh-add
+ssh_start_agent

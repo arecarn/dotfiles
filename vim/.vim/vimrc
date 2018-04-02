@@ -971,6 +971,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('AndrewRadev/linediff.vim')
     call dein#add('vim-scripts/diffchanges.vim')
     call dein#add('arecarn/vim-diff-utils')
+    call dein#add('chrisbra/vim-diff-enhanced')
     call dein#add('will133/vim-dirdiff')
 
 

@@ -1432,10 +1432,10 @@ endif "}}}2
 
 if dein#tap('obvious-resize') "{{{2
     " map F9 - F12 (like hjkl) to resize windows
-    nnoremap  <silent><F9>  :ObviousResizeLeft<CR>
-    nnoremap  <silent><F10> :ObviousResizeDown<CR>
-    nnoremap  <silent><F11> :ObviousResizeUp<CR>
-    nnoremap  <silent><F12> :ObviousResizeRight<CR>
+    nnoremap <silent><Left> :ObviousResizeLeft<CR>
+    nnoremap <silent><Down> :ObviousResizeDown<CR>
+    nnoremap <silent><Up> :ObviousResizeUp<CR>
+    nnoremap <silent><Right> :ObviousResizeRight<CR>
 endif "}}}2
 
 if dein#tap('Preserve.vim') "{{{2

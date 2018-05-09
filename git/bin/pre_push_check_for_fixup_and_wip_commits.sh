@@ -41,7 +41,7 @@ do
     fi
 
     # check for WIP commits
-    commit=$(git rev-list -n 1 --grep '^WIP' "${range}")
+    commit=$(git rev-list -n 1 --grep 'WIP' "${range}")
     if [ -n "${commit}" ]
     then
       echo "pre-push: Aborting push due to detected WIP commit"

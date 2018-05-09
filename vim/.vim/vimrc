@@ -528,11 +528,11 @@ function! s:in(group, item) abort
 endfunction
 
 " think of "co" as "change option"
-nnoremap comd :<C-U>set modifiable!<CR>:set modifiable?<CR>
-nnoremap coro :<C-U>set readonly!<CR>:set readonly?<CR>
-nnoremap cot :<C-U>set textwidth=
-nnoremap cocl :<C-U>setlocal conceallevel=
-nnoremap cosw :<C-U>set shiftwidth=
+nnoremap =omd :<C-U>set modifiable!<CR>:set modifiable?<CR>
+nnoremap =oro :<C-U>set readonly!<CR>:set readonly?<CR>
+nnoremap =ot :<C-U>set textwidth=
+nnoremap =ocl :<C-U>setlocal conceallevel=
+nnoremap =osw :<C-U>set shiftwidth=
 nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
 function! s:scratch_toggle() abort
     if match(&buftype, '\C\v'.'nofile') != -1
@@ -557,8 +557,8 @@ function! s:format_options_toggle(options, message) abort
     set formatoptions?
     echo l:message
 endfunction
-nnoremap cotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
-nnoremap copw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
+nnoremap =otw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
+nnoremap =opw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
 
 " reselect pasted or last changed text
 nnoremap <expr> g<C-v> '`[' . getregtype()[0] . '`]'
@@ -1268,7 +1268,7 @@ if dein#tap('vim-textmanip') "{{{2
     xmap gb<C-k> <Plug>(textmanip-blank-above)
 
     " toggle insert/replace with
-    nmap cotm <Plug>(textmanip-toggle-mode)
+    nmap =otm <Plug>(textmanip-toggle-mode)
 endif "}}}2
 
 if dein#tap('vim-quickhl') "{{{2
@@ -1319,7 +1319,7 @@ if dein#tap('undotree') "{{{2
 endif "}}}2
 
 if dein#tap('goyo.vim') "{{{2
-    nnoremap cof :<C-u>call SetGoyo(v:count)<CR>
+    nnoremap =of :<C-u>call SetGoyo(v:count)<CR>
 
     function! s:goyo_enter() abort
         let b:wrap_cache = &wrap
@@ -1485,7 +1485,7 @@ if dein#tap('vim-matchmaker') "{{{2
     let g:matchmaker_enable_startup = 1
 
     " change option highlight word
-    nnoremap cohw :MatchmakerToggle<CR>
+    nnoremap =ohw :MatchmakerToggle<CR>
 
     augroup matchmaker
         autocmd!

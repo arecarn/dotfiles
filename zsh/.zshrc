@@ -215,7 +215,7 @@ setopt auto_cd # just by writing a path
 setopt print_exit_value #print non-zero exit codes
 setopt interactivecomments # pound sign in interactive prompt
 # Display CPU usage stats for commands taking more than REPORTTIME seconds
-REPORTTIME=10
+REPORTTIME=5
 
 ###########################################################################}}}
 # KEY BINDINGS                                                             {{{

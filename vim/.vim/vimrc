@@ -1246,13 +1246,6 @@ if dein#tap('vim-indent-guides') "{{{2
     let g:indent_guides_start_level = 2
 endif "}}}2
 
-if dein#tap('syntastic') "{{{2
-    let g:syntastic_check_on_open = 0
-    " let g:syntastic_python_checkers = ['python', 'pylint']
-    let g:syntastic_python_checkers = ['python']
-    nnoremap cost :SyntasticToggleMode<CR>
-endif "}}}2
-
 if dein#tap('vim-textmanip') "{{{2
     xmap <C-j> <Plug>(textmanip-move-down)
     xmap <C-k> <Plug>(textmanip-move-up)
@@ -1415,8 +1408,6 @@ if dein#tap('todo.txt-vim') "{{{2
         nnoremap <localleader>ud :s/\d\d\d\d-\d\d\-\d\d/\=strftime("%Y-%m-%d")/<CR>
 
         setlocal foldmethod=expr
-        setlocal foldexpr=Todo_fold(v:lnum)
-        setlocal foldtext=Todo_fold_text('_')
         setlocal iskeyword+=+,_,.
         setlocal iskeyword+=@-@ " add literal @
 

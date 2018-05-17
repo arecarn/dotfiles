@@ -4,7 +4,7 @@ dirty=$(git status --short -uno | sed s/^...//)
 last_modified=$(git show --pretty="format:" --name-only HEAD)
 
 if [ -n "$dirty" ]; then
-    ${EDITOR} $dirty
+    ${EDITOR} "$dirty"
 else
-    ${EDITOR} $last_modified
+    ${EDITOR} "$last_modified"
 fi

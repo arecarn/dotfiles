@@ -69,6 +69,8 @@
     dta = !git dt --cached # Diff Tool Added
 
     m = merge
+    ma = merge --abort
+    mc = merge --continue
     mt = mergetool
 
     b = branch

@@ -122,7 +122,7 @@
     stA = stash save --all # Stash All incline untracked and ignored files
     stsh = stash show --patch --stat
     stp = stash pop
-    stpf = checkout stash -- . #Stash Pop Force even if there would be merge conflicts
+    stpf = checkout stash -- . # Stash Pop Force even if there would be merge conflicts
     std = stash drop
     stash-list-pretty = stash list --pretty=format:'%><(15,trunc)%Cblue%an%Creset%C(yellow)%gd%Creset %s'
     stl = !git --no-pager stash-list-pretty
@@ -236,7 +236,7 @@
     # check if a file  exist in the repository?
     exists = ls-files --error-unmatch
 
-    #White Space Fix
+    # White Space Fix for files that are staged to be commited
     wsf = !git diff --cached --no-color > stage.diff && git apply --index -R stage.diff && git apply --index --whitespace=fix stage.diff && rm -f stage.diff
 
 [include]

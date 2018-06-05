@@ -306,7 +306,6 @@ set laststatus=2
 set showtabline=2
 set list
 set listchars=trail:·,tab:→-,extends:▶,precedes:◀
-set noshowmode
 if v:version >= 800
     set signcolumn=yes
 endif
@@ -1515,10 +1514,16 @@ if dein#tap('lightline.vim') "{{{2
     let g:lightline = {
                 \ 'colorscheme': 'gruvbox',
                 \ 'active': {
-                \     'left': [['winnr', 'bufnr', 'mode', 'paste'], ['fugitive', 'filename']]
+                \     'right': [['winnr'], ['fugitive', 'filename', 'bufnr']],
+                \     'left': [['paste', 'lineinfo' ],
+                \                ['percent' ],
+                \                ['fileformat', 'fileencoding', 'filetype']]
                 \ },
                 \ 'inactive' : {
-                \     'left': [['winnr', 'bufnr', 'filename']],
+                \     'right': [['winnr'], ['filename', 'bufnr']],
+                \     'left': [['lineinfo' ],
+                \                ['percent' ],
+                \                ['fileformat', 'fileencoding', 'filetype']]
                 \ },
                 \ 'component_function': {
                 \     'modified': 'Lightline_modified',
@@ -1528,7 +1533,6 @@ if dein#tap('lightline.vim') "{{{2
                 \     'fileformat': 'Lightline_fileformat',
                 \     'filetype': 'Lightline_filetype',
                 \     'fileencoding': 'Lightline_fileencoding',
-                \     'mode': 'Lightline_mode',
                 \     'winnr': 'Lightline_winnr',
                 \     'bufnr': 'Lightline_bufnr',
                 \ }}
@@ -1578,16 +1582,12 @@ if dein#tap('lightline.vim') "{{{2
         return winwidth(0) > 80 ? (&fenc !=# '' ? &fenc : &enc) : ''
     endfunction
 
-    function! Lightline_mode() abort
-        return winwidth(0) > 80 ? lightline#mode() : ''
-    endfunction
-
     function! Lightline_winnr() abort
         return winnr()
     endfunction
 
     function! Lightline_bufnr() abort
-        return "b:" . bufnr('%')
+        return 'b:' . bufnr('%')
     endfunction
 endif "}}}2
 

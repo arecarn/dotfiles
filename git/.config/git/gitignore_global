@@ -7,3 +7,4 @@ cscope.out
 .cache
 .dropbox.attr
 __*
+compile_commands.json # C++ compiler output for tools like R-tags to use

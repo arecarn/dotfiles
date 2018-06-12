@@ -74,11 +74,11 @@
     mt = mergetool
 
     b = branch
-    bl = branch --all --verbose --verbose # Branch List
+    bl = !git --no-pager branch --all --verbose --verbose # Branch List
     # Branches that are Merged
-    bm =  !echo 'Merged Branches:'    && git bl --merged
+    bm =  !echo 'Merged Branches:'    && git --no-pager bl --merged
     # Branches that are  Un-Merged
-    bum = !echo ' Unmerged Branches:' && git bl --no-merged
+    bum = !echo ' Unmerged Branches:' && git --no-pager bl --no-merged
 
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete

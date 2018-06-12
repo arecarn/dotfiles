@@ -1,10 +1,21 @@
 .vimrc_project
-.projections.json # for vim-projection plugin
-tags* # ctags tags files
-cscope.out # cscope output file
+
+# for vim-projectionist plugin
+.projections.json
+
+# ctags tags files
+tags*
+
+# cscope output file
+cscope.out
+
 *.log
 .DS_Store
 .cache
 .dropbox.attr
-__* # A simple way to hide files from git
-compile_commands.json # C++ compiler output for tools like R-tags to use
+
+# A simple way to hide files from git
+__*
+
+# C++ compiler output for tools like R-tags to use
+compile_commands.json

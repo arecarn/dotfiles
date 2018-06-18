@@ -1,10 +1,20 @@
 #!/bin/sh
 
-dirty=$(git status --short -uno | sed s/^...//)
-last_modified=$(git show --pretty="format:" --name-only HEAD)
+version=HEAD
+args_passed=false
 
-if [ -n "$dirty" ]; then
-    ${EDITOR} "$dirty"
+if [ $# -ne 0 ]; then
+    version="$*"
+    args_passed=true
+fi
+
+dirty=$(git status --short -uno | sed s/^...//)
+last_modified=$(git show --pretty="format:" --name-only "$version")
+
+if [ -n "$dirty" ] && ! $args_passed; then
+    ${EDITOR} $dirty
+elif [ -n "$last_modified" ]; then
+    ${EDITOR} $last_modified
 else
-    ${EDITOR} "$last_modified"
+    echo nothing to edit in this commit
 fi

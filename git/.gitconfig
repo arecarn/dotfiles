@@ -225,6 +225,8 @@
     # submodules are updated
     pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
     plr = !git pl --rebase
+    # PuLl Force
+    plf = !git f && git reset --hard @{u}
 
     ps = push
     psf = !git ps --force-with-lease

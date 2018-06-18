@@ -90,10 +90,10 @@ testbeep() {
 
 # start the ssh-agent && and prompt for ssh passphrase only after first login
 ssh_start_agent() {
-    if [ ! -S "${HOME}/.ssh/ssh_auth_sock_${HOST}" ]; then
+    if [ ! -S "${HOME}/.ssh/ssh_auth_sock_$(hostname)" ]; then
         eval "$(ssh-agent)"
-        ln -sf "$SSH_AUTH_SOCK" "${HOME}/.ssh/ssh_auth_sock_${HOST}"
+        ln -sf "$SSH_AUTH_SOCK" "${HOME}/.ssh/ssh_auth_sock_$(hostname)"
     fi
-    export SSH_AUTH_SOCK="${HOME}/.ssh/ssh_auth_sock_${HOST}"
+    export SSH_AUTH_SOCK="${HOME}/.ssh/ssh_auth_sock_$(hostname)"
     ssh-add -l > /dev/null || ssh-add
 }

@@ -221,14 +221,17 @@
     # updated
     cl = "!f() { git clone --recursive \"$@\" && git smu; }; f"
 
-    # better Pull of a repo only if a fast forward is possible, then make sure
+    # better PuLl of a repo only if a fast forward is possible, then make sure
     # submodules are updated
     pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
+    # PuLl with Rebase
     plr = !git pl --rebase
     # PuLl Force
     plf = !git f && git reset --hard @{u}
 
+    # PuSh
     ps = push
+    # PuSh Force
     psf = !git ps --force-with-lease
 
     cln = !git clean --interactive

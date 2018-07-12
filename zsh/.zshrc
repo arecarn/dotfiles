@@ -30,7 +30,6 @@ zplug-update() {
 source "${zplug_file}"
 
 zplug 'plugins/command-not-found', from:oh-my-zsh
-zplug 'plugins/ssh-agent', from:oh-my-zsh
 zplug 'plugins/tmux', from:oh-my-zsh, defer:1
 zplug 'rupa/z', use:'*.sh'
 zplug 'zsh-users/zsh-completions'

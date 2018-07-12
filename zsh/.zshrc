@@ -145,6 +145,7 @@ dfl="${HOME}/dotfiles_local/"
 ###########################################################################}}}
 # HISTORY OPTIONS                                                          {{{
 ##############################################################################
+setopt inc_append_history # save every command before it is executed
 setopt share_history # adds history incrementally and share
 setopt hist_ignore_dups # ignore duplicates in history
 HISTFILE=${ZSH_DATA_DIR}/history

@@ -1,5 +1,5 @@
 # -                                                                        {{{
-###########################################################################}}}
+##############################################################################
 # DIRECTORIES
 ##############################################################################
 export ZSH_DATA_DIR="${HOME}/.local/share/zsh"
@@ -216,6 +216,11 @@ setopt print_exit_value #print non-zero exit codes
 setopt interactivecomments # pound sign in interactive prompt
 # Display CPU usage stats for commands taking more than REPORTTIME seconds
 REPORTTIME=5
+
+# setup automatic directory pushing during cd
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushd_minus
 
 ###########################################################################}}}
 # KEY BINDINGS                                                             {{{

@@ -12,8 +12,10 @@ dirty=$(git status --short -uno | sed s/^...//)
 last_modified=$(git show --pretty="format:" --name-only "$version")
 
 if [ -n "$dirty" ] && ! $args_passed; then
+    # shellcheck disable=SC2086
     ${EDITOR} $dirty
 elif [ -n "$last_modified" ]; then
+    # shellcheck disable=SC2086
     ${EDITOR} $last_modified
 else
     echo nothing to edit in this commit

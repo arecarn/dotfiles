@@ -41,6 +41,8 @@
 
 [core]
     excludesFile = ~/.config/git/gitignore_global
+
+    # hooksPath was added in v2.9+
     hooksPath = ~/.config/git/hooks
 
 [commit]
@@ -109,6 +111,8 @@
     cmfu = !git cm --fixup
     cmsq = !git cm --squash
     cma = !git cm --amend --reset-author
+    # Commit Amend No Message
+    cmanm = !git cma --no-edit
 
     f = fetch --all
     co = checkout

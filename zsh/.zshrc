@@ -309,6 +309,7 @@ bindkey -M viins g~      vi-oper-swap-case
 bindkey -M vicmd gg      beginning-of-buffer-or-history
 bindkey -M vicmd G       end-of-buffer-or-history
 bindkey -M vicmd '^V'    edit-command-line
+bindkey -M viins '^Q'    push-line
 # }}}2
 
 # Menu Selection {{{2

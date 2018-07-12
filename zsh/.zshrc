@@ -276,8 +276,8 @@ bindkey -M viins '^H'    _backward-delete-char-and-split-undo
 bindkey -M viins '^?'    _backward-delete-char-and-split-undo
 bindkey -M viins '^X'    _expand_alias
 bindkey -M viins '^K'    insert-last-word
-bindkey -M viins '^J'    _insert-next-word
-bindkey -M viins '^O'    copy-prev-shell-word
+bindkey -M viins '^O'    _insert-next-word
+bindkey -M viins '^S'    copy-prev-shell-word
 bindkey -M viins '^X^R'  redisplay
 bindkey -M viins '\eOH'  beginning-of-line # Home
 bindkey -M viins '\eOF'  end-of-line # End

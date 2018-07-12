@@ -491,12 +491,9 @@ if [[ -s ${hook_com[base]}/.git/refs/stash ]]; then
 fi
 } # }}}2
 
-MOVE_CURSOR_DOWN=$terminfo[cud1]$terminfo[cuu1]$terminfo[sc]$terminfo[cud1]
-CLEAR_TO_END_OF_LINE=$terminfo[el]
-RESTORE_CURSOR=$terminfo[rc]
 VI_INSERT_MODE='-- INSERT --'
 VI_OTHER_MODES='            '
-PROMPT_VALUE='%{${MOVE_CURSOR_DOWN}${VI_MODE}${RESTORE_CURSOR}%}%~ ${TIME_STAMP} %# '
+PROMPT_VALUE='${VI_MODE} %~ ${TIME_STAMP} %# '
 
 set-prompt(){ # {{{2
     case ${KEYMAP} in

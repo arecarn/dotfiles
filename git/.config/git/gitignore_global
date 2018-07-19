@@ -19,3 +19,8 @@ __*
 
 # C++ compiler output for tools like R-tags to use
 compile_commands.json
+
+
+# Files used by GDB
+*.gdb
+*.gdb_history

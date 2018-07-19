@@ -479,6 +479,10 @@ inoremap <C-F> <ESC>gw{zea
 
 " break out the current tab into a new window without leaving the current tab
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
+
+" open the current windows's buffer in a new tab without breaking it out
+nnoremap g<C-W>t :tabedit %<CR>
+
 nnoremap <leader>to :call PreviewWord()<CR>
 nnoremap <leader>c :pclose<CR>
 function! PreviewWord() abort

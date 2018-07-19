@@ -959,25 +959,28 @@ if dein#load_state(s:dein_path_plugins)
     " Colors
     call dein#add('morhetz/gruvbox')
 
+    " Completions
+    if s:has_nvim || s:has_vim8
+        call dein#add('Shougo/deoplete.nvim')
+        call dein#add('roxma/vim-hug-neovim-rpc')
+        call dein#add('roxma/nvim-yarp')
 
-    " Completion
-    call dein#add('roxma/nvim-completion-manager',
-                \ {'depends' : 'roxma/vim-hug-neovim-rpc'})
+        " call dein#add('tom95/deoplete-clang2', {'depends' : 'Shougo/deoplete.nvim'})
+        call dein#add('rzaluska/deoplete-rtags', {'depends' : 'Shougo/deoplete.nvim'})
 
-    call dein#add('roxma/vim-hug-neovim-rpc')
-    call dein#add('roxma/nvim-yarp')
+        call dein#add('zchee/deoplete-jedi', {'depends' : 'Shougo/deoplete.nvim'})
+        call dein#add('Shougo/neco-vim', {'depends' : 'Shougo/deoplete.nvim'})
+        call dein#add('zchee/deoplete-zsh', {'depends' : 'Shougo/deoplete.nvim'})
 
-    call dein#add('tom95/deoplete-clang2', {'depends' : 'Shougo/deoplete.nvim'})
-
-    call dein#add('zchee/deoplete-jedi', {'depends' : 'Shougo/deoplete.nvim'})
-    call dein#add('Shougo/neco-vim', {'depends' : 'Shougo/deoplete.nvim'})
-    call dein#add('zchee/deoplete-zsh', {'depends' : 'Shougo/deoplete.nvim'})
-
-    if !s:has_windows
-        call dein#add('wellle/tmux-complete.vim', {'depends' : 'Shougo/deoplete.nvim'})
+        if !s:has_windows
+            call dein#add('wellle/tmux-complete.vim', {'depends' : 'Shougo/deoplete.nvim'})
+        endif
+        call dein#add('Shougo/neoinclude.vim', {'depends' : 'Shougo/deoplete.nvim'})
     endif
-    call dein#add('Shougo/neoinclude.vim', {'depends' : 'Shougo/deoplete.nvim'})
-    call dein#add('Shougo/echodoc.vim')
+
+    if has('patch-7.4.774') " requires v:completed_item feature
+        call dein#add('Shougo/echodoc.vim')
+    endif
 
 
     call dein#add('Shougo/neosnippet-snippets')

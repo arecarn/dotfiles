@@ -11,6 +11,9 @@ set fileformats=unix,dos
 
 let s:has_tmux = ($TERM ==# 'screen' || $TERM ==# 'screen-256color') && !empty($TMUX)
 let s:has_windows = has('win32') || has('win64')
+let s:has_terminal = has('nvim') || has('terminal')
+let s:has_nvim = has('nvim')
+let s:has_vim8 = has('patch-8.0.0039')
 
 if s:has_windows
     let g:path_sep = '\'
@@ -905,8 +908,13 @@ if dein#load_state(s:dein_path_plugins)
         call dein#add('edkolev/tmuxline.vim')
     endif
 
-    call dein#add('w0rp/ale')
-    call dein#add('tpope/vim-dispatch')
+    if s:has_nvim || s:has_vim8
+        call dein#add('w0rp/ale')
+    endif
+        call dein#add('tpope/vim-dispatch')
+    if s:has_nvim
+        call dein#add('radenling/vim-dispatch-neovim', {'depends' : 'tpope/vim-dispatch'})
+    endif
     call dein#add('janko-m/vim-test')
 
 
@@ -1028,7 +1036,9 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('arecarn/vim-template', {'rtp': ''})
 
     " Project Management
-    call dein#add('ludovicchabant/vim-gutentags')
+    if s:has_vim8 || s:has_nvim
+        call dein#add('ludovicchabant/vim-gutentags')
+    endif
     call dein#add('tpope/vim-projectionist')
 
     call dein#end()

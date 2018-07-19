@@ -1093,6 +1093,36 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+if dein#tap('vim-lost') "{{{2
+    augroup Lost
+        autocmd!
+        autocmd BufEnter * call Lost_mapping()
+    augroup END
+
+    function! Lost_get_regex() abort
+        return get(b:, 'lost_regex', '\v^[[:alpha:]$_]')
+    endfunction
+
+    function! Lost_mapping() abort
+        nnoremap <silent> ]gL :<C-u>call Lost_movement('normal', '/')<CR>
+        nnoremap <silent> [gL :<C-u>call Lost_movement('normal', '?')<CR>
+        xnoremap <silent> ]gL :<C-u>call Lost_movement('visual', '/')<CR>
+        xnoremap <silent> [gL :<C-u>call Lost_movement('visual', '?')<CR>
+    endfunction
+
+    function! Lost_movement(mode, search_type)
+        let old_wrapscan = &wrapscan
+        set nowrapscan
+        if a:mode ==# 'visual'
+            normal! gv
+        endif
+        silent! execute "normal! " . a:search_type . "\<C-r>=Lost_get_regex()\<CR>\<CR>"
+        let &wrapscan = old_wrapscan
+    endfunction
+endif "}}}2
+
+
 if dein#tap('vim-backup-tree') "{{{2
     let g:backup_tree = s:make_data_directory('backup')
 endif "}}}2

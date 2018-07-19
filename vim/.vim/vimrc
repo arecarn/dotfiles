@@ -474,9 +474,10 @@ function! s:under_line() abort
     execute ':s#\m\S.*\S\|\S#\=repeat(''' . l:char . ''',strlen(submatch(0)))#g'
 endfunction
 
-" format wile in insert mode
+" format current paragraph wile in insert mode
 inoremap <C-F> <ESC>gw{zea
 
+" break out the current tab into a new window without leaving the current tab
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
 nnoremap <leader>o :call PreviewWord()<CR>
 nnoremap <leader>c :pclose<CR>
@@ -1348,8 +1349,6 @@ if dein#tap('goyo.vim') "{{{2
         else
             execute 'Goyo ' . string(a:num)
         endif
-
-
     endfunction
 endif "}}}2
 

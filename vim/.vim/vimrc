@@ -750,6 +750,19 @@ endfunction
 
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 
+
+if s:has_terminal
+    " Exit terminal
+    tnoremap <C-\><C-\> <C-\><C-n>
+    snoremap <C-\><C-\> <C-\><C-n>
+    inoremap <C-\><C-\> <C-\><C-n>
+    noremap <C-\><C-\> <C-\><C-n>
+    " paste into terminal
+    tnoremap <C-\>p <C-\><C-n>pi
+    " paste register into terminal
+    tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+endif
+
 " reverse selection kind of works
 vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
             \:let old_reg=@"<cr>

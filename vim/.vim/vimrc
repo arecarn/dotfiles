@@ -403,12 +403,14 @@ nnoremap <leader>v :vert sfind<Space>
 nnoremap <leader>t :tabfind<Space>
 
 nnoremap <leader>F :find <C-R>=expand('%:h') . g:path_sep<CR>
+nnoremap <leader>fo :find <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
 nnoremap <leader>S :sfind <C-R>=expand('%:h') . g:path_sep<CR>
 nnoremap <leader>V :vert sfind <C-R>=expand('%:h') . g:path_sep<CR>
 nnoremap <leader>T :tabfind <C-R>=expand('%:h') . g:path_sep<CR>
 
-nnoremap <leader>b :buffer <TAB><S-Tab>
-nnoremap <leader>B :sbuffer <TAB><S-Tab>
+nnoremap <leader>b :ls<CR>:buffer<Space>
+nnoremap <leader>bs :ls<CR>:sbuffer<Space>
+nnoremap <leader>bo :buffer <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
 
 " replace selection with spaces and enter replace mode
 xnoremap gr r<Space>gvo<Esc>R

@@ -1450,10 +1450,10 @@ if dein#tap('todo.txt-vim') "{{{2
         return fold_level
     endfunction "}}}3
 
-    nnoremap <localleader>w :s/\s*@[a-z-]\+\s*$\\|\s*$/ @work/<CR>
-    xnoremap <localleader>w :s/\s*@[a-z-]\+\s*$\\|\s*$/ @work/<CR>
-    nnoremap <localleader>h :s/\s*@[a-z-]\+\s*$\\|\s*$/ @home/<CR>
-    xnoremap <localleader>h :s/\s*@[a-z-]\+\s*$\\|\s*$/ @home/<CR>
+    nnoremap <localleader>w :s/\s*@[a-z-]\+\s*$\\|\s*$/ @work/<CR>:nohlsearch<CR>
+    xnoremap <localleader>w :s/\s*@[a-z-]\+\s*$\\|\s*$/ @work/<CR>:nohlsearch<CR>
+    nnoremap <localleader>h :s/\s*@[a-z-]\+\s*$\\|\s*$/ @home/<CR>:nohlsearch<CR>
+    xnoremap <localleader>h :s/\s*@[a-z-]\+\s*$\\|\s*$/ @home/<CR>:nohlsearch<CR>
 
     function! s:todo_txt_settings() abort "{{{3
         try

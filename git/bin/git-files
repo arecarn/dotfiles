@@ -1,0 +1,22 @@
+#!/bin/sh
+
+version=HEAD
+args_passed=false
+
+if [ $# -ne 0 ]; then
+    version="$*"
+    args_passed=true
+fi
+
+dirty=$(git status --short -uno | sed s/^...//)
+last_modified=$(git show --pretty="format:" --name-only "$version")
+
+if [ -n "$dirty" ] && ! $args_passed; then
+    # shellcheck disable=SC2086
+    echo $dirty | sed 's/ /\n/g'
+elif [ -n "$last_modified" ]; then
+    # shellcheck disable=SC2086
+    echo $last_modified | sed 's/ /\n/g'
+else
+    echo nothing to edit in this commit
+fi

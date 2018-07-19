@@ -907,6 +907,9 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('tpope/vim-repeat')
     call dein#add('vim-scripts/visualrepeat')
     "}}}2
+    "
+    call dein#add('junegunn/fzf')
+    call dein#add('junegunn/fzf.vim')
 
     " Folds
     call dein#add('arecarn/vim-clean-fold')
@@ -1146,6 +1149,11 @@ if dein#tap('denite.nvim') "{{{2
 
     command! Messages Denite -mode=normal output:message
 
+endif "}}}2
+
+if dein#tap('fzf') "{{{2
+    nnoremap [myleader]f :FZF<CR>
+    nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
 if dein#tap('vimfiler.vim') "{{{2

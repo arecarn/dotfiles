@@ -479,9 +479,8 @@ inoremap <C-F> <ESC>gw{zea
 
 " break out the current tab into a new window without leaving the current tab
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
-nnoremap <leader>o :call PreviewWord()<CR>
+nnoremap <leader>to :call PreviewWord()<CR>
 nnoremap <leader>c :pclose<CR>
-
 function! PreviewWord() abort
     if &previewwindow
         return
@@ -626,7 +625,7 @@ cnoremap <C-f> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
 cnoremap <C-x> <C-]>
-cnoremap <C-s> <C-f>
+cnoremap <C-v> <C-f>
 
 " find files easier
 cnoremap <C-t> <C-r>=expand('%:p:h') . '/'<CR>
@@ -1441,9 +1440,9 @@ endif "}}}2
 
 if dein#tap('Preserve.vim') "{{{2
     command! -range=% Dlead :PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
-    noremap <silent><leader>dl :Dlead<CR>
+    noremap <silent>d<Space>l :Dlead<CR>
     command! -range=% Dtrail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
-    noremap <silent><leader>dt :Dtrail<CR>
+    noremap <silent>d<Space>t :Dtrail<CR>
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>

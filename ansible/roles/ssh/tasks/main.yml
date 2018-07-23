@@ -1,0 +1,8 @@
+---
+- name: Ubuntu
+  tags: ssh
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: openssh-server
+    state: latest

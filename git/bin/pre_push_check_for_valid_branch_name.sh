@@ -17,7 +17,7 @@
 #   <local ref> <local sha1> <remote ref> <remote sha1>
 
 local_branch="$(git rev-parse --abbrev-ref HEAD)"
-valid_chars="[a-z0-9_-]"
+valid_chars="[a-z0-9_-/]"
 
 if ! echo "$local_branch" | grep -q "^${valid_chars}\+$"; then
     echo "pre-push: Aborting push due to invalid branch name \"$local_branch\". Use the following characters $valid_chars instead"

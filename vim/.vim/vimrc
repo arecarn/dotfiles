@@ -1,4 +1,4 @@
-" -                                                                        {{{
+" -                                                                         {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set cpoptions&vim
 set encoding=utf-8 "make Vim use UTF-8 by default
@@ -125,6 +125,9 @@ set ttyfast
 
 if !has('nvim')
     set ttymouse=xterm2
+else
+    " prevent showing weird symbols in terminal like Qs at the ends of lines
+    set guicursor=
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

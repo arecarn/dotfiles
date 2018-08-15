@@ -65,7 +65,9 @@
 
 [alias]
     d = diff --color
+    dr = !git d @{upstream}...HEAD
     da = diff --color --cached # Diff Added
+    dar = !git da @{upstream}...HEAD
 
     dt = difftool --dir-diff
     dta = !git dt --cached # Diff Tool Added

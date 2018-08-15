@@ -1,11 +1,9 @@
-#!/bin/sh
+#!/bin/false
 
 . ~/.config/shell/functions.sh
 ssh_start_agent
 
 # set default shell
 if [ "${ZSH_VERSION:-unset}" = "unset" ]; then
-    SHELL="$(which zsh)"
-    export SHELL
-    exec "${SHELL}" -l
+    export SHELL="$(which zsh)"
 fi

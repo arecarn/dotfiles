@@ -19,6 +19,4 @@
   lineinfile:
     path: ~/.profile
     insertafter: EOF
-    line: 'export SHELL=$(which zsh)
-    && [ -z "$ZSH_VERSION" ]
-    && exec "$SHELL" -l # must be last'
+    line: '. ~/.config/shell/profile'

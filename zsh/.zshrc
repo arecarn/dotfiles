@@ -37,7 +37,7 @@ zplug 'zsh-users/zsh-syntax-highlighting', defer:1
 zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
 zplug 'junegunn/fzf', \
     use:"shell", \
-    hook-build:'./install --all --no-update-rc --no-key-bindings'
+    hook-build:'./install --all --no-update-rc --no-key-bindings --xdg --no-bash --no-fish'
 zplug 'junegunn/fzf', as:"command", use:"bin/*"
 zplug 'pyenv/pyenv', as:"command", use:"bin/*"
 

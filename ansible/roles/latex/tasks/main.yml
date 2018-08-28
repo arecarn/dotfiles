@@ -10,6 +10,16 @@
 - name: MacOSX
   tags: latex
   when: ansible_distribution == 'MacOSX'
+  with_items: "{{packages[ansible_distribution | lower]}}"
   homebrew:
-    name: miktex
+    name: "{{item}}"
+    state: latest
+
+- name: Ubuntu
+  tags: latex
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  with_items: "{{packages[ansible_distribution | lower]}}"
+  package:
+    name: "{{item}}"
     state: latest

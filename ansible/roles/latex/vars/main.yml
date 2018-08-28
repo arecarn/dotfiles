@@ -1,0 +1,7 @@
+---
+packages:
+  ubuntu:
+    - texlive-latex-extra
+    - texlive-fonts-extra
+  macosx:
+    - miktex

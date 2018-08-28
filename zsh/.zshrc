@@ -305,11 +305,11 @@ bindkey -M vicmd u       undo
 bindkey -M vicmd '^R'    redo
 bindkey -M vicmd '^F'    forward-char
 bindkey -M vicmd '^B'    backward-char
-bindkey -M viins g~      vi-oper-swap-case
+bindkey -M vicmd g~      vi-oper-swap-case
 bindkey -M vicmd gg      beginning-of-buffer-or-history
 bindkey -M vicmd G       end-of-buffer-or-history
 bindkey -M vicmd '^V'    edit-command-line
-bindkey -M viins '^Q'    push-line
+bindkey -M vicmd '^Q'    push-line
 # }}}2
 
 # Menu Selection {{{2

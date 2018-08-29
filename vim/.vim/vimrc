@@ -858,6 +858,7 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:vebugger_leader='<Leader>d'
 let g:ale_emit_conflict_warnings = 0  " has to be run before loading plugins
+let g:vim_json_syntax_conceal = 0
 
 let g:dein#types#git#clone_depth = 1
 let s:plugin_path = s:make_cache_directory('plugins')
@@ -965,6 +966,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('python-rope/ropevim')
     call dein#add('kassio/neoterm')
     call dein#add('Shougo/Deol.nvim')
+    call dein#add('elzr/vim-json')
 
     " Colors
     call dein#add('morhetz/gruvbox')
@@ -1043,7 +1045,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('tpope/vim-eunuch')
     call dein#add('arecarn/vim-spell-utils')
     call dein#add('tpope/vim-abolish')
-    call dein#add('frioux/vim-lost')
+    call dein#add('arecarn/vim-lost')
 
     " Word Under the Cursor Highlighting
     call dein#add('t9md/vim-quickhl')
@@ -1098,33 +1100,11 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if dein#tap('vim-lost') "{{{2
-    augroup Lost
+    augroup vimrc
         autocmd!
-        autocmd BufEnter * call Lost_mapping()
+        autocmd FileType markdown let b:lost_regex = '\v^#'
     augroup END
-
-    function! Lost_get_regex() abort
-        return get(b:, 'lost_regex', '\v^[[:alpha:]$_]')
-    endfunction
-
-    function! Lost_mapping() abort
-        nnoremap <silent> ]gL :<C-u>call Lost_movement('normal', '/')<CR>
-        nnoremap <silent> [gL :<C-u>call Lost_movement('normal', '?')<CR>
-        xnoremap <silent> ]gL :<C-u>call Lost_movement('visual', '/')<CR>
-        xnoremap <silent> [gL :<C-u>call Lost_movement('visual', '?')<CR>
-    endfunction
-
-    function! Lost_movement(mode, search_type)
-        let old_wrapscan = &wrapscan
-        set nowrapscan
-        if a:mode ==# 'visual'
-            normal! gv
-        endif
-        silent! execute "normal! " . a:search_type . "\<C-r>=Lost_get_regex()\<CR>\<CR>"
-        let &wrapscan = old_wrapscan
-    endfunction
 endif "}}}2
-
 
 if dein#tap('vim-backup-tree') "{{{2
     let g:backup_tree = s:make_data_directory('backup')

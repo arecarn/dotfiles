@@ -1390,14 +1390,17 @@ if dein#tap('goyo.vim') "{{{2
 
     function! s:goyo_enter() abort
         let b:wrap_cache = &wrap
-        let b:list_cache = &list
         let &wrap = 1
+        let b:list_cache = &list
         let &list = 0
+        let b:cursorline = &cursorline
+        let &cursorline = 1
     endfunction
 
     function! s:goyo_leave() abort
         let &wrap = b:wrap_cache
         let &list = b:list_cache
+        let &cursorline = b:cursorline
     endfunction
 
     augroup augroup_name

@@ -1,4 +1,3 @@
 setlocal spell
-setlocal textwidth=80
-setlocal formatoptions +=t " Auto-wrap text using textwidth
-setlocal shiftwidth=2
+setlocal textwidth=0
+setlocal shiftwidth=4

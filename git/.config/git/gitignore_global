@@ -14,12 +14,8 @@ cscope.out
 .cache
 .dropbox.attr
 
-# A simple way to hide files from git
-__*
-
-# C++ compiler output for tools like R-tags to use
+# contains C++ compiler output for development tools to use
 compile_commands.json
-
 
 # Files used by GDB
 *.gdb

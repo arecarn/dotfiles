@@ -349,9 +349,7 @@ alias rd='rmdir'
 alias wipe='rm -rf'
 
 # follow symbolic link
-fln() {
-    cd $(readlink -f "$@")
-}
+alias fln='cd $(readlink -f ./)'
 
 # shortcuts to tar and compress
 # usage: tar* ARCHIVE DIR

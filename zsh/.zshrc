@@ -451,6 +451,25 @@ bindkey -M isearch ' ' self-insert
 # }}}2
 
 ###########################################################################}}}
+# TMUX                                                                     {{{
+##############################################################################
+# By default tmux updates the DISPLAY and SSH_AUTH_SOCK variables in tmux's
+# own environment, so we have to propagate the environment to our shell.
+if [ -n "$TMUX" ]; then
+    refresh-tmux-env() {
+        export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
+        export $(tmux show-environment | grep "^DISPLAY")
+    }
+else
+    refresh-tmux-env() { }
+fi
+
+# this is called after reading a command but before executing it
+preexec() {
+    refresh-tmux-env
+}
+
+###########################################################################}}}
 # PROMPT                                                                   {{{
 ##############################################################################
 setopt prompt_subst
@@ -521,10 +540,6 @@ zle-line-init() zle-keymap-select() { # {{{2
 zle -N zle-line-init
 zle -N zle-keymap-select
 # }}}2
-
-preexec(){
-    print -rn -- "${CLEAR_TO_END_OF_LINE}";
-}
 
 ###########################################################################}}}
 # MISC                                                                     {{{

@@ -402,6 +402,8 @@ elif [[ "${OSTYPE}" == 'darwin'* ]]; then
     alias rcp='rsync -aHE'
 fi
 
+alias sa="ssh_start_agent"
+
 # GLOBAL ABBERVIATIONS {{{2
 typeset -Ag abbreviations
 abbreviations=(

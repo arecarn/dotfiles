@@ -17,6 +17,6 @@
 - name: set default shell
   tags: zsh
   lineinfile:
-    path: ~/.profile
+    dest: ~/.profile
     insertafter: EOF
     line: '. ~/.config/shell/profile'

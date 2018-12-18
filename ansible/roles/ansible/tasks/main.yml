@@ -2,6 +2,7 @@
 - name: MacOSX python 2 package
   tags: ansible
   become: !!bool yes
+  when: ansible_distribution == 'MacOSX'
   pip:
     name: ansible
     state: latest

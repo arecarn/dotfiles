@@ -4,7 +4,9 @@
   when: ansible_distribution == 'MacOSX'
   homebrew:
     name: vim
-    options: with-lua
+    options:
+      - with-lua
+      - with-python3
     state: latest
 
 - name: Ubuntu

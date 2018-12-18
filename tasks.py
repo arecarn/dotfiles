@@ -128,6 +128,7 @@ def provision(ctx, args=''):
             '--ask-become-pass ' + args,
             **RUN_ARGS)
 
+
 @task
 def provision_minimal(ctx, args=''):
     """
@@ -137,7 +138,6 @@ def provision_minimal(ctx, args=''):
     ctx.run('ansible-playbook site-minimal.yml --ask-vault-pass --inventory localhost '
             '--ask-become-pass ' + args,
             **RUN_ARGS)
-
 
 
 @task

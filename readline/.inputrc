@@ -1,25 +1,30 @@
 # EDITING                                                                  {{{
 ##############################################################################
 
-set editing-mode vi
-set keymap vi
+set editing-mode emacs
+# NOTE: This doesn't seem to work with combination of vi/emacs editing modes
 set show-mode-in-prompt on
 
 ###########################################################################}}}
 # MAPPINGS                                                                 {{{
 ##############################################################################
 
-set keymap vi-command
-"gg": beginning-of-history
-"G": end-of-history
-
-set keymap vi-insert
+set keymap emacs
+"\e": vi-movement-mode
 "\C-x": alias-expand-line
 "\C-p": history-search-backward
 "\C-n": history-search-forward
 "\C-d": possible-completions
 "\t": menu-complete
 "\C-w": backward-kill-word
+
+set keymap vi-command
+"i": emacs-editing-mode
+"a": "li"
+"A": "$i"
+"I": "^i"
+"gg": beginning-of-history
+"G": end-of-history
 
 ###########################################################################}}}
 # COMPLETION                                                               {{{

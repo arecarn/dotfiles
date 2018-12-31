@@ -467,7 +467,7 @@ function! CommandLineCR() abort
     endif
 endfunction
 
-cnoremap <expr> <CR> CommandLineCR()
+" cnoremap <expr> <CR> CommandLineCR()
 
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>

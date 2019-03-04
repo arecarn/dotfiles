@@ -95,5 +95,5 @@ ssh_start_agent() {
         ln -sf "$SSH_AUTH_SOCK" "${HOME}/.ssh/ssh_auth_sock_$(hostname)"
     fi
     export SSH_AUTH_SOCK="${HOME}/.ssh/ssh_auth_sock_$(hostname)"
-    ssh-add -l > /dev/null || ssh-add
+    ssh-add -l || ssh-add
 }

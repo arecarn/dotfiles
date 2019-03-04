@@ -538,12 +538,13 @@ function! s:in(group, item) abort
     endif
 endfunction
 
-" think of "co" as "change option"
-nnoremap =omd :<C-U>set modifiable!<CR>:set modifiable?<CR>
-nnoremap =oro :<C-U>set readonly!<CR>:set readonly?<CR>
-nnoremap =ot :<C-U>set textwidth=
-nnoremap =ocl :<C-U>setlocal conceallevel=
-nnoremap =osw :<C-U>set shiftwidth=
+" think of "yo" as "yoggle option"
+nnoremap yosb :<C-U>set scrollbind!<CR>:set scrollbind?<CR>
+nnoremap yomd :<C-U>set modifiable!<CR>:set modifiable?<CR>
+nnoremap yoro :<C-U>set readonly!<CR>:set readonly?<CR>
+nnoremap yot :<C-U>set textwidth=
+nnoremap yocl :<C-U>setlocal conceallevel=
+nnoremap yosw :<C-U>set shiftwidth=
 nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
 function! s:scratch_toggle() abort
     if match(&buftype, '\C\v'.'nofile') != -1
@@ -568,8 +569,8 @@ function! s:format_options_toggle(options, message) abort
     set formatoptions?
     echo l:message
 endfunction
-nnoremap =otw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
-nnoremap =opw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
+nnoremap yotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
+nnoremap yopw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
 
 " reselect pasted or last changed text
 nnoremap <expr> gpv '`[' . getregtype()[0] . '`]'

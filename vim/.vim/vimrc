@@ -1055,7 +1055,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('qstrahl/vim-matchmaker')
 
     " Search
-    call dein#add('junegunn/vim-slash')
+    call dein#add('pgdouyon/vim-evanesco')
     call dein#add('mhinz/vim-grepper')
 
     " Utilities

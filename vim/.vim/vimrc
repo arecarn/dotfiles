@@ -771,6 +771,8 @@ if s:has_terminal
     tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 endif
 
+command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
+
 " reverse selection kind of works
 vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
             \:let old_reg=@"<cr>

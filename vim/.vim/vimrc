@@ -1519,6 +1519,10 @@ if dein#tap('Preserve.vim') "{{{2
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>
     nnoremap yie :call Preserve("normal! ggyG")<CR>
+
+    " TODO report error to vim about using the :s and :g commands reversed, it
+    " reports more values than expected
+    nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g//p")<CR>
 endif "}}}2
 
 if dein#tap('moin.vim') "{{{2

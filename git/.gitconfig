@@ -79,6 +79,7 @@
 
     b = branch
     bl = !git --no-pager branch --all --verbose --verbose # Branch List
+    bll = !git --no-pager branch --verbose --verbose # Branch List Local
     # Branches that are Merged
     bm =  !echo 'Merged Branches:'    && git --no-pager bl --merged
     # Branches that are  Un-Merged

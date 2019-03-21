@@ -1021,7 +1021,7 @@ if dein#load_state(s:dein_path_plugins)
 
 
     " Applications
-    call dein#add('Shougo/vimfiler.vim', {'depends' : 'Shougo/unite.vim'})
+    call dein#add('justinmk/vim-dirvish')
     call dein#add('idanarye/vim-vebugger', {'depends' : 'Shougo/vimproc.vim'})
     call dein#add('metakirby5/codi.vim')
     call dein#add('vimwiki/vimwiki')
@@ -1201,17 +1201,14 @@ if dein#tap('fzf') "{{{2
     nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
-if dein#tap('vimfiler.vim') "{{{2
-    " Replace entry commands with Vimfiler
+if dein#tap('vim-dirvish')
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
-    let g:vimfiler_as_default_explorer = 1
-    let g:vimfiler_data_directory = s:make_cache_path_str('vimfiler')
 
-    command! -nargs=* Explore :VimFilerBufferDir <Args>
-    command! -nargs=* Sexplore :VimFilerBufferDir -split -horizontal <Args>
-    command! -nargs=* Vexplore :VimFilerBufferDir -split  <Args>
-    command! -nargs=* Texplore :VimFilerBufferDir -tab <Args>
+    augroup dirvish_config
+      autocmd!
+      autocmd FileType dirvish silent! setlocal nospell
+    augroup END
 else
     " setup netrw
     " set up line numbering and other good stuff
@@ -1624,11 +1621,11 @@ if dein#tap('lightline.vim') "{{{2
                 \ }}
 
     function! Lightline_modified() abort
-        return &ft =~# 'help\|vimfiler' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+        return &ft =~# 'help\|dirvish' ? '' : &modified ? '+' : &modifiable ? '' : '-'
     endfunction
 
     function! Lightline_readonly() abort
-        return &ft !~? 'help\|vimfiler' && &readonly ? 'RO' : ''
+        return &ft !~? 'help\|dirvish' && &readonly ? 'RO' : ''
     endfunction
 
     function! Lightline_filename() abort
@@ -1643,13 +1640,12 @@ if dein#tap('lightline.vim') "{{{2
         endif
 
         return ('' !=# Lightline_readonly() ? Lightline_readonly() . ' ' : '') .
-                    \ (&ft ==# 'vimfiler' ? vimfiler#get_status_string() :
-                    \  &ft ==# 'unite' ? unite#get_status_string() : file_name ).
+                    \ file_name .
                     \ ('' !=# Lightline_modified() ? ' ' . Lightline_modified() : '')
     endfunction
 
     function! Lightline_fugitive() abort
-        if &ft !~? 'vimfiler' && exists('*fugitive#head') && (winwidth(0) > 80)
+        if &ft !~? 'dirvish' && exists('*fugitive#head') && (winwidth(0) > 80)
             let branch = fugitive#head()
             return branch !=# '' ? '±'.branch : ''
         endif

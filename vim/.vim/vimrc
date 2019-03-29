@@ -489,6 +489,7 @@ endfunction
 
 " think of "yo" as "yoggle option"
 nnoremap yosb :<C-U>set scrollbind!<CR>:set scrollbind?<CR>
+nnoremap yocb :<C-U>set cursorbind!<CR>:set cursorbind?<CR>
 nnoremap yomd :<C-U>set modifiable!<CR>:set modifiable?<CR>
 nnoremap yoro :<C-U>set readonly!<CR>:set readonly?<CR>
 nnoremap yot :<C-U>set textwidth=

@@ -557,9 +557,6 @@ onoremap i? gN
 xnoremap a? gN
 onoremap a? gN
 
-" disable Ex mode key and use it to repeat the last q macro (love this)
-nnoremap Q @q
-" replay q macro for each line of a visual selection
 xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
@@ -999,6 +996,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('arecarn/vim-spell-utils')
     call dein#add('tpope/vim-abolish')
     call dein#add('arecarn/vim-lost')
+    call dein#add('wincent/replay')
 
     " Word Under the Cursor Highlighting
     call dein#add('t9md/vim-quickhl')
@@ -1164,6 +1162,8 @@ else
     " set up line numbering and other good stuff
     let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
 
+if dein#tap('replay') "{{{2
+    nmap <unique> Q <Plug>(Replay)
 endif "}}}2
 
 if dein#tap('vim-grepper') "{{{2

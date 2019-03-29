@@ -8,7 +8,6 @@ set fileformats=unix,dos
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 let s:has_tmux = ($TERM ==# 'screen' || $TERM ==# 'screen-256color') && !empty($TMUX)
 let s:has_windows = has('win32') || has('win64')
 let s:has_terminal = has('nvim') || has('terminal')
@@ -47,7 +46,7 @@ else
     endif
 endif
 
-
+" consider using split(&runtimepath, ',')[0] for s:app_path
 if s:has_windows
     if has('nvim')
         let s:app_path = g:config_path

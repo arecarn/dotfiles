@@ -665,6 +665,21 @@ cnoremap ~n ~/Dropbox/notes
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
 
+if s:has_terminal
+    " Exit terminal
+    tnoremap <C-\><C-\> <C-\><C-n>
+    snoremap <C-\><C-\> <C-\><C-n>
+    inoremap <C-\><C-\> <C-\><C-n>
+    noremap <C-\><C-\> <C-\><C-n>
+    " paste into terminal
+    tnoremap <C-\>p <C-\><C-n>pi
+    " paste register into terminal
+    tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+    nnoremap + :<C-u>lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
+    nnoremap g+ :<C-u>terminal<CR>
+endif
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -705,18 +720,6 @@ endfunction
 
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 
-
-if s:has_terminal
-    " Exit terminal
-    tnoremap <C-\><C-\> <C-\><C-n>
-    snoremap <C-\><C-\> <C-\><C-n>
-    inoremap <C-\><C-\> <C-\><C-n>
-    noremap <C-\><C-\> <C-\><C-n>
-    " paste into terminal
-    tnoremap <C-\>p <C-\><C-n>pi
-    " paste register into terminal
-    tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
-endif
 
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
 

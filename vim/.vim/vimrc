@@ -96,7 +96,6 @@ set wildmode=full
 set wildmenu
 set wildcharm=<TAB>
 
-
 " File Searching
 " ignored files
 set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,cscope.out
@@ -1514,7 +1513,7 @@ if dein#tap('vim-matchmaker') "{{{2
     let g:matchmaker_enable_startup = 1
 
     " change option highlight word
-    nnoremap =ohw :MatchmakerToggle<CR>
+    nnoremap yohw :MatchmakerToggle<CR>
 
     augroup matchmaker
         autocmd!

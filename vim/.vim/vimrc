@@ -120,10 +120,10 @@ if has('mouse')
     set mouse=a
 endif
 
-set ttyfast
 
-if !has('nvim')
+if !s:has_nvim
     set ttymouse=xterm2
+    set ttyfast
 else
     " prevent showing weird symbols in terminal like Qs at the ends of lines
     set guicursor=

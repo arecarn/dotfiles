@@ -114,7 +114,6 @@ set path+=** " Relative to the current directory search recursively
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set scrolloff=6 " Keep lines (top/bottom) for scope
 set sidescrolloff=6 " Keep lines (side/side) for scope
-set sidescroll=3
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')

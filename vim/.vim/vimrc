@@ -1152,7 +1152,7 @@ if dein#tap('fzf') "{{{2
     nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
-if dein#tap('vim-dirvish')
+if dein#tap('vim-dirvish') "{{{2
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
 
@@ -1160,10 +1160,12 @@ if dein#tap('vim-dirvish')
       autocmd!
       autocmd FileType dirvish silent! setlocal nospell
     augroup END
+    nnoremap g- :<C-u>Dirvish .<CR>
 else
     " setup netrw
     " set up line numbering and other good stuff
     let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
+endif "}}}2
 
 if dein#tap('replay') "{{{2
     nmap <unique> Q <Plug>(Replay)

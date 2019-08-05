@@ -90,7 +90,7 @@
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
     # Branch Delete Remote
-    # Usage: git bdr <remote-naem> <branch-name>
+    # Usage: git bdr <remote-name> <branch-name>
     bdr = push --delete
 
     bc = checkout -b # Branch Create
@@ -166,7 +166,7 @@
 
     # ReBase
     rb = rebase
-    rbi = rebase --interactive --autostash --preserve-merges
+    rbi = rebase --interactive --autostash
     rbc = rebase --continue
     rba = rebase --abort
     # During a rebase it can be difficult to remember what the original intent

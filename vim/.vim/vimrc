@@ -98,7 +98,7 @@ set wildcharm=<TAB>
 
 " File Searching
 " ignored files
-set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,cscope.out
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,cscope.out,*.elf
 " lower priority files suffixes
 set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn
 
@@ -327,7 +327,7 @@ if has('autocmd') && v:version > 701
         autocmd!
         autocmd Syntax * call matchadd(
                     \ 'Debug',
-                    \ '\v\W\zs<(NOTE|INFO|IDEA|TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
+                    \ '\v\zs<(NOTE|INFO|IDEA|TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
                     \ )
     augroup END
 endif
@@ -435,7 +435,7 @@ nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
 nnoremap g<C-W>t :tabedit %<CR>
 
 nnoremap <leader>to :call PreviewWord()<CR>
-nnoremap <leader>c :pclose<CR>
+nnoremap <leader>tc :pclose<CR>
 function! PreviewWord() abort
     if &previewwindow
         return
@@ -1051,6 +1051,10 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+if dein#tap('vim-gutentags') "{{{2
+    let g:gutentags_project_root = ['.gutentags_project_root']
+endif "}}}2
 
 if dein#tap('vim-lost') "{{{2
     augroup vimrc

@@ -186,7 +186,7 @@
     # Log short
     l = !git --no-pager log-pretty --max-count=10
     # Log Comparison
-    lc = !git --no-pager log-pretty --graph --left-right # branch...other_branch
+    lc = !git log-pretty --graph --left-right # branch...other_branch
     # Log Comparison with Remote branch
     lcr = !git lc @{upstream}...HEAD
     # Log Long

@@ -78,8 +78,8 @@
     mt = mergetool
 
     b = branch
-    bl = !git --no-pager branch --all --verbose --verbose # Branch List
-    bll = !git --no-pager branch --verbose --verbose # Branch List Local
+    bl = !git --no-pager branch --verbose --verbose # Branch List
+    bll = !git --no-pager branch --all --verbose --verbose # Branch List Long
     # Branch List Verbose (This is a work in progress)
     blv = for-each-ref --sort=committerdate refs/ --format='%(HEAD) %(color:green)%(committerdate:short)%(color:reset) %(color:yellow)%(objectname:short)%(color:reset) %(refname:short) %(color:blue)%(authorname)%(color:reset) %(contents:subject)'
     # Branches that are Merged

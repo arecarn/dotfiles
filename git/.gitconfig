@@ -160,9 +160,6 @@
     rss = reset --soft
     # ReSet to Remote tracking branch
     rsr = reset @{u}
-    rsrh = reset --hard @{u}
-    rsrm = reset --mixed @{u}
-    rsrs = reset --soft @{u}
 
     # ReBase
     rb = rebase

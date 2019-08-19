@@ -237,6 +237,7 @@
 
     # PuSh
     ps = push
+    psn = push --no-verify
     # PuSh Force
     psf = !git ps --force-with-lease
 

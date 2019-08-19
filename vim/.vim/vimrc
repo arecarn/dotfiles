@@ -890,10 +890,7 @@ if dein#load_state(s:dein_path_plugins)
     if s:has_nvim || s:has_vim8
         call dein#add('w0rp/ale')
     endif
-        call dein#add('tpope/vim-dispatch')
-    if s:has_nvim
-        call dein#add('radenling/vim-dispatch-neovim', {'depends' : 'tpope/vim-dispatch'})
-    endif
+    call dein#add('tpope/vim-dispatch')
     call dein#add('janko-m/vim-test')
 
 

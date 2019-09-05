@@ -6,3 +6,14 @@
   package:
     name: openssh-server
     state: latest
+
+
+# ssh-askpass is used when ssh-add is called during start-up to prompt for the
+# ssh passphrase.
+- name: Ubuntu
+  tags: ssh
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: ssh-askpass
+    state: latest

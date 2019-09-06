@@ -1,0 +1,9 @@
+---
+# gawk is required by zplug the zsh plugin manger
+- name: Ubuntu
+  tags: gawk
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: gawk
+    state: latest

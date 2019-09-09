@@ -11,9 +11,3 @@
 #
 [user]
     email = arecarn@gmail.com
-
-[includeIf "gitdir:~/personal/"]
-    path = ~/.gitconfig_personal
-
-[includeIf "gitdir:~/.cache/"]
-    path = ~/.gitconfig_personal

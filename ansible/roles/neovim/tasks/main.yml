@@ -11,6 +11,23 @@
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
+    name: software-properties-common
+    state: latest
+
+- name: Ubuntu
+  tags: neovim
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  apt_repository:
+    repo: 'ppa:neovim-ppa/stable'
+    state: present
+    update_cache: !!bool yes
+
+- name: Ubuntu
+  tags: neovim
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
     name: neovim
     state: latest
 

@@ -669,12 +669,18 @@ if s:has_terminal
     snoremap <C-\><C-\> <C-\><C-n>
     inoremap <C-\><C-\> <C-\><C-n>
     noremap <C-\><C-\> <C-\><C-n>
+
     " paste into terminal
     tnoremap <C-\>p <C-\><C-n>pi
+
     " paste register into terminal
     tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
     nnoremap + :<C-u>lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
     nnoremap g+ :<C-u>terminal<CR>
+
+    augroup terminal
+        autocmd TermOpen * setlocal nospell
+    augroup END
 endif
 
 

@@ -905,7 +905,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('stephpy/vim-yaml') "and alternative YAML sine the built in one is slow
     call dein#add('lopter/moin.vim')
     call dein#add('vim-scripts/confluencewiki.vim')
-    call dein#add('plasticboy/vim-markdown')
+    call dein#add('tpope/vim-markdown')
     call dein#add('dbeniamine/todo.txt-vim')
     call dein#add('vim-scripts/scons.vim')
     call dein#add('romainl/vim-qf')
@@ -1332,7 +1332,8 @@ if dein#tap('vim-textobj-between') "{{{2
 endif "}}}2
 
 if dein#tap('vim-markdown') "{{{2
-    let g:vim_markdown_conceal = 0
+    let g:markdown_fenced_languages = ['python', 'c', 'cpp', 'bash=sh']
+    let g:markdown_syntax_conceal = 0
 endif "}}}2
 
 if dein#tap('vim-table-mode') "{{{2

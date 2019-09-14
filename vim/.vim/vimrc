@@ -298,7 +298,6 @@ if has('autocmd')
     augroup END
 endif
 
-set background=dark
 set confirm
 set shortmess+=a
 set number
@@ -919,6 +918,7 @@ if dein#load_state(s:dein_path_plugins)
 
     " Colors
     call dein#add('morhetz/gruvbox')
+    call dein#add('NLKNguyen/papercolor-theme')
 
     " Completions
     if s:has_nvim || s:has_vim8
@@ -1547,12 +1547,17 @@ endif "}}}2
 
 if dein#tap('gruvbox') "{{{2
     let g:gruvbox_guisp_fallback = 'fg'
-    colorscheme gruvbox
+    set background=dark
+endif "}}}2
+
+if dein#tap('papercolor-theme') "{{{2
+    colorscheme PaperColor
+    set background=light
 endif "}}}2
 
 if dein#tap('lightline.vim') "{{{2
     let g:lightline = {
-                \ 'colorscheme': 'gruvbox',
+                \ 'colorscheme': g:colors_name,
                 \ 'active': {
                 \     'right': [['winnr'], ['fugitive', 'filename', 'bufnr']],
                 \     'left': [['paste', 'lineinfo' ],

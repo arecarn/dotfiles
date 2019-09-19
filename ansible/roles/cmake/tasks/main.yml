@@ -1,15 +1,10 @@
 ---
-- name: MacOSX
-  tags: cmake
-  homebrew:
-    name: cmake
-    state: latest
-  when: ansible_distribution == 'MacOSX'
-
-- name: Ubuntu
+- name: CMake
   tags: cmake
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
-  package:
+  pip:
     name: cmake
     state: latest
+    executable: "{{pip3_executable[ansible_distribution | lower]\
+                 | default([pip3])}}"

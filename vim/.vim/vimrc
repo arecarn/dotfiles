@@ -1056,7 +1056,7 @@ command! DeinUpdate call dein#update()
 
 filetype plugin indent on
 syntax on
-if !exists("g:syntax_on")
+if !exists('g:syntax_on')
     syntax enable
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -1220,7 +1220,7 @@ if dein#tap('vim-fugitive') "{{{2
     fun! AutojumpLastPosition()
         if ! exists('b:autojumped_init')
             let b:autojumped_init = 1
-            if &ft !=# 'gitcommit' && &ft !=# 'diff' && ! &diff && line("'\"") <=# line('$') && line("'\"") > 0
+            if &filetype !=# 'gitcommit' && &filetype !=# 'diff' && ! &diff && line("'\"") <=# line('$') && line("'\"") > 0
                 " NOTE: `zv` is ignored with foldlevel in modeline.
                 exe 'normal! g`"zv'
             endif
@@ -1237,7 +1237,7 @@ if dein#tap('vim-fugitive') "{{{2
         if exists('w:no_resolve_symlink') && w:no_resolve_symlink
             return
         endif
-        if &ft ==# 'help'
+        if &filetype ==# 'help'
             return
         endif
         let fname = a:0 ? a:1 : expand('%')
@@ -1252,11 +1252,11 @@ if dein#tap('vim-fugitive') "{{{2
             return
         endif
         let resolvedfile = fnameescape(resolvedfile)
-        let sshm = &shm
+        let sshm = &shortmess
         set shortmess+=A  " silence ATTENTION message about swap file (would get displayed twice)
         redraw  " Redraw now, to avoid hit-enter prompt.
         exec 'file ' . resolvedfile
-        let &shm=sshm
+        let &shortmess=sshm
 
         call AutojumpLastPosition()
         unlet! b:git_dir
@@ -1585,17 +1585,17 @@ if dein#tap('lightline.vim') "{{{2
                 \ }}
 
     function! Lightline_modified() abort
-        return &ft =~# 'help\|dirvish' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+        return &filetype =~# 'help\|dirvish' ? '' : &modified ? '+' : &modifiable ? '' : '-'
     endfunction
 
     function! Lightline_readonly() abort
-        return &ft !~? 'help\|dirvish' && &readonly ? 'RO' : ''
+        return &filetype !~? 'help\|dirvish' && &readonly ? 'RO' : ''
     endfunction
 
     function! Lightline_filename() abort
         let file_name = bufname('%')
 
-        if file_name == ''
+        if file_name ==# ''
             let file_name = '[No Name]'
         else
             if winwidth(0) - len(file_name) < 40
@@ -1609,7 +1609,7 @@ if dein#tap('lightline.vim') "{{{2
     endfunction
 
     function! Lightline_fugitive() abort
-        if &ft !~? 'dirvish' && exists('*fugitive#head') && (winwidth(0) > 80)
+        if &filetype !~? 'dirvish' && exists('*fugitive#head') && (winwidth(0) > 80)
             let branch = fugitive#head()
             return branch !=# '' ? '±'.branch : ''
         endif
@@ -1625,7 +1625,7 @@ if dein#tap('lightline.vim') "{{{2
     endfunction
 
     function! Lightline_fileencoding() abort
-        return winwidth(0) > 80 ? (&fenc !=# '' ? &fenc : &enc) : ''
+        return winwidth(0) > 80 ? (&fileencoding !=# '' ? &fileencoding : &encoding) : ''
     endfunction
 
     function! Lightline_winnr() abort

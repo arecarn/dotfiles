@@ -7,7 +7,7 @@
 [push]
     # `simple` is default in v2.0+ and was added v1.7.10. Push mode `simple`
     # only pushes current branch to the one that git pull would pull from only
-    # if the names match.  The old default before v2.0 was `matching` option
+    # if the names match. The old default before v2.0 was `matching` option
     # means git will push all of your local branches to matching one in the
     # remote. For these older version of git the `current` mode is most similar
     # it pushes to or creates-then-pushes-to same-named branches on the remote
@@ -95,11 +95,14 @@
 
     bc = checkout -b # Branch Create
     bco = checkout --orphan # Branch Create Orphan (empty branch)
+
     # Branch Create Remote
     # Usage: git bcr <remote-name> <branch-name>
     bcr = "!f() { first_arg=\"$1\"; shift; git push --set-upstream \"${first_arg}\" $(git symbolic-ref --short HEAD) \"$@\"; }; f"
-    bsr = branch --set-upstream-to # Branch Set Remote
 
+    # Branch Set Remote tracking branch
+    # Usage: git bcr <remote-name>
+    bsr = "!f() { first_arg=\"$1\"; shift; git branch --set-upstream-to \"${first_arg}\"/$(git symbolic-ref --short HEAD) $(git symbolic-ref --short HEAD) \"$@\"; }; f"
 
     t = tag
     ta = tag --annotate
@@ -116,14 +119,13 @@
     cmfu = !git cm --fixup
     cmsq = !git cm --squash
     cma = !git cm --amend --reset-author
-    # Commit Amend No Message
-    cmanm = !git cma --no-edit
+    cmanm = !git cma --no-edit # Commit Amend No Message
 
     f = fetch --all
     co = checkout
 
     sh = show --decorate --stat --patch # Show
-    shdt = !git dt $1~..$1  # Show with Diff Tool
+    shdt = !git dt $1~..$1 # Show with Diff Tool
 
     st = stash save
     stka = stash save --keep-index # Stash Keep Added (keep files in the staging area)
@@ -178,7 +180,7 @@
     cpq = cherry-pick --quit
     cpa = cherry-pick --abort
 
-    rl =  !git --no-pager reflog --max-count=20
+    rl = !git --no-pager reflog --max-count=20
     # RefLog Long
     rll = reflog
 
@@ -195,7 +197,7 @@
     lla = !git log-pretty --all
 
     # better LoG
-    lg =  log --boundary --stat --pretty=fuller
+    lg = log --boundary --stat --pretty=fuller
     # better LoG with All branches and refs
     lga = !git lg --all
 
@@ -245,7 +247,7 @@
     # CLeaN Deep
     clnd = !git clean --interactive -d -x
 
-    # check if a file  exist in the repository?
+    # check if a file exist in the repository?
     exists = ls-files --error-unmatch
 
     # Fix White Space for files that are staged to be committed

@@ -932,6 +932,9 @@ if dein#load_state(s:dein_path_plugins)
         call dein#add('w0rp/ale')
     endif
     call dein#add('tpope/vim-dispatch')
+    if s:has_nvim
+        call dein#add('radenling/vim-dispatch-neovim', {'depends' : 'tpope/vim-dispatch'})
+    endif
     call dein#add('janko-m/vim-test')
 
 
@@ -1663,6 +1666,7 @@ endif "}}}2
 
 if dein#tap('vim-qf') "{{{2
     let g:qf_mapping_ack_style = 1
+    let g:qf_auto_open_quickfix = 1 " auto opening the quickfix resets the &makeprg :(
 endif "}}}2
 
 if dein#tap('vimwiki') "}}}2

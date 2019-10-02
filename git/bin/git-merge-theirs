@@ -1,0 +1,25 @@
+#!/bin/sh
+
+branch_to_merge="$1"
+current_branch=$(git symbolic-ref --short HEAD)
+
+git checkout "$current_branch"
+
+# Do a merge commit. The content of this commit does not matter,
+# so use a strategy that never fails.
+# Note: This advances "$current_branch".
+git merge -s ours "$branch_to_merge"
+
+# Change working tree and index to desired content.
+# --detach ensures branchB will not move when doing the reset in the next step.
+git checkout --detach "$branch_to_merge"
+
+# Move HEAD to "$current_branch" without changing contents of working tree and index.
+git reset --soft "$current_branch"
+
+# 'attach' HEAD to "$current_branch".
+# This ensures "$current_branch" will move when doing 'commit --amend'.
+git checkout "$current_branch"
+
+# Change content of merge commit to current index (i.e. content of branchB).
+git commit --no-verify --amend -C HEAD

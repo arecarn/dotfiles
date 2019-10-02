@@ -1340,7 +1340,7 @@ if dein#tap('vim-textmanip') "{{{2
     xmap gb<C-k> <Plug>(textmanip-blank-above)
 
     " toggle insert/replace with
-    nmap =otm <Plug>(textmanip-toggle-mode)
+    nmap yotm <Plug>(textmanip-toggle-mode)
 endif "}}}2
 
 if dein#tap('vim-quickhl') "{{{2
@@ -1393,7 +1393,7 @@ if dein#tap('undotree') "{{{2
 endif "}}}2
 
 if dein#tap('goyo.vim') "{{{2
-    nnoremap =of :<C-u>call SetGoyo(v:count)<CR>
+    nnoremap yof :<C-u>call SetGoyo(v:count)<CR>
 
     function! s:goyo_enter() abort
         let b:wrap_cache = &wrap
@@ -1717,7 +1717,6 @@ endif "}}}2
 if filereadable(glob('~/.vimrc_local_post', 1))
     source ~/.vimrc_local_post
 endif
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " -                                                                          {{{

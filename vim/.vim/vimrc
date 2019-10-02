@@ -676,11 +676,13 @@ if s:has_terminal
     " paste register into terminal
     tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 
-    nnoremap +. :<C-u>tabedit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
+    nnoremap +. :<C-u>terminal<CR>
+    nnoremap +.t :<C-u>tabedit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
     nnoremap +.\ :<C-u>vsplit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:vertical terminal<CR>
     nnoremap +.- :<C-u>rightbelow split %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
 
-    nnoremap ++ :<C-u>tabedit .<CR>:terminal<CR>
+    nnoremap ++ :<C-u>terminal<CR>
+    nnoremap ++t :<C-u>tabedit .<CR>:terminal<CR>
     nnoremap +\ :<C-u>vsplit<CR>:vertical terminal<CR>
     nnoremap +- :<C-u>rightbelow split<CR>terminal<CR>
 

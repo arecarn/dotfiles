@@ -83,9 +83,11 @@
     # Branch List Verbose (This is a work in progress)
     blv = for-each-ref --sort=committerdate refs/ --format='%(HEAD) %(color:green)%(committerdate:short)%(color:reset) %(color:yellow)%(objectname:short)%(color:reset) %(refname:short) %(color:blue)%(authorname)%(color:reset) %(contents:subject)'
     # Branches that are Merged
-    bm =  !echo 'Merged Branches:'    && git --no-pager bll --merged
+    blm =  !echo 'Merged Branches:'    && git --no-pager bl --merged
+    bllm =  !echo 'Merged Branches:'    && git --no-pager bll --merged
     # Branches that are  Un-Merged
-    bum = !echo ' Unmerged Branches:' && git --no-pager bll --no-merged
+    blum = !echo ' Unmerged Branches:' && git --no-pager bl --no-merged
+    bllum = !echo ' Unmerged Branches:' && git --no-pager bll --no-merged
 
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete

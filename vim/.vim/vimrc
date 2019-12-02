@@ -964,7 +964,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('elzr/vim-json')
 
     " Colors
-    call dein#add('morhetz/gruvbox')
+    call dein#add('joshdick/onedark.vim')
 
     " Completions
     if s:has_nvim || s:has_vim8
@@ -1583,10 +1583,9 @@ if dein#tap('vim-operator-replace') "{{{2
     map _ <Plug>(operator-replace)
 endif "}}}2
 
-if dein#tap('gruvbox') "{{{2
-    let g:gruvbox_guisp_fallback = 'fg'
+if dein#tap('onedark.vim') "{{{2
     set background=dark
-    colorscheme gruvbox
+    colorscheme onedark
 endif "}}}2
 
 if dein#tap('lightline.vim') "{{{2

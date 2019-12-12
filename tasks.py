@@ -237,7 +237,7 @@ def install(ctx):
     # pylint: disable=unused-argument
 
 
-@task(lint_shell, lint_yaml, lint_python, default=True)
+@task(lint_shell, lint_yaml, lint_python, lint_vim, default=True)
 def lint(ctx):
     """
     Lint task

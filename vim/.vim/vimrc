@@ -736,31 +736,17 @@ endfunction
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 
 
-function! Putty_copy(bang) abort
-    if a:bang ==# ''
-        let s:saved_number_setting = &number
-        let s:saved_relativenumber_setting = &relativenumber
-        let s:saved_signcolumn_setting = &signcolumn
-        let s:saved_foldcolumn_setting = &foldcolumn
-        set nonumber
-        set norelativenumber
-        set signcolumn=no
-        set foldcolumn=0
-        let line = line('.')
-        PreserveSave
-        tabedit %
-        PreserveRestore
-        execute ":normal! G " . line . "\<CR>"
-    else
-        let &number = s:saved_number_setting
-        let &relativenumber = s:saved_relativenumber_setting
-        let &signcolumn = s:saved_signcolumn_setting
-        let &foldcolumn = s:saved_foldcolumn_setting
-        tabclose
-    endif
+function! CopyTab() abort
+    PreserveSave
+    tabedit %
+    set nonumber
+    set norelativenumber
+    set signcolumn=no
+    set foldcolumn=0
+    PreserveRestore
 endfunction
 
-command! -bang -nargs=0 -range=0 PuttyCopy call Putty_copy("<bang>")
+command! -bang -nargs=0 -range=0 CopyTab call CopyTab()
 
 
 

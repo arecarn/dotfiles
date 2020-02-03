@@ -936,16 +936,13 @@ if dein#load_state(s:dein_path_plugins)
 
     " File Type + Syntax
     call dein#add('stephpy/vim-yaml') "and alternative YAML sine the built in one is slow
-    call dein#add('lopter/moin.vim')
     call dein#add('vim-scripts/confluencewiki.vim')
     call dein#add('tpope/vim-markdown')
     call dein#add('dbeniamine/todo.txt-vim')
     call dein#add('vim-scripts/scons.vim')
     call dein#add('romainl/vim-qf')
     call dein#add('octol/vim-cpp-enhanced-highlight')
-    call dein#add('lyuts/vim-rtags')
     call dein#add('hynek/vim-python-pep8-indent')
-    call dein#add('python-rope/ropevim')
     call dein#add('kassio/neoterm')
     call dein#add('Shougo/Deol.nvim')
     call dein#add('elzr/vim-json')
@@ -981,7 +978,6 @@ if dein#load_state(s:dein_path_plugins)
 
     " Git / VCS
     call dein#add('tpope/vim-fugitive')
-
     call dein#add('lambdalisue/gina.vim')
     call dein#add('jreybert/vimagit')
     call dein#add('airblade/vim-rooter')
@@ -992,7 +988,7 @@ if dein#load_state(s:dein_path_plugins)
     " Diff
     call dein#add('AndrewRadev/linediff.vim')
     call dein#add('vim-scripts/diffchanges.vim')
-    call dein#add('arecarn/vim-diff-utils')
+    call dein#add('arecarn/vim-diff-utils', {'rev' : 'visual_mapping'})
     call dein#add('chrisbra/vim-diff-enhanced')
     call dein#add('will133/vim-dirdiff')
 
@@ -1005,7 +1001,6 @@ if dein#load_state(s:dein_path_plugins)
 
 
     " Text Manipulation Commands / Mappings
-    call dein#add('junegunn/vim-easy-align')
     call dein#add('godlygeek/tabular')
     call dein#add('arecarn/vim-split-join')
     call dein#add('AndrewRadev/splitjoin.vim')
@@ -1018,7 +1013,6 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('tpope/vim-speeddating')
     call dein#add('tpope/vim-unimpaired')
     call dein#add('vim-scripts/UnconditionalPaste')
-    call dein#add('arecarn/vim-go-to-buffer')
     call dein#add('arecarn/vim-auto-autoread')
     call dein#add('arecarn/vim-backup-tree')
     call dein#add('thinca/vim-qfreplace')

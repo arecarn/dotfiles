@@ -322,12 +322,10 @@ endif
 
 " Highlight TODO, FIXME, NOTE, etc.
 if has('autocmd') && v:version > 701
+    highlight default link MyTodo Todo
     augroup todo
         autocmd!
-        autocmd Syntax * call matchadd(
-                    \ 'Debug',
-                    \ '\v\zs<(NOTE|INFO|IDEA|TODO|TODO_F|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
-                    \ )
+        autocmd Syntax * match MyTodo '\v<(|NOTE|INFO|IDEA|IMPROVEMENT|QUESTION|TODO|FIXME|BUG|HACK|TRICKY|XXX)>'
     augroup END
 endif
 

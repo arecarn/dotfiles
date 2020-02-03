@@ -456,17 +456,21 @@ bindkey -M isearch ' ' self-insert
 # By default tmux updates the DISPLAY and SSH_AUTH_SOCK variables in tmux's
 # own environment, so we have to propagate the environment to our shell.
 if [ -n "$TMUX" ]; then
-    refresh-tmux-env() {
+    tmux_refresh_env() {
         export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
         export $(tmux show-environment | grep "^DISPLAY")
+
+        # need to authorize
+        # see https://kerneltalks.com/troubleshooting/mobaxterm-x11-proxy-authorisation-not-recognised/
+        xauth add $(xauth -f ~/.Xauthority list | tail -1)
     }
 else
-    refresh-tmux-env() { }
+    tmux_refresh_env() { }
 fi
 
 # this is called after reading a command but before executing it
 preexec() {
-    refresh-tmux-env
+    tmux_refresh_env
 }
 
 #############################################################################}}}

@@ -1,7 +1,0 @@
----
-- name: MacOSX
-  tags: lmms
-  when: ansible_distribution == 'MacOSX'
-  homebrew_cask:
-    name: lmms
-    state: present

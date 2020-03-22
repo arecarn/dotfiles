@@ -1,14 +1,17 @@
 # Ansible Setup
 
 ## About
+
 Ansible playbooks to manage the configuration of my computers
 
 ## Usage
+
 ```
 $ ansible-playbook -i hosts <playbook> --ask-become-pass
 ```
 
 ### OSX
+
 Requirements:
 - install Homebrew
     ```
@@ -18,7 +21,9 @@ Requirements:
     ```
     brew install ansible
     ```
+
 ### Ubuntu
+
 Requirements:
 - install Ansible
   ```

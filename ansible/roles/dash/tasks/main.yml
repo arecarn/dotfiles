@@ -1,7 +1,0 @@
----
-- name: MacOSX
-  tags: dash
-  when: ansible_distribution == 'MacOSX'
-  homebrew_cask:
-    name: dash
-    state: present

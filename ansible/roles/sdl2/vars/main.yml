@@ -1,8 +1,0 @@
----
-homebrew_packages:
-  - {name: 'sdl2'}
-  - {name: 'sdl2_gfx'}
-  - {name: 'sdl2_image'}
-  - {name: 'sdl2_mixer'}
-  - {name: 'sdl2_net'}
-  - {name: 'sdl2_ttf'}

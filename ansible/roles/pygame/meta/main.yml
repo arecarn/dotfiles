@@ -1,6 +1,0 @@
----
-dependencies:
-  - package_manager
-  - sdl
-  - python
-  - hg

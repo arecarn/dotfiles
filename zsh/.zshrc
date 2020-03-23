@@ -102,7 +102,6 @@ else
     export EDITOR='vim'
 fi
 
-
 export LANG='en_US.UTF-8'
 
 # improved less option
@@ -358,17 +357,7 @@ alias tarxz='tar -Jcvf'
 # extract tar archive even if it has been compressed (e.g. .gz, .xz, bz2)
 alias untar='tar -xvf' # usage: untar ARCHIVE
 
-alias df='df -h'
-alias du='du -hc'
-# disk usage sorted
-alias dus='du -hsxc ./* | sort -rh'
-
 alias g='git'
-# Git: current branch
-alias -g gcb='$(git symbolic-ref --short HEAD)'
-alias gnp='git --no-pager'
-alias gcd='cd $(git rev-parse --show-toplevel)'
-alias v='vim'
 alias m="make"
 
 if [[ "${OSTYPE}" == 'linux'* ]]; then
@@ -402,52 +391,6 @@ elif [[ "${OSTYPE}" == 'darwin'* ]]; then
 fi
 
 alias sa="ssh_start_agent"
-
-# GLOBAL ABBERVIATIONS {{{2
-typeset -Ag abbreviations
-abbreviations=(
-'\\h'   'HEAD__CURSOR__'
-'Ia'    '| awk'
-'Ig'    '| grep -P'
-'Igv'   '| grep -Pv' #inverse match
-'Ih'    '| head'
-'Im'    '| more'
-'Ip'    '| "${PAGER}"'
-'Is'    '| sort'
-'Ist'   '| sed'
-'It'    '| tail'
-'Iv'    '| vim -R -'
-'Iw'    '| wc'
-'Ix'    '| xargs'
-)
-
-magic-abbrev-expand() {
-    local MATCH
-    LBUFFER=${LBUFFER%%(#m)[_a-zA-Z0-9\\]#}
-    command=${abbreviations[${MATCH}]}
-    LBUFFER+=${command:-${MATCH}}
-
-    if [[ "${command}" =~ '__CURSOR__' ]]
-    then
-        RBUFFER=${LBUFFER[(ws:__CURSOR__:)2]}
-        LBUFFER=${LBUFFER[(ws:__CURSOR__:)1]}
-    else
-        zle self-insert
-    fi
-    zle split-undo
-}
-zle -N magic-abbrev-expand
-
-no-magic-abbrev-expand() {
-    LBUFFER+=' '
-    zle split-undo
-}
-zle -N no-magic-abbrev-expand
-
-bindkey -M viins ' ' magic-abbrev-expand
-bindkey -M viins '^ ' no-magic-abbrev-expand
-bindkey -M isearch ' ' self-insert
-# }}}2
 
 #############################################################################}}}
 # TMUX                                                                       {{{

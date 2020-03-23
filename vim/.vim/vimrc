@@ -948,7 +948,8 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('elzr/vim-json')
 
     " Colors
-    call dein#add('joshdick/onedark.vim')
+    call dein#add('romainl/Apprentice')
+    call dein#add('jonsmithers/apprentice-lightline-experimental')
 
     " Completions
     if s:has_nvim || s:has_vim8
@@ -1578,6 +1579,11 @@ endif "}}}2
 if dein#tap('onedark.vim') "{{{2
     set background=dark
     colorscheme onedark
+endif "}}}2
+
+if dein#tap('Apprentice') "{{{2
+    set background=dark
+    colorscheme apprentice
 endif "}}}2
 
 if dein#tap('lightline.vim') "{{{2

@@ -34,7 +34,6 @@ zplug 'plugins/tmux', from:oh-my-zsh, defer:1
 zplug 'rupa/z', use:'*.sh'
 zplug 'zsh-users/zsh-completions'
 zplug 'zsh-users/zsh-syntax-highlighting', defer:1
-# zplug 'morhetz/gruvbox', use:'gruvbox_256palette.sh'
 zplug 'junegunn/fzf', \
     use:"shell", \
     hook-build:'./install --all --no-update-rc --no-key-bindings --xdg --no-bash --no-fish'

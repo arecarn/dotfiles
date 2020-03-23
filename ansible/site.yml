@@ -29,6 +29,7 @@
     - lua
     - markdownlint
     - moreutils
+    - ncdu
     - neovim
     - npm
     - package_manager

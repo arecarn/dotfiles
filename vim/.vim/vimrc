@@ -1177,8 +1177,11 @@ if dein#tap('denite.nvim') "{{{2
     command! Messages Denite -mode=normal output:message
 
     " Define mappings
-    autocmd FileType denite call s:denite_my_settings()
-    function! s:denite_my_settings() abort
+    augroup denite_custom_settings
+        autocmd!
+        autocmd FileType denite call s:denite_custom_settings()
+    augroup END
+    function! s:denite_custom_settings() abort
         nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
         nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
         nnoremap <silent><buffer><expr> p denite#do_map('do_action', 'preview')

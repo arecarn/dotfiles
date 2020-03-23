@@ -460,12 +460,19 @@ if [ -n "$TMUX" ]; then
         export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
         export $(tmux show-environment | grep "^DISPLAY")
 
-        # need to authorize
-        # see https://kerneltalks.com/troubleshooting/mobaxterm-x11-proxy-authorisation-not-recognised/
-        xauth add $(xauth -f ~/.Xauthority list | tail -1)
+        if [[ -f "~/.Xauthority" ]]; then
+            # see https://kerneltalks.com/troubleshooting/mobaxterm-x11-proxy-authorisation-not-recognised/
+            # This fixes authorization not recognized errors that prevents
+            # opening graphical programs on a X-Server. The error is as follows:
+            # > X11 proxy: Authorisation not recognised
+            # > Error: Can't open display: localhost:10.0
+            xauth add $(xauth -f ~/.Xauthority list | tail -1)
+        fi
     }
 else
-    tmux_refresh_env() { }
+    tmux_refresh_env() {
+        # do nothing
+    }
 fi
 
 # this is called after reading a command but before executing it

@@ -373,8 +373,10 @@ alias lld='ld -lh *(/D)'
 
 alias t='pwd; tree'
 alias tt='t -ph'
+alias tta='tt -ph'
 alias td='t -d'
 alias ttd='tt -d'
+alias ttad='tta -d'
 
 if [[ "${OSTYPE}" == 'linux'* ]]; then
     alias open="xdg-open"

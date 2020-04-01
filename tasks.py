@@ -177,7 +177,8 @@ class Dploy():
             'ssh',
             'tmux',
             'vim',
-            'zsh'
+            'zsh',
+            'xfce4-terminal',
         ]
 
         self.links = [

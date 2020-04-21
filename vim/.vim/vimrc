@@ -938,6 +938,9 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('stephpy/vim-yaml') "and alternative YAML sine the built in one is slow
     call dein#add('vim-scripts/confluencewiki.vim')
     call dein#add('tpope/vim-markdown')
+    call dein#add('iamcco/markdown-preview.nvim', {'on_ft': ['markdown', 'pandoc.markdown', 'rmd']})
+    call dein#set_hook('iamcco/markdown-preview.nvim', 'hook_source', function('mkdp#util#install'))
+
     call dein#add('dbeniamine/todo.txt-vim')
     call dein#add('vim-scripts/scons.vim')
     call dein#add('romainl/vim-qf')

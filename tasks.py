@@ -143,6 +143,7 @@ def provision(ctx, args=''):
                 '--ask-become-pass ' + args,
                 **RUN_ARGS)
 
+
 @task
 def provision_minimal(ctx, args=''):
     """

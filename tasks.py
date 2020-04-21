@@ -123,11 +123,25 @@ def provision(ctx, args=''):
     """
     Provision this system using ansible
     """
-    os.chdir('ansible')
-    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost '
-            '--ask-become-pass ' + args,
-            **RUN_ARGS)
-
+    if IS_WINDOWS:
+        packages = " ".join([
+            "git",
+            "ctags",
+            "neovim",
+            "nodejs",
+            "yarn",
+            "plantuml",
+            # "openssh" # not sure if this is needed if I use terminus
+            "terminus",
+            "wsl-ubuntu-1804",
+        ])
+        ctx.run(f'choco install {packages} -y', **RUN_ARGS)
+        ctx.run('choco update all -y', **RUN_ARGS)
+    else:
+        os.chdir('ansible')
+        ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost '
+                '--ask-become-pass ' + args,
+                **RUN_ARGS)
 
 @task
 def provision_minimal(ctx, args=''):

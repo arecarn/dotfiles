@@ -46,20 +46,7 @@ else
     endif
 endif
 
-" consider using split(&runtimepath, ',')[0] for s:app_path
-if s:has_windows
-    if has('nvim')
-        let s:app_path = g:config_path
-    else
-        let s:app_path = $HOME . '/vimfiles/'
-    endif
-else
-    if has('nvim')
-        let s:app_path = g:config_path
-    else
-        let s:app_path = $HOME . '/.vim/'
-    endif
-endif
+let s:app_path = split(&runtimepath, ',')[0] . g:path_sep
 
 function! s:make_private_directory(path) abort
     if !isdirectory(a:path)
@@ -221,7 +208,6 @@ if has('autocmd')
         autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
     augroup END
 endif
-
 if has('autocmd')
     augroup AllFiles
         autocmd!

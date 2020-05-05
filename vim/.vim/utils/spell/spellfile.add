@@ -28,7 +28,7 @@ CRC
 CSV
 CTRL
 DBS
-Deadlift
+deadlift
 deadlifts
 Deads
 Deselect
@@ -489,7 +489,7 @@ deserialization
 franca
 RMA
 Simulink
-deadlift
-Cardio
+cardio
 NOLINT
 pullups
+PWMs

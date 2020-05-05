@@ -381,9 +381,9 @@ xnoremap gk k
 xnoremap gj j
 
 nnoremap <leader>f :find<Space>
-nnoremap <leader>s :sfind<Space>
-nnoremap <leader>v :vert sfind<Space>
-nnoremap <leader>t :tabfind<Space>
+nnoremap <leader>fs :sfind<Space>
+nnoremap <leader>fv :vert sfind<Space>
+nnoremap <leader>ft :tabfind<Space>
 
 nnoremap <leader>F :find <C-R>=expand('%:h') . g:path_sep<CR>
 nnoremap <leader>fo :find <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
@@ -927,7 +927,7 @@ if dein#load_state(s:dein_path_plugins)
                 \ 'on_ft': ['markdown', 'mkd'],
                 \ 'hook_post_source': 'call mkdp#util#install()',
                 \ })
-
+    call dein#add('aklt/plantuml-syntax')
     call dein#add('dbeniamine/todo.txt-vim')
     call dein#add('romainl/vim-qf')
     call dein#add('octol/vim-cpp-enhanced-highlight')
@@ -1037,6 +1037,7 @@ if dein#load_state(s:dein_path_plugins)
     " Project Management
     if s:has_vim8 || s:has_nvim
         call dein#add('ludovicchabant/vim-gutentags')
+        call dein#add('liuchengxu/vista.vim')
     endif
     call dein#add('tpope/vim-projectionist')
 
@@ -1390,6 +1391,9 @@ if dein#tap('goyo.vim') "{{{2
         autocmd User GoyoEnter nested call <SID>goyo_enter()
         autocmd User GoyoLeave nested call <SID>goyo_leave()
     augroup END
+
+   let signcolumn_width = &signcolumn !=# 'no' ? 2 : 0
+   let g:goyo_width = 80 + signcolumn_width + &foldcolumn
     function! SetGoyo(num) abort
         if a:num == 0
             Goyo
@@ -1664,9 +1668,10 @@ endif "}}}2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AFTER PLUGINS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if filereadable(glob('~/.vimrc_local_post', 1))
-    source ~/.vimrc_local_post
-endif
+ if exists('*Vimrc_local_plugin_config')
+     call Vimrc_local_plugin_config()
+ endif
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " -                                                                          {{{

@@ -122,23 +122,22 @@ if [[ ${TERM} == 'xterm' ]]; then
     export TERM=xterm-256color
 fi
 
-export zsh="${HOME}/.zshrc"
-export zshl="${HOME}/.zshrc_local"
-export shf="${SH_CONFIG_DIR}/functions.sh"
-export git="${HOME}/.gitconfig"
-export gitl="${HOME}/.gitconfig_local"
-export vim="${HOME}/.vimrc"
-export viml="${HOME}/.vimrc_local"
-export tmux="${HOME}/.tmux.conf"
-export t="${HOME}/Dropbox/notes/todo.txt"
-export i="${HOME}/Dropbox/notes/inbox.md"
-export j="${HOME}/Dropbox/notes/journal.md"
-
-f="${HOME}/Dropbox/"
-p="${f}/projects/"
-n="${f}/notes/"
+zsh="${HOME}/.zshrc"
+zshl="${HOME}/.zshrc_local"
+shf="${SH_CONFIG_DIR}/functions.sh"
+git="${HOME}/.gitconfig"
+gitl="${HOME}/.gitconfig_local"
+vim="${HOME}/.vimrc"
+viml="${HOME}/.vimrc_local"
+tmux="${HOME}/.tmux.conf"
 df="${HOME}/dotfiles/"
 dfl="${HOME}/dotfiles_local/"
+f="${HOME}/files/"
+p="${f}/projects/"
+n="${f}/notes/"
+t="${n}/todo.txt"
+i="${n}/inbox.md"
+j="${n}/journal.md"
 
 #############################################################################}}}
 # HISTORY OPTIONS                                                            {{{

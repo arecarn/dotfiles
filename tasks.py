@@ -4,6 +4,7 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 
 import os
 import fnmatch
+import pathlib
 from invoke import task
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
@@ -180,12 +181,11 @@ class Dploy():
         # preventing us from installing it using the provision task
         import dploy
         self.dploy = dploy
-        self.home = os.environ[STOW_LOCATION]
+        self.home = pathlib.Path().home()
         self.packages = [
             'cmd',
             'ctags',
             'git',
-            'mutt',
             'readline',
             'scripts',
             'shell',
@@ -196,14 +196,42 @@ class Dploy():
             'xfce4-terminal',
         ]
 
+        # pylint: disable=invalid-name
+        p = pathlib.Path
+
         self.links = [
-            ((self.home, '.vim', 'vimrc'), (self.home, '.vimrc')),
-            ((self.home, '.vim'), (self.home, 'vimfiles')),
-            ((self.home, '.vim', 'vimrc'), (self.home, '.vim', 'init.vim')),
-            ((self.home, '.vim'), (self.home, '.config', 'nvim')),
+            (
+                self.home / p('.vim/vimrc'),
+                self.home / p('.vimrc')
+            ),
+            (
+                self.home / p('.vim'),
+                self.home / p('vimfiles')
+            ),
+            (
+                self.home / p('.vim/vimrc'),
+                self.home / p('.vim/init.vim')
+            ),
+            (
+                self.home / p('.vim'),
+                self.home / p('.config/nvim')
+            ),
         ]
+
+        dropbox = self.home / p('Dropbox/personal')
+        files = self.home / p('files')
+        if dropbox.exists():
+            self.links.append(
+                (dropbox, files)
+            )
+
         if IS_WINDOWS:
-            self.links += [((self.home, '.vim'), (self.home, 'AppData', 'Local', 'nvim'))]
+            self.links += [
+                (
+                    self.home / p('.vim'),
+                    self.home / p('AppData/Local/nvim')
+                ),
+            ]
 
     def stow(self):
         """
@@ -212,7 +240,7 @@ class Dploy():
         # pylint: disable=invalid-name
         self.dploy.stow(self.packages, self.home, is_silent=False)
         for src, dest in self.links:
-            self.dploy.link(os.path.join(*src), os.path.join(*dest), is_silent=False)
+            self.dploy.link(src, dest, is_silent=False)
 
     def unstow(self):
         """

@@ -640,13 +640,13 @@ let $gitl = '~/.gitconfig_local'
 let $vim = '$MYVIMRC'
 let $viml = '~/.vimrc_local'
 let $tmux = '~/.tmux.conf'
-let $t = '~/Dropbox/notes/todo.txt'
-let $i = '~/Dropbox/notes/inbox.md'
-let $j = '~/Dropbox/notes/journal.md'
+let $t = '~/files/notes/todo.txt'
+let $i = '~/files/notes/inbox.md'
+let $j = '~/files/notes/journal.md'
 
-cnoremap ~f ~/Dropbox
-cnoremap ~p ~/Dropbox/projects
-cnoremap ~n ~/Dropbox/notes
+cnoremap ~f ~/files
+cnoremap ~p ~/files/projects
+cnoremap ~n ~/files/notes
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
 
@@ -1187,8 +1187,8 @@ if dein#tap('vim-dirvish') "{{{2
     let g:loaded_netrwPlugin = 1
 
     augroup dirvish_config
-      autocmd!
-      autocmd FileType dirvish silent! setlocal nospell
+        autocmd!
+        autocmd FileType dirvish silent! setlocal nospell
     augroup END
     nnoremap g- :<C-u>Dirvish .<CR>
 else
@@ -1221,7 +1221,7 @@ if dein#tap('vim-fugitive') "{{{2
     nmap ]g :Gstatus<CR>30<C-w>_<C-w>K<C-n><CR>
     nmap [g :Gstatus<CR>30<C-w>_<C-w>K<C-p><CR>
 
-    " Jump to last known cursor position on BufReadPost {{{
+    " Jump to last known cursor position on BufReadPost
     " Don't do it when the position is invalid or when inside an event handler
     " (happens when dropping a file on gvim).
     " NOTE: read viminfo/marks, but removed: causes issues with jumplist sync

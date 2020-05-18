@@ -130,10 +130,11 @@ def provision(ctx, args=''):
             "ctags",
             "neovim",
             "nodejs",
-            "yarn",
             "plantuml",
-            # "openssh" # not sure if this is needed if I use terminus
+            "openssh -params '\"/SSHServerFeature\"' -y",
+            "Alacritty",
             "terminus",
+            "vcxsrv", # X-Server
             "wsl-ubuntu-1804",
         ])
         ctx.run(f'choco install {packages} -y', **RUN_ARGS)
@@ -195,6 +196,9 @@ class Dploy():
             'zsh',
             'xfce4-terminal',
         ]
+
+        if IS_WINDOWS:
+            self.packages.append('vcxsrv')
 
         # pylint: disable=invalid-name
         p = pathlib.Path

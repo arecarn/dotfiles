@@ -546,7 +546,7 @@ xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
 " repeat last command then go to the next search position
-nnoremap <C-n> n.
+" nnoremap <C-n> n.
 " repeat last command-line command
 nnoremap g. @:
 
@@ -1008,6 +1008,7 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('arecarn/vim-spell-utils')
     call dein#add('tpope/vim-abolish')
     call dein#add('arecarn/vim-lost')
+    call dein#add('mg979/vim-visual-multi')
 
     " Word Under the Cursor Highlighting
     call dein#add('t9md/vim-quickhl')
@@ -1542,6 +1543,10 @@ if dein#tap('vim-fold-cycle') "{{{2
     nmap zO <Plug>(fold-cycle-open-all)
     nmap zC <Plug>(fold-cycle-close-all)
     nmap zA <Plug>(fold-cycle-toggle-all)
+   " Won't close when max fold is opened
+   let g:fold_cycle_toggle_max_open  = 0
+   " Won't open when max fold is closed
+   let g:fold_cycle_toggle_max_close = 0
     " nmap zr <Plug>(fold-cycle-open-global)
     " nmap zm <Plug>(fold-cycle-close-global)
 endif "}}}2
@@ -1636,8 +1641,7 @@ if dein#tap('lightline.vim') "{{{2
 endif "}}}2
 
 if dein#tap('vim-qf') "{{{2
-    let g:qf_mapping_ack_style = 1
-    let g:qf_auto_open_quickfix = 1 " auto opening the quickfix resets the &makeprg :(
+    let g:qf_auto_open_quickfix = 0 " auto opening the quickfix resets the &makeprg :(
 endif "}}}2
 
 

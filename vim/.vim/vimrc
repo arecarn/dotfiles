@@ -935,6 +935,8 @@ if dein#load_state(s:dein_path_plugins)
     call dein#add('kassio/neoterm')
     call dein#add('Shougo/Deol.nvim')
     call dein#add('elzr/vim-json')
+    call dein#add('chrisbra/csv.vim')
+
 
     " Colors
     call dein#add('romainl/Apprentice')
@@ -1068,6 +1070,12 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if dein#tap('csv.vim')
+    augroup csv
+        autocmd!
+        autocmd CursorHold csv WhatColumn!
+    augroup END
+endif
 
 if dein#tap('vim-gutentags') "{{{2
     let g:gutentags_project_root = ['.gutentags_project_root']

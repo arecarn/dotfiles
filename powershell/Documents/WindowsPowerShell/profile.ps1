@@ -7,6 +7,9 @@
 #
 # To change the execution policy to allow PowerShell to execute scripts from local files, run the following command:
 #     PS C:\Windows\System32> Set-Executionpolicy RemoteSigned -Scope CurrentUser
+#
+
+Set-PSReadLineOption -EditMode Emacs
 
 set-alias g git
 set-alias e nvim

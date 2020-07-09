@@ -175,6 +175,7 @@ let &spellfile = s:app_path . 'utils/spell/spellfile.add'
 let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
 
 execute 'helptags ' . s:app_path . 'doc'
+nnoremap !z= :<C-u>spellrepall<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                           {{{
@@ -248,6 +249,7 @@ execute 'nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set clipboard=unnamedplus,unnamed
 set clipboard=unnamedplus
+
 set splitright
 
 " disable dang error{visual}bells for good
@@ -315,7 +317,7 @@ if has('autocmd') && v:version > 701
     augroup END
 endif
 
-" gui settings {{{2
+" GUI settings {{{2
 if has ('gui_running')
     " Make GVim more like Terminal Vim
     set guioptions-=T "remove toolbar
@@ -411,10 +413,13 @@ endfunction
 " format current paragraph wile in insert mode
 inoremap <C-F> <ESC>gw{zea
 
+" This gets CTRL-6 working on nvim-qt one windows (maybe other places too?)
+nnoremap <C-6> <C-^>
+
 " break out the current tab into a new window without leaving the current tab
 nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
 
-" open the current windows's buffer in a new tab without breaking it out
+" open the current window's buffer in a new tab without breaking it out
 nnoremap g<C-W>t :tabedit %<CR>
 
 nnoremap <leader>to :call PreviewWord()<CR>
@@ -638,6 +643,7 @@ let $shf = '~/.config/shell/functions.sh'
 let $git = '~/.gitconfig'
 let $gitl = '~/.gitconfig_local'
 let $vim = '$MYVIMRC'
+let $vimg = s:app_path . 'ginit.vim'
 let $viml = '~/.vimrc_local'
 let $tmux = '~/.tmux.conf'
 let $t = '~/files/notes/todo.txt'
@@ -753,7 +759,7 @@ command! -nargs=* -range=0 -bang Seq
             \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
 
 function! Seq(count, first_line, last_line, cmdInput, bang) abort
-    " anything within backticks
+    " anything within back ticks
     let l:rg_expr = '`\(.\{-1,}\)`'
 
     " 1 index if ! is used
@@ -1070,6 +1076,14 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if dein#tap('vim-visual-multi') "{{{2
+    let g:VM_mouse_mappings = 1
+endif "}}2
+
+if dein#tap('markdown-preview.nvim') "{{{2
+    let g:mkdp_auto_close = 1
+endif "}}2
+
 if dein#tap('csv.vim')
     augroup csv
         autocmd!
@@ -1496,9 +1510,9 @@ if dein#tap('obvious-resize') "{{{2
 endif "}}}2
 
 if dein#tap('Preserve.vim') "{{{2
-    command! -range=% Dlead :PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
-    noremap <silent>d<Space>l :Dlead<CR>
-    command! -range=% Dtrail :PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
+    command! -bar -range=% TrimLead PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
+    command! -bar -range=% TrimTrail PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
+    command! -bar -range=% Trim <line1>,<line2>TrimTrail<bar>TrimLead
     noremap <silent>d<Space>t :Dtrail<CR>
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>

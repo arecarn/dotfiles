@@ -12,4 +12,4 @@
 Set-PSReadLineOption -EditMode Emacs
 
 set-alias g git
-set-alias e nvim
+set-alias e nvim-qt.exe

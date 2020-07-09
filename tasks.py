@@ -204,7 +204,6 @@ class Dploy():
                     'powershell'
                 ]
             )
-        print(self.packages)
 
         # pylint: disable=invalid-name
         p = pathlib.Path
@@ -258,7 +257,7 @@ class Dploy():
         """
         for _, dest in reversed(self.links):
             try:
-                os.unlink(os.path.join(*dest))
+                os.unlink(dest)
             except FileNotFoundError:
                 pass
 

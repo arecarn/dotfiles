@@ -227,12 +227,17 @@ class Dploy():
             ),
         ]
 
-        dropbox = self.home / p('Dropbox/personal')
+        dropbox = self.home / p('Dropbox')
         files = self.home / p('files')
         if dropbox.exists():
-            self.links.append(
-                (dropbox, files)
-            )
+            self.links.append((dropbox, files))
+        else:
+            def mkdir(path):
+                path.mkdir(parents=True, exist_ok=True)
+                print(f"Creating Directory {path}")
+            mkdir(files / p('documents') / p('archive'))
+            mkdir(files / p('projects') / p('archive'))
+            mkdir(files / p('notes') / p('archive'))
 
         if IS_WINDOWS:
             self.links += [

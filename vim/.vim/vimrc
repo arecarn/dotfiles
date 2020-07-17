@@ -15,9 +15,9 @@ let s:has_nvim = has('nvim')
 let s:has_vim8 = has('patch-8.0.0039')
 
 if s:has_windows
-    let g:path_sep = '\'
+    let g:os_path_sep = '\'
 else
-    let g:path_sep = '/'
+    let g:os_path_sep = '/'
 endif
 
 let g:app = has('nvim') ?  'nvim' : 'vim'
@@ -46,7 +46,7 @@ else
     endif
 endif
 
-let s:app_path = split(&runtimepath, ',')[0] . g:path_sep
+let s:app_path = split(&runtimepath, ',')[0] . g:os_path_sep
 
 function! s:make_private_directory(path) abort
     if !isdirectory(a:path)
@@ -376,7 +376,6 @@ nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
 nnoremap gj j
-
 xnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 xnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 xnoremap gk k
@@ -387,11 +386,11 @@ nnoremap <leader>fs :sfind<Space>
 nnoremap <leader>fv :vert sfind<Space>
 nnoremap <leader>ft :tabfind<Space>
 
-nnoremap <leader>F :find <C-R>=expand('%:h') . g:path_sep<CR>
+nnoremap <leader>F :find <C-R>=expand('%:h') . g:os_path_sep<CR>
 nnoremap <leader>fo :find <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
-nnoremap <leader>S :sfind <C-R>=expand('%:h') . g:path_sep<CR>
-nnoremap <leader>V :vert sfind <C-R>=expand('%:h') . g:path_sep<CR>
-nnoremap <leader>T :tabfind <C-R>=expand('%:h') . g:path_sep<CR>
+nnoremap <leader>S :sfind <C-R>=expand('%:h') . g:os_path_sep<CR>
+nnoremap <leader>V :vert sfind <C-R>=expand('%:h') . g:os_path_sep<CR>
+nnoremap <leader>T :tabfind <C-R>=expand('%:h') . g:os_path_sep<CR>
 
 nnoremap <leader>b :ls<CR>:buffer<Space>
 nnoremap <leader>bs :ls<CR>:sbuffer<Space>
@@ -613,11 +612,11 @@ let s:maps = [
             \     },
             \     {
             \         'str': 'adp',
-            \         'func': "expand('%:p:h') . '/'"
+            \         'func': "expand('%:p:h') . g:os_path_sep"
             \     },
             \     {
             \         'str': 'dp',
-            \         'func': "expand('%:h') . '/'"
+            \         'func': "expand('%:h') . g:os_path_sep"
             \     },
             \     {
             \         'str': 'pwd',
@@ -1076,6 +1075,11 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if dein#tap('vim_current_word') "{{{2
+    " The word under cursor:
+    let g:vim_current_word#highlight_current_word = 0
+endif "}}2
+
 if dein#tap('vim-visual-multi') "{{{2
     let g:VM_mouse_mappings = 1
 endif "}}2
@@ -1697,6 +1701,7 @@ endif "}}}2
  if exists('*Vimrc_local_plugin_config')
      call Vimrc_local_plugin_config()
  endif
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

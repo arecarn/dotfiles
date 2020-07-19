@@ -1,0 +1,21 @@
+---
+- name: Ubuntu
+  tags: docker
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: docker
+    state: latest
+
+- name: Ubuntu
+  group:
+    become: !!bool yes
+    name: docker
+    state: present
+
+- name: Ubuntu
+  user:
+  become: !!bool yes
+    name: "{{ lookup('env','USER') }}"
+    group: docker
+    append: yes

@@ -132,9 +132,10 @@ def provision(ctx, args=''):
             "nodejs",
             "plantuml",
             "openssh -params '\"/SSHServerFeature\"' -y",
-            "Alacritty",
+            "windows-terminal --pre",
+            "unison",
             "terminus",
-            "vcxsrv", # X-Server
+            "vcxsrv",  # X-Serve
             "wsl-ubuntu-1804",
         ])
         ctx.run(f'choco install {packages} -y', **RUN_ARGS)
@@ -201,7 +202,8 @@ class Dploy():
             self.packages.extend(
                 [
                     'vcxsrv',
-                    'powershell'
+                    'powershell',
+                    'windows-terminal'
                 ]
             )
 

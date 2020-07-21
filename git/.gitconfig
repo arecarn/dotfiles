@@ -123,7 +123,7 @@
     cma = !git cm --amend --reset-author
     cmanm = !git cma --no-edit # Commit Amend No Message
 
-    f = fetch --all
+    f = fetch --all --tags
     co = checkout
 
     sh = show --decorate --stat --patch # Show

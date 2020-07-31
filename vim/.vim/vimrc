@@ -1539,7 +1539,6 @@ if dein#tap('vim-crunch') "{{{2
     let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
     let g:crunch_result_type_append = 2
     cabbrev Cr Crunch
-
 endif "}}}2
 
 if dein#tap('vim-surround') "{{{2
@@ -1557,9 +1556,6 @@ endif "}}}2
 
 if dein#tap('vim-rooter') "{{{2
     let g:rooter_manual_only = 1
-    let g:rooter_disable_map = 1
-    let g:rooter_use_lcd = 0
-    map <silent> cdp <Plug>RooterChangeToRootDirectory
 endif "}}}2
 
 if dein#tap('vim-fold-cycle') "{{{2

@@ -1085,7 +1085,7 @@ if dein#tap('vim-visual-multi') "{{{2
 endif "}}2
 
 if dein#tap('markdown-preview.nvim') "{{{2
-    let g:mkdp_auto_close = 1
+    let g:mkdp_auto_close = 0
 endif "}}2
 
 if dein#tap('csv.vim')

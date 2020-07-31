@@ -126,6 +126,7 @@ def provision(ctx, args=''):
     """
     if IS_WINDOWS:
         packages = " ".join([
+            "pandoc"
             "git",
             "ctags",
             "neovim",
@@ -134,9 +135,9 @@ def provision(ctx, args=''):
             "openssh -params '\"/SSHServerFeature\"' -y",
             "windows-terminal --pre",
             "unison",
-            "terminus",
-            "vcxsrv",  # X-Serve
+            "vcxsrv",  # X-Server
             "wsl-ubuntu-1804",
+            "fzf",
         ])
         ctx.run(f'choco install {packages} -y', **RUN_ARGS)
         ctx.run('choco update all -y', **RUN_ARGS)

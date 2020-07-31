@@ -52,27 +52,29 @@
     // Add custom color schemes to this array.
     "schemes": [
         {
+            // NOTE: brightBlack was lightened from #444444 to see command
+            // switches, otherwise it was too dark
             "name" : "Apprentice",
-            "cursorColor": "#bcbcbc",
             "selectionBackground": "#FFFFFF",
-            "background" : "#262626",
-            "foreground" : "#bcbcbc",
-            "black"        : "#1C1C1C", // Color 0
-            "red"          : "#AF5F5F", // Color 1
-            "yellow"       : "#5F875F", // Color 2
-            "green"        : "#87875F", // Color 3
-            "blue"         : "#5F87AF", // Color 4
-            "purple"       : "#5F5F87", // Color 5
-            "cyan"         : "#5F8787", // Color 6
-            "white"        : "#6C6C6C", // Color 7
-            "brightBlack"  : "#444444", // Color 8
-            "brightRed"    : "#FF8700", // Color 9
-            "brightYellow" : "#87AF87", // Color 10
-            "brightGreen"  : "#FFFFAF", // Color 11
-            "brightBlue"   : "#8FAFD7", // Color 12
-            "brightPurple" : "#8787AF", // Color 13
-            "brightCyan"   : "#5FAFAF", // Color 14
-            "brightWhite"  : "#FFFFFF", // Color 15
+            "cursorColor"  : "#FFFFFF",
+            "foreground"   : "#BCBCBC",
+            "background"   : "#262626",
+            "black"        : "#1C1C1C",  // Color 0
+            "red"          : "#AF5F5F",  // Color 1
+            "yellow"       : "#5F875F",  // Color 2
+            "green"        : "#87875F",  // Color 3
+            "blue"         : "#5F87AF",  // Color 4
+            "purple"       : "#5F5F87",  // Color 5
+            "cyan"         : "#5F8787",  // Color 6
+            "white"        : "#6C6C6C",  // Color 7
+            "brightBlack"  : "#6C6C6C",  // Color 8
+            "brightRed"    : "#FF8700",  // Color 9
+            "brightYellow" : "#87AF87",  // Color 10
+            "brightGreen"  : "#FFFFAF",  // Color 11
+            "brightBlue"   : "#8FAFD7",  // Color 12
+            "brightPurple" : "#8787AF",  // Color 13
+            "brightCyan"   : "#5FAFAF",  // Color 14
+            "brightWhite"  : "#FFFFFF",  // Color 15
         }
     ],
 

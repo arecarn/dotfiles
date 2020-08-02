@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "dotfiles"
+version = "0.0.0"
+description = ""
+authors = ["Ryan Carney arecarn@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.5"
+invoke = "^1.4.1"
+gitpython = "^3.1.7"
+dploy = "^0.1.2"
+vim-vint = "^0.3.21"
+yamllint = "^1.24.2"
+flake8 = "^3.8.3"
+pylint = "^2.5.3"

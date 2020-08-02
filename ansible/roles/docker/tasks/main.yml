@@ -15,7 +15,7 @@
 
 - name: Ubuntu
   user:
-  become: !!bool yes
+    become: !!bool yes
     name: "{{ lookup('env','USER') }}"
     group: docker
-    append: yes
+    append: !!bool yes

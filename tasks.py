@@ -167,14 +167,6 @@ def clean(ctx):
     ctx.run('git clean --interactive', **RUN_ARGS)
 
 
-@task
-def requirements(ctx, args=''):
-    """
-    Install python requirements
-    """
-    ctx.run('pip install ' + args + ' --requirement requirements.txt', **RUN_ARGS)
-
-
 class Dploy():
     """
     Class to handle logic and data to stow and unstow using dploy
@@ -182,6 +174,7 @@ class Dploy():
     def __init__(self):
         # do a file level import so this whole script isn't dependant on dploy
         # preventing us from installing it using the provision task
+        # pylint: disable=import-outside-toplevel
         import dploy
         self.dploy = dploy
         self.home = pathlib.Path().home()

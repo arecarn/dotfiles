@@ -47,6 +47,9 @@
 
 [commit]
     template = ~/.config/git/gitmessage
+
+    # not sure how to achieve the effect of passing --verbose twice here,
+    # setting the value to 2 doesn't seem to work, like documented.
     verbose = true
 
 [rerere]

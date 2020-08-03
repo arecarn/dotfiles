@@ -46,6 +46,15 @@
                 "name": "Ubuntu-18.04",
                 "source": "Windows.Terminal.Wsl"
             },
+            // The Azure Cloud Shell is a "dynamic profile" and it will
+            // reappear if it is deleteed, the best way around this for now is
+            // set hiddent to true.
+            {
+                "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
+                "hidden": true,
+                "name": "Azure Cloud Shell",
+                "source": "Windows.Terminal.Azure"
+            },
         ]
     },
 

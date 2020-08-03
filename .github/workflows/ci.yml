@@ -1,0 +1,26 @@
+---
+name: CI
+
+on:
+  push:
+    branches: "*"
+  pull_request:
+    branches: "*"
+
+jobs:
+  ci:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup
+        run: |
+          sudo apt-get install python3-setuptools
+          sudo apt-get install python3
+          sudo apt-get install python3-pip
+          sudo apt-get install python3-venv
+          sudo pip3 install poetry
+          poetry install
+      - name: test
+        run: |
+          poetry run invoke
+          poetry run invoke stow

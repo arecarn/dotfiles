@@ -179,7 +179,6 @@ class Dploy():
         self.dploy = dploy
         self.home = pathlib.Path().home()
         self.packages = [
-            'cmd',
             'ctags',
             'git',
             'readline',

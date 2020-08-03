@@ -51,10 +51,8 @@ def lint_vim(ctx):
     """
     Run Vint vim linter on .vimrc and other supporting files
     """
-    files = [
-        os.path.join('vim', '.vim', 'vimrc'),
-        os.path.join('vim', '.vim', 'autoload', '*.vim'),
-    ]
+    files = [str(f) for f in pathlib.Path('.').rglob('*.vim')]
+    files.append(os.path.join('vim', '.vim', 'vimrc'))
     files_string = " ".join(files)
 
     cmd = 'vint {files}'
@@ -66,13 +64,8 @@ def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
-
-    files = [
-        os.path.join('git', 'bin', '*'),
-        os.path.join('scripts', 'bin', '*.sh'),
-        os.path.join('scripts', 'bin', 'trash'),
-    ]
-    files_string = ' '.join(files)
+    files = [str(f) for f in pathlib.Path('.').rglob('*.sh')]
+    files_string = " ".join(files)
 
     cmd = 'shellcheck --format gcc {files}'
     ctx.run(cmd.format(files=files_string), **RUN_ARGS)
@@ -83,8 +76,7 @@ def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files = [os.path.join('ansible', '*.yml')]
-    files.extend(find_files(directory='ansible/roles', pattern='*.yml'))
+    files = [str(f) for f in pathlib.Path('.').rglob('*.yml')]
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'
@@ -96,14 +88,10 @@ def lint_python(ctx):
     """
     Run pylint on this file
     """
-    files = [
-        'tasks.py',
-    ]
-
-    cmds = ['pylint --output-format=parseable', 'flake8']
+    files = [str(f) for f in pathlib.Path('.').rglob('*.py')]
     files_string = ' '.join(files)
+    cmds = ['pylint --output-format=parseable', 'flake8']
     base_cmd = 'python3 -m {cmd} {files}'
-
     for cmd in cmds:
         ctx.run(base_cmd.format(cmd=cmd, files=files_string),
                 **RUN_ARGS)

@@ -1,4 +1,4 @@
-let &l:commentstring = "// %s"
+let &l:commentstring = '// %s'
 setlocal cinoptions=
 setlocal cinoptions+=(s
 setlocal cinoptions+=m1

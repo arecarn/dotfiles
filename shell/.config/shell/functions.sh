@@ -39,7 +39,7 @@ cdl()
 # cd to the physical location avoiding symlinks
 cdp()
 {
-    cd "$(pwd -P)"
+    cd "$(pwd -P)" || exit
 }
 
 # run a command until it fails
@@ -76,24 +76,13 @@ nmodf()
     _nmod 666 "$@"
 }
 
-# beep once if the command succeeds and twice if it fails
-# usage "some-comand; testbeep
-testbeep() {
-    if [  $? -eq 0 ]; then
-        beep
-    else
-        beep
-        beep
-        beep
-    fi
-}
-
 # start the ssh-agent && and prompt for ssh passphrase only after first login
 ssh_start_agent() {
     if [ ! -S "${HOME}/.ssh/ssh_auth_sock_$(hostname)" ]; then
         eval "$(ssh-agent)"
         ln -sf "$SSH_AUTH_SOCK" "${HOME}/.ssh/ssh_auth_sock_$(hostname)"
     fi
-    export SSH_AUTH_SOCK="${HOME}/.ssh/ssh_auth_sock_$(hostname)"
+    SSH_AUTH_SOCK="${HOME}/.ssh/ssh_auth_sock_$(hostname)"
+    export SSH_AUTH_SOCK
     ssh-add -l || ssh-add
 }

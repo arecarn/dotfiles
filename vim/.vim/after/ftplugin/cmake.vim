@@ -1,1 +1,1 @@
-let &l:commentstring = "# %s"
+let &l:commentstring = '# %s'

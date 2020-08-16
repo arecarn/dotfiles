@@ -26,7 +26,7 @@ endfunction
 
 function! s:gui_set_font_size(font, new_size) abort
     let new_font = substitute(a:font, s:font_size_pat, a:new_size, '')
-    silent execute "GuiFont! " . new_font
+    silent execute 'GuiFont! ' . new_font
 endfunction
 
 function! s:gui_get_font() abort

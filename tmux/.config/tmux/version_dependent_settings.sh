@@ -1,3 +1,5 @@
+#!/bin/sh
+
 versionlt() {
     version=$(tmux -V | cut -c 6-)
     [ "$(echo "${version} < $1" | bc)" = 1 ]

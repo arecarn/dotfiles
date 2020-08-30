@@ -1,10 +1,19 @@
 " -                                                                          {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set cpoptions&vim
-set encoding=utf-8 "make Vim use UTF-8 by default
+" enable multi-byte utf-8 characters in this file
 scriptencoding utf-8
+
+" encoding for vim to use internally (why do I want this?)
+set encoding=utf-8
+
+"end-of-line formats that will be tried editing a new file
 set fileformats=unix,dos
 
+filetype on " enable file type detection and setting of the 'filetype' option
+filetype plugin on " enable loading of file type plugin files
+filetype indent on " enable loading of the file type indent file
+
+syntax enable " enable syntax highlighting
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                              {{{
@@ -78,10 +87,13 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " COMMAND LINE                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set history=10000
+set history=10000 " keep more command-line history
 
-set wildmode=full
-set wildmenu
+set wildmenu " show command-line completions when pressing <Tab>
+set wildmode=full " complete the next full match when pressing <Tab>
+
+" character you have to type to start wildcard expansion and also works in
+" mappings, unlink 'wildchar'
 set wildcharm=<TAB>
 
 " File Searching
@@ -98,37 +110,35 @@ set path+=** " Relative to the current directory search recursively
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " CURSOR SETTINGS                                                            {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set scrolloff=6 " Keep lines (top/bottom) for scope
-set sidescrolloff=6 " Keep lines (side/side) for scope
+set scrolloff=5 " minimum number of lines to keep above & below the cursor
+set sidescrolloff=5 " minimum number of columns to keep left & right of the cursor
 
-" In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
+    " enable the mouse
     set mouse=a
 endif
 
-
 if !s:has_nvim
+    " TODO explan these
     set ttymouse=xterm2
     set ttyfast
 else
     " prevent showing weird symbols in terminal like Qs at the ends of lines
-    set guicursor=
+    " TODO commented out for now to see if this is still a problem
+    " set guicursor=
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set undofile
-
+set undofile " write undo history to files that can be restored on buffer read
+set undolevels=20000 " maximum number of changes that can be undone
 if s:has_windows
     execute 'set undodir=' . s:make_data_directory('undo') . '\\\\'
 else
     execute 'set undodir=' . s:make_data_directory('undo') . '//'
 endif
 
-set undolevels=20000
-set undoreload=20000
-set noswapfile
 
 function! Undo_clean() abort
     let l:undo_files_string = globpath(&undodir, '*')
@@ -150,48 +160,58 @@ function! Undo_clean() abort
     endfor
 endfunction
 
+" remove undo files that no longer correspond to actual files
+command! UndoClean call Undo_clean()
 
+set noswapfile " disable swap files
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set backup
+set backup " enable backup vim-backup-tree takes care of the rest
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set nowrap
-set linebreak
+set linebreak " TODO do I want this?
+" maximum width line width, longer lines will be broken after a white space
 set textwidth=80
-if exists('+breakindent')
-    set breakindent
-endif
 
+set nowrap " don't wrap lines by default
+if exists('+breakindent')
+    set breakindent " visually wrapped lines will maintain first lines indent
+endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" TODO this is a note about downloading spell file
 " to work around issue in nvim run "nvim -u NORC +set\ spell"
-set spell
-set spelllang=en_us
+
+set spell " enable spell checking
+set spelllang=en_us " use US English words for spell checking
 let &spellfile = s:app_path . 'utils/spell/spellfile.add'
 let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
 
-execute 'helptags ' . s:app_path . 'doc'
+" repeat the replacement done by z= for all matches
 nnoremap !z= :<C-u>spellrepall<CR>
+
+" generate help tags for custom help files
+execute 'helptags ' . s:app_path . 'doc'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set expandtab
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set smarttab
+set expandtab " make <Tab> in insert mode insert spaces instead of tab characters
+set tabstop=4 " width of tab characters appear
+set shiftwidth=4 " width to used for a single indent
+set softtabstop=4 " width inserted when presing <Tab> in insert mode
+set smarttab " enhances behavior of <Tab> and <BS> in insert mode
 
-set autoindent
-" these are buffer local let make them everywhere
-set formatoptions+=n "recognize lists
+
+set autoindent " copy indent from current line when starting a new line
+
+set formatoptions+=n " recognize lists
 set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
-set formatoptions+=j "remove comments leader when joining
+set formatoptions+=j " delete comment character when joining commented lines
 set formatoptions-=t "don't auto wrap based on textwidth
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -220,18 +240,19 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SEARCHING                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wrapscan
-set incsearch
-set ignorecase
-set smartcase
+set wrapscan "searches wrap around the end of the file
+set incsearch " while searching show and highlight match as you type
+set ignorecase " while searching the case of letters ignored
+set smartcase " override 'ignorecase' if the search contains upper case chars
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TAGS                                                                       {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set tags=tags;/ "search backwards for the tags
+set tags=tags;/ " search backwards for the tags file
+
+" cscope
 set cscoperelative
 set cscopequickfix=s-,c-,d-,i-,t-,e-
-
 function! PrintCscopeOptions() abort
     echo 'g: Definition'
     echo 'c: Functions calling this function'
@@ -248,11 +269,16 @@ execute 'nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" set clipboard=unnamedplus,unnamed
+" use the system clipboard register + for yank, delete, change, and put
+" operations
 set clipboard=unnamedplus
 
+" when splitting a window put the new window right of the current one.
 set splitright
 
+set nrformats-=octal " ignore octal numbers when using  <C-a> and <C-x>
+
+"TODO see if this can be simplified
 " disable dang error{visual}bells for good
 if has('autocmd')
     augroup noBells
@@ -262,15 +288,23 @@ if has('autocmd')
     augroup END
 endif
 
-set nostartofline
-set switchbuf=usetab
+
+set nostartofline " avoid moving the cursor column when navigating
+
+" write the contents of the file, if it has been modified when navigating away
+" from the file
 set autowriteall
-set autoread
-set backspace=indent,eol,start
+
+set autoread " re-read files that have been changed outside of vim
+set backspace=indent,eol,start " allow backspacing to work as expected
+
+" allow the cursor to be positioned where there are no actual character
 set virtualedit+=all
-set modeline
+
+set modeline " allow modeline options to be evaluated
 
 if has('nvim')
+    " shows the effects of a substitute commands as you type
     set inccommand=nosplit
 endif
 
@@ -298,10 +332,10 @@ set number
 set relativenumber
 set showcmd
 set lazyredraw
-set laststatus=2
+set laststatus=2 " always show status line
 set showtabline=2
 set list
-set listchars=trail:·,tab:→-,extends:▶,precedes:◀
+set listchars=trail:·,tab:→‸,extends:▶,precedes:◀,nbsp:‾
 if v:version >= 800
     set signcolumn=yes
 endif
@@ -347,13 +381,13 @@ endif "}}}2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set ttimeout
-set ttimeoutlen=100
-if has('nvim')
-    set ttimeoutlen=0 " this seems to help with slow response to <Esc>
+
+if !has('nvim') && &ttimeoutlen == -1
+  set ttimeout " enable timeout when waiting for a key code sequence to complete
+  set ttimeoutlen=100 " time in ms to wait for 'ttimeout'
 endif
 
-set updatetime=1000
+set updatetime=1000 " time to wait for swap file write/ CursorHold autocmd
 
 let mapleader="\<Space>"
 
@@ -520,8 +554,8 @@ nnoremap <expr> gpv '`[' . getregtype()[0] . '`]'
 nnoremap <C-w>Q :tabclose<CR>
 
 
-" redraw even harder
-nnoremap <silent><C-l> :redraw!<CR><C-l>
+" Use <C-L> to clear the highlighting of :set hlsearch, and redraw the screen
+nnoremap <silent> <C-L> :redraw!<CR>:nohlsearch<C-r>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-l>
 
 " open my vimrc
 nnoremap [myleader]rc :e $MYVIMRC<CR>
@@ -1713,6 +1747,11 @@ endif "}}}2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AFTER PLUGINS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+  runtime! macros/matchit.vim
+endif
+
+
 if exists('*Vimrc_local_plugin_config')
     call Vimrc_local_plugin_config()
 endif

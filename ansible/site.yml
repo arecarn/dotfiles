@@ -32,6 +32,7 @@
     - ncdu
     - neovim
     - npm
+    - nodejs
     - package_manager
     - pandoc
     - picocom
@@ -60,4 +61,5 @@
     - xsel
     - yamllint
     - yapf
+    - yarn
     - zsh

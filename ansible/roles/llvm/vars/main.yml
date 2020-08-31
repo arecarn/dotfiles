@@ -4,6 +4,7 @@ packages:
     - clang
     - clang-format
     - clang-tidy
+    - clangd-10
   macosx:
     - {name: 'llvm', options: 'with-clang'}
     - {name: 'clang-format'}

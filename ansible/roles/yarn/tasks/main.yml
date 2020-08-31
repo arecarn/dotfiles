@@ -1,0 +1,24 @@
+---
+
+- name: Ubuntu
+  tags: yarn
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  apt_key:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+
+- name: Ubuntu
+  tags: yarn
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  apt_repository:
+    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+    filename: yarn
+
+- name: Ubuntu
+  tags: yarn
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  apt:
+    name: yarn
+    state: latest

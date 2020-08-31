@@ -1,0 +1,9 @@
+---
+
+- name: Ubuntu
+  tags: yarn
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  apt:
+    name: nodejs
+    state: latest

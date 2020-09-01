@@ -601,6 +601,11 @@ nnoremap cd :cd! %:h<CR>:pwd<CR>
 nnoremap <leader>qa :qa!<CR>
 nnoremap <leader>q :q!<CR>
 
+" paste after visual block/line selection
+vnoremap <expr> gp '<C-v>A<C-r>'.v:register.'<Esc>'
+" paste before visual block/line selection
+vnoremap <expr> gP '<C-v>I<C-r>'.v:register.'<Esc>'
+
 " navigation in command line
 cnoremap <C-p> <UP>
 cnoremap <C-n> <DOWN>

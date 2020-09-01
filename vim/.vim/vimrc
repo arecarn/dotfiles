@@ -1,10 +1,11 @@
 " -                                                                          {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" encoding for vim to use internally (why do I want this?)
+set encoding=utf-8
+
 " enable multi-byte utf-8 characters in this file
 scriptencoding utf-8
 
-" encoding for vim to use internally (why do I want this?)
-set encoding=utf-8
 
 "end-of-line formats that will be tried editing a new file
 set fileformats=unix,dos

@@ -1165,7 +1165,7 @@ if Is_plugin_loaded('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
 
-if s:is_plugin_loaded('coc.nvim') "{{{2
+if Is_plugin_loaded('coc.nvim') "{{{2
     let g:coc_global_extensions = [
                 \ 'coc-clangd',
                 \ 'coc-cmake',

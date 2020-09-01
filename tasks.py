@@ -12,11 +12,8 @@ from invoke import task
 
 IS_WINDOWS = os.name == 'nt'
 if IS_WINDOWS:
-    # setting 'shell' is a work around for issue #345 of invoke
-    RUN_ARGS = {'pty': False, 'shell': r'C:\Windows\System32\cmd.exe'}
     STOW_LOCATION = 'USERPROFILE'
 else:
-    RUN_ARGS = {'pty': True}
     STOW_LOCATION = 'HOME'
 
 
@@ -56,7 +53,7 @@ def lint_vim(ctx):
     files_string = " ".join(files)
 
     cmd = 'vint {files}'
-    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+    ctx.run(cmd.format(files=files_string))
 
 
 @task
@@ -68,7 +65,7 @@ def lint_shell(ctx):
     files_string = " ".join(files)
 
     cmd = 'shellcheck --format gcc {files}'
-    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+    ctx.run(cmd.format(files=files_string))
 
 
 @task
@@ -80,7 +77,7 @@ def lint_yaml(ctx):
     files_string = " ".join(files)
 
     cmd = 'yamllint --format parsable {files}'
-    ctx.run(cmd.format(files=files_string), **RUN_ARGS)
+    ctx.run(cmd.format(files=files_string))
 
 
 @task
@@ -93,8 +90,7 @@ def lint_python(ctx):
     cmds = ['pylint --output-format=parseable', 'flake8']
     base_cmd = 'python3 -m {cmd} {files}'
     for cmd in cmds:
-        ctx.run(base_cmd.format(cmd=cmd, files=files_string),
-                **RUN_ARGS)
+        ctx.run(base_cmd.format(cmd=cmd, files=files_string))
 
 
 @task
@@ -103,8 +99,7 @@ def provision_all(ctx, args=''):
     Provision this and other system using ansible
     """
     os.chdir('ansible')
-    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory hosts' + ' ' + args,
-            **RUN_ARGS)
+    ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory hosts' + ' ' + args)
 
 
 @task
@@ -127,13 +122,12 @@ def provision(ctx, args=''):
             "wsl-ubuntu-1804",
             "fzf",
         ])
-        ctx.run(f'choco install {packages} -y', **RUN_ARGS)
-        ctx.run('choco update all -y', **RUN_ARGS)
+        ctx.run(f'choco install {packages} -y')
+        ctx.run('choco update all -y')
     else:
         os.chdir('ansible')
         ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost '
-                '--ask-become-pass ' + args,
-                **RUN_ARGS)
+                '--ask-become-pass ' + args)
 
 
 @task
@@ -143,8 +137,7 @@ def provision_minimal(ctx, args=''):
     """
     os.chdir('ansible')
     ctx.run('ansible-playbook site-minimal.yml --ask-vault-pass --inventory localhost '
-            '--ask-become-pass ' + args,
-            **RUN_ARGS)
+            '--ask-become-pass ' + args)
 
 
 @task
@@ -152,7 +145,7 @@ def clean(ctx):
     """
     Clean repository using git
     """
-    ctx.run('git clean --interactive', **RUN_ARGS)
+    ctx.run('git clean --interactive')
 
 
 class Dploy():
@@ -162,8 +155,7 @@ class Dploy():
     def __init__(self):
         # do a file level import so this whole script isn't dependant on dploy
         # preventing us from installing it using the provision task
-        # pylint: disable=import-outside-toplevel
-        import dploy
+        import dploy  # pylint: disable=C
         self.dploy = dploy
         self.home = pathlib.Path().home()
         self.packages = [

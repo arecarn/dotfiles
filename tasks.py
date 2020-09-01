@@ -109,7 +109,8 @@ def provision(ctx, args=''):
     """
     if IS_WINDOWS:
         packages = " ".join([
-            "pandoc"
+            "llvm",
+            "pandoc",
             "git",
             "ctags",
             "neovim",

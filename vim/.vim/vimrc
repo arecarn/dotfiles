@@ -6,7 +6,6 @@ set encoding=utf-8
 " enable multi-byte utf-8 characters in this file
 scriptencoding utf-8
 
-
 "end-of-line formats that will be tried editing a new file
 set fileformats=unix,dos
 
@@ -997,7 +996,6 @@ call plug#begin(s:plugin_path)
     " Completions
     if s:has_nvim || s:has_vim8
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
-        Plug 'clangd/coc-clangd', {'do': 'yarn install --frozen-lockfile'}
     endif
 
     if has('patch-7.4.774') " requires v:completed_item feature
@@ -1167,9 +1165,13 @@ if s:is_plugin_loaded('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
 
-if s:is_plugin_loaded('deoplete.nvim') "{{{2
-    let g:deoplete#enable_at_startup = 1
-    let g:deoplete#sources#clang#sort_algo = 'priority'
+if s:is_plugin_loaded('coc.nvim') "{{{2
+    let g:coc_global_extensions = [
+                \ 'coc-clangd',
+                \ 'coc-cmake',
+                \ 'coc-yank',
+                \ 'coc-vimlsp',
+                \ ]
 endif "}}}2
 
 if s:is_plugin_loaded('neosnippet-snippets') "{{{2

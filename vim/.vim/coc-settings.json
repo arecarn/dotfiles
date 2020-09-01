@@ -1,9 +1,20 @@
 {
-   "languageserver": {
-    "clangd": {
-      "command": "clangd-10",
-      "rootPatterns": [".project_root", "compile_commands.json"],
-      "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
+    "languageserver": {
+        "clangd": {
+            "command": "clangd-10",
+            "args": ["--background-index"],
+            "rootPatterns": [".project_root", "compile_commands.json"],
+            "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
+        }
+    },
+
+    "cmake": {
+        "type": "string",
+        "default": "cmake",
+        "description": "The path to CMake generator executable",
+        "filetypes": ["cmake"],
+        "cmakePath": "/home/arecarn/.local/bin/cmake"
+
     }
-  }
+
 }

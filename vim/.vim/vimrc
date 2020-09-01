@@ -686,6 +686,7 @@ let $zshl = '~/.zshrc_local'
 let $shf = '~/.config/shell/functions.sh'
 let $git = '~/.gitconfig'
 let $gitl = '~/.gitconfig_local'
+let $ps = '~/Documents/WindowsPowerShell/profile.ps1'
 let $vim = '$MYVIMRC'
 let $vimg = s:app_path . 'ginit.vim'
 let $viml = '~/.vimrc_local'
@@ -877,7 +878,7 @@ endif
 let g:vim_json_syntax_conceal = 0
 
 " Function to check if a vim-plug plugin is loaded
-function! s:is_plugin_loaded(plugin_name) abort
+function! Is_plugin_loaded(plugin_name) abort
     if has_key(g:plugs, a:plugin_name)
         let thing = fnamemodify(g:plugs[a:plugin_name].dir, ':h')
         if stridx(&rtp, thing) >= 0
@@ -1007,10 +1008,8 @@ call plug#begin(s:plugin_path)
         Plug 'Shougo/echodoc.vim'
     endif
 
-
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neosnippet.vim'
-
 
     " Git / VCS
     Plug 'tpope/vim-fugitive'
@@ -1020,7 +1019,6 @@ call plug#begin(s:plugin_path)
     Plug 'cohama/agit.vim'
     Plug 'mhinz/vim-signify'
 
-
     " Diff
     Plug 'AndrewRadev/linediff.vim'
     Plug 'vim-scripts/diffchanges.vim'
@@ -1028,11 +1026,8 @@ call plug#begin(s:plugin_path)
     Plug 'chrisbra/vim-diff-enhanced'
     Plug 'will133/vim-dirdiff'
 
-
     " Applications
-    Plug 'justinmk/vim-dirvish'
-    " TODO look into for vimspector
-
+    Plug 'tpope/vim-vinegar'
 
     " Text Manipulation Commands / Mappings
     Plug 'godlygeek/tabular'
@@ -1096,16 +1091,16 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS CONFIG                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if s:is_plugin_loaded('vim_current_word') "{{{2
+if Is_plugin_loaded('vim_current_word') "{{{2
     " The word under cursor:
     let g:vim_current_word#highlight_current_word = 0
 endif "}}2
 
-if s:is_plugin_loaded('vim-visual-multi') "{{{2
+if Is_plugin_loaded('vim-visual-multi') "{{{2
     let g:VM_mouse_mappings = 1
 endif "}}2
 
-if s:is_plugin_loaded('markdown-preview.nvim') "{{{2
+if Is_plugin_loaded('markdown-preview.nvim') "{{{2
     let g:mkdp_auto_close = 0
     let g:mkdp_preview_options = {
                 \ 'mkit': {},
@@ -1121,39 +1116,39 @@ if s:is_plugin_loaded('markdown-preview.nvim') "{{{2
                 \ }
 endif "}}2
 
-if s:is_plugin_loaded('csv.vim')
+if Is_plugin_loaded('csv.vim')
     augroup csv
         autocmd!
         autocmd CursorHold csv WhatColumn!
     augroup END
 endif
 
-if s:is_plugin_loaded('vim-gutentags') "{{{2
+if Is_plugin_loaded('vim-gutentags') "{{{2
     let g:gutentags_project_root = ['.project_root']
     let g:gutentags_define_advanced_commands = 1
 endif "}}}2
 
-if s:is_plugin_loaded('w0rp/ale') "{{{2
+if Is_plugin_loaded('w0rp/ale') "{{{2
     let g:ale_emit_conflict_warnings = 0  " has to be run before loading plugins
 endif "}}2
 
 
-if s:is_plugin_loaded('vim-lost') "{{{2
+if Is_plugin_loaded('vim-lost') "{{{2
     augroup vimrc
         autocmd!
         autocmd FileType markdown let b:lost_regex = '\v^#'
     augroup END
 endif "}}}2
 
-if s:is_plugin_loaded('vim-backup-tree') "{{{2
+if Is_plugin_loaded('vim-backup-tree') "{{{2
     let g:backup_tree = s:make_data_directory('backup')
 endif "}}}2
 
-if s:is_plugin_loaded('vim-diff-enhanced') "{{{2
+if Is_plugin_loaded('vim-diff-enhanced') "{{{2
     let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
 endif "}}}2
 
-if s:is_plugin_loaded('echodoc.vim') "{{{2
+if Is_plugin_loaded('echodoc.vim') "{{{2
     let g:echodoc#enable_at_startup = 1
     if &showmode
         set cmdheight=2
@@ -1162,11 +1157,11 @@ if s:is_plugin_loaded('echodoc.vim') "{{{2
     set shortmess+=c
 endif "}}}2
 
-if s:is_plugin_loaded('neoterm') "{{{2
+if Is_plugin_loaded('neoterm') "{{{2
     let g:neoterm_autoscroll = 1
 endif "}}}2
 
-if s:is_plugin_loaded('Deol.nvim') "{{{2
+if Is_plugin_loaded('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
 
@@ -1179,7 +1174,7 @@ if s:is_plugin_loaded('coc.nvim') "{{{2
                 \ ]
 endif "}}}2
 
-if s:is_plugin_loaded('neosnippet-snippets') "{{{2
+if Is_plugin_loaded('neosnippet-snippets') "{{{2
     imap <C-e> <Plug>(neosnippet_expand_or_jump)
     smap <C-e> <Plug>(neosnippet_expand_or_jump)
     xmap <C-e> <Plug>(neosnippet_expand_target)
@@ -1192,26 +1187,26 @@ if s:is_plugin_loaded('neosnippet-snippets') "{{{2
     let g:neosnippet#data_directory = s:make_cache_path_str('neosnippet')
 endif "}}}2
 
-if s:is_plugin_loaded('unite.vim') "{{{2
+if Is_plugin_loaded('unite.vim') "{{{2
     let g:unite_data_directory = s:make_cache_path_str('unite')
     let g:unite_winheight = 10
     let g:unite_split_rule = 'botright'
     call unite#filters#sorter_default#use(['sorter_rank'])
 endif "}}}2
 
-if s:is_plugin_loaded('denite.nvim') "{{{2
-    if s:is_plugin_loaded('unite-digraphs')
+if Is_plugin_loaded('denite.nvim') "{{{2
+    if Is_plugin_loaded('unite-digraphs')
         command! Digraphs Denite unite:digraphs
     endif
 
-    if s:is_plugin_loaded('neoyank.vim')
+    if Is_plugin_loaded('neoyank.vim')
         nnoremap [myleader]p  :<C-u>Denite -mode=normal neoyank<CR>
         xnoremap [myleader]p  dk:<C-u>Denit -mode=normale neoyank<CR>
 
         let g:neoyank#file = s:make_data_path_str('neoyank/history')
     endif
 
-    if s:is_plugin_loaded('neomru.vim')
+    if Is_plugin_loaded('neomru.vim')
         nnoremap [myleader]r :<C-u>Denite file_mru<CR>
 
         let g:neomru#file_mru_path = s:make_cache_path_str('neomru/file')
@@ -1246,12 +1241,12 @@ if s:is_plugin_loaded('denite.nvim') "{{{2
 
 endif "}}}2
 
-if s:is_plugin_loaded('fzf') "{{{2
+if Is_plugin_loaded('fzf') "{{{2
     nnoremap [myleader]f :FZF<CR>
     nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
-if s:is_plugin_loaded('vim-dirvish') "{{{2
+if Is_plugin_loaded('vim-dirvish') "{{{2
     let g:loaded_netrw = 1
     let g:loaded_netrwPlugin = 1
 
@@ -1266,18 +1261,18 @@ else
     let g:netrw_bufsettings = 'noma nomod rnu nobl nowrap ro'
 endif "}}}2
 
-if s:is_plugin_loaded('vim-grepper') "{{{2
+if Is_plugin_loaded('vim-grepper') "{{{2
     nmap [myleader]g: :Grepper<CR>
     nmap [myleader]g <plug>(GrepperOperator)
     xmap [myleader]g <plug>(GrepperOperator)
 endif "}}}2
 
-if s:is_plugin_loaded('vim-dispatch') "{{{2
+if Is_plugin_loaded('vim-dispatch') "{{{2
     nnoremap [myleader]m :Make<CR>
     nnoremap [myleader]m: :Make<Space>
 endif "}}}2
 
-if s:is_plugin_loaded('vim-fugitive') "{{{2
+if Is_plugin_loaded('vim-fugitive') "{{{2
     command! -nargs=* G :Git <Args>
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
@@ -1352,21 +1347,21 @@ if s:is_plugin_loaded('vim-fugitive') "{{{2
     command! -bar FollowSymlink call MyFollowSymlink()
 endif "}}}2
 
-if s:is_plugin_loaded('vim-split-join') "{{{2
+if Is_plugin_loaded('vim-split-join') "{{{2
     command! -range -bang SplitS <line1>,<line2>Split<bang>/[^[:space:]]\zs\s\+/
 endif "}}}2
 
-if s:is_plugin_loaded('tabular') "{{{2
+if Is_plugin_loaded('tabular') "{{{2
     nnoremap <Leader>a :Tabularize/
     xnoremap <Leader>a :Tabularize/
 endif "}}}2
 
-if s:is_plugin_loaded('vim-table-mode') "{{{2
+if Is_plugin_loaded('vim-table-mode') "{{{2
     let g:table_mode_corner = '|'
     let g:table_mode_separator = '|'
 endif "}}}2
 
-if s:is_plugin_loaded('vim-indent-guides') "{{{2
+if Is_plugin_loaded('vim-indent-guides') "{{{2
     nmap <silent> coig <Plug>IndentGuidesToggle
     let g:indent_guides_enable_on_vim_startup = 0
     let g:indent_guides_default_mapping = 0
@@ -1374,7 +1369,7 @@ if s:is_plugin_loaded('vim-indent-guides') "{{{2
     let g:indent_guides_start_level = 2
 endif "}}}2
 
-if s:is_plugin_loaded('vim-textmanip') "{{{2
+if Is_plugin_loaded('vim-textmanip') "{{{2
     xmap <C-j> <Plug>(textmanip-move-down)
     xmap <C-k> <Plug>(textmanip-move-up)
     xmap <C-h> <Plug>(textmanip-move-left)
@@ -1392,14 +1387,14 @@ if s:is_plugin_loaded('vim-textmanip') "{{{2
     nmap yotm <Plug>(textmanip-toggle-mode)
 endif "}}}2
 
-if s:is_plugin_loaded('vim-quickhl') "{{{2
+if Is_plugin_loaded('vim-quickhl') "{{{2
     nmap gm <Plug>(quickhl-manual-this)
     xmap gm <Plug>(quickhl-manual-this)
     nmap gmx <Plug>(quickhl-manual-reset)
     xmap gmx <Plug>(quickhl-manual-reset)
 endif "}}}2
 
-if s:is_plugin_loaded('cmdalias.vim') "{{{2
+if Is_plugin_loaded('cmdalias.vim') "{{{2
     command! Pwf echo expand('%:p')
     augroup VIMRC_aliases
         autocmd!
@@ -1411,15 +1406,15 @@ if s:is_plugin_loaded('cmdalias.vim') "{{{2
     augroup END
 endif "}}}2
 
-if s:is_plugin_loaded('FormatToWidth') "{{{2
+if Is_plugin_loaded('FormatToWidth') "{{{2
     xmap gQ <Plug>FormatToWidth
 endif "}}}2
 
-if s:is_plugin_loaded('linediff.vim') "{{{2
+if Is_plugin_loaded('linediff.vim') "{{{2
     xnoremap <Leader>ld :Linediff<CR>
 endif "}}}2
 
-if s:is_plugin_loaded('vim-textobj-between') "{{{2
+if Is_plugin_loaded('vim-textobj-between') "{{{2
     let g:textobj_between_no_default_key_mappings = 1
     xmap am <Plug>(textobj-between-a)
     omap am <Plug>(textobj-between-a)
@@ -1427,17 +1422,17 @@ if s:is_plugin_loaded('vim-textobj-between') "{{{2
     omap im <Plug>(textobj-between-i)
 endif "}}}2
 
-if s:is_plugin_loaded('vim-markdown') "{{{2
+if Is_plugin_loaded('vim-markdown') "{{{2
     let g:markdown_fenced_languages = ['python', 'c', 'cpp', 'bash=sh']
     let g:markdown_syntax_conceal = 0
     let g:markdown_folding = 1
 endif "}}}2
 
-if s:is_plugin_loaded('undotree') "{{{2
+if Is_plugin_loaded('undotree') "{{{2
     nnoremap [myleader]ut :UndotreeToggle<CR>:UndotreeFocus<CR>
 endif "}}}2
 
-if s:is_plugin_loaded('goyo.vim') "{{{2
+if Is_plugin_loaded('goyo.vim') "{{{2
     nnoremap yof :<C-u>call SetGoyo(v:count)<CR>
 
     function! s:goyo_enter() abort
@@ -1472,7 +1467,7 @@ if s:is_plugin_loaded('goyo.vim') "{{{2
     endfunction
 endif "}}}2
 
-if s:is_plugin_loaded('todo.txt-vim') "{{{2
+if Is_plugin_loaded('todo.txt-vim') "{{{2
     let g:Todo_txt_prefix_creation_date = 1
     let g:TodoTxtStripDoneItemPriority = 1
 
@@ -1537,7 +1532,7 @@ if s:is_plugin_loaded('todo.txt-vim') "{{{2
         setlocal iskeyword+=+,_,.
         setlocal iskeyword+=@-@ " add literal @
 
-        if s:is_plugin_loaded('neocomplete') "{{{3
+        if Is_plugin_loaded('neocomplete') "{{{3
             " use iskeyword characters in neocompletion
             let keyword_patterns = {}
             let keyword_patterns.todo = '\k\+'
@@ -1547,7 +1542,7 @@ if s:is_plugin_loaded('todo.txt-vim') "{{{2
     endfunction "}}}3
 endif "}}}2
 
-if s:is_plugin_loaded('obvious-resize') "{{{2
+if Is_plugin_loaded('obvious-resize') "{{{2
     " map F9 - F12 (like hjkl) to resize windows
     nnoremap <silent><Left> :ObviousResizeLeft<CR>
     nnoremap <silent><Down> :ObviousResizeDown<CR>
@@ -1555,7 +1550,7 @@ if s:is_plugin_loaded('obvious-resize') "{{{2
     nnoremap <silent><Right> :ObviousResizeRight<CR>
 endif "}}}2
 
-if s:is_plugin_loaded('Preserve.vim') "{{{2
+if Is_plugin_loaded('Preserve.vim') "{{{2
     command! -bar -range=% TrimLead PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
     command! -bar -range=% TrimTrail PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
     command! -bar -range=% Trim <line1>,<line2>TrimTrail<bar>TrimLead
@@ -1570,25 +1565,25 @@ if s:is_plugin_loaded('Preserve.vim') "{{{2
     nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g//p")<CR>
 endif "}}}2
 
-if s:is_plugin_loaded('confluencewiki.vim') "{{{2
+if Is_plugin_loaded('confluencewiki.vim') "{{{2
     augroup MOIN
         autocmd!
         autocmd BufNewFile,BufRead *.jira set filetype=confluencewiki
     augroup END
 endif "}}}2
 
-if s:is_plugin_loaded('vim-crunch') "{{{2
+if Is_plugin_loaded('vim-crunch') "{{{2
     let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
     let g:crunch_result_type_append = 2
     cabbrev Cr Crunch
 endif "}}}2
 
-if s:is_plugin_loaded('vim-surround') "{{{2
+if Is_plugin_loaded('vim-surround') "{{{2
     " custom surround using :
     let g:surround_58 = "\1Surround\1\r\1\1"
 endif "}}}2
 
-if s:is_plugin_loaded('vim-clean-fold') "{{{2
+if Is_plugin_loaded('vim-clean-fold') "{{{2
     set foldmethod=expr
     set foldtext=clean_fold#fold_text_minimal()
     set foldexpr=clean_fold#fold_expr(v:lnum)
@@ -1596,11 +1591,11 @@ else
     set foldmethod=indent
 endif "}}}2
 
-if s:is_plugin_loaded('vim-rooter') "{{{2
+if Is_plugin_loaded('vim-rooter') "{{{2
     let g:rooter_manual_only = 1
 endif "}}}2
 
-if s:is_plugin_loaded('vim-fold-cycle') "{{{2
+if Is_plugin_loaded('vim-fold-cycle') "{{{2
     let g:fold_cycle_default_mapping = 0
     nmap zo <Plug>(fold-cycle-open)
     nmap zc <Plug>(fold-cycle-close)
@@ -1615,16 +1610,16 @@ if s:is_plugin_loaded('vim-fold-cycle') "{{{2
     " nmap zm <Plug>(fold-cycle-close-global)
 endif "}}}2
 
-if s:is_plugin_loaded('vim-operator-replace') "{{{2
+if Is_plugin_loaded('vim-operator-replace') "{{{2
     map _ <Plug>(operator-replace)
 endif "}}}2
 
-if s:is_plugin_loaded('Apprentice') "{{{2
+if Is_plugin_loaded('Apprentice') "{{{2
     set background=dark
     colorscheme apprentice
 endif "}}}2
 
-if s:is_plugin_loaded('lightline.vim') "{{{2
+if Is_plugin_loaded('lightline.vim') "{{{2
     let g:lightline = {
                 \ 'colorscheme': g:colors_name,
                 \ 'active': {
@@ -1704,13 +1699,13 @@ if s:is_plugin_loaded('lightline.vim') "{{{2
     endfunction
 endif "}}}2
 
-if s:is_plugin_loaded('vim-qf') "{{{2
+if Is_plugin_loaded('vim-qf') "{{{2
     let g:qf_auto_open_quickfix = 0 " auto opening the quickfix resets the &makeprg :(
     let g:qf_nowrap = 1
 endif "}}}2
 
 
-if s:is_plugin_loaded('tmuxline.vim')
+if Is_plugin_loaded('tmuxline.vim')
     if ($TERM ==# 'screen' || $TERM ==# 'screen-256color')
                 \ && !empty($TMUX)
 

@@ -126,12 +126,10 @@ RTOS
 S12
 schemes
 SCons
-sequenzer
 Smores
 SPI
 suggestions
 Terriaki
-Thermalcouple
 This
 Timeslice
 TODO
@@ -412,8 +410,7 @@ benzocaine
 cepacol
 Sudafed
 Benadryl
-#ismol
-#epto
+Pepto-Bismol
 VPN
 Appveyor
 preprocessors
@@ -501,3 +498,4 @@ nvim
 toolbar
 powershell
 microcontroller
+statment/!

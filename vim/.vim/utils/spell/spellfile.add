@@ -137,12 +137,10 @@ S12
 Sandstrom
 schemes
 SCons
-sequenzer
 Smores
 SPI
 suggestions
 Terriaki
-Thermalcouple
 This
 Timeslice
 TODO
@@ -244,7 +242,6 @@ Proactively
 proactively
 UXUI
 Recon
-Kimber
 Kimber
 Duy
 Dyck
@@ -446,8 +443,7 @@ benzocaine
 cepacol
 Sudafed
 Benadryl
-#ismol
-#epto
+Pepto-Bismol
 VPN
 Appveyor
 preprocessors
@@ -552,3 +548,4 @@ toolbar
 powershell
 Raelin's
 microcontroller
+statment/!

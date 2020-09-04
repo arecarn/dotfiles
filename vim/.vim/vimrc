@@ -95,6 +95,8 @@ set wildmode=full " complete the next full match when pressing <Tab>
 " character you have to type to start wildcard expansion and also works in
 " mappings, unlink 'wildchar'
 set wildcharm=<TAB>
+" accept current completion (requires that wildcharm is set to <TAB>)
+cnoremap <C-Y> <SPACE><BS><TAB>
 
 " File Searching
 " ignored files
@@ -172,13 +174,22 @@ set backup " enable backup vim-backup-tree takes care of the rest
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set linebreak " TODO do I want this?
-" maximum width line width, longer lines will be broken after a white space
+" maximum width line width, longer lines will be broken with a <EOL> after a
+" white space
 set textwidth=80
 
-set nowrap " don't wrap lines by default
+" when 'wrap' is enabled visually break long lines at a character in 'breakat'
+set linebreak
 if exists('+breakindent')
-    set breakindent " visually wrapped lines will maintain first lines indent
+    " when 'wrap' is enabled visually wrapped lines will maintain first lines
+    " indention level
+    set breakindent
+endif
+set nowrap " don't wrap lines by default
+
+if has('nvim')
+    " hard-wrap to $MANWIDTH when using :Man
+    let g:man_hardwrap = 1
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{
@@ -230,6 +241,7 @@ if has('autocmd')
         autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
     augroup END
 endif
+
 if has('autocmd')
     augroup AllFiles
         autocmd!
@@ -313,17 +325,12 @@ set diffopt+=vertical "always open diff side by side
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" set color column based on 'textwidth'
+" set 'colorcolumn' position based on 'textwidth'
 if has('autocmd')
     augroup colorcolumn
         autocmd!
         autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
     augroup END
-endif
-
-if has('nvim')
-    " hard-wrap to $MANWIDTH when using :Man
-    let g:man_hardwrap = 1
 endif
 
 set confirm
@@ -410,8 +417,8 @@ nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
 nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
 
-" Navigation
-" make navigation more intuitive
+" When 'wrap' is enabled these mappings make basic navigation more intuitive
+" when navigating between visually wrapped lines
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 nnoremap gk k
@@ -613,6 +620,7 @@ cnoremap <C-b> <LEFT>
 cnoremap <C-f> <RIGHT>
 cnoremap <C-a> <HOME>
 cnoremap <C-e> <END>
+" expand abbreviations
 cnoremap <C-x> <C-]>
 cnoremap <C-v> <C-f>
 
@@ -676,8 +684,6 @@ for s:map in s:maps
     execute 'cnoremap %' . s:map.str . ' <C-r>=' . s:map.func . '<CR>'
 endfor
 
-" accept completion (requires "set wildcharm = <TAB>)
-cnoremap <C-y> <SPACE><BS><TAB>
 
 cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
 

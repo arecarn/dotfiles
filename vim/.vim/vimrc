@@ -22,6 +22,7 @@ let s:has_tmux = ($TERM ==# 'screen' || $TERM ==# 'screen-256color') && !empty($
 let s:has_windows = has('win32') || has('win64')
 let s:has_terminal = has('nvim') || has('terminal')
 let s:has_nvim = has('nvim')
+let s:has_vim = !has('nvim')
 let s:has_vim8 = has('patch-8.0.0039')
 
 if s:has_windows
@@ -120,13 +121,20 @@ if has('mouse')
     set mouse=a
 endif
 
-if !s:has_nvim
-    " TODO explan these
-    set ttymouse=xterm2
-    set ttyfast
-else
+if s:has_vim && !has('gui_running')
+    " configure what mouse code vim will recognize in terminal mode
+    if has('mouse_sgr')
+        set ttymouse=sgr
+    else
+        set ttymouse=xterm2
+    endif
+
+    set ttyfast " indicate a fast terminal connection
+endif
+
+if has('nvim')
     " prevent showing weird symbols in terminal like Qs at the ends of lines
-    " TODO commented out for now to see if this is still a problem
+    " TODO this commented out for now to see if this is still a problem
     " set guicursor=
 endif
 
@@ -169,7 +177,7 @@ set noswapfile " disable swap files
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set backup " enable backup vim-backup-tree takes care of the rest
+set backup " enable backups vim-backup-tree takes care of the rest
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                              {{{
@@ -889,12 +897,15 @@ function! Is_plugin_loaded(plugin_name) abort
         let thing = fnamemodify(g:plugs[a:plugin_name].dir, ':h')
         if stridx(&rtp, thing) >= 0
             return 1
+        else
+            " not this doesn't work if loading is delayed
+            echo a:plugin_name . ': is not loaded'
         endif
     endif
 endfunction
 
 let s:plugin_path = s:make_cache_directory('plugins')
-let s:plugin_manager_path = s:make_cache_directory('plugins/plugin_manager')
+let s:plugin_manager_path = s:make_cache_directory('plugin_manager')
 let s:plugin_manager_autoload_path = s:plugin_manager_path . '/autoload/'
 let s:is_first_time_setup = 0
 if !isdirectory(s:plugin_manager_autoload_path)
@@ -976,9 +987,9 @@ call plug#begin(s:plugin_path)
 
 
     " Vim script Development
-    Plug 'vim-jp/vital.vim'
-    Plug 'junegunn/vader.vim'
-    Plug 'vim-scripts/Decho'
+    " Plug 'vim-jp/vital.vim'
+    " Plug 'junegunn/vader.vim'
+    " Plug 'vim-scripts/Decho'
 
 
     " File Type + Syntax
@@ -988,7 +999,6 @@ call plug#begin(s:plugin_path)
     Plug 'iamcco/markdown-preview.nvim',
                 \ {
                 \     'do': {-> mkdp#util#install()},
-                \     'for': ['markdown', 'vim-plug']
                 \ }
     Plug 'aklt/plantuml-syntax'
     Plug 'dbeniamine/todo.txt-vim'

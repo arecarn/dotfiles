@@ -904,7 +904,7 @@ endfunction
 
 let s:plugin_path = s:make_cache_directory('plugins')
 let s:plugin_manager_path = s:make_cache_directory('plugin_manager')
-let s:plugin_manager_autoload_path = s:plugin_manager_path . '/autoload/'
+let s:plugin_manager_autoload_path = s:plugin_manager_path . g:os_path_sep . 'autoload'
 let s:is_first_time_setup = 0
 if !isdirectory(s:plugin_manager_autoload_path)
     let s:is_first_time_setup = 1
@@ -1705,7 +1705,7 @@ if Is_plugin_installed('vim-qf') "{{{2
 endif "}}}2
 
 
-if Is_plugin_installed('tmuxline.vim')
+if !s:has_windows && Is_plugin_installed('tmuxline.vim')
     if ($TERM ==# 'screen' || $TERM ==# 'screen-256color')
                 \ && !empty($TMUX)
 

@@ -174,6 +174,7 @@ endfunction
 command! UndoClean call Undo_clean()
 
 set noswapfile " disable swap files
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BACKUP                                                                     {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -199,10 +200,11 @@ if has('nvim')
     " hard-wrap to $MANWIDTH when using :Man
     let g:man_hardwrap = 1
 endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" TODO this is a note about downloading spell file
+" TODO this is a note about downloading spell file is this necessary anymore?
 " to work around issue in nvim run "nvim -u NORC +set\ spell"
 
 set spell " enable spell checking
@@ -222,16 +224,15 @@ execute 'helptags ' . s:app_path . 'doc'
 set expandtab " make <Tab> in insert mode insert spaces instead of tab characters
 set tabstop=4 " width of tab characters appear
 set shiftwidth=4 " width to used for a single indent
-set softtabstop=4 " width inserted when presing <Tab> in insert mode
+set softtabstop=4 " width inserted when pressing <Tab> in insert mode
 set smarttab " enhances behavior of <Tab> and <BS> in insert mode
-
 
 set autoindent " copy indent from current line when starting a new line
 
 set formatoptions+=n " recognize lists
 set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
 set formatoptions+=j " delete comment character when joining commented lines
-set formatoptions-=t "don't auto wrap based on textwidth
+set formatoptions-=t "don't auto wrap based on 'textwidth'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " FOLDING                                                                    {{{
@@ -308,7 +309,6 @@ if has('autocmd')
     augroup END
 endif
 
-
 set nostartofline " avoid moving the cursor column when navigating
 
 " write the contents of the file, if it has been modified when navigating away
@@ -341,26 +341,26 @@ if has('autocmd')
     augroup END
 endif
 
+" open a dialog for commands that can be confirmed/ can fail e.g. :q, :qa, :w
 set confirm
-set shortmess+=a
+
+set shortmess+=a "use abbreviations for short messages
+
+" show current line number, and relative line numbers around it
 set number
 set relativenumber
-set showcmd
-set lazyredraw
+
+set showcmd " show partial normal mode commands
+set lazyredraw " don't redraw for non-typed normal mode commands e.g. macros
 set laststatus=2 " always show status line
-set showtabline=2
+set showtabline=2 " always show tab line
+
+" special characters to display for certain situations
 set list
 set listchars=trail:·,tab:→‸,extends:▶,precedes:◀,nbsp:‾
+
 if v:version >= 800
     set signcolumn=yes
-endif
-
-" Maximize Window on Startup
-if has ('gui_running') && has('autocmd') && s:has_windows
-    augroup windowsgui:
-        autocmd!
-        autocmd GUIEnter * simalt ~x " maximize in windows
-    augroup END
 endif
 
 " Highlight TODO, FIXME, NOTE, etc.
@@ -372,13 +372,22 @@ if has('autocmd') && v:version > 701
     augroup END
 endif
 
-" GUI settings {{{2
+" gVim settings {{{2
 if has ('gui_running')
     " Make GVim more like Terminal Vim
     set guioptions-=T "remove toolbar
     set guioptions-=r "remove right-hand scroll bar
     set guioptions-=l "remove right-hand scroll bar
     set guioptions=c "makes dialogs boxes appear like they do in console vim
+
+
+    " Maximize windows GVim On Startup
+    if has('autocmd') && s:has_windows
+        augroup windowsgui:
+            autocmd!
+            autocmd GUIEnter * simalt ~x
+        augroup END
+    endif
 
     " Set Font
     try
@@ -465,16 +474,16 @@ function! s:under_line() abort
 endfunction
 
 " format current paragraph wile in insert mode
-inoremap <C-F> <ESC>gw{zea
+inoremap <C-f> <ESC>gw{zea
 
 " This gets CTRL-6 working on nvim-qt one windows (maybe other places too?)
 nnoremap <C-6> <C-^>
 
 " break out the current tab into a new window without leaving the current tab
-nnoremap <expr> <C-W><C-T> (winnr('$') != 1 ? "<C-W>TgT" : "")
+nnoremap <expr> <C-w><C-t> (winnr('$') != 1 ? "<C-w>TgT" : "")
 
 " open the current window's buffer in a new tab without breaking it out
-nnoremap g<C-W>t :tabedit %<CR>
+nnoremap g<C-w>t :tabedit %<CR>
 
 nnoremap <leader>to :call PreviewWord()<CR>
 nnoremap <leader>tc :pclose<CR>
@@ -519,8 +528,6 @@ function! PreviewWord() abort
 endfun
 
 
-
-" TODO add to util set
 function! s:in(group, item) abort
     if type(a:group) == type('')
         let l:group = split(a:group, '\zs')
@@ -568,12 +575,8 @@ nnoremap <expr> gpv '`[' . getregtype()[0] . '`]'
 
 nnoremap <C-w>Q :tabclose<CR>
 
-
 " Use <C-L> to clear the highlighting of :set hlsearch, and redraw the screen
 nnoremap <silent> <C-L> :redraw!<CR>:nohlsearch<C-r>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-l>
-
-" open my vimrc
-nnoremap [myleader]rc :e $MYVIMRC<CR>
 
 nnoremap <C-W>d :bd<CR>
 
@@ -604,17 +607,10 @@ nnoremap Q @q
 xnoremap Q :normal! @q<CR>
 " repeat last command for each line of a visual selection
 xnoremap . :normal! .<CR>
-" repeat last command then go to the next search position
-" nnoremap <C-n> n.
-" repeat last command-line command
-nnoremap g. @:
 
 " set path to present working directory locally
 nnoremap cdl :lcd! %:h<CR>:pwd<CR>
 nnoremap cd :cd! %:h<CR>:pwd<CR>
-
-nnoremap <leader>qa :qa!<CR>
-nnoremap <leader>q :q!<CR>
 
 " paste after visual block/line selection
 vnoremap <expr> gp '<C-v>A<C-r>'.v:register.'<Esc>'
@@ -632,9 +628,7 @@ cnoremap <C-e> <END>
 cnoremap <C-x> <C-]>
 cnoremap <C-v> <C-f>
 
-" find files easier
-cnoremap <C-t> <C-r>=expand('%:p:h') . '/'<CR>
-
+" fn file name foo.txt
 " afp File Path  (/something/src/foo.txt)
 " fp File Path relative  (src/foo.txt)
 " ofn Other File Name (trail)
@@ -692,6 +686,8 @@ for s:map in s:maps
     execute 'cnoremap %' . s:map.str . ' <C-r>=' . s:map.func . '<CR>'
 endfor
 
+" accept completion (requires "set wildcharm = <TAB>)
+cnoremap <C-y> <Space><BS><Tab>
 
 cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
 
@@ -749,23 +745,6 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                    {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nnoremap <leader>m  :call SearchPosition()<CR>
-nnoremap <leader>M  :let @/ = ''<CR>
-function! SearchPosition() abort
-    if @/ !~# '\v(\\\%\d+[lc](\\\|)?)+'
-        let @/ = ''
-        " echo "pattern didn't match = ".@/
-    else
-        let @/ .= '\|'
-        " echo "added bar = ".@/
-    endif
-
-    let l:line = getpos('.')[1]
-    let l:col = getpos('.')[2]
-    execute "let @/ .= '\\%" . l:line . "l'"
-    execute "let @/ .= '\\%" . l:col . "c'"
-endfunction
-
 nnoremap g** :<C-U>call AddToSearch('n')<CR>
 xnoremap g* :<C-U>call AddToSearch('x')<CR>
 function! AddToSearch(mode) abort
@@ -787,6 +766,7 @@ endfunction
 nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
 
 
+" create a tab that can be used to copy from while in a terminal
 function! CopyTab() abort
     PreserveSave
     tabedit %
@@ -799,12 +779,10 @@ endfunction
 
 command! -bang -nargs=0 -range=0 CopyTab call CopyTab()
 
-
-
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
 
 " reverse selection kind of works
-vnoremap <silent> <leader>is :<c-u>let old_reg_a=@a<cr>
+vnoremap <silent> <leader>rev :<c-u>let old_reg_a=@a<cr>
             \:let old_reg=@"<cr>
             \gv"ay
             \:let @a=substitute(@a, '.\(.*\)\@=',
@@ -889,7 +867,6 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                    {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:vim_json_syntax_conceal = 0
 
 " Function to check if a vim-plug plugin is loaded
 function! Is_plugin_installed(plugin_name) abort
@@ -992,7 +969,6 @@ call plug#begin(s:plugin_path)
 
     " File Type + Syntax
     Plug 'stephpy/vim-yaml' "and alternative YAML sine the built in one is slow
-    Plug 'vim-scripts/confluencewiki.vim'
     Plug 'tpope/vim-markdown'
     Plug 'iamcco/markdown-preview.nvim',
                 \ {
@@ -1109,11 +1085,17 @@ endif
 if Is_plugin_installed('vim_current_word') "{{{2
     " The word under cursor:
     let g:vim_current_word#highlight_current_word = 0
-endif "}}2
+endif "}}}2
+
+if Is_plugin_installed('vim-json')
+    " disable concealing of quotes
+    let g:vim_json_syntax_conceal = 0
+endif "}}}2
+
 
 if Is_plugin_installed('vim-visual-multi') "{{{2
     let g:VM_mouse_mappings = 1
-endif "}}2
+endif "}}}2
 
 if Is_plugin_installed('markdown-preview.nvim') "{{{2
     let g:mkdp_auto_close = 0
@@ -1129,25 +1111,22 @@ if Is_plugin_installed('markdown-preview.nvim') "{{{2
                 \ 'flowchart_diagrams': {},
                 \ 'content_editable': v:false
                 \ }
-endif "}}2
+endif "}}}2
 
 if Is_plugin_installed('csv.vim')
     augroup csv
         autocmd!
         autocmd CursorHold csv WhatColumn!
     augroup END
-endif
+endif "}}}2
 
 if Is_plugin_installed('vim-gutentags') "{{{2
     let g:gutentags_project_root = ['.project_root']
     let g:gutentags_define_advanced_commands = 1
 endif "}}}2
 
-if Is_plugin_installed('ale') "{{{2
-    let g:ale_emit_conflict_warnings = 0  " has to be run before loading plugins
-endif "}}2
 
-
+" TODO this doesn't get much use
 if Is_plugin_installed('vim-lost') "{{{2
     augroup vimrc
         autocmd!
@@ -1181,12 +1160,19 @@ if Is_plugin_installed('Deol.nvim') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('coc.nvim') "{{{2
+    " list extensions that should be installed if they aren't already
     let g:coc_global_extensions = [
                 \ 'coc-clangd',
                 \ 'coc-cmake',
                 \ 'coc-yank',
                 \ 'coc-vimlsp',
                 \ ]
+
+    " disable warning about using older version of nodejs
+    let g:coc_disable_startup_warning = 1
+
+    " mapping for coc-yank
+    nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank
 endif "}}}2
 
 if Is_plugin_installed('neosnippet-snippets') "{{{2
@@ -1563,13 +1549,17 @@ if Is_plugin_installed('Preserve.vim') "{{{2
     " TODO report error to vim about using the :s and :g commands reversed, it
     " reports more values than expected
     nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g//p")<CR>
-endif "}}}2
 
-if Is_plugin_installed('confluencewiki.vim') "{{{2
-    augroup MOIN
-        autocmd!
-        autocmd BufNewFile,BufRead *.jira set filetype=confluencewiki
-    augroup END
+    " create a tab that can be used to copy from while in a terminal
+    function! CopyTab() abort
+        PreserveSave
+        tabedit %
+        set nonumber
+        set norelativenumber
+        set signcolumn=no
+        set foldcolumn=0
+        PreserveRestore
+    endfunction
 endif "}}}2
 
 if Is_plugin_installed('vim-crunch') "{{{2
@@ -1732,7 +1722,8 @@ endif "}}}2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AFTER PLUGINS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+if !exists('g:loaded_matchit')
+            \ && findfile('plugin/matchit.vim', &runtimepath) ==# ''
   runtime! macros/matchit.vim
 endif
 

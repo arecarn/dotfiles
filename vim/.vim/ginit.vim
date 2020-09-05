@@ -11,7 +11,7 @@ endfunction
 
 let s:font_size_pat = '\d\+'
 
-function! Gui_adjust_font_size(amount) abort
+function! Nvim_qt_adjust_font_size(amount) abort
     let font = s:gui_get_font()
     let font_size = s:gui_get_font_size(font)
     let base = 10
@@ -19,19 +19,19 @@ function! Gui_adjust_font_size(amount) abort
     call s:gui_set_font_size(font, new_fontsize)
 endfunction
 
-function! Gui_set_font_size(new_size) abort
+function! Nvim_qt_set_font_size(new_size) abort
     let font = s:gui_get_font()
     call s:gui_set_font_size(font, a:new_size)
 endfunction
 
 function! s:gui_set_font_size(font, new_size) abort
     let new_font = substitute(a:font, s:font_size_pat, a:new_size, '')
-    silent execute 'GuiFont! ' . new_font
+    silent execute 'Nvim_qtFont! ' . new_font
 endfunction
 
 function! s:gui_get_font() abort
     redir => font
-    silent GuiFont
+    silent Nvim_qtFont
     redir END
     let font = trim(font)
     return font
@@ -43,9 +43,9 @@ function! s:gui_get_font_size(font) abort
     return font_size
 endfunction
 
-command! -nargs=1 GuiFontSize call Gui_set_font_size(<args>)
+command! -nargs=1 Nvim_qtFontSize call Nvim_qt_set_font_size(<args>)
 
-noremap <silent> <C-=> :<C-u>call Gui_adjust_font_size(1)<CR>
-noremap <silent> <C--> :<C-u>call Gui_adjust_font_size(-1)<CR>
-inoremap <silent> <C-=> <Esc>:<C-u>call Gui_adjust_font_size(1)<CR>a
-inoremap <silent> <C--> <Esc>:<C-u>call Gui_adjust_font_size(-1)<CR>a
+noremap <silent> <C-=> :<C-u>call Nvim_qt_adjust_font_size(1)<CR>
+noremap <silent> <C--> :<C-u>call Nvim_qt_adjust_font_size(-1)<CR>
+inoremap <silent> <C-=> <Esc>:<C-u>call Nvim_qt_adjust_font_size(1)<CR>a
+inoremap <silent> <C--> <Esc>:<C-u>call Nvim_qt_adjust_font_size(-1)<CR>a

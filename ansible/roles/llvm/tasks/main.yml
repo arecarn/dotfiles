@@ -16,3 +16,30 @@
   package:
     name: "{{item}}"
     state: latest
+
+- name: Ubuntu
+  tags: llvm
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  alternatives:
+    name: clang-format
+    link: /usr/bin/clang-format
+    path: /usr/bin/clang-format-10
+
+- name: Ubuntu
+  tags: llvm
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  alternatives:
+    name: clang-tidy
+    link: /usr/bin/clang-tidy
+    path: /usr/bin/clang-tidy-10
+
+- name: Ubuntu
+  tags: llvm
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  alternatives:
+    name: clangd
+    link: /usr/bin/clangd
+    path: /usr/bin/clangd-10

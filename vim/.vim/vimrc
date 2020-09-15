@@ -1690,8 +1690,8 @@ if Is_plugin_installed('lightline.vim') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('vim-qf') "{{{2
-    let g:qf_auto_open_quickfix = 0 " auto opening the quickfix resets the &makeprg :(
-    let g:qf_nowrap = 1
+    " auto opening the quickfix resets the &makeprg :(
+    let g:qf_auto_open_quickfix = 0
 endif "}}}2
 
 

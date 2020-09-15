@@ -1728,6 +1728,8 @@ if !exists('g:loaded_matchit')
 endif
 
 
+packadd termdebug
+
 if exists('*Vimrc_local_plugin_config')
     call Vimrc_local_plugin_config()
 endif

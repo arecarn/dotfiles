@@ -407,8 +407,8 @@ endif "}}}2
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if !has('nvim') && &ttimeoutlen == -1
-  set ttimeout " enable timeout when waiting for a key code sequence to complete
-  set ttimeoutlen=100 " time in ms to wait for 'ttimeout'
+    set ttimeout " enable timeout when waiting for a key code sequence to complete
+    set ttimeoutlen=100 " time in ms to wait for 'ttimeout'
 endif
 
 set updatetime=1000 " time to wait for swap file write/ CursorHold autocmd
@@ -980,7 +980,6 @@ call plug#begin(s:plugin_path)
     Plug 'romainl/vim-qf'
     Plug 'octol/vim-cpp-enhanced-highlight'
     Plug 'hynek/vim-python-pep8-indent'
-    Plug 'kassio/neoterm'
     Plug 'Shougo/Deol.nvim'
     Plug 'elzr/vim-json'
     Plug 'chrisbra/csv.vim'
@@ -1019,6 +1018,13 @@ call plug#begin(s:plugin_path)
 
     " Applications
     Plug 'tpope/vim-vinegar'
+    if has('nvim')
+        Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
+    else
+        Plug 'Shougo/defx.nvim'
+        Plug 'roxma/nvim-yarp'
+        Plug 'roxma/vim-hug-neovim-rpc'
+    endif
 
     " Text Manipulation Commands / Mappings
     Plug 'godlygeek/tabular'
@@ -1087,6 +1093,51 @@ if Is_plugin_installed('vim_current_word') "{{{2
     let g:vim_current_word#highlight_current_word = 0
 endif "}}}2
 
+if Is_plugin_installed('defx.nvim') "{{{2
+
+    " File explore P working Directory
+    command! Ex Defx <args>
+
+    " File explorer File's directory
+    command! Exf Defx `expand('%:p:h')` -search=`expand('%:p')`
+
+    function! s:defx_my_settings() abort
+        set number
+        set relativenumber
+        nnoremap <silent><buffer><expr> <CR> defx#do_action('open')
+        nnoremap <silent><buffer><expr> c defx#do_action('copy')
+        nnoremap <silent><buffer><expr> m defx#do_action('move')
+        nnoremap <silent><buffer><expr> p defx#do_action('paste')
+        nnoremap <silent><buffer><expr> l defx#do_action('open')
+        nnoremap <silent><buffer><expr> E defx#do_action('open', 'vsplit')
+        nnoremap <silent><buffer><expr> P defx#do_action('preview')
+        nnoremap <silent><buffer><expr> o defx#do_action('open_tree', 'toggle')
+        nnoremap <silent><buffer><expr> K defx#do_action('new_directory')
+        nnoremap <silent><buffer><expr> N defx#do_action('new_file')
+        nnoremap <silent><buffer><expr> M defx#do_action('new_multiple_files')
+        nnoremap <silent><buffer><expr> C defx#do_action('toggle_columns', 'mark:indent:icon:filename:type:size:time')
+        nnoremap <silent><buffer><expr> S defx#do_action('toggle_sort', 'time')
+        nnoremap <silent><buffer><expr> d defx#do_action('remove')
+        nnoremap <silent><buffer><expr> r defx#do_action('rename')
+        nnoremap <silent><buffer><expr> ! defx#do_action('execute_command')
+        nnoremap <silent><buffer><expr> x defx#do_action('execute_system')
+        nnoremap <silent><buffer><expr> yy defx#do_action('yank_path')
+        nnoremap <silent><buffer><expr> . defx#do_action('toggle_ignored_files')
+        nnoremap <silent><buffer><expr> ; defx#do_action('repeat')
+        nnoremap <silent><buffer><expr> h defx#do_action('cd', ['..'])
+        nnoremap <silent><buffer><expr> ~ defx#do_action('cd')
+        nnoremap <silent><buffer><expr> q defx#do_action('quit')
+        nnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select') . 'j'
+        vnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select_visual')
+        nnoremap <silent><buffer><expr> * defx#do_action('toggle_select_all')
+        nnoremap <silent><buffer><expr> j line('.') == line('$') ? 'gg' : 'j'
+        nnoremap <silent><buffer><expr> k line('.') == 1 ? 'G' : 'k'
+        nnoremap <silent><buffer><expr> <C-l> defx#do_action('redraw')
+        nnoremap <silent><buffer><expr> <C-g> defx#do_action('print')
+        nnoremap <silent><buffer><expr> cd defx#do_action('change_vim_cwd')
+    endfunction
+endif "}}}2
+
 if Is_plugin_installed('vim-json')
     " disable concealing of quotes
     let g:vim_json_syntax_conceal = 0
@@ -1151,10 +1202,6 @@ if Is_plugin_installed('echodoc.vim') "{{{2
     set shortmess+=c
 endif "}}}2
 
-if Is_plugin_installed('neoterm') "{{{2
-    let g:neoterm_autoscroll = 1
-endif "}}}2
-
 if Is_plugin_installed('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
@@ -1172,7 +1219,7 @@ if Is_plugin_installed('coc.nvim') "{{{2
     let g:coc_disable_startup_warning = 1
 
     " mapping for coc-yank
-    nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank
+    nnoremap <silent> <Leader>y  :<C-u>CocList -A --normal yank<CR>
 endif "}}}2
 
 if Is_plugin_installed('neosnippet-snippets') "{{{2
@@ -1259,7 +1306,7 @@ if Is_plugin_installed('vim-dispatch') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('vim-fugitive') "{{{2
-    command! -nargs=* G :Git <Args>
+    command! -nargs=* G :Git <args>
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gd :Gdiff<CR>
     nnoremap <Leader>gd<Space> :Gdiff<Space>
@@ -1724,7 +1771,7 @@ endif "}}}2
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if !exists('g:loaded_matchit')
             \ && findfile('plugin/matchit.vim', &runtimepath) ==# ''
-  runtime! macros/matchit.vim
+    runtime! macros/matchit.vim
 endif
 
 

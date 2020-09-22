@@ -894,189 +894,189 @@ endif
 
 
 call plug#begin(s:plugin_path)
-    Plug 'Shougo/vimproc.vim', {'do': 'make'}
+Plug 'Shougo/vimproc.vim', {'do': 'make'}
 
-    " text objects {{{2
-    Plug 'kana/vim-textobj-user'
-    Plug 'saihoooooooo/vim-textobj-space'
-    Plug 'Julian/vim-textobj-variable-segment'
-    Plug 'kana/vim-textobj-entire'
-    Plug 'kana/vim-textobj-indent'
-    Plug 'kana/vim-textobj-line'
-    Plug 'kana/vim-textobj-syntax'
-    Plug 'mattn/vim-textobj-url'
-    Plug 'glts/vim-textobj-comment'
-    Plug 'thinca/vim-textobj-between'
-    Plug 'osyo-manga/vim-textobj-multiblock'
-    Plug 'sgur/vim-textobj-parameter'
-    Plug 'osyo-manga/vim-textobj-blockwise'
-    "}}}2
+" text objects {{{2
+Plug 'kana/vim-textobj-user'
+Plug 'saihoooooooo/vim-textobj-space'
+Plug 'Julian/vim-textobj-variable-segment'
+Plug 'kana/vim-textobj-entire'
+Plug 'kana/vim-textobj-indent'
+Plug 'kana/vim-textobj-line'
+Plug 'kana/vim-textobj-syntax'
+Plug 'mattn/vim-textobj-url'
+Plug 'glts/vim-textobj-comment'
+Plug 'thinca/vim-textobj-between'
+Plug 'osyo-manga/vim-textobj-multiblock'
+Plug 'sgur/vim-textobj-parameter'
+Plug 'osyo-manga/vim-textobj-blockwise'
+"}}}2
 
-    " {u,de}nite {{{2
-    Plug 'Shougo/denite.nvim'
-    Plug 'Shougo/neoyank.vim' " depends on 'Shougo/denite.nvim'
-    Plug 'Shougo/neomru.vim' " depends on 'Shougo/denite.nvim'
-    Plug 'naquad/unite-digraphs' "  depends on 'Shougo/denite.nvim'
-    Plug 'Shougo/unite.vim'
-    " }}}2
+" {u,de}nite {{{2
+Plug 'Shougo/denite.nvim'
+Plug 'Shougo/neoyank.vim' " depends on 'Shougo/denite.nvim'
+Plug 'Shougo/neomru.vim' " depends on 'Shougo/denite.nvim'
+Plug 'naquad/unite-digraphs' "  depends on 'Shougo/denite.nvim'
+Plug 'Shougo/unite.vim'
+" }}}2
 
-    Plug 'dyng/ctrlsf.vim'
+Plug 'dyng/ctrlsf.vim'
 
-    " Operators
-    Plug 'kana/vim-operator-user'
-    Plug 'arecarn/vim-operator-mixed-case'
-    Plug 'kana/vim-operator-replace' " depends on 'kana/vim-operator-user'
-    Plug 'tpope/vim-surround'
-    Plug 'tommcdo/vim-exchange'
-    Plug 'tpope/vim-commentary'
-    Plug 'tpope/vim-repeat'
-    Plug 'vim-scripts/visualrepeat'
-    "}}}2
-    "
-    Plug 'junegunn/fzf'
-    Plug 'junegunn/fzf.vim'
+" Operators
+Plug 'kana/vim-operator-user'
+Plug 'arecarn/vim-operator-mixed-case'
+Plug 'kana/vim-operator-replace' " depends on 'kana/vim-operator-user'
+Plug 'tpope/vim-surround'
+Plug 'tommcdo/vim-exchange'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'vim-scripts/visualrepeat'
+"}}}2
+"
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
 
-    " Folds
-    Plug 'arecarn/vim-clean-fold'
-    Plug 'arecarn/vim-fold-cycle' " {'branch' : 'topics/global_fold_cycling'}
-
-
-    " Visual Enhancements
-    Plug 'itchyny/lightline.vim'
-    Plug 'chreekat/vim-paren-crosshairs'
-    Plug 'junegunn/goyo.vim'
-    Plug 'nathanaelkane/vim-indent-guides'
-
-    if !s:has_windows
-        Plug 'edkolev/tmuxline.vim'
-    endif
-
-    if s:has_nvim || s:has_vim8
-        Plug 'w0rp/ale'
-    endif
-    Plug 'tpope/vim-dispatch'
-    if s:has_nvim
-        Plug 'radenling/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
-    endif
-    Plug 'janko-m/vim-test'
+" Folds
+Plug 'arecarn/vim-clean-fold'
+Plug 'arecarn/vim-fold-cycle' " {'branch' : 'topics/global_fold_cycling'}
 
 
-    " Vim script Development
-    " Plug 'vim-jp/vital.vim'
-    " Plug 'junegunn/vader.vim'
-    " Plug 'vim-scripts/Decho'
+" Visual Enhancements
+Plug 'itchyny/lightline.vim'
+Plug 'chreekat/vim-paren-crosshairs'
+Plug 'junegunn/goyo.vim'
+Plug 'nathanaelkane/vim-indent-guides'
+
+if !s:has_windows
+    Plug 'edkolev/tmuxline.vim'
+endif
+
+if s:has_nvim || s:has_vim8
+    Plug 'w0rp/ale'
+endif
+Plug 'tpope/vim-dispatch'
+if s:has_nvim
+    Plug 'radenling/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
+endif
+Plug 'janko-m/vim-test'
 
 
-    " File Type + Syntax
-    Plug 'stephpy/vim-yaml' "and alternative YAML sine the built in one is slow
-    Plug 'tpope/vim-markdown'
-    Plug 'iamcco/markdown-preview.nvim',
-                \ {
-                \     'do': {-> mkdp#util#install()},
-                \     'for': ['markdown', 'vim-plug']
-                \ }
-    Plug 'aklt/plantuml-syntax'
-    Plug 'dbeniamine/todo.txt-vim'
-    Plug 'romainl/vim-qf'
-    Plug 'octol/vim-cpp-enhanced-highlight'
-    Plug 'hynek/vim-python-pep8-indent'
-    Plug 'Shougo/Deol.nvim'
-    Plug 'elzr/vim-json'
-    Plug 'chrisbra/csv.vim'
+" Vim script Development
+" Plug 'vim-jp/vital.vim'
+" Plug 'junegunn/vader.vim'
+" Plug 'vim-scripts/Decho'
 
 
-    " Colors
-    Plug 'romainl/Apprentice'
-    Plug 'jonsmithers/apprentice-lightline-experimental'
+" File Type + Syntax
+Plug 'stephpy/vim-yaml' "and alternative YAML sine the built in one is slow
+Plug 'tpope/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim',
+            \ {
+            \     'do': {-> mkdp#util#install()},
+            \     'for': ['markdown', 'vim-plug']
+            \ }
+Plug 'aklt/plantuml-syntax'
+Plug 'dbeniamine/todo.txt-vim'
+Plug 'romainl/vim-qf'
+Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'hynek/vim-python-pep8-indent'
+Plug 'Shougo/Deol.nvim'
+Plug 'elzr/vim-json'
+Plug 'chrisbra/csv.vim'
 
-    " Completions
-    if s:has_nvim || s:has_vim8
-        Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    endif
 
-    if has('patch-7.4.774') " requires v:completed_item feature
-        Plug 'Shougo/echodoc.vim'
-    endif
+" Colors
+Plug 'romainl/Apprentice'
+Plug 'jonsmithers/apprentice-lightline-experimental'
 
-    Plug 'Shougo/neosnippet-snippets'
-    Plug 'Shougo/neosnippet.vim'
+" Completions
+if s:has_nvim || s:has_vim8
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
 
-    " Git / VCS
-    Plug 'tpope/vim-fugitive'
-    Plug 'lambdalisue/gina.vim'
-    Plug 'jreybert/vimagit'
-    Plug 'airblade/vim-rooter'
-    Plug 'cohama/agit.vim'
-    Plug 'mhinz/vim-signify'
+if has('patch-7.4.774') " requires v:completed_item feature
+    Plug 'Shougo/echodoc.vim'
+endif
 
-    " Diff
-    Plug 'AndrewRadev/linediff.vim'
-    Plug 'vim-scripts/diffchanges.vim'
-    Plug 'arecarn/vim-diff-utils', {'branch' : 'visual_mapping'}
-    Plug 'chrisbra/vim-diff-enhanced'
-    Plug 'will133/vim-dirdiff'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'Shougo/neosnippet.vim'
 
-    " Applications
-    Plug 'tpope/vim-vinegar'
-    if has('nvim')
-        Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
-    else
-        Plug 'Shougo/defx.nvim'
-        Plug 'roxma/nvim-yarp'
-        Plug 'roxma/vim-hug-neovim-rpc'
-    endif
+" Git / VCS
+Plug 'tpope/vim-fugitive'
+Plug 'lambdalisue/gina.vim'
+Plug 'jreybert/vimagit'
+Plug 'airblade/vim-rooter'
+Plug 'cohama/agit.vim'
+Plug 'mhinz/vim-signify'
 
-    " Text Manipulation Commands / Mappings
-    Plug 'godlygeek/tabular'
-    Plug 'arecarn/vim-split-join'
-    Plug 'AndrewRadev/splitjoin.vim'
-    Plug 't9md/vim-textmanip'
-    Plug 'vim-scripts/ingo-library'
-    Plug 'vim-scripts/FormatToWidth' " depends on 'vim-scripts/ingo-library'
+" Diff
+Plug 'AndrewRadev/linediff.vim'
+Plug 'vim-scripts/diffchanges.vim'
+Plug 'arecarn/vim-diff-utils', {'branch' : 'visual_mapping'}
+Plug 'chrisbra/vim-diff-enhanced'
+Plug 'will133/vim-dirdiff'
 
-    " Enhancements
-    Plug 'kana/vim-niceblock'
-    Plug 'tpope/vim-speeddating'
-    Plug 'tpope/vim-unimpaired'
-    Plug 'vim-scripts/UnconditionalPaste'
-    Plug 'arecarn/vim-auto-autoread'
-    Plug 'arecarn/vim-backup-tree'
-    Plug 'thinca/vim-qfreplace'
-    Plug 'tpope/vim-eunuch'
-    Plug 'arecarn/vim-spell-utils'
-    Plug 'tpope/vim-abolish'
-    Plug 'arecarn/vim-lost'
-    Plug 'mg979/vim-visual-multi'
+" Applications
+Plug 'tpope/vim-vinegar'
+if has('nvim')
+    Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+    Plug 'Shougo/defx.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
+endif
 
-    " Word Under the Cursor Highlighting
-    Plug 't9md/vim-quickhl'
-    Plug 'dominikduda/vim_current_word'
+" Text Manipulation Commands / Mappings
+Plug 'godlygeek/tabular'
+Plug 'arecarn/vim-split-join'
+Plug 'AndrewRadev/splitjoin.vim'
+Plug 't9md/vim-textmanip'
+Plug 'vim-scripts/ingo-library'
+Plug 'vim-scripts/FormatToWidth' " depends on 'vim-scripts/ingo-library'
 
-    " Search
-    Plug 'pgdouyon/vim-evanesco'
-    Plug 'mhinz/vim-grepper'
+" Enhancements
+Plug 'kana/vim-niceblock'
+Plug 'tpope/vim-speeddating'
+Plug 'tpope/vim-unimpaired'
+Plug 'vim-scripts/UnconditionalPaste'
+Plug 'arecarn/vim-auto-autoread'
+Plug 'arecarn/vim-backup-tree'
+Plug 'thinca/vim-qfreplace'
+Plug 'tpope/vim-eunuch'
+Plug 'arecarn/vim-spell-utils'
+Plug 'tpope/vim-abolish'
+Plug 'arecarn/vim-lost'
+Plug 'mg979/vim-visual-multi'
 
-    " Utilities
-    Plug 'talek/obvious-resize'
-    Plug 'vim-scripts/cmdalias.vim'
-    Plug 'arecarn/Preserve.vim'
+" Word Under the Cursor Highlighting
+Plug 't9md/vim-quickhl'
+Plug 'dominikduda/vim_current_word'
 
-    " Interactive Tools/Modes
-    Plug 'dhruvasagar/vim-table-mode'
-    Plug 'arecarn/vim-selection'
-    Plug 'arecarn/vim-crunch' " depends on arecarn/vim-selection
-    Plug 'chrisbra/NrrwRgn'
-    Plug 'mbbill/undotree'
+" Search
+Plug 'pgdouyon/vim-evanesco'
+Plug 'mhinz/vim-grepper'
 
-    Plug 'arecarn/vim-binascii'
-    Plug 'arecarn/vim-frisk'
+" Utilities
+Plug 'talek/obvious-resize'
+Plug 'vim-scripts/cmdalias.vim'
+Plug 'arecarn/Preserve.vim'
 
-    " Project Management
-    if s:has_vim8 || s:has_nvim
-        Plug 'ludovicchabant/vim-gutentags'
-        Plug 'liuchengxu/vista.vim'
-    endif
-    Plug 'tpope/vim-projectionist'
+" Interactive Tools/Modes
+Plug 'dhruvasagar/vim-table-mode'
+Plug 'arecarn/vim-selection'
+Plug 'arecarn/vim-crunch' " depends on arecarn/vim-selection
+Plug 'chrisbra/NrrwRgn'
+Plug 'mbbill/undotree'
+
+Plug 'arecarn/vim-binascii'
+Plug 'arecarn/vim-frisk'
+
+" Project Management
+if s:has_vim8 || s:has_nvim
+    Plug 'ludovicchabant/vim-gutentags'
+    Plug 'liuchengxu/vista.vim'
+endif
+Plug 'tpope/vim-projectionist'
 
 " Initialize plugin system
 call plug#end()

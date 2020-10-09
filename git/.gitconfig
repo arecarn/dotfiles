@@ -22,6 +22,9 @@
     tool = vimdiff
     conflictStyle = diff3
 
+[pull]
+    ff=only
+
 [log]
     decorate = short
 
@@ -53,7 +56,8 @@
     verbose = true
 
 [rerere]
-    enabled = true
+    enabled = true # record merge resolutions that git can reuse later
+    autoupdate = true # auto stage files that have been resolved by rerere
 
 [diff]
   tool = default-difftool
@@ -236,7 +240,7 @@
 
     # better PuLl of a repo only if a fast forward is possible, then make sure
     # submodules are updated
-    pl = "!f() { git pull --ff --ff-only \"$@\" && git smu; }; f"
+    pl = "!f() { git pull \"$@\" && git smu; }; f"
     # PuLl with Rebase
     plr = !git pl --rebase
     # PuLl Force

@@ -1220,13 +1220,82 @@ if Is_plugin_installed('coc.nvim') "{{{2
                 \ 'coc-cmake',
                 \ 'coc-yank',
                 \ 'coc-vimlsp',
+                \ 'coc-python',
+                \ 'coc-neosnippet',
                 \ ]
 
-    " disable warning about using older version of nodejs
+    " disable warning about using older version of node.js
     let g:coc_disable_startup_warning = 1
 
-    " mapping for coc-yank
-    nnoremap <silent> <Leader>y  :<C-u>CocList -A --normal yank<CR>
+    " go to code navigation.
+    nmap <silent> <leader>ld <Plug>(coc-definition)
+    nmap <silent> <leader>li <Plug>(coc-implementation)
+    nmap <silent> <leader>lt <Plug>(coc-type-definition)
+    nmap <silent> <leader>lr <Plug>(coc-references)
+    nmap <silent><expr> <leader>ld CocActionAsync('doHover')
+
+    " substitute symbol
+    nmap <leader>ls <Plug>(coc-rename)
+
+    " Formatting selected code.
+    xmap <leader>lfm <Plug>(coc-format-selected)
+    nmap <leader>lfm <Plug>(coc-format-selected)
+
+    augroup coc_group
+        autocmd!
+        " Update signature help on jump placeholder.
+        autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    augroup end
+
+    " Applying codeAction to the selected region.
+    " Example: `<leader>laap` for current paragraph
+    xmap <silent><leader>la <Plug>(coc-codeaction-selected)
+    nmap <silent><leader>la <Plug>(coc-codeaction-selected)
+
+    " Apply AutoFix to problem on the current line.
+    nmap <leader>lf  <Plug>(coc-fix-current)
+
+    " Map function and class text objects
+    " NOTE: Requires 'textDocument.documentSymbol' support from the language
+    " server.
+    xmap <silent> if <Plug>(coc-funcobj-i)
+    omap <silent> if <Plug>(coc-funcobj-i)
+    xmap <silent> af <Plug>(coc-funcobj-a)
+    omap <silent> af <Plug>(coc-funcobj-a)
+    xmap <silent> icl <Plug>(coc-classobj-i)
+    omap <silent> icl <Plug>(coc-classobj-i)
+    xmap <silent> acl <Plug>(coc-classobj-a)
+    omap <silent> acl <Plug>(coc-classobj-a)
+
+    " Use CTRL-S for selections ranges.
+    " Requires 'textDocument/selectionRange' support of language server.
+    nmap <silent> <C-s> <Plug>(coc-range-select)
+    xmap <silent> <C-s> <Plug>(coc-range-select)
+
+    " format current buffer.
+    command! -nargs=0 Lformat :call CocAction('format')
+
+    " fold current buffer.
+    command! -nargs=? Lfold :call CocAction('fold', <f-args>)
+
+    " organize imports of the current buffer.
+    command! -nargs=0 Lorg :call CocAction('runCommand', 'editor.action.organizeImport')
+
+    " Mappings for CoCList
+    nnoremap <silent> <leader>lld :<C-u>CocList diagnostics<CR>
+    nnoremap <silent> <leader>lle :<C-u>CocList extensions<CR>
+    nnoremap <silent> <leader>llc :<C-u>CocList commands<CR>
+    nnoremap <silent> <leader>llo :<C-u>CocList outline<CR>
+    " search workspace symbols.
+    nnoremap <silent> <leader>lls :<C-u>CocList -I symbols<CR>
+    " do default action for next item.
+    nnoremap <silent> <leader>llj :<C-u>CocNext<CR>
+    " do default action for previous item.
+    nnoremap <silent> <leader>llk :<C-u>CocPrev<CR>
+    nnoremap <silent> <leader>llr :<C-u>CocListResume<CR>
+    " List recent yanks
+    nnoremap <silent> <leader>ly  :<C-u>CocList -A --normal yank<CR>
+
 endif "}}}2
 
 if Is_plugin_installed('neosnippet-snippets') "{{{2
@@ -1451,7 +1520,7 @@ if Is_plugin_installed('FormatToWidth') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('linediff.vim') "{{{2
-    xnoremap <Leader>ld :Linediff<CR>
+    xnoremap <leader>lnd :Linediff<CR>
 endif "}}}2
 
 if Is_plugin_installed('vim-textobj-between') "{{{2

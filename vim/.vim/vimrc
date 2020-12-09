@@ -767,15 +767,14 @@ nnoremap <leader>tp :ptjump <C-r><C-w><CR>
 
 " create a tab that can be used to copy from while in a terminal
 function! CopyTab() abort
-    PreserveSave
+    let winview = winsaveview()
     tabedit %
     set nonumber
     set norelativenumber
     set signcolumn=no
     set foldcolumn=0
-    PreserveRestore
+    call winrestview(winview)
 endfunction
-
 command! -bang -nargs=0 -range=0 CopyTab call CopyTab()
 
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
@@ -974,6 +973,7 @@ Plug 'iamcco/markdown-preview.nvim',
             \     'do': {-> mkdp#util#install()},
             \     'for': ['markdown', 'vim-plug']
             \ }
+Plug 'jkramer/vim-checkbox'
 Plug 'aklt/plantuml-syntax'
 Plug 'dbeniamine/todo.txt-vim'
 Plug 'romainl/vim-qf'
@@ -1338,7 +1338,7 @@ if Is_plugin_installed('denite.nvim') "{{{2
 
     nnoremap [myleader]d :<C-u>Denite directory_rec<CR>
     nnoremap [myleader]f :<C-u>Denite file_rec<CR>
-    nnoremap [myleader]rg :<C-u>Denite -mode=normal register<CR>
+    nnoremap [myleader]rg :<C-u>Denite register<CR>
     nnoremap [myleader]b  :<C-u>Denite buffer<CR>
     nnoremap [myleader]l  :<C-u>Denite line<CR>
     nnoremap [myleader]t  :<C-u>Denite tag<CR>
@@ -1346,7 +1346,7 @@ if Is_plugin_installed('denite.nvim') "{{{2
     cnoremap <silent> <C-r><C-r> <C-u>Denite command_history<CR>
     cnoremap <silent> <C-o> <C-u>Denite command<CR>
 
-    command! Messages Denite -mode=normal output:message
+    command! Messages Denite output:message
 
     " Define mappings
     augroup denite_custom_settings
@@ -1662,7 +1662,7 @@ if Is_plugin_installed('Preserve.vim') "{{{2
     command! -bar -range=% TrimLead PreserveSave|<line1>,<line2>s,^\s\+,,ge|PreserveRestore
     command! -bar -range=% TrimTrail PreserveSave|<line1>,<line2>s,\s\+$,,ge|PreserveRestore
     command! -bar -range=% Trim <line1>,<line2>TrimTrail<bar>TrimLead
-    noremap <silent>d<Space>t :Dtrail<CR>
+    noremap <silent>d<Space>t :TrimTrail<CR>
     nnoremap =ae :call Preserve("normal! gg=G")<CR>
     nnoremap =ie :call Preserve("normal! gg=G")<CR>
     nnoremap yae :call Preserve("normal! ggyG")<CR>

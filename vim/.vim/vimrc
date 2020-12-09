@@ -95,9 +95,9 @@ set wildmode=full " complete the next full match when pressing <Tab>
 
 " character you have to type to start wildcard expansion and also works in
 " mappings, unlink 'wildchar'
-set wildcharm=<TAB>
-" accept current completion (requires that wildcharm is set to <TAB>)
-cnoremap <C-Y> <SPACE><BS><TAB>
+set wildcharm=<Tab>
+" accept current completion (requires that wildcharm is set to <Tab>)
+cnoremap <C-Y> <Space><bs><Tab>
 
 " File Searching
 " ignored files
@@ -183,8 +183,8 @@ set backup " enable backups vim-backup-tree takes care of the rest
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LINE WRAPPING                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" maximum width line width, longer lines will be broken with a <EOL> after a
-" white space
+" maximum width line width, longer lines will be broken with a end of line
+" characters after a white space
 set textwidth=80
 
 " when 'wrap' is enabled visually break long lines at a character in 'breakat'
@@ -213,7 +213,7 @@ let &spellfile = s:app_path . 'utils/spell/spellfile.add'
 let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
 
 " repeat the replacement done by z= for all matches
-nnoremap !z= :<C-u>spellrepall<CR>
+nnoremap !z= :<C-u>spellrepall<cr>
 
 " generate help tags for custom help files
 execute 'helptags ' . s:app_path . 'doc'
@@ -248,14 +248,14 @@ if has('autocmd')
     augroup vimrc
         autocmd!
         autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
-    augroup END
+    augroup end
 endif
 
 if has('autocmd')
     augroup AllFiles
         autocmd!
         autocmd FocusLost * silent! wall
-    augroup END
+    augroup end
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -284,8 +284,8 @@ function! PrintCscopeOptions() abort
     echo 't: This text string'
     echo 'e: This egrep pattern'
 endfunction
-execute 'nnoremap <Leader>csf :call PrintCscopeOptions()<CR>:cs find '
-execute 'nnoremap <Leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>' . repeat('<Right>',8)
+execute 'nnoremap <leader>csf :call PrintCscopeOptions()<CR>:cs find '
+execute 'nnoremap <leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>' . repeat('<Right>',8)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                           {{{
@@ -306,7 +306,7 @@ if has('autocmd')
         autocmd!
         autocmd GUIEnter * set vb t_vb=
         autocmd VimEnter * set vb t_vb=
-    augroup END
+    augroup end
 endif
 
 set nostartofline " avoid moving the cursor column when navigating
@@ -338,7 +338,7 @@ if has('autocmd')
     augroup colorcolumn
         autocmd!
         autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
-    augroup END
+    augroup end
 endif
 
 " open a dialog for commands that can be confirmed/ can fail e.g. :q, :qa, :w
@@ -369,7 +369,7 @@ if has('autocmd') && v:version > 701
     augroup todo
         autocmd!
         autocmd Syntax * match MyTodo '\v<(|NOTE|INFO|IDEA|IMPROVEMENT|QUESTION|TODO|FIXME|BUG|HACK|TRICKY|XXX)>'
-    augroup END
+    augroup end
 endif
 
 " gVim settings {{{2
@@ -386,7 +386,7 @@ if has ('gui_running')
         augroup windowsgui:
             autocmd!
             autocmd GUIEnter * simalt ~x
-        augroup END
+        augroup end
     endif
 
     " Set Font
@@ -474,7 +474,7 @@ function! s:under_line() abort
 endfunction
 
 " format current paragraph wile in insert mode
-inoremap <C-f> <ESC>gw{zea
+inoremap <C-f> <Esc>gw{zea
 
 " This gets CTRL-6 working on nvim-qt one windows (maybe other places too?)
 nnoremap <C-6> <C-^>
@@ -679,14 +679,14 @@ let s:maps = [
             \     }
             \  ]
 for s:map in s:maps
-    execute 'nnoremap <silent> <Leader>y' . s:map.str . ' ' .
+    execute 'nnoremap <silent> <leader>y' . s:map.str . ' ' .
                 \ ':let @*=' . s:map.func . '<CR>' .
                 \ ':let @+=' . s:map.func . '<CR>' .
                 \ ':let @"=' . s:map.func . '<CR>'
     execute 'cnoremap %' . s:map.str . ' <C-r>=' . s:map.func . '<CR>'
 endfor
 
-" accept completion (requires "set wildcharm = <TAB>)
+" accept completion (requires "set wildcharm = <Tab>)
 cnoremap <C-y> <Space><BS><Tab>
 
 cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
@@ -737,7 +737,7 @@ if s:has_terminal
     if s:has_nvim
         augroup terminal
             autocmd TermOpen * setlocal nospell
-        augroup END
+        augroup end
     endif
 endif
 
@@ -763,8 +763,7 @@ function! AddToSearch(mode) abort
     let @@ = l:save_reg
 endfunction
 
-nnoremap <Leader>tp :ptjump <C-r><C-w><CR>
-
+nnoremap <leader>tp :ptjump <C-r><C-w><CR>
 
 " create a tab that can be used to copy from while in a terminal
 function! CopyTab() abort
@@ -782,8 +781,8 @@ command! -bang -nargs=0 -range=0 CopyTab call CopyTab()
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
 
 " reverse selection kind of works
-vnoremap <silent> <leader>rev :<c-u>let old_reg_a=@a<cr>
-            \:let old_reg=@"<cr>
+vnoremap <silent> <leader>rev :<c-u>let old_reg_a=@a<CR>
+            \:let old_reg=@"<CR>
             \gv"ay
             \:let @a=substitute(@a, '.\(.*\)\@=',
             \ '\=@a[strlen(submatch(1))]', 'g')<CR>
@@ -1104,13 +1103,13 @@ if Is_plugin_installed('defx.nvim') "{{{2
     augroup defx_custom_settings
         autocmd!
         autocmd FileType defx call s:defx_custom_settings()
-    augroup END
+    augroup end
 
     function! s:defx_custom_settings() abort
         set number
         set relativenumber
 
-        nnoremap <silent><buffer> <TAB> :<C-u>Defx -new -split=vertical -winwidth=<C-r>=winwidth("%")/2<CR><CR>
+        nnoremap <silent><buffer> <Tab> :<C-u>Defx -new -split=vertical -winwidth=<C-r>=winwidth("%")/2<CR><CR>
         nnoremap <silent><buffer><expr> <CR> defx#do_action('open')
         nnoremap <silent><buffer><expr> c defx#do_action('copy')
         nnoremap <silent><buffer><expr> m defx#do_action('move')
@@ -1175,7 +1174,7 @@ if Is_plugin_installed('csv.vim')
     augroup csv
         autocmd!
         autocmd CursorHold csv WhatColumn!
-    augroup END
+    augroup end
 endif "}}}2
 
 if Is_plugin_installed('vim-gutentags') "{{{2
@@ -1189,7 +1188,7 @@ if Is_plugin_installed('vim-lost') "{{{2
     augroup vimrc
         autocmd!
         autocmd FileType markdown let b:lost_regex = '\v^#'
-    augroup END
+    augroup end
 endif "}}}2
 
 if Is_plugin_installed('vim-backup-tree') "{{{2
@@ -1353,7 +1352,7 @@ if Is_plugin_installed('denite.nvim') "{{{2
     augroup denite_custom_settings
         autocmd!
         autocmd FileType denite call s:denite_custom_settings()
-    augroup END
+    augroup end
     function! s:denite_custom_settings() abort
         nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
         nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
@@ -1372,8 +1371,8 @@ endif "}}}2
 
 if Is_plugin_installed('vim-grepper') "{{{2
     nmap [myleader]g: :Grepper<CR>
-    nmap [myleader]g <plug>(GrepperOperator)
-    xmap [myleader]g <plug>(GrepperOperator)
+    nmap [myleader]g <Plug>(GrepperOperator)
+    xmap [myleader]g <Plug>(GrepperOperator)
 endif "}}}2
 
 if Is_plugin_installed('vim-dispatch') "{{{2
@@ -1383,12 +1382,12 @@ endif "}}}2
 
 if Is_plugin_installed('vim-fugitive') "{{{2
     command! -nargs=* G :Git <args>
-    nnoremap <Leader>gs :Gstatus<CR>
-    nnoremap <Leader>gd :Gdiff<CR>
-    nnoremap <Leader>gd<Space> :Gdiff<Space>
-    nnoremap <Leader>gd1 :Gdiff HEAD~1<CR>
-    nnoremap <Leader>gd2 :Gdiff HEAD~2<CR>
-    nmap <Leader>gc :Gstatus<CR>cc<C-w>T:vs<CR>/>8<CR>z<CR><C-w>p
+    nnoremap <leader>gs :Gstatus<CR>
+    nnoremap <leader>gd :Gdiff<CR>
+    nnoremap <leader>gd<Space> :Gdiff<Space>
+    nnoremap <leader>gd1 :Gdiff HEAD~1<CR>
+    nnoremap <leader>gd2 :Gdiff HEAD~2<CR>
+    nmap <leader>gc :Gstatus<CR>cc<C-w>T:vs<CR>/>8<CR>z<CR><C-w>p
     nmap ]gd :Gstatus<CR>30<C-w>_<C-w>K<C-n>D
     nmap [gd :Gstatus<CR>30<C-w>_<C-w>K<C-p>D
     nmap ]g :Gstatus<CR>30<C-w>_<C-w>K<C-n><CR>
@@ -1461,8 +1460,8 @@ if Is_plugin_installed('vim-split-join') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('tabular') "{{{2
-    nnoremap <Leader>a :Tabularize/
-    xnoremap <Leader>a :Tabularize/
+    nnoremap <leader>a :Tabularize/
+    xnoremap <leader>a :Tabularize/
 endif "}}}2
 
 if Is_plugin_installed('vim-table-mode') "{{{2
@@ -1512,7 +1511,7 @@ if Is_plugin_installed('cmdalias.vim') "{{{2
         autocmd VimEnter * Alias sex Sexplore
         autocmd VimEnter * Alias tex Texplore
         autocmd VimEnter * Alias vex Vexplore
-    augroup END
+    augroup end
 endif "}}}2
 
 if Is_plugin_installed('FormatToWidth') "{{{2
@@ -1559,11 +1558,11 @@ if Is_plugin_installed('goyo.vim') "{{{2
         let &cursorline = b:cursorline
     endfunction
 
-    augroup augroup_name
+    augroup goyo
         autocmd!
         autocmd User GoyoEnter nested call <SID>goyo_enter()
         autocmd User GoyoLeave nested call <SID>goyo_leave()
-    augroup END
+    augroup end
 
     let signcolumn_width = &signcolumn !=# 'no' ? 2 : 0
     let g:goyo_width = 80 + signcolumn_width + &foldcolumn
@@ -1586,7 +1585,7 @@ if Is_plugin_installed('todo.txt-vim') "{{{2
         autocmd BufNewFile,BufRead todo*.txt,done*.txt set filetype=todo
         autocmd FileType todo call s:todo_txt_settings()
         autocmd FileType todo setlocal formatoptions-=t
-    augroup END
+    augroup end
 
     function! s:get_context(line) abort "{{{3
         return matchstr(getline(a:line), '@[^ ]\+')
@@ -1628,7 +1627,7 @@ if Is_plugin_installed('todo.txt-vim') "{{{2
 
     function! s:todo_txt_settings() abort "{{{3
         try
-            execute "iunmap <buffer> date\<TAB>"
+            execute "iunmap <buffer> date\<Tab>"
             iunmap <buffer> due:
         catch
         endtry
@@ -1672,17 +1671,6 @@ if Is_plugin_installed('Preserve.vim') "{{{2
     " TODO report error to vim about using the :s and :g commands reversed, it
     " reports more values than expected
     nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g//p")<CR>
-
-    " create a tab that can be used to copy from while in a terminal
-    function! CopyTab() abort
-        PreserveSave
-        tabedit %
-        set nonumber
-        set norelativenumber
-        set signcolumn=no
-        set foldcolumn=0
-        PreserveRestore
-    endfunction
 endif "}}}2
 
 if Is_plugin_installed('vim-crunch') "{{{2
@@ -1833,7 +1821,7 @@ if !s:has_windows && Is_plugin_installed('tmuxline.vim')
         augroup tmuxline
             autocmd!
             autocmd VimEnter * call s:set_up_tmuxline()
-        augroup END
+        augroup end
 
         function! s:set_up_tmuxline() abort
             Tmuxline lightline

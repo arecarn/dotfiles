@@ -1543,26 +1543,27 @@ endif "}}}2
 if Is_plugin_installed('goyo.vim') "{{{2
     nnoremap yof :<C-u>call SetGoyo(v:count)<CR>
 
-    function! s:goyo_enter() abort
-        let b:wrap_cache = &wrap
-        let &wrap = 1
-        let b:list_cache = &list
-        let &list = 0
-        let b:cursorline = &cursorline
-        let &cursorline = 1
-    endfunction
+    " TODO: not sure why but goyo won't work if I uncomment the following
+    " function! s:goyo_enter() abort
+    "     let b:wrap_cache = &wrap
+    "     let &wrap = 1
+    "     let b:list_cache = &list
+    "     let &list = 0
+    "     let b:cursorline = &cursorline
+    "     let &cursorline = 1
+    " endfunction
 
-    function! s:goyo_leave() abort
-        let &wrap = b:wrap_cache
-        let &list = b:list_cache
-        let &cursorline = b:cursorline
-    endfunction
+    " function! s:goyo_leave() abort
+    "     let &wrap = b:wrap_cache
+    "     let &list = b:list_cache
+    "     let &cursorline = b:cursorline
+    " endfunction
 
-    augroup goyo
-        autocmd!
-        autocmd User GoyoEnter nested call <SID>goyo_enter()
-        autocmd User GoyoLeave nested call <SID>goyo_leave()
-    augroup end
+    " augroup goyo
+    "     autocmd!
+    "     autocmd User GoyoEnter nested call <SID>goyo_enter()
+    "     autocmd User GoyoLeave nested call <SID>goyo_leave()
+    " augroup end
 
     let signcolumn_width = &signcolumn !=# 'no' ? 2 : 0
     let g:goyo_width = 80 + signcolumn_width + &foldcolumn

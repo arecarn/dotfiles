@@ -1281,6 +1281,7 @@ if Is_plugin_installed('coc.nvim') "{{{2
     command! -nargs=0 Lorg :call CocAction('runCommand', 'editor.action.organizeImport')
 
     " Mappings for CoCList
+    nnoremap <silent> <leader>ll :<C-u>CocList --normal<CR>
     nnoremap <silent> <leader>lld :<C-u>CocList --normal diagnostics<CR>
     nnoremap <silent> <leader>lle :<C-u>CocList --normal extensions<CR>
     nnoremap <silent> <leader>llc :<C-u>CocList --normal commands<CR>

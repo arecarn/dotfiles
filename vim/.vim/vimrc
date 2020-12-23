@@ -134,7 +134,7 @@ endif
 
 if has('nvim')
     " prevent showing weird symbols in terminal like Qs at the ends of lines
-    " TODO this commented out for now to see if this is still a problem
+    " TODO commented out for now to see if this is still a problem
     " set guicursor=
 endif
 
@@ -1231,7 +1231,7 @@ if Is_plugin_installed('coc.nvim') "{{{2
     nmap <silent> <leader>li <Plug>(coc-implementation)
     nmap <silent> <leader>lt <Plug>(coc-type-definition)
     nmap <silent> <leader>lr <Plug>(coc-references)
-    nmap <silent><expr> <leader>ld CocActionAsync('doHover')
+    nmap <silent><expr> <leader>lh CocActionAsync('doHover')
 
     " substitute symbol
     nmap <leader>ls <Plug>(coc-rename)
@@ -1281,20 +1281,19 @@ if Is_plugin_installed('coc.nvim') "{{{2
     command! -nargs=0 Lorg :call CocAction('runCommand', 'editor.action.organizeImport')
 
     " Mappings for CoCList
-    nnoremap <silent> <leader>lld :<C-u>CocList diagnostics<CR>
-    nnoremap <silent> <leader>lle :<C-u>CocList extensions<CR>
-    nnoremap <silent> <leader>llc :<C-u>CocList commands<CR>
-    nnoremap <silent> <leader>llo :<C-u>CocList outline<CR>
+    nnoremap <silent> <leader>lld :<C-u>CocList --normal diagnostics<CR>
+    nnoremap <silent> <leader>lle :<C-u>CocList --normal extensions<CR>
+    nnoremap <silent> <leader>llc :<C-u>CocList --normal commands<CR>
+    nnoremap <silent> <leader>llo :<C-u>CocList --normal outline<CR>
     " search workspace symbols.
-    nnoremap <silent> <leader>lls :<C-u>CocList -I symbols<CR>
+    nnoremap <silent> <leader>lls :<C-u>CocList --interactive symbols<CR>
     " do default action for next item.
     nnoremap <silent> <leader>llj :<C-u>CocNext<CR>
     " do default action for previous item.
     nnoremap <silent> <leader>llk :<C-u>CocPrev<CR>
     nnoremap <silent> <leader>llr :<C-u>CocListResume<CR>
     " List recent yanks
-    nnoremap <silent> <leader>ly  :<C-u>CocList -A --normal yank<CR>
-
+    nnoremap <silent> <leader>ly  :<C-u>CocList --auto-preview --normal yank<CR>
 endif "}}}2
 
 if Is_plugin_installed('neosnippet-snippets') "{{{2

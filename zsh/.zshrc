@@ -88,6 +88,7 @@ if _is_installed 'pyenv/pyenv'; then
     # This must happen after 'zplug load' since the pyenv may not be available
     # yet
     export PYENV_ROOT="${ZPLUG_HOME}/repos/pyenv/pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
 fi
 
@@ -109,6 +110,8 @@ export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 
 # configure path
 export PATH="${PATH}:${HOME}/bin"
+export PATH="${PATH}:${HOME}/.local/bin"
+
 
 if [[ "${OSTYPE}" == 'darwin'* ]]; then
     # TODO HAVE ansible add these to ~/.profile for homebrew

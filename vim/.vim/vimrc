@@ -1223,9 +1223,6 @@ if Is_plugin_installed('coc.nvim') "{{{2
                 \ 'coc-neosnippet',
                 \ ]
 
-    " disable warning about using older version of node.js
-    let g:coc_disable_startup_warning = 1
-
     " go to code navigation.
     nmap <silent> <leader>ld <Plug>(coc-definition)
     nmap <silent> <leader>li <Plug>(coc-implementation)
@@ -1268,8 +1265,8 @@ if Is_plugin_installed('coc.nvim') "{{{2
 
     " Use CTRL-S for selections ranges.
     " Requires 'textDocument/selectionRange' support of language server.
-    nmap <silent> <C-s> <Plug>(coc-range-select)
-    xmap <silent> <C-s> <Plug>(coc-range-select)
+    " nmap <silent> <C-s> <Plug>(coc-range-select)
+    " xmap <silent> <C-s> <Plug>(coc-range-select)
 
     " format current buffer.
     command! -nargs=0 Lformat :call CocAction('format')

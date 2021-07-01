@@ -1379,7 +1379,7 @@ endif "}}}2
 
 if Is_plugin_installed('vim-fugitive') "{{{2
     command! -nargs=* G :Git <args>
-    nnoremap <leader>gs :Gstatus<CR>
+    nnoremap <leader>gs :Git<CR>
     nnoremap <leader>gd :Gdiff<CR>
     nnoremap <leader>gd<Space> :Gdiff<Space>
     nnoremap <leader>gd1 :Gdiff HEAD~1<CR>

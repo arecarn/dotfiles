@@ -76,7 +76,7 @@
 
 [credential]
     # don't re-prompt for credentials for N seconds
-    helper = cache --timeout=1600
+	helper = store
 
 [alias]
     hash = rev-parse --verify HEAD

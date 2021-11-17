@@ -79,10 +79,16 @@
     helper = cache --timeout=1600
 
 [alias]
+    hash = rev-parse --verify HEAD
+    h = !git hash # Hash
+    hs = !git hash --short # Hash Short
+
+    executable = update-index --chmod=+x
+
     d = diff --color
     dr = !git d @{upstream}...HEAD
     da = diff --color --cached # Diff Added
-    dar = !git da @{upstream}...HEAD
+    dar = !git da @{upstream}...HEAD # Diff Added Remote
 
     dt = difftool --dir-diff
     dta = !git dt --cached # Diff Tool Added
@@ -109,17 +115,23 @@
     # Branch Delete Remote
     # Usage: git bdr <remote-name> <branch-name>
     bdr = push --delete
+    # Branch Delete All (local and remote)
+    bda = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bd \"${branch_name}\"; git push --delete \"${remote}\" \"${branch_name}\";  }; f"
 
     bc = checkout -b # Branch Create
     bco = checkout --orphan # Branch Create Orphan (empty branch)
 
     # Branch Create Remote
     # Usage: git bcr <remote-name> <branch-name>
-    bcr = "!f() { first_arg=\"$1\"; shift; git push --set-upstream \"${first_arg}\" $(git symbolic-ref --short HEAD) \"$@\"; }; f"
+    bcr = "!f() { remote=\"$1\"; shift; git push --set-upstream \"${remote}\" $(git symbolic-ref --short HEAD) \"$@\"; }; f"
+
+    # Branch Create All (local and remote)
+    # Usage: git bca <remote-name> <branch-name>
+    bca = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bc \"${branch_name}\"; git push --set-upstream \"${remote}\" \"${branch_name}\"; }; f"
 
     # Branch Set Remote tracking branch
-    # Usage: git bcr <remote-name>
-    bsr = "!f() { first_arg=\"$1\"; shift; git branch --set-upstream-to \"${first_arg}\"/$(git symbolic-ref --short HEAD) $(git symbolic-ref --short HEAD) \"$@\"; }; f"
+    # Usage: git bsr <remote-name>
+    bsr = "!f() { remote=\"$1\"; shift; git branch --set-upstream-to \"${remote}\"/$(git symbolic-ref --short HEAD) $(git symbolic-ref --short HEAD) \"$@\"; }; f"
 
     t = tag
     ta = tag --annotate
@@ -142,7 +154,7 @@
     co = checkout
 
     sh = show --decorate --stat --patch # Show
-    shdt = !git dt $1~..$1 # Show with Diff Tool
+    shdt = !git dt "$1~..$1" # Show with Diff Tool
 
     st = stash save
     stka = stash save --keep-index # Stash Keep Added (keep files in the staging area)

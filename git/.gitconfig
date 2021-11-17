@@ -18,9 +18,17 @@
     followTags = true
     recurseSubmodules = on-demand
 
+[mergetool "nvim"]
+    # define command which will be used when "nvim" is set as a merge tool
+    cmd = nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
+
 [merge]
-    tool = vimdiff
-    conflictStyle = diff3
+    # set "nvim" as tool for merging
+    tool = nvim
+
+[mergetool]
+    # automatically launch merge tool without displaying a prompt
+    prompt = false
 
 [pull]
     ff=only
@@ -63,7 +71,7 @@
   tool = default-difftool
 
 [difftool "default-difftool"]
-    cmd = "vim -f '+next' '+execute \"DirDiff\" argv(0) argv(1)' $LOCAL $REMOTE"
+    cmd = "nvim -f '+next' '+execute \"DirDiff\" argv(0) argv(1)' $LOCAL $REMOTE"
     prompt = false
 
 [credential]

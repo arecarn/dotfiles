@@ -1668,7 +1668,7 @@ if Is_plugin_installed('Preserve.vim') "{{{2
 
     " TODO report error to vim about using the :s and :g commands reversed, it
     " reports more values than expected
-    nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g//p")<CR>
+    nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g/")<CR>
 endif "}}}2
 
 if Is_plugin_installed('vim-crunch') "{{{2

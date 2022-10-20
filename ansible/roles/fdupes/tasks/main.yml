@@ -1,0 +1,8 @@
+---
+- name: Ubuntu
+  tags: fdupes
+  become: !!bool yes
+  when: ansible_distribution == 'Ubuntu'
+  package:
+    name: fdupes
+    state: latest

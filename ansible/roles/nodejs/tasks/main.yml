@@ -4,6 +4,6 @@
   tags: node
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
-  community.general.snap:
-    name: node
-    channel: 12/stable
+  package:
+    name: nodejs
+    state: latest

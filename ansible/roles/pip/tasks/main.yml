@@ -16,12 +16,3 @@
     state: latest
     executable: "{{pip3_executable[ansible_distribution | lower]\
                  | default([pip3])}}"
-
-- name: python 2 package
-  tags: pip
-  become: !!bool yes
-  pip:
-    name: pip
-    state: latest
-    executable: "{{pip2_executable[ansible_distribution | lower]\
-                 | default([pip2])}}"

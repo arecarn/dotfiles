@@ -127,8 +127,8 @@ def provision(ctx, args=''):
         ctx.run('choco update all -y')
     else:
         os.chdir('ansible')
-        ctx.run('ansible-playbook site.yml --ask-vault-pass --inventory localhost '
-                '--ask-become-pass ' + args)
+        ctx.run('ansible-playbook site.yml --inventory localhost '
+                '-e ansible_become_pass=blackbox ' + args)
 
 
 @task

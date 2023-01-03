@@ -1,12 +1,4 @@
 ---
-- name: python 2 package
-  tags: pylint
-  become: !!bool yes
-  pip:
-    name: pylint
-    state: latest
-    executable: "{{pip2_executable[ansible_distribution | lower]\
-                 | default([pip2])}}"
 
 - name: python 3 package
   tags: pylint

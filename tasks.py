@@ -122,6 +122,7 @@ def provision(ctx, args=''):
             "vcxsrv",  # X-Server
             "wsl-ubuntu-1804",
             "fzf",
+            "monotorian",
         ])
         ctx.run(f'choco install {packages} -y')
         ctx.run('choco update all -y')

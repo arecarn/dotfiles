@@ -1,14 +1,4 @@
 ---
-- name: MacOSX python 2 package
-  tags: ansible
-  become: !!bool yes
-  when: ansible_distribution == 'MacOSX'
-  pip:
-    name: ansible
-    state: latest
-    executable: "{{pip2_executable[ansible_distribution | lower]\
-                 | default([pip2])}}"
-
 - name: Ubuntu
   tags: ansible
   become: !!bool yes

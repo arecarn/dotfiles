@@ -405,8 +405,8 @@ alias sa="ssh_start_agent"
 # own environment, so we have to propagate the environment to our shell.
 if [ -n "$TMUX" ]; then
     tmux_refresh_env() {
-        export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
-        export $(tmux show-environment | grep "^DISPLAY")
+        export $(tmux show-environment | grep "^SSH_AUTH_SOCK") > /dev/null
+        export $(tmux show-environment | grep "^DISPLAY") > /dev/null
 
         if [[ -f "~/.Xauthority" ]]; then
             # see https://kerneltalks.com/troubleshooting/mobaxterm-x11-proxy-authorisation-not-recognised/

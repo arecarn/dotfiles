@@ -16,7 +16,6 @@
     - dploy
     - dropbox
     - firefox
-    - flake8
     - gawk
     - git
     - htop
@@ -49,7 +48,6 @@
     - ssh
     - tmux
     - tree
-    - ubuntu
     - unrar
     - vim
     - vint
@@ -60,6 +58,5 @@
     - xquartz
     - xsel
     - yamllint
-    - yapf
     - yarn
     - zsh

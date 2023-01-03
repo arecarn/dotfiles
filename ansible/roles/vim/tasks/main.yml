@@ -14,7 +14,7 @@
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   apt_repository:
-    repo: 'ppa:pi-rho/dev'
+    repo: 'ppa:jonathonf/vim'
     state: present
     update_cache: !!bool yes
 
@@ -23,5 +23,5 @@
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   package:
-    name: vim-gnome
+    name: vim
     state: latest

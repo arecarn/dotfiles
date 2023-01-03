@@ -2,9 +2,9 @@
 packages:
   ubuntu:
     - clang
-    - clang-format-10
-    - clang-tidy-10
-    - clangd-10
+    - clang-format
+    - clang-tidy
+    - clangd
   macosx:
     - {name: 'llvm', options: 'with-clang'}
     - {name: 'clang-format'}

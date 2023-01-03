@@ -1,12 +1,7 @@
 ---
-pip2_executable:
-  macosx: pip2
-  ubuntu: pip2
-
 pip3_executable:
   macosx: pip3
   ubuntu: pip3
 
 packagess:
-  - python-pip
   - python3-pip

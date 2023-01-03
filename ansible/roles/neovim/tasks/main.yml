@@ -40,15 +40,6 @@
     executable: "{{pip3_executable[ansible_distribution | lower]\
                  | default([pip3])}}"
 
-- name: python 2 package
-  tags: neovim
-  become: !!bool yes
-  pip:
-    name: neovim
-    state: latest
-    executable: "{{pip2_executable[ansible_distribution | lower]\
-                 | default([pip2])}}"
-
 - name: ruby package
   tags: neovim
   become: !!bool yes

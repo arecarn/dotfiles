@@ -1,13 +1,18 @@
 # This config file is mean to be included in the ~/.gitconfig_local using git
 # V2.13 includeIf feature
 #
-#e.g.
+# e.g.
 #
-#[user]
-#    email = ryan.careny@foobar.com
+# [user]
+#     email = ryan.careny@foobar.com
 #
-#[includeIf "gitdir:~/dotfiles/"]
+# [includeIf "gitdir:~/dotfiles/"]
+#     path = ~/.gitconfig_personal
+#
+# or
+#
+# [include]
 #    path = ~/.gitconfig_personal
-#
+
 [user]
     email = arecarn@gmail.com

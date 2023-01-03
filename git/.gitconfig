@@ -115,8 +115,8 @@
     # Branch Delete Remote
     # Usage: git bdr <remote-name> <branch-name>
     bdr = push --delete
-    # Branch Delete All (local and remote)
-    bda = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bd \"${branch_name}\"; git push --delete \"${remote}\" \"${branch_name}\";  }; f"
+    # Branch Delete Both (local and remote)
+    bdb = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bd \"${branch_name}\"; git push --delete \"${remote}\" \"${branch_name}\";  }; f"
 
     bc = checkout -b # Branch Create
     bco = checkout --orphan # Branch Create Orphan (empty branch)
@@ -125,9 +125,9 @@
     # Usage: git bcr <remote-name> <branch-name>
     bcr = "!f() { remote=\"$1\"; shift; git push --set-upstream \"${remote}\" $(git symbolic-ref --short HEAD) \"$@\"; }; f"
 
-    # Branch Create All (local and remote)
-    # Usage: git bca <remote-name> <branch-name>
-    bca = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bc \"${branch_name}\"; git push --set-upstream \"${remote}\" \"${branch_name}\"; }; f"
+    # Branch Create Both (local and remote)
+    # Usage: git bcb <remote-name> <branch-name>
+    bcb = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bc \"${branch_name}\"; git push --set-upstream \"${remote}\" \"${branch_name}\"; }; f"
 
     # Branch Set Remote tracking branch
     # Usage: git bsr <remote-name>

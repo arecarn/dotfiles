@@ -101,7 +101,7 @@ cnoremap <C-Y> <Space><bs><Tab>
 
 " File Searching
 " ignored files
-set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,cscope.out,*.elf
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,*.elf
 " lower priority files suffixes
 set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn
 
@@ -270,22 +270,6 @@ set smartcase " override 'ignorecase' if the search contains upper case chars
 " TAGS                                                                       {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set tags=tags;/ " search backwards for the tags file
-
-" cscope
-set cscoperelative
-set cscopequickfix=s-,c-,d-,i-,t-,e-
-function! PrintCscopeOptions() abort
-    echo 'g: Definition'
-    echo 'c: Functions calling this function'
-    echo 'd: Functions called by this function'
-    echo 'f: This file'
-    echo 'i: Files #including this file'
-    echo 's: This C symbol'
-    echo 't: This text string'
-    echo 'e: This egrep pattern'
-endfunction
-execute 'nnoremap <leader>csf :call PrintCscopeOptions()<CR>:cs find '
-execute 'nnoremap <leader>cs :call PrintCscopeOptions()<CR>:cs find   <C-r><C-w><HOME>' . repeat('<Right>',8)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " GENERAL BEHAVIOR                                                           {{{

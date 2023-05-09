@@ -12,19 +12,7 @@
 # local files, run the following command:
 #     PS C:\Windows\System32> Set-Executionpolicy RemoteSigned -Scope CurrentUser
 #
-
-function install_modules
-{
-    # TODO functions to update modules
-    Install-Module PSFzf -Scope CurrentUser
-    Install-Module posh-git -Scope CurrentUser
-    Install-Module oh-my-posh -Scope CurrentUser
-}
-
-function update_modules
-{
-    Update-Module
-}
+Set-Executionpolicy RemoteSigned -Scope CurrentUser
 
 Set-PSReadLineOption -EditMode Emacs
 Set-PSReadLineKeyHandler -Chord 'Ctrl+p' -Function HistorySearchBackward
@@ -35,9 +23,9 @@ Remove-PSReadlineKeyHandler 'Ctrl+t'
 Import-Module PSFzf
 Enable-PsFzfAliases
 
-Import-Module posh-git
+# Import-Module posh-git
 
-Set-Theme Avit
+oh-my-posh init pwsh --config "$(scoop prefix oh-my-posh)\themes\avit.omp.json" | Invoke-Expression
 
 # add a display for use with ssh
 $env:DISPLAY="127.0.0.1:0"

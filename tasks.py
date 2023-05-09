@@ -3,6 +3,7 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 """
 
 import os
+import ctypes
 import fnmatch
 import pathlib
 from invoke import task
@@ -13,8 +14,10 @@ from invoke import task
 IS_WINDOWS = os.name == 'nt'
 if IS_WINDOWS:
     STOW_LOCATION = 'USERPROFILE'
+    IS_ADMIN = ctypes.windll.shell32.IsUserAnAdmin() != 0
 else:
     STOW_LOCATION = 'HOME'
+
 
 
 # try to cd to the root of the git directory because all of the tasks expect
@@ -24,7 +27,7 @@ try:
     GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
     GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
     os.chdir(GIT_ROOT)
-except ImportError:
+except: # ImportError or GitCommadError:
     pass
 
 
@@ -108,24 +111,33 @@ def provision(ctx, args=''):
     Provision this system using ansible
     """
     if IS_WINDOWS:
-        packages = " ".join([
-            "llvm",
-            "pandoc",
-            "git",
-            "ctags",
-            "neovim",
-            "nodejs",
-            "plantuml",
-            "openssh -params '\"/SSHServerFeature\"' -y",
-            "windows-terminal --pre",
-            "unison",
-            "vcxsrv",  # X-Server
-            "wsl-ubuntu-1804",
-            "fzf",
-            "monotorian",
-        ])
-        ctx.run(f'choco install {packages} -y')
-        ctx.run('choco update all -y')
+        if IS_ADMIN:
+            packages = " ".join([
+                "llvm",
+                "pandoc",
+                "git",
+                "ctags",
+                "neovim",
+                "nodejs",
+                "plantuml",
+                "microsoft-windows-terminal --pre",
+                "unison",
+                "vcxsrv",  # X-Server
+                "fzf",
+            ])
+            ctx.run('choco feature enable -n=allowGlobalConfirmation')
+            ctx.run(f'choco install {packages}')
+            ctx.run(f'choco upgrade {packages}')
+        else:
+            ctx.run('powershell -command "irm get.scoop.sh | iex"')
+            ctx.run('powershell -command "scoop bucket add main"', warn=True)
+            ctx.run('powershell -command "scoop install winget gsudo"')
+
+            ctx.run('powershell -command "scoop bucket add extras"', warn=True)
+            ctx.run('powershell -command "scoop install oh-my-posh posh-git psfzf"')
+
+            ctx.run('powershell -command "scoop bucket add nerd-fonts"', warn=True)
+            ctx.run('powershell -command "scoop install DejaVuSansMono-NF-Mono"')
     else:
         os.chdir('ansible')
         ctx.run('ansible-playbook site.yml --inventory localhost '
@@ -229,6 +241,7 @@ class Dploy():
         stow and link the specified files
         """
         # pylint: disable=invalid-name
+        print(self.packages)
         self.dploy.stow(self.packages, self.home, is_silent=False)
         for src, dest in self.links:
             self.dploy.link(src, dest, is_silent=False)

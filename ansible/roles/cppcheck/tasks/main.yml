@@ -1,8 +1,7 @@
 ---
-- name: Ubuntu
+- name: cppcheck
   tags: cppcheck
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: cppcheck
     state: latest

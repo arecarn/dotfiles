@@ -141,7 +141,7 @@ def provision(ctx, args=''):
     else:
         os.chdir('ansible')
         ctx.run('ansible-playbook site.yml --inventory localhost '
-                '-e ansible_become_pass=blackbox ' + args)
+                '--ask-become-pass ' + args)
 
 
 @task

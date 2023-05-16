@@ -1,8 +1,7 @@
 ---
-- name: Ubuntu
+- name: ncdu
   tags: ncdu
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: ncdu
     state: latest

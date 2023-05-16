@@ -1,9 +1,0 @@
----
-- name: MacOSX
-  tags: lua
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: lua
-    state: latest
-
-# TODO Ubuntu

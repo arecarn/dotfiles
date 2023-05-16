@@ -1,8 +1,7 @@
 ---
-- name: Ubuntu
+- name: ctags
   tags: ctags
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: exuberant-ctags
     state: latest

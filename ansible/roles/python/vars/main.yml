@@ -3,6 +3,8 @@ packages:
   ubuntu:
     - python3
     - python3-dev
+  centos:
+    - python3
   macosx:
     - python
     - python3

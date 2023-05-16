@@ -1,12 +1,5 @@
 ---
-- name: MacOSX
-  tags: git
-  homebrew:
-    name: git
-    state: latest
-  when: ansible_distribution == 'MacOSX'
-
-- name: Ubuntu
+- name: git package repo
   tags: git
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
@@ -15,10 +8,9 @@
     state: present
     update_cache: !!bool yes
 
-- name: Ubuntu
+- name: git
   tags: git
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: git
     state: latest

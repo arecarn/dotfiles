@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: moreutils
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: moreutils
-    state: latest
-
-- name: Ubuntu
+- name: moreutils
   tags: moreutils
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: moreutils
     state: latest

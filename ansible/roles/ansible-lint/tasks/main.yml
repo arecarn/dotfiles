@@ -1,9 +1,0 @@
----
-- name: python 2 package
-  tags: ansible-lint
-  become: !!bool yes
-  pip:
-    name: ansible-lint
-    state: latest
-    executable: "{{pip3_executable[ansible_distribution | lower]\
-                 | default([pip3])}}"

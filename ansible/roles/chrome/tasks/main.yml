@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: chrome
-  when: ansible_distribution == 'MacOSX'
-  homebrew_cask:
-    name: google-chrome
-    state: present
-
-- name: Ubuntu
+- name: chrome
   tags: chrome
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: chromium-browser
     state: latest

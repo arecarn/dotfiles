@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: cscope
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: cscope
-    state: latest
-
-- name: Ubuntu
+- name: cscope
   tags: cscope
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: cscope
     state: latest

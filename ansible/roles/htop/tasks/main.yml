@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: htop
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: htop
-    state: latest
-
-- name: Ubuntu
+- name: htop
   tags: htop
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: htop
     state: latest

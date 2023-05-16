@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: firefox
-  homebrew_cask:
-    name: firefox
-    state: present
-  when: ansible_distribution == 'MacOSX'
-
-- name: Ubuntu
+- name: firefox
   tags: firefox
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: firefox
     state: latest

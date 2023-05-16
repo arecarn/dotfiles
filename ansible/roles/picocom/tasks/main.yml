@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: picocom
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: picocom
-    state: latest
-
-- name: Ubuntu
+- name: picocom
   tags: picocom
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: picocom
     state: latest

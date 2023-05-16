@@ -2,6 +2,7 @@
 pip3_executable:
   macosx: pip3
   ubuntu: pip3
+  centos: pip
 
-packagess:
+packages:
   - python3-pip

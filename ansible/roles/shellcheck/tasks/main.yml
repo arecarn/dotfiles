@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: shellcheck
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: shellcheck
-    state: latest
-
-- name: Ubuntu
+- name: shellcheck
   tags: shellcheck
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: shellcheck
     state: latest

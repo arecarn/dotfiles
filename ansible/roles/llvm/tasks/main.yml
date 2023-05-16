@@ -1,17 +1,7 @@
 ---
-- name: MacOSX
-  tags: llvm
-  when: ansible_distribution == 'MacOSX'
-  with_items: "{{packages[ansible_distribution | lower]}}"
-  homebrew:
-    name: "{{item.name}}"
-    state: latest
-    options: "{{item.options | default()}}"
-
-- name: Ubuntu
+- name: llvm
   tags: llvm
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   with_items: "{{packages[ansible_distribution | lower]}}"
   package:
     name: "{{item}}"

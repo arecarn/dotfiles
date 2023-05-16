@@ -682,6 +682,7 @@ let $git = '~/.gitconfig'
 let $gitl = '~/.gitconfig_local'
 let $ps = '~/Documents/WindowsPowerShell/profile.ps1'
 let $vim = '$MYVIMRC'
+let $nvim_plugin_lua = g:config_path . 'nvim_plugin.lua'
 let $vimg = s:app_path . 'ginit.vim'
 let $viml = '~/.vimrc_local'
 let $tmux = '~/.tmux.conf'
@@ -846,6 +847,7 @@ if filereadable(glob('~/.vimrc_local', 1))
     source ~/.vimrc_local
 endif
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " PLUGINS                                                                    {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -904,6 +906,9 @@ Plug 'Shougo/unite.vim'
 
 Plug 'dyng/ctrlsf.vim'
 
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+
 " Operators
 Plug 'kana/vim-operator-user'
 Plug 'arecarn/vim-operator-mixed-case'
@@ -935,6 +940,8 @@ endif
 
 if s:has_nvim || s:has_vim8
     Plug 'w0rp/ale'
+    let g:ale_virtualtext_cursor = 0
+
 endif
 Plug 'tpope/vim-dispatch'
 if s:has_nvim
@@ -972,17 +979,24 @@ Plug 'chrisbra/csv.vim'
 Plug 'romainl/Apprentice'
 Plug 'jonsmithers/apprentice-lightline-experimental'
 
-" Completions
-if s:has_nvim || s:has_vim8
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+if has('nvim')
+    Plug 'williamboman/mason.nvim'
+    Plug 'williamboman/mason-lspconfig.nvim'
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'hrsh7th/cmp-cmdline'
+
+    " For vsnip users.
+    Plug 'hrsh7th/cmp-vsnip'
+    Plug 'hrsh7th/vim-vsnip'
 endif
 
 if has('patch-7.4.774') " requires v:completed_item feature
     Plug 'Shougo/echodoc.vim'
 endif
-
-Plug 'Shougo/neosnippet-snippets'
-Plug 'Shougo/neosnippet.vim'
 
 " Git / VCS
 Plug 'tpope/vim-fugitive'
@@ -1196,100 +1210,15 @@ if Is_plugin_installed('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
 
-if Is_plugin_installed('coc.nvim') "{{{2
-    " list extensions that should be installed if they aren't already
-    let g:coc_global_extensions = [
-                \ 'coc-clangd',
-                \ 'coc-cmake',
-                \ 'coc-yank',
-                \ 'coc-vimlsp',
-                \ 'coc-python',
-                \ 'coc-neosnippet',
-                \ ]
-
-    " go to code navigation.
-    nmap <silent> <leader>ld <Plug>(coc-definition)
-    nmap <silent> <leader>li <Plug>(coc-implementation)
-    nmap <silent> <leader>lt <Plug>(coc-type-definition)
-    nmap <silent> <leader>lr <Plug>(coc-references)
-    nmap <silent><expr> <leader>lh CocActionAsync('doHover')
-
-    " substitute symbol
-    nmap <leader>ls <Plug>(coc-rename)
-
-    " Formatting selected code.
-    xmap <leader>lfm <Plug>(coc-format-selected)
-    nmap <leader>lfm <Plug>(coc-format-selected)
-
-    augroup coc_group
-        autocmd!
-        " Update signature help on jump placeholder.
-        autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-    augroup end
-
-    " Applying codeAction to the selected region.
-    " Example: `<leader>laap` for current paragraph
-    xmap <silent><leader>la <Plug>(coc-codeaction-selected)
-    nmap <silent><leader>la <Plug>(coc-codeaction-selected)
-
-    " Apply AutoFix to problem on the current line.
-    nmap <leader>lf  <Plug>(coc-fix-current)
-
-    " Map function and class text objects
-    " NOTE: Requires 'textDocument.documentSymbol' support from the language
-    " server.
-    xmap <silent> if <Plug>(coc-funcobj-i)
-    omap <silent> if <Plug>(coc-funcobj-i)
-    xmap <silent> af <Plug>(coc-funcobj-a)
-    omap <silent> af <Plug>(coc-funcobj-a)
-    xmap <silent> icl <Plug>(coc-classobj-i)
-    omap <silent> icl <Plug>(coc-classobj-i)
-    xmap <silent> acl <Plug>(coc-classobj-a)
-    omap <silent> acl <Plug>(coc-classobj-a)
-
-    " Use CTRL-S for selections ranges.
-    " Requires 'textDocument/selectionRange' support of language server.
-    " nmap <silent> <C-s> <Plug>(coc-range-select)
-    " xmap <silent> <C-s> <Plug>(coc-range-select)
-
-    " format current buffer.
-    command! -nargs=0 Lformat :call CocAction('format')
-
-    " fold current buffer.
-    command! -nargs=? Lfold :call CocAction('fold', <f-args>)
-
-    " organize imports of the current buffer.
-    command! -nargs=0 Lorg :call CocAction('runCommand', 'editor.action.organizeImport')
-
-    " Mappings for CoCList
-    nnoremap <silent> <leader>ll :<C-u>CocList --normal<CR>
-    nnoremap <silent> <leader>lld :<C-u>CocList --normal diagnostics<CR>
-    nnoremap <silent> <leader>lle :<C-u>CocList --normal extensions<CR>
-    nnoremap <silent> <leader>llc :<C-u>CocList --normal commands<CR>
-    nnoremap <silent> <leader>llo :<C-u>CocList --normal outline<CR>
-    " search workspace symbols.
-    nnoremap <silent> <leader>lls :<C-u>CocList --interactive symbols<CR>
-    " do default action for next item.
-    nnoremap <silent> <leader>llj :<C-u>CocNext<CR>
-    " do default action for previous item.
-    nnoremap <silent> <leader>llk :<C-u>CocPrev<CR>
-    nnoremap <silent> <leader>llr :<C-u>CocListResume<CR>
-    " List recent yanks
-    nnoremap <silent> <leader>ly  :<C-u>CocList --auto-preview --normal yank<CR>
+if Is_plugin_installed('nvim-cmp') "{{{2
+    execute 'source'. $nvim_plugin_lua
+    lua setup_nvim_cmp()
+    lua setup_mason_and_lspconfig()
 endif "}}}2
 
-if Is_plugin_installed('neosnippet-snippets') "{{{2
-    imap <C-e> <Plug>(neosnippet_expand_or_jump)
-    smap <C-e> <Plug>(neosnippet_expand_or_jump)
-    xmap <C-e> <Plug>(neosnippet_expand_target)
-
-    if has('conceal')
-        set conceallevel=2 concealcursor=i
-    endif
-
-    let g:neosnippet#snippets_directory = s:app_path . 'utils/snippets'
-    let g:neosnippet#data_directory = s:make_cache_path_str('neosnippet')
-endif "}}}2
+if Is_plugin_installed('telescope.nvim') "{{{2
+    nnoremap z=  :<C-u>Telescope spell_suggest theme=dropdown<CR>
+endif
 
 if Is_plugin_installed('unite.vim') "{{{2
     let g:unite_data_directory = s:make_cache_path_str('unite')
@@ -1622,13 +1551,6 @@ if Is_plugin_installed('todo.txt-vim') "{{{2
         setlocal iskeyword+=+,_,.
         setlocal iskeyword+=@-@ " add literal @
 
-        if Is_plugin_installed('neocomplete') "{{{3
-            " use iskeyword characters in neocompletion
-            let keyword_patterns = {}
-            let keyword_patterns.todo = '\k\+'
-            call neocomplete#custom#source('buffer',
-                        \ 'keyword_patterns', keyword_patterns)
-        endif
     endfunction "}}}3
 endif "}}}2
 
@@ -1699,6 +1621,7 @@ endif "}}}2
 
 if Is_plugin_installed('Apprentice') "{{{2
     set background=dark
+    set termguicolors
     colorscheme apprentice
 endif "}}}2
 

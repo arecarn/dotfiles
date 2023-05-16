@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: coreutils
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: coreutils
-    state: latest
-
-- name: Ubuntu
+- name: coreutils
   tags: coreutils
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: coreutils
     state: present

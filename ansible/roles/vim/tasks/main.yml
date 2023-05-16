@@ -1,27 +1,16 @@
 ---
-- name: MacOSX
-  tags: vim
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: vim
-    options:
-      - with-lua
-      - with-python3
-    state: latest
-
-- name: Ubuntu
+- name: vim
   tags: vim
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
+
   apt_repository:
     repo: 'ppa:jonathonf/vim'
     state: present
     update_cache: !!bool yes
 
-- name: Ubuntu
+- name: vim
   tags: vim
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: vim
     state: latest

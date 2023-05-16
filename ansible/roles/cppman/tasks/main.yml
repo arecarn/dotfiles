@@ -1,11 +1,10 @@
 ---
-- name: Ubuntu
+- name: cppman
   tags: cppman
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: cppman
     state: latest
 
-- name: Ubuntu
+- name: cppman setup
   shell: yes | cppamn --cache-all --use-mandb=true

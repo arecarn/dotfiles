@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: unrar
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: unrar
-    state: latest
-
-- name: Ubuntu
+- name: unrar
   tags: unrar
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: unrar
     state: latest

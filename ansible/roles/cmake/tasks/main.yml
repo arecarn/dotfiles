@@ -2,7 +2,7 @@
 - name: CMake
   tags: cmake
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
+
   pip:
     name: cmake
     state: latest

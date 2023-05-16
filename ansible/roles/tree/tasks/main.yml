@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: tree
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: tree
-    state: latest
-
-- name: Ubuntu
+- name: tree
   tags: tree
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: tree
     state: latest

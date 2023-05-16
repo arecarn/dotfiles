@@ -4,29 +4,23 @@
     - ack
     - ag
     - ansible
-    - ansible-lint
-    - chrome
-    - cmake
-    - cmake-lint
+    # - ansible-lint
+    # - chrome
+    # - cmake
+    # - cmake-lint
     - coreutils
-    - cppcheck
-    - cscope
-    - ctags
+    # - cppcheck
+    # - cscope
+    # - ctags
     - curl
     - dploy
-    - dropbox
     - firefox
     - gawk
     - git
     - htop
-    - invoke
-    - iterm2
-    - jedi
-    - lastpass
-    - latex
+    # - latex
     - llvm
-    - lua
-    - markdownlint
+    # - markdownlint
     - moreutils
     - ncdu
     - neovim
@@ -36,27 +30,24 @@
     - pandoc
     - picocom
     - pip
-    - proselint
-    - pstree
-    - pylint
+    # - proselint
+    # - pstree
+    # - pylint
     - python
-    - python_git
-    - reattach-to-user-namespace
-    - ruby
-    - set_default_shell
-    - shellcheck
+    # - ruby
+    # - set_default_shell
+    # - shellcheck
     - ssh
     - tmux
     - tree
     - unrar
     - vim
-    - vint
+    # - vint
     - vlc
     - wget
-    - write-good
+    # - write-good
     - xclip
-    - xquartz
     - xsel
-    - yamllint
+    # - yamllint
     - yarn
     - zsh

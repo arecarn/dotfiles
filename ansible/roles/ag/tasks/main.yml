@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: ag
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: ag
-    state: latest
-
-- name: Ubuntu
+- name: ag
   tags: ag
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
-    name: silversearcher-ag
+    name: "{{ package[ansible_distribution | lower] }}"
     state: latest

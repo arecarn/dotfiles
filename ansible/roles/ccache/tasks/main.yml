@@ -1,8 +1,7 @@
 ---
-- name: Ubuntu
+- name: ccache
   tags: ccache
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: ccache
     state: latest

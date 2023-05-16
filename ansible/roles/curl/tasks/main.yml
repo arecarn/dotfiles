@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: curl
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: curl
-    state: latest
-
-- name: Ubuntu
+- name: curl
   tags: curl
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: curl
     state: latest

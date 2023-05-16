@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: ack
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: ack
-    state: latest
-
-- name: Ubuntu
+- name: ack
   tags: ack
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
-    name: ack-grep
+    name: "{{ package[ansible_distribution | lower] }}"
     state: latest

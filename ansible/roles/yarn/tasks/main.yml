@@ -1,13 +1,13 @@
 ---
 
-- name: Ubuntu
+- name: yarn
   tags: yarn
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
   apt_key:
     url: https://dl.yarnpkg.com/debian/pubkey.gpg
 
-- name: Ubuntu
+- name: yarn
   tags: yarn
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'
@@ -15,7 +15,7 @@
     repo: "deb https://dl.yarnpkg.com/debian/ stable main"
     filename: yarn
 
-- name: Ubuntu
+- name: yarn
   tags: yarn
   become: !!bool yes
   when: ansible_distribution == 'Ubuntu'

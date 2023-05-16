@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: wget
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: wget
-    state: latest
-
-- name: Ubuntu
+- name: wget
   tags: wget
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: wget
     state: latest

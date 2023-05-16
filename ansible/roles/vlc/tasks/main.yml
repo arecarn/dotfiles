@@ -1,16 +1,8 @@
 ---
-- name: MacOSX
-  tags: vlc
-  when: ansible_distribution == 'MacOSX'
-  homebrew_cask:
-    name: vlc
-    state: present
 
-
-- name: Ubuntu
+- name: vlc
   tags: vlc
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: vlc
     state: latest

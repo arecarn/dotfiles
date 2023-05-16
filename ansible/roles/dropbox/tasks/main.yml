@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: dropbox
-  when: ansible_distribution == 'MacOSX'
-  homebrew_cask:
-    name: dropbox
-    state: present
-
-- name: Ubuntu
+- name: dropbox
   tags: dropbox
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: nautilus-dropbox
     state: latest

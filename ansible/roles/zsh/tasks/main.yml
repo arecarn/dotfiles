@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: zsh
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: zsh
-    state: latest
-
-- name: Ubuntu
+- name: zsh
   tags: zsh
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: zsh
     state: latest

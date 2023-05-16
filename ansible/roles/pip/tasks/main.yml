@@ -1,9 +1,9 @@
 ---
-- name: Ubuntu
+- name: pip
   tags: pip
   become: !!bool yes
   when: ansible_distribution == "Ubuntu"
-  with_items: "{{packagess}}"
+  with_items: "{{packages}}"
   package:
     name: "{{item}}"
     state: latest

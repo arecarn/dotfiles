@@ -1,11 +1,4 @@
 ---
-- name: MacOSX
-  tags: neovim
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: neovim/neovim/neovim
-    state: latest
-
 - name: Ubuntu
   tags: neovim
   become: !!bool yes

@@ -1,8 +1,7 @@
 ---
-- name: Ubuntu
+- name: xfce4-terminal
   tags: xfce4-terminal
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: xfce4-terminal
     state: latest

@@ -1,7 +1,1 @@
 ---
-- name: MacOSX
-  tags: pstree
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: pstree
-    state: latest

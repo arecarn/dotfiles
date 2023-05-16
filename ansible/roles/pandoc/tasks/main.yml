@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: pandoc
-  homebrew:
-    name: pandoc
-    state: latest
-  when: ansible_distribution == 'MacOSX'
-
-- name: Ubuntu
+- name: pandoc
   tags: pandoc
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: pandoc
     state: latest

@@ -1,0 +1,4 @@
+---
+package:
+  ubuntu: silversearcher-ag
+  centos: the_silver_searcher

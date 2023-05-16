@@ -1,15 +1,7 @@
 ---
-- name: MacOSX
-  tags: tmux
-  when: ansible_distribution == 'MacOSX'
-  homebrew:
-    name: tmux
-    state: latest
-
-- name: Ubuntu
+- name: tmux
   tags: tmux
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: tmux
     state: latest

@@ -1,9 +1,8 @@
 ---
 
-- name: Ubuntu
+- name: node
   tags: node
   become: !!bool yes
-  when: ansible_distribution == 'Ubuntu'
   package:
     name: nodejs
     state: latest

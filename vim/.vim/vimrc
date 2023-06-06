@@ -1209,7 +1209,10 @@ if Is_plugin_installed('nvim-cmp') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('telescope.nvim') "{{{2
-    nnoremap z=  :<C-u>Telescope spell_suggest theme=dropdown<CR>
+    nnoremap z= :<C-u>Telescope spell_suggest theme=cursor<CR>
+    nnoremap [myleader]f :Telescope find_files<CR>
+    nnoremap [myleader]s :Telescope live_grep<CR>
+    nnoremap [myleader]r :Telescope oldfiles<CR>
 endif
 
 if Is_plugin_installed('unite.vim') "{{{2
@@ -1232,21 +1235,21 @@ if Is_plugin_installed('denite.nvim') "{{{2
     endif
 
     if Is_plugin_installed('neomru.vim')
-        nnoremap [myleader]r :<C-u>Denite file_mru<CR>
+        " nnoremap [myleader]r :<C-u>Denite file_mru<CR>
 
         let g:neomru#file_mru_path = s:make_cache_path_str('neomru/file')
         let g:neomru#directory_mru_path = s:make_cache_path_str('neomru/directory')
     endif
 
-    nnoremap [myleader]d :<C-u>Denite directory_rec<CR>
-    nnoremap [myleader]f :<C-u>Denite file_rec<CR>
-    nnoremap [myleader]rg :<C-u>Denite register<CR>
-    nnoremap [myleader]b  :<C-u>Denite buffer<CR>
-    nnoremap [myleader]l  :<C-u>Denite line<CR>
-    nnoremap [myleader]t  :<C-u>Denite tag<CR>
-    nnoremap [myleader]:  :<C-u>Denite<Space><C-d>
-    cnoremap <silent> <C-r><C-r> <C-u>Denite command_history<CR>
-    cnoremap <silent> <C-o> <C-u>Denite command<CR>
+    " nnoremap [myleader]d :<C-u>Denite directory_rec<CR>
+    " nnoremap [myleader]f :<C-u>Denite file_rec<CR>
+    " nnoremap [myleader]rg :<C-u>Denite register<CR>
+    " nnoremap [myleader]b  :<C-u>Denite buffer<CR>
+    " nnoremap [myleader]l  :<C-u>Denite line<CR>
+    " nnoremap [myleader]t  :<C-u>Denite tag<CR>
+    " nnoremap [myleader]:  :<C-u>Denite<Space><C-d>
+    " cnoremap <silent> <C-r><C-r> <C-u>Denite command_history<CR>
+    " cnoremap <silent> <C-o> <C-u>Denite command<CR>
 
     command! Messages Denite output:message
 
@@ -1267,8 +1270,8 @@ if Is_plugin_installed('denite.nvim') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('fzf') "{{{2
-    nnoremap [myleader]f :FZF<CR>
-    nnoremap [myleader]f<Space> :FZF<Space>
+    " nnoremap [myleader]f :FZF<CR>
+    " nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
 if Is_plugin_installed('vim-grepper') "{{{2

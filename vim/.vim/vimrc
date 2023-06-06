@@ -283,15 +283,7 @@ set splitright
 
 set nrformats-=octal " ignore octal numbers when using  <C-a> and <C-x>
 
-"TODO see if this can be simplified
-" disable dang error{visual}bells for good
-if has('autocmd')
-    augroup noBells
-        autocmd!
-        autocmd GUIEnter * set vb t_vb=
-        autocmd VimEnter * set vb t_vb=
-    augroup end
-endif
+set belloff=all " disable bells
 
 set nostartofline " avoid moving the cursor column when navigating
 

@@ -5,6 +5,9 @@ set editing-mode emacs
 # NOTE: This doesn't seem to work with combination of vi/emacs editing modes
 set show-mode-in-prompt on
 
+# disable bells
+set bell-style none
+
 #############################################################################}}}
 # MAPPINGS                                                                   {{{
 ################################################################################

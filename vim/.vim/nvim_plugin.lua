@@ -70,8 +70,16 @@ end
 -----------------------------------------------------------------------------}}}
 -- SETUP MASON & LSPCONFIG                                                   {{{
 --------------------------------------------------------------------------------
-function setup_mason_and_lspconfig()
+--
+function setup_mason_dap_and_lspconfig()
     require("mason").setup()
+
+    require("mason-nvim-dap").setup{
+        ensure_installed = {'python', 'cppdbg'},
+        handlers = {}, -- sets up dap in the predefined manner
+    }
+    require("dapui").setup()
+
     require("mason-lspconfig").setup{
         ensure_installed = {
             "bashls",

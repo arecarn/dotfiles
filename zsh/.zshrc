@@ -2,6 +2,7 @@
 ################################################################################
 # DIRECTORIES
 ################################################################################
+export SHELL=/usr/bin/zsh
 export ZSH_DATA_DIR="${HOME}/.local/share/zsh"
 export ZSH_CACHE_DIR="${HOME}/.cache/zsh"
 mkdir -p ${ZSH_DATA_DIR}
@@ -54,18 +55,17 @@ fi
 
 # checks if a plugin is installed via zplug
 _is_installed() {
-    zplug list | grep -q "$@"
+    $(zplug list | grep -q "$@")
+    installed=$?
+    if [[ ${installed} != 0 ]]; then
+        >&2 echo WARNING: "$* is not installed"
+    fi
 }
 
 if _is_installed 'rupa/z'; then
     local _Z_DATA_DIR="${ZSH_DATA_DIR}/z"
     mkdir -p $_Z_DATA_DIR
     export _Z_DATA="${_Z_DATA_DIR}/data"
-fi
-
-if _is_installed 'plugins/ssh-agent'; then
-    zstyle :omz:plugins:ssh-agent agent-forwarding on
-    zstyle :omz:plugins:ssh-agent identities id_rsa
 fi
 
 if _is_installed 'junegunn/fzf'; then
@@ -92,8 +92,6 @@ if _is_installed 'pyenv/pyenv'; then
     eval "$(pyenv init -)"
 fi
 
-# enable zsh completion in [n]vim via deoplete.nvim and deoplete-zsh
-zmodload zsh/zpty
 #############################################################################}}}
 # ENVIRONMENT                                                                {{{
 ################################################################################
@@ -145,9 +143,11 @@ j="${n}/journal.md"
 #############################################################################}}}
 # HISTORY OPTIONS                                                            {{{
 ################################################################################
+unsetopt extendedhistory # don't include timestamps in history
 setopt inc_append_history # save every command before it is executed
 setopt share_history # adds history incrementally and share
 setopt hist_ignore_dups # ignore duplicates in history
+setopt hist_ignore_space # commands with leading spaces are not added to history
 HISTFILE=${ZSH_DATA_DIR}/history
 HISTSIZE=500000
 SAVEHIST=500000
@@ -332,6 +332,11 @@ alias -g ...="../../"
 alias -g send-right="tmux send-keys -t right"
 alias -g send-left="tmux send-keys -t left"
 
+del-history-pattern() {
+    LC_ALL=C sed -i "/$@/d" $HISTFILE
+    grep "$@" $HISTFILE
+}
+
 # this allows aliases to mostly work when using sudo
 alias sudo='sudo '
 
@@ -486,7 +491,13 @@ set-prompt(){ # {{{2
 precmd(){ # {{{2
     vcs_info
     print ""
-    print -rP "%n%F{blue}@%m%f ${vcs_info_msg_0_}"
+    JOBS_COUNT=$(jobs -p | wc -l)
+    if [[ ${JOBS_COUNT} == 0 ]]; then
+        JOBS_MSG=""
+    else
+        JOBS_MSG="%F{yellow}[${JOBS_COUNT}]%f"
+    fi
+    print -rP " %n%F{blue}@%m%f ${JOBS_MSG} ${vcs_info_msg_0_}"
     VI_MODE="${VI_INSERT_MODE}"
     TIME_STAMP=$(date +"%T")
     PROMPT="${PROMPT_VALUE}"

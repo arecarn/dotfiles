@@ -132,12 +132,6 @@ if s:has_vim && !has('gui_running')
     set ttyfast " indicate a fast terminal connection
 endif
 
-if has('nvim')
-    " prevent showing weird symbols in terminal like Qs at the ends of lines
-    " TODO commented out for now to see if this is still a problem
-    " set guicursor=
-endif
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -209,7 +203,7 @@ endif
 
 set spell " enable spell checking
 set spelllang=en_us " use US English words for spell checking
-let &spellfile = s:app_path . 'utils/spell/spellfile.add'
+let &spellfile = s:app_path . 'utils/spell/spellfile.add,.*spell' . ',.'
 let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
 
 " repeat the replacement done by z= for all matches
@@ -503,7 +497,6 @@ function! PreviewWord() abort
     endif
 endfun
 
-
 function! s:in(group, item) abort
     if type(a:group) == type('')
         let l:group = split(a:group, '\zs')
@@ -519,7 +512,7 @@ nnoremap yoro :<C-U>set readonly!<CR>:set readonly?<CR>
 nnoremap yot :<C-U>set textwidth=
 nnoremap yocl :<C-U>setlocal conceallevel=
 nnoremap yosw :<C-U>set shiftwidth=
-nnoremap <silent> conf :<C-U>call <SID>scratch_toggle()<CR>
+nnoremap <silent> yonf :<C-U>call <SID>scratch_toggle()<CR>
 function! s:scratch_toggle() abort
     if match(&buftype, '\C\v'.'nofile') != -1
         set buftype-=nofile
@@ -684,7 +677,6 @@ let $j = '~/files/notes/journal.md'
 
 cnoremap ~f ~/files
 cnoremap ~p ~/files/projects
-cnoremap ~n ~/files/notes
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
 
@@ -819,15 +811,6 @@ endfunction
 cabbrev numend s/$/\=1-line("'<")+line(".")/c
 cabbrev numfront s/^/\=1-line("'<")+line(".")/c
 
-function! Git_status() abort
-    let output = system('git status --porcelain')
-    let escaped = escape(output, ' ')
-    let subbed_start = substitute(escaped, '^...\', '', 'g')
-    let subbed = substitute(subbed_start, '\n...', ' ', 'g')
-    execute 'args ' . subbed
-endfunction
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " BEFORE PLUGINS                                                             {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -933,8 +916,8 @@ endif
 if s:has_nvim || s:has_vim8
     Plug 'w0rp/ale'
     let g:ale_virtualtext_cursor = 0
-
 endif
+
 Plug 'tpope/vim-dispatch'
 if s:has_nvim
     Plug 'radenling/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'

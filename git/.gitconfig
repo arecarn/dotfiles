@@ -76,7 +76,7 @@
 
 [credential]
     # don't re-prompt for credentials for N seconds
-	helper = store
+    helper = store
 
 [alias]
     hash = rev-parse --verify HEAD
@@ -112,26 +112,29 @@
 
     bd = branch --delete # Branch Delete
     bD = branch -D # Branch Delete
+
     # Branch Delete Remote
     # Usage: git bdr <remote-name> <branch-name>
     bdr = push --delete
+
     # Branch Delete Both (local and remote)
-    bdb = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bd \"${branch_name}\"; git push --delete \"${remote}\" \"${branch_name}\";  }; f"
+    # Usage: git bdb <remote-name> <branch-name>
+    bdb = !git branch-delete-both
 
     bc = checkout -b # Branch Create
     bco = checkout --orphan # Branch Create Orphan (empty branch)
 
     # Branch Create Remote
     # Usage: git bcr <remote-name> <branch-name>
-    bcr = "!f() { remote=\"$1\"; shift; git push --set-upstream \"${remote}\" $(git symbolic-ref --short HEAD) \"$@\"; }; f"
+    bcr = !git branch-create-remote
 
     # Branch Create Both (local and remote)
     # Usage: git bcb <remote-name> <branch-name>
-    bcb = "!f() { remote=\"$1\"; shift; branch_name=\"$1\"; shift; git bc \"${branch_name}\"; git push --set-upstream \"${remote}\" \"${branch_name}\"; }; f"
+    bcb = !git branch-create-both
 
     # Branch Set Remote tracking branch
     # Usage: git bsr <remote-name>
-    bsr = "!f() { remote=\"$1\"; shift; git branch --set-upstream-to \"${remote}\"/$(git symbolic-ref --short HEAD) $(git symbolic-ref --short HEAD) \"$@\"; }; f"
+    bsr = !git branch-set-remote
 
     t = tag
     ta = tag --annotate
@@ -154,7 +157,7 @@
     co = checkout
 
     sh = show --decorate --stat --patch # Show
-    shdt = !git dt "$1~..$1" # Show with Diff Tool
+    shdt = !git dt "${1:-HEAD}~..${1:-HEAD}" # Show with Diff Tool
 
     st = stash save
     stka = stash save --keep-index # Stash Keep Added (keep files in the staging area)
@@ -243,16 +246,21 @@
     wtl = worktree list # added in v2.7
 
     sm = submodule
+    #IDEA come up with smc alias to run a command on a submodule without having
+    #to cd, and if no submodule is specified it will run the command on all the
+    #submodules
     # SubModule Update
-    smu = !git submodule update --init
+    smu = !git submodule update --checkout --init
+    # SubModule Update Forced
+    smuf = !git submodule update --checkout --init --force
+    # SubModule PuLl
+    smpl = !git smco --remote
     # For submodules that track a remote branch (added v1.8.2) check them out
     # in the branch that they track rather than a detached head state.
-    # SubModule CheckOut
-    smco = "!git submodule foreach -q --recursive \
+    smcob = "!git submodule foreach -q \
         'git checkout \
         $(git config -f $toplevel/.gitmodules submodule.$name.branch)'"
-    # SubModule Update Remote
-    smur = !git smu --remote && git sm foreach git smu
+
 
     # a better CLone of a repo making sure it's submodules are initialized and
     # updated

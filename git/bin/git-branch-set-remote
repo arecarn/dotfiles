@@ -1,0 +1,5 @@
+#!/bin/sh
+
+remote_name="${1}"
+branch_name="$(git symbolic-ref --short HEAD)"
+git branch --set-upstream-to "${remote_name}"/${branch_name} ${branch_name} "$@"

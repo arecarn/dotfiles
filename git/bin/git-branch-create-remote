@@ -1,0 +1,4 @@
+#!/bin/sh
+
+remote_name="${1}"
+git push --set-upstream "${remote_name}" $(git symbolic-ref --short HEAD) "$@"

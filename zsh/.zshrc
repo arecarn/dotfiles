@@ -491,7 +491,9 @@ set-prompt(){ # {{{2
 precmd(){ # {{{2
     vcs_info
     print ""
-    JOBS_COUNT=$(jobs -p | wc -l)
+    # the grep filter prevents lines associated with chaining the current
+    # directory
+    JOBS_COUNT=$(jobs -p | grep "^\[.*$" | wc -l)
     if [[ ${JOBS_COUNT} == 0 ]]; then
         JOBS_MSG=""
     else

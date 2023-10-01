@@ -18,8 +18,6 @@ if IS_WINDOWS:
 else:
     STOW_LOCATION = 'HOME'
 
-
-
 # try to cd to the root of the git directory because all of the tasks expect
 # to be called from there.
 try:
@@ -27,7 +25,7 @@ try:
     GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
     GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
     os.chdir(GIT_ROOT)
-except: # ImportError or GitCommadError:
+except (ImportError, git.GitCommadError):
     pass
 
 

@@ -3,6 +3,8 @@
 " encoding for vim to use internally (why do I want this?)
 set encoding=utf-8
 
+" disable a false positive reported by vint
+" vint: -ProhibitEncodingOptionAfterScriptEncoding
 " enable multi-byte utf-8 characters in this file
 scriptencoding utf-8
 

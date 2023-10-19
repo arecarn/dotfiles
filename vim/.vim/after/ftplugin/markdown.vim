@@ -1,3 +1,3 @@
 setlocal spell
-setlocal textwidth=0
+setlocal colorcolumn=100
 let &l:commentstring = '[//]: <> (%s)'

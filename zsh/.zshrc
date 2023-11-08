@@ -340,6 +340,11 @@ del-history-pattern() {
 # this allows aliases to mostly work when using sudo
 alias sudo='sudo '
 
+# Pass the list of job numbers (the keys of the $jobstates special associative
+# array) to an anonymous function that runs kill with % prepended to the job
+# number if its number of arguments is non-zero.
+alias kill-jobs='() { (($#)) && kill %${^@}; } ${(k)jobstates}'
+
 alias gp='grep -P'
 alias py='python'
 alias p="${PAGER}"

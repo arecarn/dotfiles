@@ -417,11 +417,6 @@ xnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 xnoremap gk k
 xnoremap gj j
 
-nnoremap <leader>f :find<Space>
-nnoremap <leader>fs :sfind<Space>
-nnoremap <leader>fv :vert sfind<Space>
-nnoremap <leader>ft :tabfind<Space>
-
 nnoremap <leader>F :find <C-R>=expand('%:h') . g:os_path_sep<CR>
 nnoremap <leader>fo :find <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
 nnoremap <leader>S :sfind <C-R>=expand('%:h') . g:os_path_sep<CR>
@@ -660,7 +655,8 @@ endfor
 " accept completion (requires "set wildcharm = <Tab>)
 cnoremap <C-y> <Space><BS><Tab>
 
-cnoremap %date <C-r>=strftime('%Y-%m-%d')<CR>
+cnoremap %%date <C-r>=strftime('%Y-%m-%d')<CR>
+inoremap %%date <C-r>=strftime('%Y-%m-%d')<CR>
 
 let $zsh = '~/.zshrc'
 let $zshl = '~/.zshrc_local'
@@ -695,19 +691,22 @@ if s:has_terminal
     " paste register into terminal
     tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 
-    nnoremap +. :<C-u>terminal<CR>
-    nnoremap +.t :<C-u>tabedit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
-    nnoremap +.\ :<C-u>vsplit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:vertical terminal<CR>
-    nnoremap +.- :<C-u>rightbelow split %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
 
-    nnoremap ++ :<C-u>terminal<CR>
-    nnoremap ++t :<C-u>tabedit .<CR>:terminal<CR>
-    nnoremap +\ :<C-u>vsplit<CR>:vertical terminal<CR>
-    nnoremap +- :<C-u>rightbelow split<CR>terminal<CR>
+    nnoremap + :<C-u>terminal<CR>
+    " nnoremap +t :<C-u>tabnew .<CR>:terminal<CR>
+    " nnoremap +\ :<C-u>vsplit<CR>:vertical terminal<CR>
+    " nnoremap +- :<C-u>rightbelow split<CR>:terminal<CR>
+
+    " nnoremap +.. :lcd <C-r>=expand('%:h')<CR>:<C-u>terminal<CR>
+    " nnoremap +.t :<C-u>tabnew %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
+    " nnoremap +.\ :<C-u>vsplit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:vertical terminal<CR>
+    " nnoremap +.- :<C-u>rightbelow split %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
 
     if s:has_nvim
         augroup terminal
             autocmd TermOpen * setlocal nospell
+            autocmd TermOpen * startinsert
+            autocmd BufWinEnter,WinEnter term://* startinsert
         augroup end
     endif
 endif
@@ -895,9 +894,9 @@ Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
 
 " Operators
 Plug 'kana/vim-operator-user'
-Plug 'arecarn/vim-operator-mixed-case'
 Plug 'kana/vim-operator-replace' " depends on 'kana/vim-operator-user'
-Plug 'tpope/vim-surround'
+Plug 'arecarn/vim-operator-mixed-case'
+Plug 'machakann/vim-sandwich'
 Plug 'tommcdo/vim-exchange'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-repeat'
@@ -999,9 +998,7 @@ Plug 'chrisbra/vim-diff-enhanced'
 Plug 'will133/vim-dirdiff'
 
 " Applications
-Plug 'tpope/vim-vinegar'
 Plug 'lambdalisue/fern.vim'
-
 Plug 'lambdalisue/fern-hijack.vim'
 
 " Text Manipulation Commands / Mappings
@@ -1129,6 +1126,9 @@ if Is_plugin_installed('vim-json') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('fern.vim') "{{{2
+    nnoremap - :Fern %:p:h<CR>
+    let g:fern#default_hidden = 1
+
     function! s:on_highlight() abort
         " Use brighter highlight on root node
         highlight link FernRootSymbol Title
@@ -1136,6 +1136,15 @@ if Is_plugin_installed('fern.vim') "{{{2
     endfunction
 
     function! s:init_fern() abort
+        " navigation
+        nmap <buffer> <BS> <Plug>(fern-action-collapse)
+        nmap <buffer> <CR> <Plug>(fern-action-open-or-expand)
+        nmap <buffer> h <Plug>(fern-action-leave)
+        nmap <buffer> l <Plug>(fern-action-open-or-enter)
+
+        " display
+        nmap <buffer> H <Plug>(fern-action-hidden)
+        nmap  <buffer> <F1> <Plug>(fern-action-help:all)
 
         " <C-C>                    cancel                                      <Plug>(fern-action-cancel)
         " cd                       <Plug>(fern-action-cd)                      <Plug>(fern-action-cd)
@@ -1145,7 +1154,6 @@ if Is_plugin_installed('fern.vim') "{{{2
         " C                        clipboard-copy                              <Plug>(fern-action-clipboard-copy)
         " M                        clipboard-move                              <Plug>(fern-action-clipboard-move)
         " P                        clipboard-paste                             <Plug>(fern-action-clipboard-paste)
-        " h                        collapse                                    <Plug>(fern-action-collapse)
         " c                        copy                                        <Plug>(fern-action-copy)
         " debug                                                                <Plug>(fern-action-debug)
         " diff                     <Plug>(fern-action-diff)                    <Plug>(fern-action-diff)
@@ -1171,7 +1179,6 @@ if Is_plugin_installed('fern.vim') "{{{2
         " include=                 <Plug>(fern-action-include=)
         " lcd                      <Plug>(fern-action-lcd)                     <Plug>(fern-action-lcd)
         " lcd:cursor               <Plug>(fern-action-lcd:cursor)
-        " <BS>                     leave                                       <Plug>(fern-action-leave)
         " -                        mark                                        <Plug>(fern-action-mark)
         " mark:toggle              <Plug>(fern-action-mark:toggle)
         " m                        move                                        <Plug>(fern-action-move)
@@ -1182,8 +1189,6 @@ if Is_plugin_installed('fern.vim') "{{{2
         " new-path                 <Plug>(fern-action-new-path)
         " new-path=                <Plug>(fern-action-new-path=)
         " e                        open                                        <Plug>(fern-action-open)
-        " <CR>                     open-or-enter                               <Plug>(fern-action-open-or-enter)
-        " l                        open-or-expand                              <Plug>(fern-action-open-or-expand)
         " open:edit                <Plug>(fern-action-open:edit)               <Plug>(fern-action-open:edit)
         " open:edit-or-error       <Plug>(fern-action-open:edit-or-error)
         " s                        open:select                                 <Plug>(fern-action-open:select)
@@ -1374,11 +1379,10 @@ if Is_plugin_installed('vim-fugitive') "{{{2
     nnoremap <leader>gd<Space> :Gdiff<Space>
     nnoremap <leader>gd1 :Gdiff HEAD~1<CR>
     nnoremap <leader>gd2 :Gdiff HEAD~2<CR>
-    nmap <leader>gc :Gstatus<CR>cc<C-w>T:vs<CR>/>8<CR>z<CR><C-w>p
-    nmap ]gd :Gstatus<CR>30<C-w>_<C-w>K<C-n>D
-    nmap [gd :Gstatus<CR>30<C-w>_<C-w>K<C-p>D
-    nmap ]g :Gstatus<CR>30<C-w>_<C-w>K<C-n><CR>
-    nmap [g :Gstatus<CR>30<C-w>_<C-w>K<C-p><CR>
+    nmap ]gd :Git<CR>30<C-w>_<C-w>K<C-n>dd
+    nmap [gd :Git<CR>30<C-w>_<C-w>K<C-p>dd
+    nmap ]g :Git<CR>30<C-w>_<C-w>K<C-n><CR>
+    nmap [g :Git<CR>30<C-w>_<C-w>K<C-p><CR>
 
     " Jump to last known cursor position on BufReadPost
     " Don't do it when the position is invalid or when inside an event handler
@@ -1658,11 +1662,6 @@ if Is_plugin_installed('vim-crunch') "{{{2
     let g:crunch_user_variables = {'e': exp(1),  'pi':3.14159265359}
     let g:crunch_result_type_append = 2
     cabbrev Cr Crunch
-endif "}}}2
-
-if Is_plugin_installed('vim-surround') "{{{2
-    " custom surround using :
-    let g:surround_58 = "\1Surround\1\r\1\1"
 endif "}}}2
 
 if Is_plugin_installed('vim-clean-fold') "{{{2

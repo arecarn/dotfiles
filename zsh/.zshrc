@@ -73,11 +73,14 @@ if _is_installed 'junegunn/fzf'; then
     bindkey -M viins '^Y' fzf-cd-widget
     bindkey -M viins '^R' fzf-history-widget
 
-    if exists ag; then
-        export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
-    else
-        export FZF_DEFAULT_COMMAND='find .'
-    fi
+    FZF_COMPLETION_TRIGGER=**
+
+    ge() {
+        version=HEAD
+        files="$(git show --pretty="format:" --name-only "$version" | fzf)"
+        nvim "${files}"
+    }
+
 fi
 
 # Finally, source plugins and add commands to ${PATH}
@@ -333,8 +336,8 @@ alias -g send-right="tmux send-keys -t right"
 alias -g send-left="tmux send-keys -t left"
 
 del-history-pattern() {
-    LC_ALL=C sed -i "/$@/d" $HISTFILE
-    grep "$@" $HISTFILE
+LC_ALL=C sed -i "/$@/d" $HISTFILE
+grep "$@" $HISTFILE
 }
 
 # this allows aliases to mostly work when using sudo

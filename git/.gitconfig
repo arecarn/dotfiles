@@ -250,11 +250,10 @@
     #to cd, and if no submodule is specified it will run the command on all the
     #submodules
     # SubModule Update
-    smu = !git submodule update --checkout --init
-    # SubModule Update Forced
-    smuf = !git submodule update --checkout --init --force
+    smu = !git submodule update --checkout --init --recursive
     # SubModule PuLl
-    smpl = !git smco --remote
+    # update submodules to the HEAD of their tracking branches and
+    smpl = !git git submodule update --checkout --init --remote && git smu
     # For submodules that track a remote branch (added v1.8.2) check them out
     # in the branch that they track rather than a detached head state.
     smcob = "!git submodule foreach -q \

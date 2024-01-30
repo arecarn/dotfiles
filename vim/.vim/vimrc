@@ -1132,6 +1132,10 @@ if Is_plugin_installed('vimwiki') "{{{2
                 \ 'syntax': 'markdown',
                 \ 'ext': 'md'
                 \}]
+
+    let g:vimwiki_key_mappings = {
+                \ 'headers': 0,
+                \ }
     let g:vimwiki_ext2syntax = { ['.md'] = 'markdown' }
     g:vimwiki_hl_headers = 1 " use alternating colors for different heading levels
 endif "}}}2

@@ -1000,6 +1000,7 @@ Plug 'will133/vim-dirdiff'
 " Applications
 Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/fern-hijack.vim'
+Plug 'vimwiki/vimwiki'
 
 " Text Manipulation Commands / Mappings
 Plug 'godlygeek/tabular'
@@ -1124,6 +1125,17 @@ if Is_plugin_installed('vim-json') "{{{2
     " disable concealing of quotes
     let g:vim_json_syntax_conceal = 0
 endif "}}}2
+
+if Is_plugin_installed('vimwiki') "{{{2
+    let g:vimwiki_list = [{
+                \ 'path': '~/files/notes/',
+                \ 'syntax': 'markdown',
+                \ 'ext': 'md'
+                \}]
+    let g:vimwiki_ext2syntax = { ['.md'] = 'markdown' }
+    g:vimwiki_hl_headers = 1 " use alternating colors for different heading levels
+endif "}}}2
+
 
 if Is_plugin_installed('fern.vim') "{{{2
     nnoremap - :Fern %:p:h<CR>
@@ -1290,7 +1302,7 @@ if Is_plugin_installed('Deol.nvim') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('nvim-cmp') "{{{2
-    execute 'source'. $nvim_plugin_lua
+    execute 'source '. $nvim_plugin_lua
     lua setup_nvim_cmp()
     lua setup_mason_dap_and_lspconfig()
 endif "}}}2

@@ -261,6 +261,7 @@ set wrapscan "searches wrap around the end of the file
 set incsearch " while searching show and highlight match as you type
 set ignorecase " while searching the case of letters ignored
 set smartcase " override 'ignorecase' if the search contains upper case chars
+set maxmempattern=2000000
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TAGS                                                                       {{{
@@ -386,6 +387,8 @@ endif
 set updatetime=1000 " time to wait for swap file write/ CursorHold autocmd
 
 let mapleader="\<Space>"
+
+nnoremap ZA :quitall!<CR>
 
 nnoremap [myleader] <Nop>
 xnoremap [myleader] <Nop>
@@ -705,8 +708,8 @@ if s:has_terminal
     if s:has_nvim
         augroup terminal
             autocmd TermOpen * setlocal nospell
-            autocmd TermOpen * startinsert
-            autocmd BufWinEnter,WinEnter term://* startinsert
+            " autocmd TermOpen * startinsert
+            " autocmd BufWinEnter,WinEnter term://* startinsert
         augroup end
     endif
 endif
@@ -734,6 +737,10 @@ function! AddToSearch(mode) abort
 endfunction
 
 nnoremap <leader>tp :ptjump <C-r><C-w><CR>
+
+function Rand()
+    return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
+endfunction
 
 " create a tab that can be used to copy from while in a terminal
 function! CopyTab() abort
@@ -866,7 +873,7 @@ Plug 'Shougo/vimproc.vim', {'do': 'make'}
 " text objects {{{2
 Plug 'kana/vim-textobj-user'
 Plug 'saihoooooooo/vim-textobj-space'
-Plug 'Julian/vim-textobj-variable-segment'
+Plug 'Julian/vim-textobj-variable-segment', { 'commit': '51c323dca5c44f7a8e5a689b9156ef818d02188e' }
 Plug 'kana/vim-textobj-entire'
 Plug 'kana/vim-textobj-indent'
 Plug 'kana/vim-textobj-line'
@@ -890,7 +897,7 @@ Plug 'Shougo/unite.vim'
 Plug 'dyng/ctrlsf.vim'
 
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'nvim-telescope/telescope.nvim'
 
 " Operators
 Plug 'kana/vim-operator-user'
@@ -916,6 +923,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'chreekat/vim-paren-crosshairs'
 Plug 'junegunn/goyo.vim'
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 if !s:has_windows
     Plug 'edkolev/tmuxline.vim'
@@ -990,6 +998,9 @@ Plug 'airblade/vim-rooter'
 Plug 'cohama/agit.vim'
 Plug 'mhinz/vim-signify'
 
+" Remote / Container Development
+Plug 'esensar/nvim-dev-container'
+
 " Diff
 Plug 'AndrewRadev/linediff.vim'
 Plug 'vim-scripts/diffchanges.vim'
@@ -1000,7 +1011,6 @@ Plug 'will133/vim-dirdiff'
 " Applications
 Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/fern-hijack.vim'
-Plug 'vimwiki/vimwiki'
 
 " Text Manipulation Commands / Mappings
 Plug 'godlygeek/tabular'
@@ -1124,20 +1134,6 @@ endif "}}}2
 if Is_plugin_installed('vim-json') "{{{2
     " disable concealing of quotes
     let g:vim_json_syntax_conceal = 0
-endif "}}}2
-
-if Is_plugin_installed('vimwiki') "{{{2
-    let g:vimwiki_list = [{
-                \ 'path': '~/files/notes/',
-                \ 'syntax': 'markdown',
-                \ 'ext': 'md'
-                \}]
-
-    let g:vimwiki_key_mappings = {
-                \ 'headers': 0,
-                \ }
-    let g:vimwiki_ext2syntax = { ['.md'] = 'markdown' }
-    g:vimwiki_hl_headers = 1 " use alternating colors for different heading levels
 endif "}}}2
 
 
@@ -1671,7 +1667,7 @@ if Is_plugin_installed('Preserve.vim') "{{{2
 
     " TODO report error to vim about using the :s and :g commands reversed, it
     " reports more values than expected
-    nnoremap g/ :call Preserve("echo @/<Bar>%s///ng<Bar>g/")<CR>
+    nnoremap g? :call Preserve("echo @/<Bar>%s///ng<Bar>g/")<CR>
 endif "}}}2
 
 if Is_plugin_installed('vim-crunch') "{{{2

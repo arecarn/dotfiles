@@ -16,7 +16,7 @@
 
     # Also Push relevant annotated tags (Added in v2.4.1)
     followTags = true
-    recurseSubmodules = on-demand
+    # recurseSubmodules = on-demand
 
 [mergetool "nvim"]
     # define command which will be used when "nvim" is set as a merge tool
@@ -68,11 +68,15 @@
     autoupdate = true # auto stage files that have been resolved by rerere
 
 [diff]
-  tool = default-difftool
+  tool = nvim_dirdiff_difftool
+  # submodule = diff
 
-[difftool "default-difftool"]
-    cmd = "nvim -f '+next' '+execute \"DirDiff\" argv(0) argv(1)' $LOCAL $REMOTE"
+[difftool "nvim_dirdiff_difftool"]
+    cmd = "nvim -f '+next' '+execute \"DirDiff\" argv(0) argv(1)' \"$LOCAL\" \"$REMOTE\""
     prompt = false
+
+[difftool "nvim_difftool"]
+    cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 
 [credential]
     # don't re-prompt for credentials for N seconds
@@ -110,8 +114,11 @@
     blum = !echo ' Unmerged Branches:' && git --no-pager bl --no-merged
     bllum = !echo ' Unmerged Branches:' && git --no-pager bll --no-merged
 
+
     bd = branch --delete # Branch Delete
-    bD = branch -D # Branch Delete
+    bD = branch --delete --force # Branch Delete force
+    # Branch Delete Merged
+    bdm = "!f() { git branch --merged \"${1}\" | grep -v '^[ *]*'\"${1}\"'$' | sed 's/^\\s\\+//g' | xargs -r -d'\\n' git branch --delete; }; f"
 
     # Branch Delete Remote
     # Usage: git bdr <remote-name> <branch-name>
@@ -136,10 +143,9 @@
     # Usage: git bsr <remote-name>
     bsr = !git branch-set-remote
 
-    t = tag
     ta = tag --annotate
     tam = tag --annotate -m
-    tl = tag --list -n
+    tl = tag --format='%(color:yellow)%(refname:short)%(color:reset) %(color:green)%(authordate:short)%(color:reset) %(color:blue)%(authorname)%(color:reset) %(subject)' --list -n
     td = tag --delete
     tdr = push --delete # Tag Delete Remote
 
@@ -154,6 +160,7 @@
     cmanm = !git cma --no-edit # Commit Amend No Message
 
     f = fetch --all --tags
+    ff = !git f --force
     co = checkout
 
     sh = show --decorate --stat --patch # Show
@@ -194,6 +201,8 @@
     rss = reset --soft
     # ReSet to Remote tracking branch
     rsr = reset @{u}
+    rsrh = reset @{u} --hard
+    rsrm = reset @{u} --mixed
 
     # ReBase
     rb = rebase
@@ -216,7 +225,7 @@
     # RefLog Long
     rll = reflog
 
-    log-pretty = log --pretty=tformat:'%Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %><(9)%C(yellow)%h%Creset %s%C(auto)%d%Creset' --boundary --date=short --graph
+    log-pretty = log --pretty=tformat:'%Cgreen%ad%Creset %><(15,trunc)%Cblue%an%Creset %><(9)%C(yellow)%h%Creset %s%C(auto)%d%Creset' --boundary --date=short --graph --decorate=full
     # Log short
     l = !git --no-pager log-pretty --max-count=10
     # Log Compare
@@ -226,7 +235,7 @@
     # Log Long
     ll = !git log-pretty
     # Log Long with All branches and refs
-    lla = !git log-pretty --all
+    lla = !git ll --all
 
     # better LoG
     lg = log --boundary --stat --pretty=fuller
@@ -241,7 +250,7 @@
     rmts = remote show
 
     # Worktrees were added in v2.6
-    wta = worktree add
+    wta = !git worktree-add-by-branch
     wtp = worktree prune
     wtl = worktree list # added in v2.7
 
@@ -250,10 +259,10 @@
     #to cd, and if no submodule is specified it will run the command on all the
     #submodules
     # SubModule Update
-    smu = !git submodule update --checkout --init --recursive
+    smu = submodule update --checkout --init --recursive
     # SubModule PuLl
     # update submodules to the HEAD of their tracking branches and
-    smpl = !git git submodule update --checkout --init --remote && git smu
+    smpl = !git submodule update --checkout --init --remote && git smu
     # For submodules that track a remote branch (added v1.8.2) check them out
     # in the branch that they track rather than a detached head state.
     smcob = "!git submodule foreach -q \
@@ -278,6 +287,8 @@
     psn = push --no-verify
     # PuSh Force
     psf = !git ps --force-with-lease
+    #PuSh Tags
+    pst = !git ps --tags
 
     cln = !git clean --interactive
     # CLeaN Deep

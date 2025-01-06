@@ -3,8 +3,6 @@
 " encoding for vim to use internally (why do I want this?)
 set encoding=utf-8
 
-" disable a false positive reported by vint
-" vint: -ProhibitEncodingOptionAfterScriptEncoding
 " enable multi-byte utf-8 characters in this file
 scriptencoding utf-8
 
@@ -318,6 +316,7 @@ endif
 set confirm
 
 set shortmess+=a "use abbreviations for short messages
+set shortmess-=S "Show number of matches when searching
 
 " show current line number, and relative line numbers around it
 set number
@@ -345,6 +344,42 @@ if has('autocmd') && v:version > 701
     augroup end
 endif
 
+" gVim settings {{{2
+if has ('gui_running')
+    " Make GVim more like Terminal Vim
+    set guioptions-=T "remove toolbar
+    set guioptions-=r "remove right-hand scroll bar
+    set guioptions-=l "remove right-hand scroll bar
+    set guioptions=c "makes dialogs boxes appear like they do in console vim
+
+
+    " Maximize windows GVim On Startup
+    if has('autocmd') && s:has_windows
+        augroup windowsgui:
+            autocmd!
+            autocmd GUIEnter * simalt ~x
+        augroup end
+    endif
+
+    " Set Font
+    try
+        if s:has_windows
+            set guifont=DejaVu_Sans_Mono:h9:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
+        elseif has('mac')
+            set guifont=DejaVu\ Sans\ Mono:h11,Monaco:h11
+        elseif has('unix') && !has('mac') "linux
+            set guifont=DejaVu\ Sans\ Mono\ 10
+        endif
+    catch
+    endtry
+endif "}}}2
+
+highlight default link MyTodo Todo
+augroup todo
+    autocmd!
+    autocmd Syntax * match MyTodo '\v<(|NOTE|INFO|IDEA|IMPROVEMENT|QUESTION|TODO|FIXME|BUG|HACK|TRICKY|XXX)>'
+augroup end
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -357,8 +392,6 @@ endif
 set updatetime=1000 " time to wait for swap file write/ CursorHold autocmd
 
 let mapleader="\<Space>"
-
-nnoremap ZA :quitall!<CR>
 
 nnoremap [myleader] <Nop>
 xnoremap [myleader] <Nop>
@@ -636,15 +669,14 @@ let $zshl = '~/.zshrc_local'
 let $shf = '~/.config/shell/functions.sh'
 let $git = '~/.gitconfig'
 let $gitl = '~/.gitconfig_local'
-let $ps = '~/Documents/WindowsPowerShell/profile.ps1'
+let $posh = '~/Documents/WindowsPowerShell/profile.ps1'
 let $vim = '$MYVIMRC'
 let $nvim_plugin_lua = g:config_path . 'nvim_plugin.lua'
 let $vimg = s:app_path . 'ginit.vim'
 let $viml = '~/.vimrc_local'
 let $tmux = '~/.tmux.conf'
-let $t = '~/files/notes/todo.txt'
-let $i = '~/files/notes/inbox.md'
-let $j = '~/files/notes/journal.md'
+let $i = '~/files/inbox.md'
+let $j = '~/files/journal.md'
 
 cnoremap ~f ~/files
 cnoremap ~p ~/files/projects
@@ -678,8 +710,6 @@ if s:has_terminal
     if s:has_nvim
         augroup terminal
             autocmd TermOpen * setlocal nospell
-            " autocmd TermOpen * startinsert
-            " autocmd BufWinEnter,WinEnter term://* startinsert
         augroup end
     endif
 endif
@@ -854,8 +884,18 @@ Plug 'sgur/vim-textobj-parameter'
 Plug 'osyo-manga/vim-textobj-blockwise'
 "}}}2
 
+" {u,de}nite {{{2
+Plug 'Shougo/denite.nvim'
+Plug 'Shougo/neoyank.vim' " depends on 'Shougo/denite.nvim'
+Plug 'Shougo/neomru.vim' " depends on 'Shougo/denite.nvim'
+Plug 'naquad/unite-digraphs' "  depends on 'Shougo/denite.nvim'
+Plug 'Shougo/unite.vim'
+" }}}2
+
+Plug 'dyng/ctrlsf.vim'
+
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
 
 " Operators
 Plug 'kana/vim-operator-user'
@@ -881,8 +921,6 @@ Plug 'itchyny/lightline.vim'
 Plug 'chreekat/vim-paren-crosshairs'
 Plug 'junegunn/goyo.vim'
 Plug 'nathanaelkane/vim-indent-guides'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'stevearc/dressing.nvim'
 
 if !s:has_windows
     Plug 'edkolev/tmuxline.vim'
@@ -911,7 +949,6 @@ Plug 'iamcco/markdown-preview.nvim',
             \ }
 Plug 'jkramer/vim-checkbox'
 Plug 'aklt/plantuml-syntax'
-Plug 'dbeniamine/todo.txt-vim'
 Plug 'romainl/vim-qf'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'hynek/vim-python-pep8-indent'
@@ -945,9 +982,6 @@ if has('nvim')
     Plug 'hrsh7th/vim-vsnip'
 endif
 
-if has('patch-7.4.774') " requires v:completed_item feature
-    Plug 'Shougo/echodoc.vim'
-endif
 
 " Git / VCS
 Plug 'tpope/vim-fugitive'
@@ -956,10 +990,6 @@ Plug 'jreybert/vimagit'
 Plug 'airblade/vim-rooter'
 Plug 'cohama/agit.vim'
 Plug 'mhinz/vim-signify'
-Plug 'jecaro/fugitive-difftool.nvim'
-
-" Remote / Container Development
-Plug 'esensar/nvim-dev-container'
 
 " Diff
 Plug 'AndrewRadev/linediff.vim'
@@ -1187,15 +1217,6 @@ if Is_plugin_installed('vim-diff-enhanced') "{{{2
     let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
 endif "}}}2
 
-if Is_plugin_installed('echodoc.vim') "{{{2
-    let g:echodoc#enable_at_startup = 1
-    if &showmode
-        set cmdheight=2
-    endif
-    set completeopt-=preview
-    set shortmess+=c
-endif "}}}2
-
 if Is_plugin_installed('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
@@ -1302,10 +1323,6 @@ if Is_plugin_installed('vim-fugitive') "{{{2
         edit
     endfunction
     command! FollowSymlink call MyFollowSymlink()
-
-    if Is_plugin_installed('fugitive-difftool.nvim') "{{{3
-        command! -nargs=* Gdt :Git difftool --name-status <args>
-    endif "}}}3
 endif "}}}2
 
 if Is_plugin_installed('vim-split-join') "{{{2
@@ -1360,10 +1377,6 @@ if Is_plugin_installed('cmdalias.vim') "{{{2
     augroup VIMRC_aliases
         autocmd!
         autocmd VimEnter * Alias pwf Pwf
-        autocmd VimEnter * Alias ex Explore
-        autocmd VimEnter * Alias sex Sexplore
-        autocmd VimEnter * Alias tex Texplore
-        autocmd VimEnter * Alias vex Vexplore
     augroup end
 endif "}}}2
 

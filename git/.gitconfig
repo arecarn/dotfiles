@@ -23,8 +23,8 @@
     cmd = nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
 
 [merge]
-    # set "nvim" as tool for merging
     tool = nvim
+    conflictstyle = zdiff3
 
 [mergetool]
     # automatically launch merge tool without displaying a prompt
@@ -51,10 +51,21 @@
     prune = true
 
 [core]
+    pager = delta
+
     excludesFile = ~/.config/git/gitignore_global
 
     # hooksPath was added in v2.9+
     hooksPath = ~/.config/git/hooks
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+    side-by-side = true
+
 
 [commit]
     template = ~/.config/git/gitmessage
@@ -299,6 +310,9 @@
 
     # Fix White Space for files that are staged to be committed
     fws = !git diff --cached --no-color > stage.diff && git apply --index -R stage.diff && git apply --index --whitespace=fix stage.diff && rm -f stage.diff
+
+    # Commit Ammend & Push Force
+    cmapf = !git cma --no-edit && git psf
 
 [include]
     path = ~/.gitconfig_local

@@ -119,23 +119,18 @@ def provision(ctx, args=''):
                 "nodejs",
                 "plantuml",
                 "microsoft-windows-terminal --pre",
-                "unison",
                 "vcxsrv",  # X-Server
                 "fzf",
+                "delta", # A syntax-highlighting pager for git
+                "anki",
+                "gsudo", # sudo for windows
+
             ])
             ctx.run('choco feature enable -n=allowGlobalConfirmation')
             ctx.run(f'choco install {packages}')
             ctx.run(f'choco upgrade {packages}')
         else:
-            ctx.run('powershell -command "irm get.scoop.sh | iex"')
-            ctx.run('powershell -command "scoop bucket add main"', warn=True)
-            ctx.run('powershell -command "scoop install winget gsudo"')
-
-            ctx.run('powershell -command "scoop bucket add extras"', warn=True)
-            ctx.run('powershell -command "scoop install oh-my-posh posh-git psfzf"')
-
-            ctx.run('powershell -command "scoop bucket add nerd-fonts"', warn=True)
-            ctx.run('powershell -command "scoop install DejaVuSansMono-NF-Mono"')
+            assert False, "You need to be admin to install things with Chocolaty"
     else:
         os.chdir('ansible')
         ctx.run('ansible-playbook site.yml --inventory localhost '

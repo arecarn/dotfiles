@@ -345,36 +345,6 @@ if has('autocmd') && v:version > 701
     augroup end
 endif
 
-" gVim settings {{{2
-if has ('gui_running')
-    " Make GVim more like Terminal Vim
-    set guioptions-=T "remove toolbar
-    set guioptions-=r "remove right-hand scroll bar
-    set guioptions-=l "remove right-hand scroll bar
-    set guioptions=c "makes dialogs boxes appear like they do in console vim
-
-
-    " Maximize windows GVim On Startup
-    if has('autocmd') && s:has_windows
-        augroup windowsgui:
-            autocmd!
-            autocmd GUIEnter * simalt ~x
-        augroup end
-    endif
-
-    " Set Font
-    try
-        if s:has_windows
-            set guifont=DejaVu_Sans_Mono:h9:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
-        elseif has('mac')
-            set guifont=DejaVu\ Sans\ Mono:h11,Monaco:h11
-        elseif has('unix') && !has('mac') "linux
-            set guifont=DejaVu\ Sans\ Mono\ 10
-        endif
-    catch
-    endtry
-endif "}}}2
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -398,11 +368,11 @@ xmap go [myleader]
 cnoremap [cmdleader] <Nop>
 cmap <C-j> [cmdleader]
 
-if executable('ag')
+set grepformat=%f:%l:%c:%m
+if executable('rg')
+    set grepprg=rg\ --vimgrep\ $*
+elseif executable('ag')
     set grepprg=ag\ --vimgrep\ $*
-    set grepformat=%f:%l:%c:%m
-elseif executable('ack')
-    set grepprg=ack\ -H\ --nocolor\ --nogroup
 endif
 
 nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
@@ -738,7 +708,7 @@ endfunction
 
 nnoremap <leader>tp :ptjump <C-r><C-w><CR>
 
-function Rand()
+function! Rand() abort
     return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
 endfunction
 
@@ -868,8 +838,6 @@ endif
 
 
 call plug#begin(s:plugin_path)
-Plug 'Shougo/vimproc.vim', {'do': 'make'}
-
 " text objects {{{2
 Plug 'kana/vim-textobj-user'
 Plug 'saihoooooooo/vim-textobj-space'
@@ -885,16 +853,6 @@ Plug 'osyo-manga/vim-textobj-multiblock'
 Plug 'sgur/vim-textobj-parameter'
 Plug 'osyo-manga/vim-textobj-blockwise'
 "}}}2
-
-" {u,de}nite {{{2
-Plug 'Shougo/denite.nvim'
-Plug 'Shougo/neoyank.vim' " depends on 'Shougo/denite.nvim'
-Plug 'Shougo/neomru.vim' " depends on 'Shougo/denite.nvim'
-Plug 'naquad/unite-digraphs' "  depends on 'Shougo/denite.nvim'
-Plug 'Shougo/unite.vim'
-" }}}2
-
-Plug 'dyng/ctrlsf.vim'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
@@ -924,6 +882,7 @@ Plug 'chreekat/vim-paren-crosshairs'
 Plug 'junegunn/goyo.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'stevearc/dressing.nvim'
 
 if !s:has_windows
     Plug 'edkolev/tmuxline.vim'
@@ -997,6 +956,7 @@ Plug 'jreybert/vimagit'
 Plug 'airblade/vim-rooter'
 Plug 'cohama/agit.vim'
 Plug 'mhinz/vim-signify'
+Plug 'jecaro/fugitive-difftool.nvim'
 
 " Remote / Container Development
 Plug 'esensar/nvim-dev-container'
@@ -1031,7 +991,6 @@ Plug 'thinca/vim-qfreplace'
 Plug 'tpope/vim-eunuch'
 Plug 'arecarn/vim-spell-utils'
 Plug 'tpope/vim-abolish'
-Plug 'arecarn/vim-lost'
 Plug 'mg979/vim-visual-multi'
 
 " Word Under the Cursor Highlighting
@@ -1077,58 +1036,6 @@ endif
 if Is_plugin_installed('vim_current_word') "{{{2
     " The word under cursor:
     let g:vim_current_word#highlight_current_word = 0
-endif "}}}2
-
-if 0 " Is_plugin_installed('defx.nvim') "{{{2
-
-    " EXplore present working Directory
-    command! Ex Defx -new <args>
-
-    " EXplorer current File's directory
-    command! Exf Defx -new `expand('%:p:h')` -search=`expand('%:p')`
-
-    augroup defx_custom_settings
-        autocmd!
-        autocmd FileType defx call s:defx_custom_settings()
-    augroup end
-
-    function! s:defx_custom_settings() abort
-        set number
-        set relativenumber
-
-        nnoremap <silent><buffer> <Tab> :<C-u>Defx -new -split=vertical -winwidth=<C-r>=winwidth("%")/2<CR><CR>
-        nnoremap <silent><buffer><expr> <CR> defx#do_action('open')
-        nnoremap <silent><buffer><expr> c defx#do_action('copy')
-        nnoremap <silent><buffer><expr> m defx#do_action('move')
-        nnoremap <silent><buffer><expr> p defx#do_action('paste')
-        nnoremap <silent><buffer><expr> l defx#do_action('open')
-        nnoremap <silent><buffer><expr> E defx#do_action('open', 'vsplit')
-        nnoremap <silent><buffer><expr> P defx#do_action('preview')
-        nnoremap <silent><buffer><expr> o defx#do_action('open_tree', 'toggle')
-        nnoremap <silent><buffer><expr> K defx#do_action('new_directory')
-        nnoremap <silent><buffer><expr> N defx#do_action('new_file')
-        nnoremap <silent><buffer><expr> M defx#do_action('new_multiple_files')
-        nnoremap <silent><buffer><expr> C defx#do_action('toggle_columns', 'mark:indent:icon:filename:type:size:time')
-        nnoremap <silent><buffer><expr> S defx#do_action('toggle_sort', 'time')
-        nnoremap <silent><buffer><expr> d defx#do_action('remove')
-        nnoremap <silent><buffer><expr> r defx#do_action('rename')
-        nnoremap <silent><buffer><expr> ! defx#do_action('execute_command')
-        nnoremap <silent><buffer><expr> x defx#do_action('execute_system')
-        nnoremap <silent><buffer><expr> yy defx#do_action('yank_path')
-        nnoremap <silent><buffer><expr> . defx#do_action('toggle_ignored_files')
-        nnoremap <silent><buffer><expr> ; defx#do_action('repeat')
-        nnoremap <silent><buffer><expr> h defx#do_action('cd', ['..'])
-        nnoremap <silent><buffer><expr> ~ defx#do_action('cd')
-        nnoremap <silent><buffer><expr> q defx#do_action('quit')
-        nnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select') . 'j'
-        vnoremap <silent><buffer><expr> <Space> defx#do_action('toggle_select_visual')
-        nnoremap <silent><buffer><expr> * defx#do_action('toggle_select_all')
-        nnoremap <silent><buffer><expr> j line('.') == line('$') ? 'gg' : 'j'
-        nnoremap <silent><buffer><expr> k line('.') == 1 ? 'G' : 'k'
-        nnoremap <silent><buffer><expr> <C-l> defx#do_action('redraw')
-        nnoremap <silent><buffer><expr> <C-g> defx#do_action('print')
-        nnoremap <silent><buffer><expr> cd defx#do_action('change_vim_cwd')
-    endfunction
 endif "}}}2
 
 if Is_plugin_installed('vim-json') "{{{2
@@ -1272,14 +1179,6 @@ if Is_plugin_installed('vim-gutentags') "{{{2
 endif "}}}2
 
 
-" TODO this doesn't get much use
-if Is_plugin_installed('vim-lost') "{{{2
-    augroup vimrc
-        autocmd!
-        autocmd FileType markdown let b:lost_regex = '\v^#'
-    augroup end
-endif "}}}2
-
 if Is_plugin_installed('vim-backup-tree') "{{{2
     let g:backup_tree = s:make_data_directory('backup')
 endif "}}}2
@@ -1314,69 +1213,17 @@ if Is_plugin_installed('telescope.nvim') "{{{2
     nnoremap [myleader]r :Telescope oldfiles<CR>
 endif
 
-if Is_plugin_installed('unite.vim') "{{{2
-    let g:unite_data_directory = s:make_cache_path_str('unite')
-    let g:unite_winheight = 10
-    let g:unite_split_rule = 'botright'
-    call unite#filters#sorter_default#use(['sorter_rank'])
-endif "}}}2
-
-if Is_plugin_installed('denite.nvim') "{{{2
-    if Is_plugin_installed('unite-digraphs')
-        command! Digraphs Denite unite:digraphs
-    endif
-
-    if Is_plugin_installed('neoyank.vim')
-        nnoremap [myleader]p  :<C-u>Denite -mode=normal neoyank<CR>
-        xnoremap [myleader]p  dk:<C-u>Denit -mode=normale neoyank<CR>
-
-        let g:neoyank#file = s:make_data_path_str('neoyank/history')
-    endif
-
-    if Is_plugin_installed('neomru.vim')
-        " nnoremap [myleader]r :<C-u>Denite file_mru<CR>
-
-        let g:neomru#file_mru_path = s:make_cache_path_str('neomru/file')
-        let g:neomru#directory_mru_path = s:make_cache_path_str('neomru/directory')
-    endif
-
-    " nnoremap [myleader]d :<C-u>Denite directory_rec<CR>
-    " nnoremap [myleader]f :<C-u>Denite file_rec<CR>
-    " nnoremap [myleader]rg :<C-u>Denite register<CR>
-    " nnoremap [myleader]b  :<C-u>Denite buffer<CR>
-    " nnoremap [myleader]l  :<C-u>Denite line<CR>
-    " nnoremap [myleader]t  :<C-u>Denite tag<CR>
-    " nnoremap [myleader]:  :<C-u>Denite<Space><C-d>
-    " cnoremap <silent> <C-r><C-r> <C-u>Denite command_history<CR>
-    " cnoremap <silent> <C-o> <C-u>Denite command<CR>
-
-    command! Messages Denite output:message
-
-    " Define mappings
-    augroup denite_custom_settings
-        autocmd!
-        autocmd FileType denite call s:denite_custom_settings()
-    augroup end
-    function! s:denite_custom_settings() abort
-        nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
-        nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
-        nnoremap <silent><buffer><expr> p denite#do_map('do_action', 'preview')
-        nnoremap <silent><buffer><expr> q denite#do_map('quit')
-        nnoremap <silent><buffer><expr> i denite#do_map('open_filter_buffer')
-        nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
-    endfunction
-
-endif "}}}2
-
 if Is_plugin_installed('fzf') "{{{2
     " nnoremap [myleader]f :FZF<CR>
     " nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
 if Is_plugin_installed('vim-grepper') "{{{2
+    runtime plugin/grepper.vim
     nmap [myleader]g: :Grepper<CR>
     nmap [myleader]g <Plug>(GrepperOperator)
     xmap [myleader]g <Plug>(GrepperOperator)
+    let grepper.tools = ['rg', 'git', 'grep']
 endif "}}}2
 
 if Is_plugin_installed('vim-dispatch') "{{{2
@@ -1385,7 +1232,6 @@ if Is_plugin_installed('vim-dispatch') "{{{2
 endif "}}}2
 
 if Is_plugin_installed('vim-fugitive') "{{{2
-    command! -nargs=* G :Git <args>
     nnoremap <leader>gs :Git<CR>
     nnoremap <leader>gd :Gdiff<CR>
     nnoremap <leader>gd<Space> :Gdiff<Space>
@@ -1456,6 +1302,10 @@ if Is_plugin_installed('vim-fugitive') "{{{2
         edit
     endfunction
     command! FollowSymlink call MyFollowSymlink()
+
+    if Is_plugin_installed('fugitive-difftool.nvim') "{{{3
+        command! -nargs=* Gdt :Git difftool --name-status <args>
+    endif "}}}3
 endif "}}}2
 
 if Is_plugin_installed('vim-split-join') "{{{2
@@ -1577,74 +1427,6 @@ if Is_plugin_installed('goyo.vim') "{{{2
             execute 'Goyo ' . string(a:num)
         endif
     endfunction
-endif "}}}2
-
-if Is_plugin_installed('todo.txt-vim') "{{{2
-    let g:Todo_txt_prefix_creation_date = 1
-    let g:TodoTxtStripDoneItemPriority = 1
-
-    augroup TODO_TXT
-        autocmd!
-        autocmd BufNewFile,BufRead *todo.txt,*done.txt set filetype=todo
-        autocmd BufNewFile,BufRead todo*.txt,done*.txt set filetype=todo
-        autocmd FileType todo call s:todo_txt_settings()
-        autocmd FileType todo setlocal formatoptions-=t
-    augroup end
-
-    function! s:get_context(line) abort "{{{3
-        return matchstr(getline(a:line), '@[^ ]\+')
-    endfunction "}}}3
-
-    function! s:get_project(line) abort "{{{3
-        return matchstr(getline(a:line), '+[^ ]\+')
-    endfunction "}}}3
-
-    function! Todo_fold_text(foldchar) abort "{{{3
-        let line = s:get_context(v:foldstart)
-        let lines_count = v:foldend - v:foldstart + 1
-        let lines_count_text = '| ' . printf('%10s', lines_count . ' todos') . ' |'
-        let foldtextstart = strpart(line, 0, (winwidth(0)*2)/3)
-        let foldtextend = lines_count_text . repeat(a:foldchar, 8)
-        let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
-        return foldtextstart . repeat(a:foldchar, winwidth(0)-foldtextlength) . foldtextend
-    endfunction "}}}3
-
-    function! Todo_fold(lnum) abort "{{{3
-        let this_context = s:get_context(a:lnum)
-        let next_context = s:get_context(a:lnum - 1)
-
-        let fold_level = '0'
-
-        if this_context ==# next_context
-            let fold_level = '1'
-        else
-            let fold_level = '>1'
-        endif
-
-        return fold_level
-    endfunction "}}}3
-
-    nnoremap <localleader>w :s/\s*@[a-z-]\+\s*$\\|\s*$/ @work/<CR>:nohlsearch<CR>
-    xnoremap <localleader>w :s/\s*@[a-z-]\+\s*$\\|\s*$/ @work/<CR>:nohlsearch<CR>
-    nnoremap <localleader>h :s/\s*@[a-z-]\+\s*$\\|\s*$/ @home/<CR>:nohlsearch<CR>
-    xnoremap <localleader>h :s/\s*@[a-z-]\+\s*$\\|\s*$/ @home/<CR>:nohlsearch<CR>
-
-    function! s:todo_txt_settings() abort "{{{3
-        try
-            execute "iunmap <buffer> date\<Tab>"
-            iunmap <buffer> due:
-        catch
-        endtry
-
-        " update time
-        " TODO fix issue where search pattern leaks into search history
-        nnoremap <localleader>ud :s/\d\d\d\d-\d\d\-\d\d/\=strftime("%Y-%m-%d")/<CR>
-
-        setlocal foldmethod=expr
-        setlocal iskeyword+=+,_,.
-        setlocal iskeyword+=@-@ " add literal @
-
-    endfunction "}}}3
 endif "}}}2
 
 if Is_plugin_installed('obvious-resize') "{{{2

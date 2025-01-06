@@ -20,12 +20,13 @@ Set-PSReadLineKeyHandler -Chord 'Ctrl+n' -Function HistorySearchForward
 Remove-PSReadlineKeyHandler 'Ctrl+r'
 Remove-PSReadlineKeyHandler 'Ctrl+t'
 
-Import-Module PSFzf
-Enable-PsFzfAliases
 
+# Import-Module PSFzf
+# Enable-PsFzfAliases
 # Import-Module posh-git
+# oh-my-posh init pwsh --config "$(scoop prefix oh-my-posh)\themes\avit.omp.json" | Invoke-Expression
 
-oh-my-posh init pwsh --config "$(scoop prefix oh-my-posh)\themes\avit.omp.json" | Invoke-Expression
+oh-my-posh init pwsh | Invoke-Expression
 
 # add a display for use with ssh
 $env:DISPLAY="127.0.0.1:0"

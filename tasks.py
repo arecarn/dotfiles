@@ -125,7 +125,9 @@ def provision(ctx, args=''):
                 "anki",
                 "gsudo", # sudo for windows
                 "ripgrep",
-
+                "oh-my-posh",
+                "poshgit",
+                "openssh --pre"
             ])
             ctx.run('choco feature enable -n=allowGlobalConfirmation')
             ctx.run(f'choco install {packages}')

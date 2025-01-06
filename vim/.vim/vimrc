@@ -895,7 +895,7 @@ Plug 'Shougo/unite.vim'
 Plug 'dyng/ctrlsf.vim'
 
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'nvim-telescope/telescope.nvim'
 
 " Operators
 Plug 'kana/vim-operator-user'
@@ -921,6 +921,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'chreekat/vim-paren-crosshairs'
 Plug 'junegunn/goyo.vim'
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 if !s:has_windows
     Plug 'edkolev/tmuxline.vim'
@@ -1072,7 +1073,6 @@ if Is_plugin_installed('vim-json') "{{{2
     " disable concealing of quotes
     let g:vim_json_syntax_conceal = 0
 endif "}}}2
-
 
 if Is_plugin_installed('fern.vim') "{{{2
     nnoremap - :Fern %:p:h<CR>

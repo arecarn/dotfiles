@@ -77,19 +77,30 @@ function setup_mason_dap_and_lspconfig()
 
     require("mason-lspconfig").setup{
         ensure_installed = {
+            "yamlls",
             "bashls",
             "clangd",
             "cmake",
             "pyright",
             "vimls",
+            "prosemd_lsp",
 
         },
     }
 
+    require("lspconfig").yamlls.setup{
+            settings = {
+                yaml = {
+                    completion = {enable = true}
+                }
+            }
+    }
     require("lspconfig").bashls.setup{}
     require("lspconfig").cmake.setup{}
     require("lspconfig").pyright.setup{}
     require("lspconfig").vimls.setup{}
+    require("lspconfig").prosemd_lsp.setup{}
+
 
     require("lspconfig").clangd.setup{}
     vim.api.nvim_create_autocmd("FileType",

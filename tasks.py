@@ -124,6 +124,7 @@ def provision(ctx, args=''):
                 "delta", # A syntax-highlighting pager for git
                 "anki",
                 "gsudo", # sudo for windows
+                "ripgrep",
 
             ])
             ctx.run('choco feature enable -n=allowGlobalConfirmation')

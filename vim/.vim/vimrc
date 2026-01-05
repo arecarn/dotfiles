@@ -300,6 +300,9 @@ if has('nvim')
 endif
 
 set diffopt+=vertical "always open diff side by side
+set diffopt+=linematch:60
+set diffopt+=indent-heuristic
+set diffopt+=algorithm:histogram
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                                 {{{
@@ -407,6 +410,8 @@ if executable('rg')
 elseif executable('ag')
     set grepprg=ag\ --vimgrep\ $*
 endif
+
+
 
 nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
@@ -672,6 +677,7 @@ let $gitl = '~/.gitconfig_local'
 let $posh = '~/Documents/WindowsPowerShell/profile.ps1'
 let $vim = '$MYVIMRC'
 let $nvim_plugin_lua = g:config_path . 'nvim_plugin.lua'
+execute 'source '. $nvim_plugin_lua
 let $vimg = s:app_path . 'ginit.vim'
 let $viml = '~/.vimrc_local'
 let $tmux = '~/.tmux.conf'
@@ -913,10 +919,11 @@ Plug 'junegunn/fzf.vim'
 
 " Folds
 Plug 'arecarn/vim-clean-fold'
-Plug 'arecarn/vim-fold-cycle' " {'branch' : 'topics/global_fold_cycling'}
+" Plug 'arecarn/vim-fold-cycle' " {'branch' : 'topics/global_fold_cycling'}
 
 
 " Visual Enhancements
+Plug 'folke/snacks.nvim'
 Plug 'itchyny/lightline.vim'
 Plug 'chreekat/vim-paren-crosshairs'
 Plug 'junegunn/goyo.vim'
@@ -929,7 +936,7 @@ endif
 
 Plug 'tpope/vim-dispatch'
 if s:has_nvim
-    Plug 'MadCoder/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
+    " Plug 'MadCoder/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
 endif
 Plug 'janko-m/vim-test'
 
@@ -950,7 +957,12 @@ Plug 'iamcco/markdown-preview.nvim',
             \ }
 Plug 'jkramer/vim-checkbox'
 Plug 'aklt/plantuml-syntax'
-Plug 'romainl/vim-qf'
+" Plug 'romainl/vim-qf'
+" Plug 'stevearc/quicker.nvim'
+if has('nvim')
+    Plug 'kevinhwang91/nvim-bqf' " , {'for': 'qf'}
+endif
+
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'hynek/vim-python-pep8-indent'
 Plug 'Shougo/Deol.nvim'
@@ -1194,6 +1206,11 @@ if Is_plugin_installed('markdown-preview.nvim') "{{{2
                 \ 'flowchart_diagrams': {},
                 \ 'content_editable': v:false
                 \ }
+
+    " set to 1, echo preview page url in command line when open preview page
+    " default is 0
+    let g:mkdp_echo_preview_url = 1
+    let g:mkdp_port = '6419'
 endif "}}}2
 
 if Is_plugin_installed('csv.vim')
@@ -1221,10 +1238,17 @@ if Is_plugin_installed('Deol.nvim') "{{{2
     let g:deol#prompt_pattern = '.\{-} \d\d:\d\d:\d\d %'
 endif "}}}2
 
+if Is_plugin_installed('snacks.nvim') "{{{2
+    lua setup_nvim_snacks()
+endif "}}}2
+
 if Is_plugin_installed('nvim-cmp') "{{{2
-    execute 'source '. $nvim_plugin_lua
     lua setup_nvim_cmp()
     lua setup_mason_dap_and_lspconfig()
+endif "}}}2
+
+if Is_plugin_installed('codecompanion.nvim') "{{{2
+    lua setup_nvim_codecompanion()
 endif "}}}2
 
 if Is_plugin_installed('telescope.nvim') "{{{2
@@ -1463,6 +1487,7 @@ if Is_plugin_installed('Preserve.vim') "{{{2
     " TODO report error to vim about using the :s and :g commands reversed, it
     " reports more values than expected
     nnoremap g? :call Preserve("echo @/<Bar>%s///ng<Bar>g/")<CR>
+    vnoremap <silent>yn :<C-u>redir @"> <CR>:silent! '<,'>number <CR>:redir END<CR>
 endif "}}}2
 
 if Is_plugin_installed('vim-crunch') "{{{2

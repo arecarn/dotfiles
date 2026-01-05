@@ -51,7 +51,7 @@
     prune = true
 
 [core]
-    pager = delta
+    # pager = delta
 
     excludesFile = ~/.config/git/gitignore_global
 
@@ -94,6 +94,8 @@
     helper = store
 
 [alias]
+    exec = !exec
+    root = rev-parse --show-toplevel
     hash = rev-parse --verify HEAD
     h = !git hash # Hash
     hs = !git hash --short # Hash Short
@@ -316,3 +318,5 @@
 
 [include]
     path = ~/.gitconfig_local
+[init]
+	defaultBranch = main

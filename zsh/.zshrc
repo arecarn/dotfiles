@@ -41,6 +41,10 @@ zplug 'junegunn/fzf', \
 zplug 'junegunn/fzf', as:"command", use:"bin/*"
 zplug 'pyenv/pyenv', as:"command", use:"bin/*"
 
+. "$HOME/.cargo/env"
+export PATH="/home/rcarney/.local/share/bob/nvim-bin:$PATH"
+
+
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
     printf 'Install? [y/n]: '
@@ -98,6 +102,7 @@ fi
 #############################################################################}}}
 # ENVIRONMENT                                                                {{{
 ################################################################################
+
 if exists nvim; then
     export EDITOR='nvim'
 else
@@ -112,7 +117,6 @@ export LESS='--tabs=4 --no-init --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 # configure path
 export PATH="${PATH}:${HOME}/bin"
 export PATH="${PATH}:${HOME}/.local/bin"
-
 
 if [[ "${OSTYPE}" == 'darwin'* ]]; then
     # TODO HAVE ansible add these to ~/.profile for homebrew
@@ -339,6 +343,8 @@ del-history-pattern() {
 LC_ALL=C sed -i "/$@/d" $HISTFILE
 grep "$@" $HISTFILE
 }
+
+
 
 # this allows aliases to mostly work when using sudo
 alias sudo='sudo '

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 versionlt() {
-    version=$(tmux -V | cut -c 6-)
+    version=$(tmux -V | sed 's/[^0-9.]//g')
     [ "$(echo "${version} < $1" | bc)" = 1 ]
 }
 
@@ -21,4 +21,13 @@ if  versionlt "2.6"; then
     tmux bind-key W choose-tree -u
 else
     tmux bind-key W choose-tree
+fi
+
+# easy way to swap windows
+if versionlt "3.0"; then
+    tmux bind-key -r < swap-window -t -1
+    tmux bind-key -r > swap-window -t +1
+else
+    tmux bind-key -r < swap-window -td -1
+    tmux bind-key -r > swap-window -td +1
 fi

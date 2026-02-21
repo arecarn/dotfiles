@@ -3,7 +3,7 @@
 " encoding for vim to use internally (why do I want this?)
 set encoding=utf-8
 
-" enable multi-byte fut-8 characters in this file
+" enable multi-byte utf-8 characters in this file
 scriptencoding utf-8
 
 "end-of-line formats that will be tried editing a new file
@@ -18,12 +18,7 @@ syntax enable " enable syntax highlighting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:has_tmux = ($TERM ==# 'screen' || $TERM ==# 'screen-256color') && !empty($TMUX)
 let s:has_windows = has('win32') || has('win64')
-let s:has_terminal = has('nvim') || has('terminal')
-let s:has_nvim = has('nvim')
-let s:has_vim = !has('nvim')
-let s:has_vim8 = has('patch-8.0.0039')
 
 if s:has_windows
     let g:os_path_sep = '\'
@@ -31,7 +26,7 @@ else
     let g:os_path_sep = '/'
 endif
 
-let g:app = has('nvim') ?  'nvim' : 'vim'
+let g:app = 'nvim'
 
 if s:has_windows
     let g:config_path = $LOCALAPPDATA . '\' . g:app . '\'
@@ -90,7 +85,6 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set history=10000 " keep more command-line history
 
-set wildmenu " show command-line completions when pressing <Tab>
 set wildmode=full " complete the next full match when pressing <Tab>
 
 " character you have to type to start wild card expansion and also works in
@@ -116,21 +110,8 @@ set path+=** " Relative to the current directory search recursively
 set scrolloff=5 " minimum number of lines to keep above & below the cursor
 set sidescrolloff=5 " minimum number of columns to keep left & right of the cursor
 
-if has('mouse')
-    " enable the mouse
-    set mouse=a
-endif
-
-if s:has_vim && !has('gui_running')
-    " configure what mouse code vim will recognize in terminal mode
-    if has('mouse_sgr')
-        set ttymouse=sgr
-    else
-        set ttymouse=xterm2
-    endif
-
-    set ttyfast " indicate a fast terminal connection
-endif
+" enable the mouse
+set mouse=a
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                                {{{
@@ -183,17 +164,13 @@ set textwidth=80
 
 " when 'wrap' is enabled visually break long lines at a character in 'break at'
 set linebreak
-if exists('+breakindent')
-    " when 'wrap' is enabled visually wrapped lines will maintain first lines
-    " indention level
-    set breakindent
-endif
+" when 'wrap' is enabled visually wrapped lines will maintain first lines
+" indention level
+set breakindent
 set nowrap " don't wrap lines by default
 
-if has('nvim')
-    " hard-wrap to $MAN WIDTH when using :Man
-    let g:man_hardwrap = 1
-endif
+" hard-wrap to $MAN WIDTH when using :Man
+let g:man_hardwrap = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{
@@ -236,27 +213,22 @@ set foldnestmax=3
 set foldlevelstart=99
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" AUTO CMDR                                                                   {{{
+" AUTO CMD                                                                    {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has('autocmd')
-    augroup vimrc
-        autocmd!
-        autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
-    augroup end
-endif
+augroup vimrc
+    autocmd!
+    autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
+augroup end
 
-if has('autocmd')
-    augroup AllFiles
-        autocmd!
-        autocmd FocusLost * silent! wall
-    augroup end
-endif
+augroup AllFiles
+    autocmd!
+    autocmd FocusLost * silent! wall
+augroup end
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SEARCHING                                                                  {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set wrapscan "searches wrap around the end of the file
-set incsearch " while searching show and highlight match as you type
 set ignorecase " while searching the case of letters ignored
 set smartcase " override 'ignore case' if the search contains upper case chars
 set maxmempattern=2000000
@@ -287,17 +259,14 @@ set nostartofline " avoid moving the cursor column when navigating
 set autowriteall
 
 set autoread " re-read files that have been changed outside of vim
-set backspace=indent,eol,start " allow backspacing to work as expected
 
 " allow the cursor to be positioned where there are no actual character
 set virtualedit+=all
 
 set modeline " allow modeling options to be evaluated
 
-if has('nvim')
-    " shows the effects of a substitute commands as you type
-    set inccommand=nosplit
-endif
+" shows the effects of a substitute commands as you type
+set inccommand=nosplit
 
 set diffopt+=vertical "always open diff side by side
 set diffopt+=linematch:60
@@ -308,12 +277,10 @@ set diffopt+=algorithm:histogram
 " UI OPTIONS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set 'colorcolumn' position based on 'textwidth'
-if has('autocmd')
-    augroup colorcolumn
-        autocmd!
-        autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
-    augroup end
-endif
+augroup colorcolumn
+    autocmd!
+    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
+augroup end
 
 " open a dialog for commands that can be confirmed/ can fail e.g. :q, :qa, :w
 set confirm
@@ -326,7 +293,6 @@ set number
 set relativenumber
 
 set showcmd " show partial normal mode commands
-set lazyredraw " don't redraw for non-typed normal mode commands e.g. macros
 set laststatus=2 " always show status line
 set showtabline=2 " always show tab line
 
@@ -334,49 +300,9 @@ set showtabline=2 " always show tab line
 set list
 set listchars=trail:·,tab:→‸,extends:▶,precedes:◀,nbsp:‾
 
-if v:version >= 800
-    set signcolumn=yes
-endif
+set signcolumn=yes
 
 " Highlight TODO, FIXME, NOTE, etc.
-if has('autocmd') && v:version > 701
-    highlight default link MyTodo Todo
-    augroup todo
-        autocmd!
-        autocmd Syntax * match MyTodo '\v<(|NOTE|INFO|IDEA|IMPROVEMENT|QUESTION|TODO|FIXME|BUG|HACK|TRICKY|XXX)>'
-    augroup end
-endif
-
-" gVim settings {{{2
-if has ('gui_running')
-    " Make GVim more like Terminal Vim
-    set guioptions-=T "remove toolbar
-    set guioptions-=r "remove right-hand scroll bar
-    set guioptions-=l "remove right-hand scroll bar
-    set guioptions=c "makes dialogs boxes appear like they do in console vim
-
-
-    " Maximize windows GVim On Startup
-    if has('autocmd') && s:has_windows
-        augroup windowsgui:
-            autocmd!
-            autocmd GUIEnter * simalt ~x
-        augroup end
-    endif
-
-    " Set Font
-    try
-        if s:has_windows
-            set guifont=DejaVu_Sans_Mono:h9:cANSI,Lucida_Console:h9:cANSI,Consolas:h9:cANSI
-        elseif has('mac')
-            set guifont=DejaVu\ Sans\ Mono:h11,Monaco:h11
-        elseif has('unix') && !has('mac') "linux
-            set guifont=DejaVu\ Sans\ Mono\ 10
-        endif
-    catch
-    endtry
-endif "}}}2
-
 highlight default link MyTodo Todo
 augroup todo
     autocmd!
@@ -386,11 +312,6 @@ augroup end
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-if !has('nvim') && &ttimeoutlen == -1
-    set ttimeout " enable timeout when waiting for a key code sequence to complete
-    set ttimeoutlen=100 " time in ms to wait for 'ttimeout'
-endif
 
 set updatetime=1000 " time to wait for swap file write/ CursorHold autocmd
 
@@ -412,8 +333,6 @@ if executable('rg')
 elseif executable('ag')
     set grepprg=ag\ --vimgrep\ $*
 endif
-
-
 
 nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
 nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
@@ -465,52 +384,10 @@ nnoremap <expr> <C-w><C-t> (winnr('$') != 1 ? "<C-w>TgT" : "")
 " open the current window's buffer in a new tab without breaking it out
 nnoremap g<C-w>t :tabedit %<CR>
 
-nnoremap <leader>to :call PreviewWord()<CR>
-nnoremap <leader>tc :pclose<CR>
-function! PreviewWord() abort
-    if &previewwindow
-        return
-    endif
-
-    let l:word_under_cursor = expand('<cword>')
-    let l:is_word_under_cursor_a_letter = l:word_under_cursor =~# '\a'
-
-    if l:is_word_under_cursor_a_letter
-
-        " Delete any existing highlight before showing another tag
-        silent! wincmd P  " jump to preview window
-        if &previewwindow " if we really get there...
-            match none    " delete existing highlight
-            wincmd p      " back to old window
-        endif
-
-        " Try displaying a matching tag for the word under the cursor
-        try
-            execute ':ptag ' . l:word_under_cursor
-        catch
-            return
-        endtry
-
-        silent! wincmd P " jump to preview window
-        if &previewwindow " if we really get there...
-            if has('folding')
-                silent! .foldopen  " don't want a closed fold
-            endif
-            call search('$', 'b')  " to end of previous line
-            let l:word_under_cursor = substitute(l:word_under_cursor, '\\', '\\\\', '')
-            call search('\<\V' . l:word_under_cursor . '\>')  " position cursor on match
-            " Add a match highlight to the word at this position
-            hi previewWord term=underline cterm=reverse gui=reverse
-            execute 'match previewWord "\%' . line('.') . 'l\%' . col('.') . 'c\k*"'
-            wincmd p " back to old window
-        endif
-    endif
-endfun
-
 function! s:in(group, item) abort
     if type(a:group) == type('')
         let l:group = split(a:group, '\zs')
-        return index(l:group, a:item) <= 0
+        return index(l:group, a:item) >= 0
     endif
 endfunction
 
@@ -535,11 +412,11 @@ function! s:format_options_toggle(options, message) abort
 
     for l:option in l:options
         if s:in(&formatoptions, l:option)
-            let l:add_or_subtract = '+='
-            let l:message = printf('on: %s', a:message)
-        else
             let l:add_or_subtract = '-='
-            let l:message =  printf('off: %s', a:message)
+            let l:message = printf('off: %s', a:message)
+        else
+            let l:add_or_subtract = '+='
+            let l:message =  printf('on: %s', a:message)
         endif
         execute 'set formatoptions' . l:add_or_subtract . l:option
     endfor
@@ -547,7 +424,7 @@ function! s:format_options_toggle(options, message) abort
     echo l:message
 endfunction
 nnoremap yotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
-nnoremap yopw :<C-U>call <SID>format_options_toggle('aw' 'auto formmating of paragraphs')<CR>
+nnoremap yopw :<C-U>call <SID>format_options_toggle('aw', 'auto formatting of paragraphs')<CR>
 
 " reselect pasted or last changed text
 nnoremap <expr> gpv '`[' . getregtype()[0] . '`]'
@@ -616,7 +493,7 @@ cnoremap <C-v> <C-f>
 " adp Directory Path (head) (/something/src)
 " dp Directory Path Relative to pwd (head) (/something/src)
 " pwd Present Working Directory
-let s:extension_patter = '\(\(.\{1,}\.\)\w\+$\)\?'
+let s:extension_pattern = '\(\(.\{1,}\.\)\w\+$\)\?'
 let s:maps = [
             \     {
             \         'str': 'fn',
@@ -633,12 +510,12 @@ let s:maps = [
             \     {
             \         'str': 'ofn',
             \         'func': "substitute(expand('%:t'), '"
-            \         . s:extension_patter . "', '\\2', 'g')"
+            \         . s:extension_pattern . "', '\\2', 'g')"
             \     },
             \     {
             \         'str': 'aofp',
             \         'func': "substitute(expand('%:p:r:.'), '"
-            \         . s:extension_patter . "', '\\2', 'g')"
+            \         . s:extension_pattern . "', '\\2', 'g')"
             \     },
             \     {
             \         'str': 'ofp',
@@ -691,36 +568,25 @@ cnoremap ~p ~/files/projects
 cnoremap ~df ~/dotfiles
 cnoremap ~dfl ~/dotfiles_local
 
-if s:has_terminal
-    " Exit terminal
-    tnoremap <C-\><C-\> <C-\><C-n>
-    snoremap <C-\><C-\> <C-\><C-n>
-    inoremap <C-\><C-\> <C-\><C-n>
-    noremap <C-\><C-\> <C-\><C-n>
+" Exit terminal
+tnoremap <C-\><C-\> <C-\><C-n>
+snoremap <C-\><C-\> <C-\><C-n>
+inoremap <C-\><C-\> <C-\><C-n>
+noremap <C-\><C-\> <C-\><C-n>
 
-    " paste into terminal
-    tnoremap <C-\>p <C-\><C-n>pi
+" paste into terminal
+tnoremap <C-\>p <C-\><C-n>pi
 
-    " paste register into terminal
-    tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+" paste register into terminal
+tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 
 
-    nnoremap + :<C-u>terminal<CR>
-    " nnoremap +t :<C-u>tabnew .<CR>:terminal<CR>
-    " nnoremap +\ :<C-u>vsplit<CR>:vertical terminal<CR>
-    " nnoremap +- :<C-u>rightbelow split<CR>:terminal<CR>
+nnoremap + :<C-u>terminal<CR>
 
-    " nnoremap +.. :lcd <C-r>=expand('%:h')<CR>:<C-u>terminal<CR>
-    " nnoremap +.t :<C-u>tabnew %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
-    " nnoremap +.\ :<C-u>vsplit %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:vertical terminal<CR>
-    " nnoremap +.- :<C-u>rightbelow split %<CR>:lcd <C-r>=expand('%:h')<CR><CR>:terminal<CR>
-
-    if s:has_nvim
-        augroup terminal
-            autocmd TermOpen * setlocal nospell
-        augroup end
-    endif
-endif
+augroup terminal
+    autocmd!
+    autocmd TermOpen * setlocal nospell
+augroup end
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -764,13 +630,13 @@ command! -bang -nargs=0 -range=0 CopyTab call CopyTab()
 
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
 
-function! s:sentance_split(line1, line2, ) abort
+function! s:sentence_split(line1, line2, ) abort
     execute a:line1.','.a:line2.'Join'
     execute a:line1.','.a:line2.'Split/[.?!;:—]\zs\s\+/'
 endfunction
 
 
-command! -bar -range=% SentanceSplit call s:sentance_split(<line1>,<line2>)
+command! -bar -range=% SentenceSplit call s:sentence_split(<line1>,<line2>)
 
 " reverse selection kind of works
 vnoremap <silent> <leader>rev :<c-u>let old_reg_a=@a<CR>
@@ -870,10 +736,7 @@ if !isdirectory(s:plugin_manager_autoload_path)
     execute '!git clone https://github.com/junegunn/vim-plug.git '
                 \ . s:plugin_manager_autoload_path
 endif
-if has('vim_starting')
-    execute 'set runtimepath+=' . s:plugin_manager_path
-endif
-
+execute 'set runtimepath+=' . s:plugin_manager_path
 
 call plug#begin(s:plugin_path)
 " text objects {{{2
@@ -892,20 +755,11 @@ Plug 'sgur/vim-textobj-parameter'
 Plug 'osyo-manga/vim-textobj-blockwise'
 "}}}2
 
-" {u,de}nite {{{2
-Plug 'Shougo/denite.nvim'
-Plug 'Shougo/neoyank.vim' " depends on 'Shougo/denite.nvim'
-Plug 'Shougo/neomru.vim' " depends on 'Shougo/denite.nvim'
-Plug 'naquad/unite-digraphs' "  depends on 'Shougo/denite.nvim'
-Plug 'Shougo/unite.vim'
-" }}}2
-
-Plug 'dyng/ctrlsf.vim'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
-" Operators
+" Operators {{{2
 Plug 'kana/vim-operator-user'
 Plug 'kana/vim-operator-replace' " depends on 'kana/vim-operator-user'
 Plug 'arecarn/vim-operator-mixed-case'
@@ -937,9 +791,7 @@ if !s:has_windows
 endif
 
 " Plug 'tpope/vim-dispatch'
-if s:has_nvim
-    " Plug 'MadCoder/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
-endif
+" Plug 'MadCoder/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
 Plug 'stevearc/overseer.nvim'
 
 
@@ -961,9 +813,7 @@ Plug 'jkramer/vim-checkbox'
 Plug 'aklt/plantuml-syntax'
 " Plug 'romainl/vim-qf'
 " Plug 'stevearc/quicker.nvim'
-if has('nvim')
-    Plug 'kevinhwang91/nvim-bqf' " , {'for': 'qf'}
-endif
+Plug 'kevinhwang91/nvim-bqf'
 
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'hynek/vim-python-pep8-indent'
@@ -977,26 +827,24 @@ Plug 'rktjmp/lush.nvim'
 Plug 'adisen99/apprentice.nvim'
 Plug 'jonsmithers/apprentice-lightline-experimental'
 
-if has('nvim')
-    Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason.nvim'
 
-    Plug 'mfussenegger/nvim-dap'
-    Plug 'jay-babu/mason-nvim-dap.nvim'
-    Plug 'rcarriga/nvim-dap-ui'
+Plug 'mfussenegger/nvim-dap'
+Plug 'jay-babu/mason-nvim-dap.nvim'
+Plug 'rcarriga/nvim-dap-ui'
 
-    Plug 'williamboman/mason-lspconfig.nvim'
-    Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'neovim/nvim-lspconfig'
 
-    Plug 'hrsh7th/nvim-cmp'
-    Plug 'hrsh7th/cmp-nvim-lsp'
-    Plug 'hrsh7th/cmp-buffer'
-    Plug 'hrsh7th/cmp-path'
-    Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
 
-    " For vsnip users.
-    Plug 'hrsh7th/cmp-vsnip'
-    Plug 'hrsh7th/vim-vsnip'
-endif
+" For vsnip users.
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
 
 
 " Git / VCS
@@ -1063,10 +911,8 @@ Plug 'arecarn/vim-binascii'
 Plug 'arecarn/vim-frisk'
 
 " Project Management
-if s:has_vim8 || s:has_nvim
-    Plug 'ludovicchabant/vim-gutentags'
-    Plug 'liuchengxu/vista.vim'
-endif
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'liuchengxu/vista.vim'
 Plug 'tpope/vim-projectionist'
 
 " Initialize plugin system
@@ -1216,7 +1062,7 @@ if Is_plugin_installed('markdown-preview.nvim') "{{{2
     let g:mkdp_port = '6419'
 endif "}}}2
 
-if Is_plugin_installed('csv.vim')
+if Is_plugin_installed('csv.vim') "{{{2
     augroup csv
         autocmd!
         autocmd CursorHold csv WhatColumn!
@@ -1250,20 +1096,11 @@ if Is_plugin_installed('nvim-cmp') "{{{2
     lua setup_mason_dap_and_lspconfig()
 endif "}}}2
 
-if Is_plugin_installed('codecompanion.nvim') "{{{2
-    lua setup_nvim_codecompanion()
-endif "}}}2
-
 if Is_plugin_installed('telescope.nvim') "{{{2
     nnoremap z= :<C-u>Telescope spell_suggest theme=cursor<CR>
     nnoremap [myleader]f :Telescope find_files<CR>
     nnoremap [myleader]s :Telescope live_grep<CR>
     nnoremap [myleader]r :Telescope oldfiles<CR>
-endif
-
-if Is_plugin_installed('fzf') "{{{2
-    " nnoremap [myleader]f :FZF<CR>
-    " nnoremap [myleader]f<Space> :FZF<Space>
 endif "}}}2
 
 if Is_plugin_installed('vim-grepper') "{{{2
@@ -1271,12 +1108,7 @@ if Is_plugin_installed('vim-grepper') "{{{2
     nmap [myleader]g: :Grepper<CR>
     nmap [myleader]g <Plug>(GrepperOperator)
     xmap [myleader]g <Plug>(GrepperOperator)
-    let grepper.tools = ['rg', 'git', 'grep']
-endif "}}}2
-
-if Is_plugin_installed('vim-dispatch') "{{{2
-    nnoremap [myleader]m :Make<CR>
-    nnoremap [myleader]m: :Make<Space>
+    let g:grepper.tools = ['rg', 'git', 'grep']
 endif "}}}2
 
 if Is_plugin_installed('vim-fugitive') "{{{2
@@ -1284,7 +1116,7 @@ if Is_plugin_installed('vim-fugitive') "{{{2
     nnoremap <leader>gd :Gdiff<CR>
     nnoremap <leader>gd<Space> :Gdiff<Space>
     nnoremap <leader>gd1 :Gdiff HEAD~1<CR>
-    nnoremap <leader>gd2 :Gdiff HEAD~2<CR>
+    nnoremap leader>gd2 :Gdiff HEAD~2<CR>
     nmap ]gd :Git<CR>30<C-w>_<C-w>K<C-n>dd
     nmap [gd :Git<CR>30<C-w>_<C-w>K<C-p>dd
     nmap ]g :Git<CR>30<C-w>_<C-w>K<C-n><CR>
@@ -1298,7 +1130,7 @@ if Is_plugin_installed('vim-fugitive') "{{{2
     " \   rviminfo |
     " NOTE: removed for SVN commit messages: && fnamemodify(bufname('%'), ':t') != 'svn-commit.tmp'
     " ref: :h last-position-jump
-    fun! AutojumpLastPosition()
+    function! AutojumpLastPosition()
         if ! exists('b:autojumped_init')
             let b:autojumped_init = 1
             if &filetype !=# 'gitcommit' && &filetype !=# 'diff' && ! &diff && line("'\"") <=# line('$') && line("'\"") > 0
@@ -1306,7 +1138,7 @@ if Is_plugin_installed('vim-fugitive') "{{{2
                 exe 'normal! g`"zv'
             endif
         endif
-    endfun
+    endfunction
 
     " Follow symlinks when opening a file {{{
     " NOTE: this happens with directory symlinks anyway (due to Vim's chdir/getcwd
@@ -1630,8 +1462,8 @@ if Is_plugin_installed('lightline.vim') "{{{2
     endfunction
 
     function! Lightline_fugitive() abort
-        if &filetype !~? 'dirvish' && exists('*fugitive#head') && (winwidth(0) > 80)
-            let branch = fugitive#head()
+        if &filetype !~? 'dirvish' && exists('*FugitiveHead') && (winwidth(0) > 80)
+            let branch = FugitiveHead()
             return branch !=# '' ? '±'.branch : ''
         endif
         return ''
@@ -1747,11 +1579,6 @@ endif "}}}2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AFTER PLUGINS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if !exists('g:loaded_matchit')
-            \ && findfile('plugin/matchit.vim', &runtimepath) ==# ''
-    runtime! macros/matchit.vim
-endif
-
 if !exists(':Termdebug')
     packadd termdebug
 endif

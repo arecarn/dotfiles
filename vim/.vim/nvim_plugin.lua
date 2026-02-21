@@ -99,7 +99,12 @@ function setup_nvim_cmp()
     --     )
     --     }
     -- )
+
+    -- Set LSP capabilities globally for all servers (nvim-cmp integration)
     local capabilities = require('cmp_nvim_lsp').default_capabilities()
+    vim.lsp.config('*', {
+        capabilities = capabilities,
+    })
 end
 
 -----------------------------------------------------------------------------}}}
@@ -229,39 +234,84 @@ require('bqf').setup({
             "pyright",
             "vimls",
             "prosemd_lsp",
-
         },
     }
 
-    require("lspconfig").yamlls.setup{
-            settings = {
-                yaml = {
-                    completion = {enable = true}
-                }
+    -- Use Neovim 0.11+ native vim.lsp.config API
+    -- See :help lspconfig-nvim-0.11
+
+    -- YAML
+    vim.lsp.config.yamlls = {
+        cmd = { 'yaml-language-server', '--stdio' },
+        filetypes = { 'yaml', 'yaml.docker-compose', 'yaml.gitlab' },
+        root_markers = { '.git' },
+        settings = {
+            yaml = {
+                completion = { enable = true }
             }
+        }
     }
-    require("lspconfig").bashls.setup{}
-    require("lspconfig").cmake.setup{}
-    require("lspconfig").pyright.setup{}
-    require("lspconfig").vimls.setup{}
-    require("lspconfig").prosemd_lsp.setup{}
 
+    -- Bash
+    vim.lsp.config.bashls = {
+        cmd = { 'bash-language-server', 'start' },
+        filetypes = { 'sh', 'bash' },
+        root_markers = { '.git' },
+    }
 
-    require("lspconfig").clangd.setup{}
-    vim.api.nvim_create_autocmd("FileType",
-    {
-        pattern = "c,cpp",
-        callback = function(ev)
-            vim.keymap.set(
-            'n',
-            '<leader>of',
-            '<Cmd>ClangdSwitchSourceHeader<CR>',
-            {buffer=true, noremap}
-            )
+    -- CMake
+    vim.lsp.config.cmake = {
+        cmd = { 'cmake-language-server' },
+        filetypes = { 'cmake' },
+        root_markers = { 'CMakeLists.txt', '.git' },
+    }
+
+    -- Python
+    vim.lsp.config.pyright = {
+        cmd = { 'pyright-langserver', '--stdio' },
+        filetypes = { 'python' },
+        root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', '.git' },
+    }
+
+    -- Vimscript
+    vim.lsp.config.vimls = {
+        cmd = { 'vim-language-server', '--stdio' },
+        filetypes = { 'vim' },
+        root_markers = { '.git' },
+    }
+
+    -- Prose/Markdown
+    vim.lsp.config.prosemd_lsp = {
+        cmd = { 'prosemd-lsp', '--stdio' },
+        filetypes = { 'markdown' },
+        root_markers = { '.git' },
+    }
+
+    -- C/C++
+    vim.lsp.config.clangd = {
+        cmd = { 'clangd' },
+        filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda', 'proto' },
+        root_markers = { 'compile_commands.json', 'compile_flags.txt', '.git' },
+    }
+
+    -- Enable all configured LSP servers
+    vim.lsp.enable('yamlls')
+    vim.lsp.enable('bashls')
+    vim.lsp.enable('cmake')
+    vim.lsp.enable('pyright')
+    vim.lsp.enable('vimls')
+    vim.lsp.enable('prosemd_lsp')
+    vim.lsp.enable('clangd')
+
+    -- Clangd-specific keymap for switching between source/header
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "c", "cpp" },
+        callback = function()
+            vim.keymap.set('n', '<leader>of', '<Cmd>ClangdSwitchSourceHeader<CR>',
+                { buffer = true, desc = "Switch source/header" })
         end,
-        group = clangd
-    }
-    )
+        group = vim.api.nvim_create_augroup("clangd_mappings", { clear = true })
+    })
 
     local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
     for type, icon in pairs(signs) do

@@ -1,19 +1,11 @@
 " - {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" encoding for vim to use internally (why do I want this?)
-set encoding=utf-8
+" NOTE: Encoding settings moved to lua/config/options.lua
 
-" enable multi-byte utf-8 characters in this file
-scriptencoding utf-8
-
-"end-of-line formats that will be tried editing a new file
-set fileformats=unix,dos
-
-filetype on " enable file type detection and setting of the 'file type' option
-filetype plugin on " enable loading of file type plugin files
-filetype indent on " enable loading of the file type indent file
-
-syntax enable " enable syntax highlighting
+filetype on
+filetype plugin on
+filetype indent on
+syntax enable
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                              {{{
@@ -83,41 +75,14 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " COMMAND LINE                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set history=10000 " keep more command-line history
+" NOTE: Settings moved to lua/config/options.lua
 
-set wildmode=full " complete the next full match when pressing <Tab>
-
-" character you have to type to start wild card expansion and also works in
-" mappings, inline 'wild char'
-set wildcharm=<Tab>
-" accept current completion (requires that wild charm is set to <Tab>)
-cnoremap <C-Y> <Space><bs><Tab>
-
-" File Searching
-" ignored files
-set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.out,*.i,tags*,*.elf
-" lower priority files suffixes
-set suffixes=.bak,~,.o,.info,.swp,.obj,.git,.hg,.svn
-
-set path=
-set path+=.  " To search relative to the directory of the current file
-set path+=,, " To search in the current directory
-set path+=** " Relative to the current directory search recursively
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" CURSOR SETTINGS                                                            {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set scrolloff=5 " minimum number of lines to keep above & below the cursor
-set sidescrolloff=5 " minimum number of columns to keep left & right of the cursor
-
-" enable the mouse
-set mouse=a
+" NOTE: Command line mappings moved to lua/config/keymaps.lua
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UNDO & SWAP                                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set undofile " write undo history to files that can be restored on buffer read
-set undolevels=20000 " maximum number of changes that can be undone
+" NOTE: undofile, undolevels, swapfile moved to lua/config/options.lua
 if s:has_windows
     execute 'set undodir=' . s:make_data_directory('undo') . '\\\\'
 else
@@ -148,43 +113,16 @@ endfunction
 " remove undo files that no longer correspond to actual files
 command! UndoClean call Undo_clean()
 
-set noswapfile " disable swap files
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" BACKUP                                                                     {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set backup " enable backups vim-backup-tree takes care of the rest
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" LINE WRAPPING                                                              {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" maximum width line width, longer lines will be broken with a end of line
-" characters after a white space
-set textwidth=80
-
-" when 'wrap' is enabled visually break long lines at a character in 'break at'
-set linebreak
-" when 'wrap' is enabled visually wrapped lines will maintain first lines
-" indention level
-set breakindent
-set nowrap " don't wrap lines by default
-
-" hard-wrap to $MAN WIDTH when using :Man
-let g:man_hardwrap = 1
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" TODO this is a note about downloading spell file is this necessary anymore?
-" to work around issue in nvim run "nvim -u NORC +set\ spell"
+" NOTE: spell, spelllang, backup, line wrapping moved to lua/config/options.lua
 
-set spell " enable spell checking
-set spelllang=en_us " use US English words for spell checking
+" Path-dependent settings that must stay in vimscript
 let &spellfile = s:app_path . 'utils/spell/spellfile.add'
 let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
 
-" repeat the replacement done by z= for all matches
-nnoremap !z= :<C-u>spellrepall<cr>
+" NOTE: !z= mapping moved to lua/config/keymaps.lua
 
 " generate help tags for custom help files
 execute 'helptags ' . s:app_path . 'doc'
@@ -192,25 +130,10 @@ execute 'helptags ' . s:app_path . 'doc'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set expandtab " make <Tab> in insert mode insert spaces instead of tab characters
-set tabstop=4 " width of tab characters appear
-set shiftwidth=4 " width to used for a single indent
-set softtabstop=4 " width inserted when pressing <Tab> in insert mode
-set smarttab " enhances behavior of <Tab> and <BS> in insert mode
+" NOTE: Tab/indent settings moved to lua/config/options.lua
 
-set autoindent " copy indent from current line when starting a new line
-
-set formatoptions+=n " recognize lists
-set formatlistpat+=\\\|^\\s*[-*]\\s* "recognize lists with * or -
-set formatoptions+=j " delete comment character when joining commented lines
-set formatoptions-=t "don't auto wrap based on 'textwidth'
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" FOLDING                                                                    {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set foldcolumn=2
-set foldnestmax=3
-set foldlevelstart=99
+" formatlistpat must stay in vimscript (complex escaping)
+set formatlistpat+=\\\|^\\s*[-*]\\s*
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AUTO CMD                                                                    {{{
@@ -226,81 +149,15 @@ augroup AllFiles
 augroup end
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SEARCHING                                                                  {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set wrapscan "searches wrap around the end of the file
-set ignorecase " while searching the case of letters ignored
-set smartcase " override 'ignore case' if the search contains upper case chars
-set maxmempattern=2000000
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" TAGS                                                                       {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set tags=tags;/ " search backwards for the tags file
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" GENERAL BEHAVIOR                                                           {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" use the system clipboard register + for yank, delete, change, and put
-" operations
-set clipboard=unnamedplus
-
-" when splitting a window put the new window right of the current one.
-set splitright
-
-set nrformats-=octal " ignore octal numbers when using  <C-a> and <C-x>
-
-set belloff=all " disable bells
-
-set nostartofline " avoid moving the cursor column when navigating
-
-" write the contents of the file, if it has been modified when navigating away
-" from the file
-set autowriteall
-
-set autoread " re-read files that have been changed outside of vim
-
-" allow the cursor to be positioned where there are no actual character
-set virtualedit+=all
-
-set modeline " allow modeling options to be evaluated
-
-" shows the effects of a substitute commands as you type
-set inccommand=nosplit
-
-set diffopt+=vertical "always open diff side by side
-set diffopt+=linematch:60
-set diffopt+=indent-heuristic
-set diffopt+=algorithm:histogram
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" NOTE: Search, tags, general behavior, UI settings moved to lua/config/options.lua
+
 " set 'colorcolumn' position based on 'textwidth'
 augroup colorcolumn
     autocmd!
     autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
 augroup end
-
-" open a dialog for commands that can be confirmed/ can fail e.g. :q, :qa, :w
-set confirm
-
-set shortmess+=a "use abbreviations for short messages
-set shortmess-=S "Show number of matches when searching
-
-" show current line number, and relative line numbers around it
-set number
-set relativenumber
-
-set showcmd " show partial normal mode commands
-set laststatus=2 " always show status line
-set showtabline=2 " always show tab line
-
-" special characters to display for certain situations
-set list
-set listchars=trail:·,tab:→‸,extends:▶,precedes:◀,nbsp:‾
-
-set signcolumn=yes
 
 " Highlight TODO, FIXME, NOTE, etc.
 highlight default link MyTodo Todo
@@ -312,20 +169,8 @@ augroup end
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-set updatetime=1000 " time to wait for swap file write/ CursorHold autocmd
-
-let mapleader="\<Space>"
-
-nnoremap [myleader] <Nop>
-xnoremap [myleader] <Nop>
-nmap go [myleader]
-xmap go [myleader]
-
-cnoremap [cmdleader] <Nop>
-cmap <C-j> [cmdleader]
-
-
+" NOTE: Core keymaps moved to lua/config/keymaps.lua
+" NOTE: updatetime, mapleader moved to lua/config/options.lua
 
 set grepformat=%f:%l:%c:%m
 if executable('rg')
@@ -334,20 +179,7 @@ elseif executable('ag')
     set grepprg=ag\ --vimgrep\ $*
 endif
 
-nnoremap sal :set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>
-nnoremap sG :set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>
-nnoremap sae :set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>
-
-" When 'wrap' is enabled these mappings make basic navigation more intuitive
-" when navigating between visually wrapped lines
-nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
-nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
-nnoremap gk k
-nnoremap gj j
-xnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
-xnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
-xnoremap gk k
-xnoremap gj j
+" NOTE: sal, sG, sae, j/k navigation moved to lua/config/keymaps.lua
 
 nnoremap <leader>F :find <C-R>=expand('%:h') . g:os_path_sep<CR>
 nnoremap <leader>fo :find <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
@@ -359,10 +191,7 @@ nnoremap <leader>b :ls<CR>:buffer<Space>
 nnoremap <leader>bs :ls<CR>:sbuffer<Space>
 nnoremap <leader>bo :buffer <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
 
-" replace selection with spaces and enter replace mode
-xnoremap gr r<Space>gvo<Esc>R
-
-noremap <silent><leader>rt :retab<CR>
+" NOTE: gr, <leader>rt moved to lua/config/keymaps.lua
 
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>
@@ -372,17 +201,7 @@ function! s:under_line() abort
     execute ':s#\m\S.*\S\|\S#\=repeat(''' . l:char . ''',strlen(submatch(0)))#g'
 endfunction
 
-" format current paragraph wile in insert mode
-inoremap <C-f> <Esc>gw{zea
-
-" This gets CTRL-6 working on nvim-qt one windows (maybe other places too?)
-nnoremap <C-6> <C-^>
-
-" break out the current tab into a new window without leaving the current tab
-nnoremap <expr> <C-w><C-t> (winnr('$') != 1 ? "<C-w>TgT" : "")
-
-" open the current window's buffer in a new tab without breaking it out
-nnoremap g<C-w>t :tabedit %<CR>
+" NOTE: <C-f>, <C-6>, window/tab mappings moved to lua/config/keymaps.lua
 
 function! s:in(group, item) abort
     if type(a:group) == type('')
@@ -391,14 +210,8 @@ function! s:in(group, item) abort
     endif
 endfunction
 
-" think of "yo" as "yoggle option"
-nnoremap yosb :<C-U>set scrollbind!<CR>:set scrollbind?<CR>
-nnoremap yocb :<C-U>set cursorbind!<CR>:set cursorbind?<CR>
-nnoremap yomd :<C-U>set modifiable!<CR>:set modifiable?<CR>
-nnoremap yoro :<C-U>set readonly!<CR>:set readonly?<CR>
-nnoremap yot :<C-U>set textwidth=
-nnoremap yocl :<C-U>setlocal conceallevel=
-nnoremap yosw :<C-U>set shiftwidth=
+" NOTE: yosb, yocb, yomd, yoro, yot, yocl, yosw moved to lua/config/keymaps.lua
+" yonf stays here as it depends on s:scratch_toggle()
 nnoremap <silent> yonf :<C-U>call <SID>scratch_toggle()<CR>
 function! s:scratch_toggle() abort
     if match(&buftype, '\C\v'.'nofile') != -1
@@ -426,63 +239,8 @@ endfunction
 nnoremap yotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
 nnoremap yopw :<C-U>call <SID>format_options_toggle('aw', 'auto formatting of paragraphs')<CR>
 
-" reselect pasted or last changed text
-nnoremap <expr> gpv '`[' . getregtype()[0] . '`]'
-
-nnoremap <C-w>Q :tabclose<CR>
-
-" Use <C-L> to clear the highlighting of :set hlsearch, and redraw the screen
-nnoremap <silent> <C-L> :redraw!<CR>:nohlsearch<C-r>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-l>
-
-nnoremap <C-W>d :bd<CR>
-
-" make more undos possible after leaving insert mode
-inoremap <C-u> <C-g>u<C-u>
-inoremap <C-w> <C-g>u<C-w>
-inoremap <BS> <C-g>u<BS>
-inoremap <Del> <C-g>u<Del>
-inoremap <End> <C-g>u<End>
-inoremap <Space> <C-g>u<Space>
-
-" yank to end of line, kinda like D or C
-noremap Y y$
-
-" visual selection text object
-xnoremap a/ gn
-onoremap a/ gn
-xnoremap i/ gn
-onoremap i/ gn
-xnoremap i? gN
-onoremap i? gN
-xnoremap a? gN
-onoremap a? gN
-
-" disable Ex mode key and use it to repeat the last q macro (love this)
-nnoremap Q @q
-" replay q macro for each line of a visual selection
-xnoremap Q :normal! @q<CR>
-" repeat last command for each line of a visual selection
-xnoremap . :normal! .<CR>
-
-" set path to present working directory locally
-nnoremap cdl :lcd! %:h<CR>:pwd<CR>
-nnoremap cd :cd! %:h<CR>:pwd<CR>
-
-" paste after visual block/line selection
-vnoremap <expr> gp '<C-v>A<C-r>'.v:register.'<Esc>'
-" paste before visual block/line selection
-vnoremap <expr> gP '<C-v>I<C-r>'.v:register.'<Esc>'
-
-" navigation in command line
-cnoremap <C-p> <UP>
-cnoremap <C-n> <DOWN>
-cnoremap <C-b> <LEFT>
-cnoremap <C-f> <RIGHT>
-cnoremap <C-a> <HOME>
-cnoremap <C-e> <END>
-" expand abbreviations
-cnoremap <C-x> <C-]>
-cnoremap <C-v> <C-f>
+" NOTE: gpv, window/buffer commands, undo break points, Y, text objects,
+" NOTE: Q macro, cd, gp/gP, command line navigation moved to lua/config/keymaps.lua
 
 " fn file name foo.txt
 " afp File Path  (/something/src/foo.txt)
@@ -542,11 +300,7 @@ for s:map in s:maps
     execute 'cnoremap %' . s:map.str . ' <C-r>=' . s:map.func . '<CR>'
 endfor
 
-" accept completion (requires "set wildcharm = <Tab>)
-cnoremap <C-y> <Space><BS><Tab>
-
-cnoremap %%date <C-r>=strftime('%Y-%m-%d')<CR>
-inoremap %%date <C-r>=strftime('%Y-%m-%d')<CR>
+" NOTE: <C-y> completion, %%date moved to lua/config/keymaps.lua
 
 let $zsh = '~/.zshrc'
 let $zshl = '~/.zshrc_local'
@@ -563,25 +317,7 @@ let $tmux = '~/.tmux.conf'
 let $i = '~/files/inbox.md'
 let $j = '~/files/journal.md'
 
-cnoremap ~f ~/files
-cnoremap ~p ~/files/projects
-cnoremap ~df ~/dotfiles
-cnoremap ~dfl ~/dotfiles_local
-
-" Exit terminal
-tnoremap <C-\><C-\> <C-\><C-n>
-snoremap <C-\><C-\> <C-\><C-n>
-inoremap <C-\><C-\> <C-\><C-n>
-noremap <C-\><C-\> <C-\><C-n>
-
-" paste into terminal
-tnoremap <C-\>p <C-\><C-n>pi
-
-" paste register into terminal
-tnoremap <expr> <C-\><C-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
-
-
-nnoremap + :<C-u>terminal<CR>
+" NOTE: ~f, ~p, ~df, ~dfl, terminal mappings moved to lua/config/keymaps.lua
 
 augroup terminal
     autocmd!
@@ -1579,10 +1315,6 @@ endif "}}}2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AFTER PLUGINS                                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if !exists(':Termdebug')
-    packadd termdebug
-endif
-
 if !exists(':CFilter')
     packadd cfilter
 endif

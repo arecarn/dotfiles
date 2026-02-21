@@ -1,15 +1,15 @@
-" -                                                                          {{{
+" - {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " encoding for vim to use internally (why do I want this?)
 set encoding=utf-8
 
-" enable multi-byte utf-8 characters in this file
+" enable multi-byte fut-8 characters in this file
 scriptencoding utf-8
 
 "end-of-line formats that will be tried editing a new file
 set fileformats=unix,dos
 
-filetype on " enable file type detection and setting of the 'filetype' option
+filetype on " enable file type detection and setting of the 'file type' option
 filetype plugin on " enable loading of file type plugin files
 filetype indent on " enable loading of the file type indent file
 
@@ -93,10 +93,10 @@ set history=10000 " keep more command-line history
 set wildmenu " show command-line completions when pressing <Tab>
 set wildmode=full " complete the next full match when pressing <Tab>
 
-" character you have to type to start wildcard expansion and also works in
-" mappings, unlink 'wildchar'
+" character you have to type to start wild card expansion and also works in
+" mappings, inline 'wild char'
 set wildcharm=<Tab>
-" accept current completion (requires that wildcharm is set to <Tab>)
+" accept current completion (requires that wild charm is set to <Tab>)
 cnoremap <C-Y> <Space><bs><Tab>
 
 " File Searching
@@ -181,7 +181,7 @@ set backup " enable backups vim-backup-tree takes care of the rest
 " characters after a white space
 set textwidth=80
 
-" when 'wrap' is enabled visually break long lines at a character in 'breakat'
+" when 'wrap' is enabled visually break long lines at a character in 'break at'
 set linebreak
 if exists('+breakindent')
     " when 'wrap' is enabled visually wrapped lines will maintain first lines
@@ -191,7 +191,7 @@ endif
 set nowrap " don't wrap lines by default
 
 if has('nvim')
-    " hard-wrap to $MANWIDTH when using :Man
+    " hard-wrap to $MAN WIDTH when using :Man
     let g:man_hardwrap = 1
 endif
 
@@ -236,7 +236,7 @@ set foldnestmax=3
 set foldlevelstart=99
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" AUTOCMDS                                                                   {{{
+" AUTO CMDR                                                                   {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has('autocmd')
     augroup vimrc
@@ -258,7 +258,7 @@ endif
 set wrapscan "searches wrap around the end of the file
 set incsearch " while searching show and highlight match as you type
 set ignorecase " while searching the case of letters ignored
-set smartcase " override 'ignorecase' if the search contains upper case chars
+set smartcase " override 'ignore case' if the search contains upper case chars
 set maxmempattern=2000000
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
@@ -292,7 +292,7 @@ set backspace=indent,eol,start " allow backspacing to work as expected
 " allow the cursor to be positioned where there are no actual character
 set virtualedit+=all
 
-set modeline " allow modeline options to be evaluated
+set modeline " allow modeling options to be evaluated
 
 if has('nvim')
     " shows the effects of a substitute commands as you type
@@ -403,6 +403,8 @@ xmap go [myleader]
 
 cnoremap [cmdleader] <Nop>
 cmap <C-j> [cmdleader]
+
+
 
 set grepformat=%f:%l:%c:%m
 if executable('rg')
@@ -934,11 +936,11 @@ if !s:has_windows
     Plug 'edkolev/tmuxline.vim'
 endif
 
-Plug 'tpope/vim-dispatch'
+" Plug 'tpope/vim-dispatch'
 if s:has_nvim
     " Plug 'MadCoder/vim-dispatch-neovim' " depends on 'tpope/vim-dispatch'
 endif
-Plug 'janko-m/vim-test'
+Plug 'stevearc/overseer.nvim'
 
 
 " Vim script Development
@@ -971,7 +973,8 @@ Plug 'chrisbra/csv.vim'
 
 
 " Colors
-Plug 'romainl/Apprentice'
+Plug 'rktjmp/lush.nvim'
+Plug 'adisen99/apprentice.nvim'
 Plug 'jonsmithers/apprentice-lightline-experimental'
 
 if has('nvim')
@@ -1527,10 +1530,52 @@ if Is_plugin_installed('vim-operator-replace') "{{{2
     map _ <Plug>(operator-replace)
 endif "}}}2
 
-if Is_plugin_installed('Apprentice') "{{{2
+if Is_plugin_installed('apprentice.nvim') "{{{2
+    let g:colors_name = 'apprentice'
     set background=dark
     set termguicolors
-    colorscheme apprentice
+    lua << EOF
+    require('lush')(require('apprentice').setup({
+      plugins = {
+        "buftabline",
+        "cmp", -- nvim-cmp
+        "fzf",
+        "lsp",
+        "lspsaga",
+        "signify",
+        "telescope",
+        "treesitter"
+      },
+      langs = {
+        "c",
+        "clojure",
+        "coffeescript",
+        "csharp",
+        "css",
+        "elixir",
+        "golang",
+        "haskell",
+        "html",
+        "java",
+        "js",
+        "json",
+        "jsx",
+        "lua",
+        "markdown",
+        "moonscript",
+        "objc",
+        "ocaml",
+        "purescript",
+        "python",
+        "ruby",
+        "rust",
+        "scala",
+        "typescript",
+        "viml",
+        "xml"
+      }
+    }))
+EOF
 endif "}}}2
 
 if Is_plugin_installed('lightline.vim') "{{{2
@@ -1613,9 +1658,65 @@ if Is_plugin_installed('lightline.vim') "{{{2
     endfunction
 endif "}}}2
 
-if Is_plugin_installed('vim-qf') "{{{2
-    " auto opening the quickfix resets the &makeprg :(
-    let g:qf_auto_open_quickfix = 0
+if Is_plugin_installed('overseer.nvim') "{{{2
+    lua setup_overseer()
+    nnoremap m<Space> :Make<Space>
+    nnoremap <leader>oo :OverseerOpen<CR>
+    nnoremap <leader>ot :OverseerToggle<CR>
+    cabbrev Run OverseerShell
+
+    lua << EOF
+    local function get_makefile_targets()
+        local targets = {}
+        local makefile = "Makefile"
+
+
+        -- Check if Makefile exists
+        if vim.fn.filereadable(makefile) == 0 then
+            return targets
+        end
+
+        -- Read file line by line
+        for line in io.lines(makefile) do
+            -- Match lines starting with a word followed by a colon
+            -- Excludes lines starting with space/tab (commands) or # (comments)
+            local target = line:match("^([%w%-_%.]+):")
+            if target and target ~= ".PHONY" then
+                table.insert(targets, target)
+            end
+        end
+        return targets
+    end
+
+    vim.api.nvim_create_user_command("Make", function(params)
+        local cmd, num_subs = vim.o.makeprg:gsub("%%$%%*", params.args)
+        if num_subs == 0 then
+            cmd = cmd .. " " .. params.args
+        end
+        local task = require("overseer").new_task({
+            cmd = vim.fn.expandcmd(cmd),
+            components = {
+                -- 1. Show the output in a terminal/buffer while running
+                { "open_output", direction = "dock", on_start = "always", on_complete="always"},
+                { "unique", replace=true },
+                -- { "on_output_quickfix", open = not params.bang, open_height = 10 },
+                "default",
+            },
+        })
+        task:start()
+    end, {
+    desc = "Run your makeprg as an Overseer task",
+    nargs = "*",
+    bang = true,
+    complete = function(ArgLead)
+        local targets = get_makefile_targets()
+        return vim.tbl_filter(function(v)
+            return v:find(ArgLead, 1, true) == 1
+        end, targets)
+    end,
+        })
+EOF
+
 endif "}}}2
 
 
@@ -1651,8 +1752,13 @@ if !exists('g:loaded_matchit')
     runtime! macros/matchit.vim
 endif
 
+if !exists(':Termdebug')
+    packadd termdebug
+endif
 
-packadd termdebug
+if !exists(':CFilter')
+    packadd cfilter
+endif
 
 if exists('*Vimrc_local_plugin_config')
     call Vimrc_local_plugin_config()

@@ -14,7 +14,6 @@ require('plugins')
 require('config.keymaps')
 
 -- Source vimrc for remaining vimscript (utility functions, autocmds, etc.)
--- This also sources nvim_plugin.lua for LSP configuration
 vim.cmd('source ~/.config/nvim/vimrc')
 
 -------------------------------------------------------------------------------}}}

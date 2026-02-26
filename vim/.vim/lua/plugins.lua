@@ -211,7 +211,49 @@ local plugins = {
         },
         config = function()
             require('overseer').setup()
-            -- Make command is defined in nvim_plugin.lua
+
+            local function get_makefile_targets()
+                local targets = {}
+                local makefile = "Makefile"
+
+                if vim.fn.filereadable(makefile) == 0 then
+                    return targets
+                end
+
+                for line in io.lines(makefile) do
+                    local target = line:match("^([%w%-_%.]+):")
+                    if target and target ~= ".PHONY" then
+                        table.insert(targets, target)
+                    end
+                end
+                return targets
+            end
+
+            vim.api.nvim_create_user_command("Make", function(params)
+                local cmd, num_subs = vim.o.makeprg:gsub("%%$%%*", params.args)
+                if num_subs == 0 then
+                    cmd = cmd .. " " .. params.args
+                end
+                local task = require("overseer").new_task({
+                    cmd = vim.fn.expandcmd(cmd),
+                    components = {
+                        { "open_output", direction = "dock", on_start = "always", on_complete = "always" },
+                        { "unique", replace = true },
+                        "default",
+                    },
+                })
+                task:start()
+            end, {
+                desc = "Run your makeprg as an Overseer task",
+                nargs = "*",
+                bang = true,
+                complete = function(ArgLead)
+                    local targets = get_makefile_targets()
+                    return vim.tbl_filter(function(v)
+                        return v:find(ArgLead, 1, true) == 1
+                    end, targets)
+                end,
+            })
         end,
     },
 

@@ -529,7 +529,20 @@ local plugins = {
                 mapping = cmp.mapping.preset.insert({
                     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
                     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                    ['<C-n>'] = cmp.mapping.complete(),
+                    ['<C-n>'] = cmp.mapping(function()
+                        if cmp.visible() then
+                            cmp.select_next_item()
+                        else
+                            cmp.complete()
+                        end
+                    end, { 'i', 's' }),
+                    ['<C-p>'] = cmp.mapping(function()
+                        if cmp.visible() then
+                            cmp.select_prev_item()
+                        else
+                            cmp.complete()
+                        end
+                    end, { 'i', 's' }),
                     ['<C-e>'] = cmp.mapping.abort(),
                     ['<C-y>'] = cmp.mapping.confirm({ select = true }),
                 }),

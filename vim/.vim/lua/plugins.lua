@@ -237,11 +237,16 @@ local plugins = {
                 local task = require("overseer").new_task({
                     cmd = vim.fn.expandcmd(cmd),
                     components = {
-                        { "open_output", direction = "dock", on_start = "always", on_complete = "always" },
+                        { "open_output", direction = "dock", on_start = "always", on_complete = "never" },
+                        { "on_output_quickfix", open = false },
                         { "unique", replace = true },
                         "default",
                     },
                 })
+                task:subscribe("on_complete", function()
+                    vim.cmd("copen")
+                    vim.cmd("OverseerClose")
+                end)
                 task:start()
             end, {
                 desc = "Run your makeprg as an Overseer task",

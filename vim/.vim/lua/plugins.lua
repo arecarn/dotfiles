@@ -560,12 +560,12 @@ local plugins = {
     ---------------------------------------------------------------------------
     {
         'tpope/vim-fugitive',
-        cmd = { 'Git', 'G', 'Gdiff', 'Gread', 'Gwrite', 'Ggrep', 'GMove', 'GDelete', 'GBrowse' },
+        cmd = { 'Git', 'G', 'Gdiffsplit', 'Gread', 'Gwrite', 'Ggrep', 'GMove', 'GDelete', 'GBrowse' },
         keys = {
             { '<leader>gs', '<cmd>Git<CR>', desc = 'Git status' },
-            { '<leader>gd', '<cmd>Gdiff<CR>', desc = 'Git diff' },
-            { '<leader>gd1', '<cmd>Gdiff HEAD~1<CR>', desc = 'Git diff HEAD~1' },
-            { '<leader>gd2', '<cmd>Gdiff HEAD~2<CR>', desc = 'Git diff HEAD~2' },
+            { '<leader>gd', '<cmd>Gdiffsplit<CR>', desc = 'Git diff' },
+            { '<leader>gd1', '<cmd>Gdiffsplit HEAD~1<CR>', desc = 'Git diff HEAD~1' },
+            { '<leader>gd2', '<cmd>Gdiffsplit HEAD~2<CR>', desc = 'Git diff HEAD~2' },
         },
     },
     { 'lambdalisue/gina.vim', cmd = 'Gina' },

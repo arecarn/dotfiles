@@ -81,41 +81,8 @@ endfunction
 
 " NOTE: <C-f>, <C-6>, window/tab mappings moved to lua/config/keymaps.lua
 
-function! s:in(group, item) abort
-    if type(a:group) == type('')
-        let l:group = split(a:group, '\zs')
-        return index(l:group, a:item) >= 0
-    endif
-endfunction
-
 " NOTE: yosb, yocb, yomd, yoro, yot, yocl, yosw moved to lua/config/keymaps.lua
-" yonf stays here as it depends on s:scratch_toggle()
-nnoremap <silent> yonf :<C-U>call <SID>scratch_toggle()<CR>
-function! s:scratch_toggle() abort
-    if match(&buftype, '\C\v'.'nofile') != -1
-        set buftype-=nofile
-    else
-        set buftype+=nofile
-    endif
-endfunction
-function! s:format_options_toggle(options, message) abort
-    let l:options = split(a:options, '\zs')
-
-    for l:option in l:options
-        if s:in(&formatoptions, l:option)
-            let l:add_or_subtract = '-='
-            let l:message = printf('off: %s', a:message)
-        else
-            let l:add_or_subtract = '+='
-            let l:message =  printf('on: %s', a:message)
-        endif
-        execute 'set formatoptions' . l:add_or_subtract . l:option
-    endfor
-    set formatoptions?
-    echo l:message
-endfunction
-nnoremap yotw :<C-U>call <SID>format_options_toggle('t', 'auto wrap using textwidth')<CR>
-nnoremap yopw :<C-U>call <SID>format_options_toggle('aw', 'auto formatting of paragraphs')<CR>
+" NOTE: yonf, yotw, yopw (format option toggles) moved to lua/config/keymaps.lua
 
 " NOTE: gpv, window/buffer commands, undo break points, Y, text objects,
 " NOTE: Q macro, cd, gp/gP, command line navigation moved to lua/config/keymaps.lua

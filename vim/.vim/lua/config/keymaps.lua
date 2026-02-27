@@ -188,6 +188,47 @@ map('n', 'yot', ':<C-U>set textwidth=')
 map('n', 'yocl', ':<C-U>setlocal conceallevel=')
 map('n', 'yosw', ':<C-U>set shiftwidth=')
 
+-- Toggle scratch buffer (nofile)
+map('n', 'yonf', function()
+    if vim.bo.buftype:match('nofile') then
+        vim.bo.buftype = ''
+    else
+        vim.bo.buftype = 'nofile'
+    end
+    vim.cmd('set buftype?')
+end, { silent = true, desc = 'Toggle scratch buffer' })
+
+--- Toggle formatoptions and display status
+---@param options string Single characters to toggle (e.g., 't' or 'aw')
+---@param message string Description of what's being toggled
+local function format_options_toggle(options, message)
+    local fo = vim.bo.formatoptions
+    local action = 'on'
+
+    for char in options:gmatch('.') do
+        if fo:find(char, 1, true) then
+            vim.bo.formatoptions = fo:gsub(char, '')
+            action = 'off'
+        else
+            vim.bo.formatoptions = vim.bo.formatoptions .. char
+        end
+        fo = vim.bo.formatoptions
+    end
+
+    vim.cmd('set formatoptions?')
+    print(action .. ': ' .. message)
+end
+
+-- Toggle auto wrap using textwidth (formatoption 't')
+map('n', 'yotw', function()
+    format_options_toggle('t', 'auto wrap using textwidth')
+end, { desc = 'Toggle auto wrap' })
+
+-- Toggle auto formatting of paragraphs (formatoptions 'a' and 'w')
+map('n', 'yopw', function()
+    format_options_toggle('aw', 'auto formatting of paragraphs')
+end, { desc = 'Toggle paragraph auto-format' })
+
 -------------------------------------------------------------------------------}}}
 -- SPELLING                                                                   {{{
 --------------------------------------------------------------------------------

@@ -10,6 +10,9 @@ require('config.paths')
 -- Load options (includes mapleader)
 require('config.options')
 
+-- Load statusline functions (must be before plugins for lightline)
+require('config.statusline')
+
 -- Load plugins via lazy.nvim
 require('plugins')
 

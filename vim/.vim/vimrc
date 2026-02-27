@@ -235,56 +235,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " LIGHTLINE FUNCTIONS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" These functions are used by lightline (configured in plugins.lua)
-function! Lightline_modified() abort
-    return &filetype =~# 'help\|dirvish' ? '' : &modified ? '+' : &modifiable ? '' : '-'
-endfunction
-
-function! Lightline_readonly() abort
-    return &filetype !~? 'help\|dirvish' && &readonly ? 'RO' : ''
-endfunction
-
-function! Lightline_filename() abort
-    let file_name = bufname('%')
-    if file_name ==# ''
-        let file_name = '[No Name]'
-    else
-        if winwidth(0) - len(file_name) < 40
-            let file_name = substitute(file_name, '\v([^/\\:])[^/\\:]*([/\\])', '\1\2', 'g' )
-        endif
-    endif
-    return ('' !=# Lightline_readonly() ? Lightline_readonly() . ' ' : '') .
-                \ file_name .
-                \ ('' !=# Lightline_modified() ? ' ' . Lightline_modified() : '')
-endfunction
-
-function! Lightline_fugitive() abort
-    if &filetype !~? 'dirvish' && exists('*FugitiveHead') && (winwidth(0) > 80)
-        let branch = FugitiveHead()
-        return branch !=# '' ? '±'.branch : ''
-    endif
-    return ''
-endfunction
-
-function! Lightline_fileformat() abort
-    return winwidth(0) > 80 ? &fileformat : ''
-endfunction
-
-function! Lightline_filetype() abort
-    return winwidth(0) > 80 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
-endfunction
-
-function! Lightline_fileencoding() abort
-    return winwidth(0) > 80 ? (&fileencoding !=# '' ? &fileencoding : &encoding) : ''
-endfunction
-
-function! Lightline_winnr() abort
-    return winnr()
-endfunction
-
-function! Lightline_bufnr() abort
-    return 'b:' . bufnr('%')
-endfunction
+" NOTE: Lightline functions moved to lua/config/statusline.lua
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " AFTER PLUGINS                                                              {{{

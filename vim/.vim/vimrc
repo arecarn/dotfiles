@@ -86,65 +86,7 @@ endfunction
 
 " NOTE: gpv, window/buffer commands, undo break points, Y, text objects,
 " NOTE: Q macro, cd, gp/gP, command line navigation moved to lua/config/keymaps.lua
-
-" fn file name foo.txt
-" afp File Path  (/something/src/foo.txt)
-" fp File Path relative  (src/foo.txt)
-" ofn Other File Name (trail)
-" aofp Other File Path
-" ofp Other File Path Relative to pwd
-" adp Directory Path (head) (/something/src)
-" dp Directory Path Relative to pwd (head) (/something/src)
-" pwd Present Working Directory
-let s:extension_pattern = '\(\(.\{1,}\.\)\w\+$\)\?'
-let s:maps = [
-            \     {
-            \         'str': 'fn',
-            \         'func': "expand('%:t')"
-            \     },
-            \     {
-            \         'str': 'afp',
-            \         'func': "expand('%:p')"
-            \     },
-            \     {
-            \         'str': 'fp',
-            \         'func': "expand('%')"
-            \     },
-            \     {
-            \         'str': 'ofn',
-            \         'func': "substitute(expand('%:t'), '"
-            \         . s:extension_pattern . "', '\\2', 'g')"
-            \     },
-            \     {
-            \         'str': 'aofp',
-            \         'func': "substitute(expand('%:p:r:.'), '"
-            \         . s:extension_pattern . "', '\\2', 'g')"
-            \     },
-            \     {
-            \         'str': 'ofp',
-            \         'func': "expand('%<') . '.'"
-            \     },
-            \     {
-            \         'str': 'adp',
-            \         'func': "expand('%:p:h') . g:os_path_sep"
-            \     },
-            \     {
-            \         'str': 'dp',
-            \         'func': "expand('%:h') . g:os_path_sep"
-            \     },
-            \     {
-            \         'str': 'pwd',
-            \         'func': 'getcwd()'
-            \     }
-            \  ]
-for s:map in s:maps
-    execute 'nnoremap <silent> <leader>y' . s:map.str . ' ' .
-                \ ':let @*=' . s:map.func . '<CR>' .
-                \ ':let @+=' . s:map.func . '<CR>' .
-                \ ':let @"=' . s:map.func . '<CR>'
-    execute 'cnoremap %' . s:map.str . ' <C-r>=' . s:map.func . '<CR>'
-endfor
-
+" NOTE: File path yank mappings (<leader>y*, %*) moved to lua/config/keymaps.lua
 " NOTE: <C-y> completion, %%date moved to lua/config/keymaps.lua
 
 let $zsh = '~/.zshrc'

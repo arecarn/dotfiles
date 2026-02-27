@@ -156,6 +156,89 @@ map('c', '~df', '~/dotfiles')
 map('c', '~dfl', '~/dotfiles_local')
 
 -------------------------------------------------------------------------------}}}
+-- FILE PATH YANK                                                             {{{
+--------------------------------------------------------------------------------
+-- Yank various file path components to clipboard
+-- <leader>y<suffix> yanks to all registers (*, +, ")
+-- %<suffix> in command mode inserts the value
+
+local path_sep = vim.g.os_path_sep or '/'
+
+--- Get file path component
+---@param kind string The type of path to get
+---@return string
+local function get_path(kind)
+    local handlers = {
+        -- fn: file name (foo.txt)
+        fn = function() return vim.fn.expand('%:t') end,
+        -- afp: absolute file path (/something/src/foo.txt)
+        afp = function() return vim.fn.expand('%:p') end,
+        -- fp: file path relative (src/foo.txt)
+        fp = function() return vim.fn.expand('%') end,
+        -- ofn: other file name - filename stem with trailing dot (foo.)
+        ofn = function()
+            local name = vim.fn.expand('%:t:r')
+            return name ~= '' and name .. '.' or ''
+        end,
+        -- aofp: absolute other file path - full path stem with trailing dot
+        aofp = function()
+            local stem = vim.fn.expand('%:p:r')
+            return stem ~= '' and stem .. '.' or ''
+        end,
+        -- ofp: other file path relative - relative path stem with trailing dot
+        ofp = function()
+            local stem = vim.fn.expand('%:r')
+            return stem ~= '' and stem .. '.' or ''
+        end,
+        -- adp: absolute directory path (/something/src/)
+        adp = function() return vim.fn.expand('%:p:h') .. path_sep end,
+        -- dp: directory path relative (src/)
+        dp = function()
+            local dir = vim.fn.expand('%:h')
+            return dir ~= '' and dir .. path_sep or ''
+        end,
+        -- pwd: present working directory
+        pwd = function() return vim.fn.getcwd() end,
+    }
+    local handler = handlers[kind]
+    return handler and handler() or ''
+end
+
+--- Yank value to all clipboard registers
+---@param value string
+local function yank_to_all(value)
+    vim.fn.setreg('*', value)
+    vim.fn.setreg('+', value)
+    vim.fn.setreg('"', value)
+    print('Yanked: ' .. value)
+end
+
+-- Define all path mappings
+local path_maps = {
+    { suffix = 'fn',   desc = 'file name' },
+    { suffix = 'afp',  desc = 'absolute file path' },
+    { suffix = 'fp',   desc = 'relative file path' },
+    { suffix = 'ofn',  desc = 'file name stem' },
+    { suffix = 'aofp', desc = 'absolute path stem' },
+    { suffix = 'ofp',  desc = 'relative path stem' },
+    { suffix = 'adp',  desc = 'absolute directory' },
+    { suffix = 'dp',   desc = 'relative directory' },
+    { suffix = 'pwd',  desc = 'working directory' },
+}
+
+for _, m in ipairs(path_maps) do
+    -- Normal mode: <leader>y<suffix> yanks to all registers
+    map('n', '<leader>y' .. m.suffix, function()
+        yank_to_all(get_path(m.suffix))
+    end, { silent = true, desc = 'Yank ' .. m.desc })
+
+    -- Command mode: %<suffix> inserts the value
+    map('c', '%' .. m.suffix, function()
+        return get_path(m.suffix)
+    end, { expr = true })
+end
+
+-------------------------------------------------------------------------------}}}
 -- TERMINAL                                                                   {{{
 --------------------------------------------------------------------------------
 -- Exit terminal mode

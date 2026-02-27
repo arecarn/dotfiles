@@ -136,35 +136,10 @@ execute 'helptags ' . s:app_path . 'doc'
 set formatlistpat+=\\\|^\\s*[-*]\\s*
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" AUTO CMD                                                                    {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-augroup vimrc
-    autocmd!
-    autocmd BufWritePost *vimrc*,init.vim nested source $MYVIMRC
-augroup end
-
-augroup AllFiles
-    autocmd!
-    autocmd FocusLost * silent! wall
-augroup end
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                                 {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NOTE: Search, tags, general behavior, UI settings moved to lua/config/options.lua
-
-" set 'colorcolumn' position based on 'textwidth'
-augroup colorcolumn
-    autocmd!
-    autocmd BufNewFile,BufWinEnter * let &colorcolumn = (&textwidth == 0 ? 0 : &textwidth + 1)
-augroup end
-
-" Highlight TODO, FIXME, NOTE, etc.
-highlight default link MyTodo Todo
-augroup todo
-    autocmd!
-    autocmd Syntax * match MyTodo '\v<(|NOTE|INFO|IDEA|IMPROVEMENT|QUESTION|TODO|FIXME|BUG|HACK|TRICKY|XXX)>'
-augroup end
+" NOTE: Autocmds (vimrc reload, FocusLost, colorcolumn, todo) moved to lua/config/autocmds.lua
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
@@ -316,12 +291,7 @@ let $i = '~/files/inbox.md'
 let $j = '~/files/journal.md'
 
 " NOTE: ~f, ~p, ~df, ~dfl, terminal mappings moved to lua/config/keymaps.lua
-
-augroup terminal
-    autocmd!
-    autocmd TermOpen * setlocal nospell
-augroup end
-
+" NOTE: terminal augroup moved to lua/config/autocmds.lua
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                    {{{

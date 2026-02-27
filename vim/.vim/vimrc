@@ -48,15 +48,7 @@ set formatlistpat+=\\\|^\\s*[-*]\\s*
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NOTE: Core keymaps moved to lua/config/keymaps.lua
-" NOTE: updatetime, mapleader moved to lua/config/options.lua
-
-set grepformat=%f:%l:%c:%m
-if executable('rg')
-    set grepprg=rg\ --vimgrep\ $*
-elseif executable('ag')
-    set grepprg=ag\ --vimgrep\ $*
-endif
-
+" NOTE: updatetime, mapleader, grepprg/grepformat moved to lua/config/options.lua
 " NOTE: sal, sG, sae, j/k navigation moved to lua/config/keymaps.lua
 
 nnoremap <leader>F :find <C-R>=expand('%:h') . g:os_path_sep<CR>

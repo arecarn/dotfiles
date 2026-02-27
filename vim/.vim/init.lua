@@ -4,7 +4,10 @@
 -- Neovim configuration entry point
 -- Uses lazy.nvim for plugin management
 
--- Load options first (includes mapleader)
+-- Load paths first (sets up directories, undodir)
+require('config.paths')
+
+-- Load options (includes mapleader)
 require('config.options')
 
 -- Load plugins via lazy.nvim

@@ -10,108 +10,11 @@ syntax enable
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let s:has_windows = has('win32') || has('win64')
+" NOTE: Path utilities, undodir, UndoClean moved to lua/config/paths.lua
+" Global variables g:os_path_sep, g:config_path, g:data_path, g:cache_path
+" are now set by the Lua module for compatibility.
 
-if s:has_windows
-    let g:os_path_sep = '\'
-else
-    let g:os_path_sep = '/'
-endif
-
-let g:app = 'nvim'
-
-if s:has_windows
-    let g:config_path = $LOCALAPPDATA . '\' . g:app . '\'
-    let g:data_path   = $LOCALAPPDATA . '\' . g:app . '-data\'
-    let g:cache_path  = $LOCALAPPDATA . '\' . g:app . '-cache\'
-else
-    if empty($XDG_CONFIG_HOME)
-        let g:config_path = $HOME . '/.config/' . g:app . '/'
-    else
-        let g:config_path = $XDG_CONFIG_HOME . '/' . g:app . '/'
-    endif
-
-    if empty($XDG_DATA_HOME)
-        let g:data_path = $HOME . '/.local/share/' . g:app . '/'
-    else
-        let g:data_path = $XDG_DATA_HOME . '/' . g:app . '/'
-    endif
-
-    if empty($XDG_CACHE_HOME)
-        let g:cache_path = $HOME . '/.cache/' . g:app . '/'
-    else
-        let g:cache_path = $XDG_CACHE_HOME . '/' . g:app . '/'
-    endif
-endif
-
-let s:app_path = split(&runtimepath, ',')[0] . g:os_path_sep
-
-function! s:make_private_directory(path) abort
-    if !isdirectory(a:path)
-        call mkdir(a:path, 'p', 0700)
-    endif
-endfunction
-
-function! s:make_cache_path_str(name) abort
-    return g:cache_path . a:name
-endfunction
-
-function! s:make_data_path_str(name) abort
-    return g:data_path . a:name
-endfunction
-
-function! s:make_cache_directory(dir_name) abort
-    let l:path = s:make_cache_path_str(a:dir_name)
-    call s:make_private_directory(l:path)
-    return l:path
-endfunction
-
-function! s:make_data_directory(dir_name) abort
-    let l:path = s:make_data_path_str(a:dir_name)
-    call s:make_private_directory(l:path)
-    return l:path
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" COMMAND LINE                                                               {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Settings moved to lua/config/options.lua
-
-" NOTE: Command line mappings moved to lua/config/keymaps.lua
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" UNDO & SWAP                                                                {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: undofile, undolevels, swapfile moved to lua/config/options.lua
-if s:has_windows
-    execute 'set undodir=' . s:make_data_directory('undo') . '\\\\'
-else
-    execute 'set undodir=' . s:make_data_directory('undo') . '//'
-endif
-
-
-function! Undo_clean() abort
-    let l:undo_files_string = globpath(&undodir, '*')
-    let l:undo_files = split(l:undo_files_string, '\n')
-    for l:undo_file in l:undo_files
-        let l:real_file = substitute(l:undo_file, escape(&undodir, '\/\\'), '', 'g')
-
-        if has('win32') || has('win64')
-            let l:real_file = substitute(l:real_file, '%%', ':\', 'g')
-            let l:real_file = substitute(l:real_file, '%', '\', 'g')
-        else
-            let l:real_file = substitute(l:real_file, '%', '/', 'g')
-        endif
-
-        if !filereadable(l:real_file)
-            echo l:undo_file
-            call delete(l:undo_file)
-        endif
-    endfor
-endfunction
-
-" remove undo files that no longer correspond to actual files
-command! UndoClean call Undo_clean()
+let s:app_path = g:config_path
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{

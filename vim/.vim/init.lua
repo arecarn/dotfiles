@@ -22,9 +22,6 @@ require('config.keymaps')
 -- Load autocmds
 require('config.autocmds')
 
--- Source vimrc for remaining vimscript (utility functions, etc.)
-vim.cmd('source ~/.config/nvim/vimrc')
-
 -------------------------------------------------------------------------------}}}
 -- LOCAL CONFIG                                                               {{{
 --------------------------------------------------------------------------------

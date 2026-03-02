@@ -62,6 +62,39 @@ map('x', 'gr', 'r<Space>gvo<Esc>R')
 -- Retab
 map({ 'n', 'v' }, '<leader>rt', ':retab<CR>', { silent = true })
 
+-- Underline current line with character of choice
+map('n', '<leader>u', function()
+    local char = vim.fn.nr2char(vim.fn.getchar())
+    if char == '' or char == '\27' then return end  -- Escape pressed
+    char = vim.fn.escape(char, '\\')
+    vim.cmd('normal! yyp')
+    vim.cmd([[s#\m\S.*\S\|\S#\=repeat(']] .. char .. [[',strlen(submatch(0)))#ge]])
+    vim.cmd('nohlsearch')
+end, { silent = true, desc = 'Underline with character' })
+
+-- Reverse visual selection characters
+map('x', '<leader>rev', function()
+    -- Save registers
+    local old_reg_a = vim.fn.getreg('a')
+    local old_reg = vim.fn.getreg('"')
+
+    -- Yank selection to register a
+    vim.cmd('normal! gv"ay')
+
+    -- Reverse the string
+    local text = vim.fn.getreg('a')
+    local reversed = text:reverse()
+
+    -- Replace selection with reversed text
+    vim.fn.setreg('a', reversed)
+    vim.cmd('normal! gvc')
+    vim.cmd('normal! "aP')
+
+    -- Restore registers
+    vim.fn.setreg('a', old_reg_a)
+    vim.fn.setreg('"', old_reg)
+end, { silent = true, desc = 'Reverse selection' })
+
 -- Format current paragraph in insert mode
 map('i', '<C-f>', '<Esc>gw{zea')
 
@@ -367,6 +400,39 @@ map('n', 'sal', ':set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>'
 map('n', 'sG', ':set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>')
 map('n', 'sae', ':set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>')
 
+--- Add word or selection to search pattern (OR)
+---@param mode string 'n' for normal, 'x' for visual
+local function add_to_search(mode)
+    local save_reg = vim.fn.getreg('@')
+
+    -- Add OR separator if search pattern is not empty
+    if vim.fn.getreg('/') ~= '' then
+        vim.fn.setreg('/', vim.fn.getreg('/') .. '\\|')
+    end
+
+    -- Get text to add
+    if mode == 'x' then
+        vim.cmd('normal! gvy')
+    elseif mode == 'n' then
+        vim.cmd('normal! yiw')
+    else
+        vim.fn.setreg('@', save_reg)
+        return
+    end
+
+    -- Append to search register
+    vim.fn.setreg('/', vim.fn.getreg('/') .. vim.fn.getreg('@'))
+    vim.fn.setreg('@', save_reg)
+end
+
+-- Add word under cursor to search pattern
+map('n', 'g**', function() add_to_search('n') end, { desc = 'Add word to search' })
+-- Add visual selection to search pattern
+map('x', 'g*', function() add_to_search('x') end, { desc = 'Add selection to search' })
+
+-- Preview tag jump
+map('n', '<leader>tp', ':ptjump <C-r><C-w><CR>', { desc = 'Preview tag jump' })
+
 -- Clear search highlighting and redraw
 map('n', '<C-L>', function()
     vim.cmd('redraw!')
@@ -402,6 +468,48 @@ vim.env.j = '~/files/journal.md'
 -- Usage: :'<,'>numend or :'<,'>numfront
 vim.cmd([[cabbrev numend s/$/\=1-line("'<")+line(".")/c]])
 vim.cmd([[cabbrev numfront s/^/\=1-line("'<")+line(".")/c]])
+
+-------------------------------------------------------------------------------}}}
+-- UTILITY FUNCTIONS                                                          {{{
+--------------------------------------------------------------------------------
+--- Generate a random number from reltime
+---@return integer
+function _G.Rand()
+    local time_str = vim.fn.reltimestr(vim.fn.reltime())
+    local digits = time_str:match('%.(%d+)')
+    return digits and tonumber(digits:sub(2)) or 0
+end
+
+-------------------------------------------------------------------------------}}}
+-- COMMANDS                                                                   {{{
+--------------------------------------------------------------------------------
+-- Create a tab for copying (useful when in terminal)
+vim.api.nvim_create_user_command('CopyTab', function()
+    local winview = vim.fn.winsaveview()
+    vim.cmd('tabedit %')
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+    vim.opt_local.signcolumn = 'no'
+    vim.opt_local.foldcolumn = '0'
+    vim.fn.winrestview(winview)
+end, { desc = 'Open buffer in new tab for copying' })
+
+-- Reverse lines in range
+vim.api.nvim_create_user_command('Reverse', function(opts)
+    local line1 = opts.line1
+    local line2 = opts.line2
+    vim.cmd(string.format('%d,%dg/^/m%d', line1, line2, line1 - 1))
+    vim.cmd('nohlsearch')
+end, { range = '%', bar = true, desc = 'Reverse lines in range' })
+
+-- Split sentences onto separate lines (requires Split/Join plugin)
+vim.api.nvim_create_user_command('SentenceSplit', function(opts)
+    local line1 = opts.line1
+    local line2 = opts.line2
+    -- Join lines first, then split on sentence boundaries
+    vim.cmd(string.format('%d,%dJoin', line1, line2))
+    vim.cmd(string.format([[%d,%dSplit/[.?!;:—]\zs\s\+/]], line1, line2))
+end, { range = '%', bar = true, desc = 'Split sentences onto separate lines' })
 
 -------------------------------------------------------------------------------}}}
 -- vim: foldmethod=marker

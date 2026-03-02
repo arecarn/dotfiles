@@ -1,131 +1,14 @@
-" - {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Encoding settings moved to lua/config/options.lua
-
-filetype on
-filetype plugin on
-filetype indent on
-syntax enable
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" UTILITY FUNCTIONS & VARIABLES                                              {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Moved to lua/config/paths.lua:
-"   - Path utilities, undodir, UndoClean
-"   - Global variables g:os_path_sep, g:config_path, g:data_path, g:cache_path
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SPELLING - THESAURUS - DOCS                                                {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Moved to lua/config/options.lua:
-"   - spell, spelllang, backup, line wrapping
-"   - spellfile, thesaurus, helptags
-"   - !z= mapping in lua/config/keymaps.lua
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" TABS, INDENTING & FORMAT OPTIONS                                           {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Moved to lua/config/options.lua:
-"   - Tab/indent settings, formatlistpat
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" UI OPTIONS                                                                 {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Search, tags, general behavior, UI settings moved to lua/config/options.lua
-" NOTE: Autocmds (vimrc reload, FocusLost, colorcolumn, todo) moved to lua/config/autocmds.lua
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" MAPPINGS & COMMANDS                                                        {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Moved to lua/config/keymaps.lua:
-"   - Core keymaps, sal/sG/sae, j/k navigation
-"   - <leader>F, <leader>fo, <leader>S, <leader>V, <leader>T (find mappings)
-"   - <leader>b, <leader>bs, <leader>bo (buffer mappings)
-"   - gr, <leader>rt, <C-f>, <C-6>, window/tab mappings
-"   - yosb, yocb, yomd, yoro, yot, yocl, yosw (option toggles)
-"   - yonf, yotw, yopw (format option toggles)
-"   - gpv, undo break points, Y, text objects, Q macro, cd, gp/gP
-"   - Command line navigation, file path yank mappings
-"   - <C-y> completion, %%date, ~f/~p/~df/~dfl shortcuts
-"   - Environment shortcuts ($zsh, $vim, etc.)
-"   - numend, numfront abbreviations
-"   - <leader>u (underline), g**/g* (add to search), <leader>tp (ptjump)
-"   - <leader>rev (reverse selection)
-"   - Rand(), CopyTab, Reverse, SentenceSplit commands
-" NOTE: Moved to lua/config/options.lua:
-"   - updatetime, mapleader, grepprg/grepformat
-" NOTE: Moved to lua/config/autocmds.lua:
-"   - terminal augroup
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" SCRIPTS                                                                    {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Complex commands that use eval() - kept in vimscript for now
-
-command! -nargs=* -range=0 -bang Seq
-            \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")
-
-function! Seq(count, first_line, last_line, cmdInput, bang) abort
-    " anything within back ticks
-    let l:rg_expr = '`\(.\{-1,}\)`'
-
-    " 1 index if ! is used
-    if a:bang !=# '!'
-        let x = 0
-    else
-        let x = 1
-    endif
-
-    let @a = ''
-    let r = ''
-    for i in range(0, a:last_line-a:first_line) "TODO fails without a range
-        let l:line = substitute(a:cmdInput, l:rg_expr, '\=eval(submatch(1))', 'g')
-        echomsg l:line
-        call append(i+a:first_line, line)
-        let r = r.l:line."\n"
-        echomsg r
-        let x = x + 1
-    endfor
-    call setreg('a', r,  'b')
-    normal! "aP
-endfunction
-
-command! -nargs=* -range=0 -bang Renumber
-            \ call <SID>renumber(<line1>, <line2>, "<bang>")
-function! s:renumber(first_line, last_line, bang) abort
-    let num_expr = '\v\C^[^ ]{-}\zs\d+\ze'
-    " 0 index if ! is used
-    if a:bang !=# '!'
-        let s:renumber_index = 1
-    else
-        let s:renumber_index = 0
-    endif
-
-    execute a:first_line.','.a:last_line.'s#'.num_expr.'#\=s:increment()#'
-endfunction
-
-function! s:increment() abort
-    let old_renumber_index = s:renumber_index
-    let s:renumber_index = s:renumber_index + 1
-    return old_renumber_index
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" PLUGIN SETUP                                                               {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Moved to init.lua:
-"   - .vimrc_project and ~/.vimrc_local sourcing
-"   - Is_plugin_installed() function
-"   - cfilter packadd
-"   - Vimrc_local_plugin_config() call
-" NOTE: Moved to lua/config/keymaps.lua:
-"   - numend, numfront abbreviations
-" NOTE: Moved to lua/config/statusline.lua:
-"   - Lightline functions
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" -                                                                          {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vimrc - Legacy compatibility file
+"
+" This file is sourced by init.lua for any remaining vimscript needs.
+" All configuration has been migrated to Lua:
+"
+"   lua/config/options.lua   - Vim options, encoding, UI settings
+"   lua/config/keymaps.lua   - Key mappings, commands, abbreviations
+"   lua/config/autocmds.lua  - Autocommands
+"   lua/config/paths.lua     - Path utilities, undodir
+"   lua/config/statusline.lua - Lightline component functions
+"   lua/plugins.lua          - Plugin management (lazy.nvim)
+"   init.lua                 - Entry point, local config sourcing
+"
 " vim: textwidth=80
-" vim: foldmethod=marker
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}

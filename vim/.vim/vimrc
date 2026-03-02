@@ -49,77 +49,18 @@ syntax enable
 "   - <C-y> completion, %%date, ~f/~p/~df/~dfl shortcuts
 "   - Environment shortcuts ($zsh, $vim, etc.)
 "   - numend, numfront abbreviations
+"   - <leader>u (underline), g**/g* (add to search), <leader>tp (ptjump)
+"   - <leader>rev (reverse selection)
+"   - Rand(), CopyTab, Reverse, SentenceSplit commands
 " NOTE: Moved to lua/config/options.lua:
 "   - updatetime, mapleader, grepprg/grepformat
 " NOTE: Moved to lua/config/autocmds.lua:
 "   - terminal augroup
 
-" underline current line with character of choice
-nnoremap <silent> <leader>u :call <SID>under_line()<CR>
-function! s:under_line() abort
-    let l:char = escape(nr2char(getchar()), '\')
-    normal! yyp
-    execute ':s#\m\S.*\S\|\S#\=repeat(''' . l:char . ''',strlen(submatch(0)))#g'
-endfunction
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                    {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nnoremap g** :<C-U>call AddToSearch('n')<CR>
-xnoremap g* :<C-U>call AddToSearch('x')<CR>
-function! AddToSearch(mode) abort
-    let l:save_reg = @@
-    if @/ !=# ''
-        let @/ .= '\|'
-    endif
-    if a:mode ==# 'x'
-        normal! gvy
-    elseif a:mode ==# 'n'
-        normal! yiw
-    else
-        let @@ = l:save_reg
-    endif
-    let @/ .= @@
-    let @@ = l:save_reg
-endfunction
-
-nnoremap <leader>tp :ptjump <C-r><C-w><CR>
-
-function! Rand() abort
-    return str2nr(matchstr(reltimestr(reltime()), '\v\.@<=\d+')[1:])
-endfunction
-
-" create a tab that can be used to copy from while in a terminal
-function! CopyTab() abort
-    let winview = winsaveview()
-    tabedit %
-    set nonumber
-    set norelativenumber
-    set signcolumn=no
-    set foldcolumn=0
-    call winrestview(winview)
-endfunction
-command! -bang -nargs=0 -range=0 CopyTab call CopyTab()
-
-command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1|nohl
-
-function! s:sentence_split(line1, line2, ) abort
-    execute a:line1.','.a:line2.'Join'
-    execute a:line1.','.a:line2.'Split/[.?!;:—]\zs\s\+/'
-endfunction
-
-
-command! -bar -range=% SentenceSplit call s:sentence_split(<line1>,<line2>)
-
-" reverse selection kind of works
-vnoremap <silent> <leader>rev :<c-u>let old_reg_a=@a<CR>
-            \:let old_reg=@"<CR>
-            \gv"ay
-            \:let @a=substitute(@a, '.\(.*\)\@=',
-            \ '\=@a[strlen(submatch(1))]', 'g')<CR>
-            \gvc<C-R>a<Esc>
-            \:let @a=old_reg_a<CR>
-            \:let @"=old_reg<CR>
+" Complex commands that use eval() - kept in vimscript for now
 
 command! -nargs=* -range=0 -bang Seq
             \ call Seq(<count>, <line1>, <line2>, <q-args>, "<bang>")

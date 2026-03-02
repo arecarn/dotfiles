@@ -511,5 +511,60 @@ vim.api.nvim_create_user_command('SentenceSplit', function(opts)
     vim.cmd(string.format([[%d,%dSplit/[.?!;:—]\zs\s\+/]], line1, line2))
 end, { range = '%', bar = true, desc = 'Split sentences onto separate lines' })
 
+-- Generate sequence of lines from a template
+-- Usage: :5Seq Item {i}: {i*10}     -> generates 5 lines with i from 0-4
+--        :5Seq! Item {i}: {i*10}    -> generates 5 lines with i from 1-5
+-- Expressions in {braces} are evaluated as Lua with 'i' as the index
+vim.api.nvim_create_user_command('Seq', function(opts)
+    local count = opts.count > 0 and opts.count or 1
+    local template = opts.args
+    local start_idx = opts.bang and 1 or 0
+
+    if template == '' then
+        vim.notify('Seq: template required', vim.log.levels.ERROR)
+        return
+    end
+
+    local lines = {}
+    for idx = start_idx, start_idx + count - 1 do
+        -- Replace {expr} with evaluated Lua expression
+        local line = template:gsub('{(.-)}', function(expr)
+            -- Create environment with 'i' as the index variable
+            local env = setmetatable({ i = idx }, { __index = _G })
+            local fn, err = load('return ' .. expr, 'seq', 't', env)
+            if fn then
+                local ok, result = pcall(fn)
+                return ok and tostring(result) or expr
+            end
+            return expr
+        end)
+        table.insert(lines, line)
+    end
+
+    -- Insert lines after current line
+    local cur_line = vim.fn.line('.')
+    vim.api.nvim_buf_set_lines(0, cur_line, cur_line, false, lines)
+end, { nargs = '*', count = true, bang = true, desc = 'Generate sequence from template' })
+
+-- Renumber sequential numbers in a range
+-- Usage: :'<,'>Renumber    -> renumbers starting from 1
+--        :'<,'>Renumber!   -> renumbers starting from 0
+-- Finds the first number on each line and replaces sequentially
+vim.api.nvim_create_user_command('Renumber', function(opts)
+    local line1 = opts.line1
+    local line2 = opts.line2
+    local idx = opts.bang and 0 or 1
+
+    for lnum = line1, line2 do
+        local line = vim.fn.getline(lnum)
+        -- Replace first number found on the line
+        local new_line, count = line:gsub('^([^%d]-)%d+', '%1' .. idx, 1)
+        if count > 0 then
+            vim.fn.setline(lnum, new_line)
+            idx = idx + 1
+        end
+    end
+end, { range = true, bang = true, desc = 'Renumber lines sequentially' })
+
 -------------------------------------------------------------------------------}}}
 -- vim: foldmethod=marker

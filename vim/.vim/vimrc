@@ -10,33 +10,23 @@ syntax enable
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UTILITY FUNCTIONS & VARIABLES                                              {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Path utilities, undodir, UndoClean moved to lua/config/paths.lua
-" Global variables g:os_path_sep, g:config_path, g:data_path, g:cache_path
-" are now set by the Lua module for compatibility.
-
-let s:app_path = g:config_path
+" NOTE: Moved to lua/config/paths.lua:
+"   - Path utilities, undodir, UndoClean
+"   - Global variables g:os_path_sep, g:config_path, g:data_path, g:cache_path
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SPELLING - THESAURUS - DOCS                                                {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: spell, spelllang, backup, line wrapping moved to lua/config/options.lua
-
-" Path-dependent settings that must stay in vimscript
-let &spellfile = s:app_path . 'utils/spell/spellfile.add'
-let &thesaurus = s:app_path . 'utils/thesaurus/thesaurus.txt'
-
-" NOTE: !z= mapping moved to lua/config/keymaps.lua
-
-" generate help tags for custom help files
-execute 'helptags ' . s:app_path . 'doc'
+" NOTE: Moved to lua/config/options.lua:
+"   - spell, spelllang, backup, line wrapping
+"   - spellfile, thesaurus, helptags
+"   - !z= mapping in lua/config/keymaps.lua
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " TABS, INDENTING & FORMAT OPTIONS                                           {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Tab/indent settings moved to lua/config/options.lua
-
-" formatlistpat must stay in vimscript (complex escaping)
-set formatlistpat+=\\\|^\\s*[-*]\\s*
+" NOTE: Moved to lua/config/options.lua:
+"   - Tab/indent settings, formatlistpat
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " UI OPTIONS                                                                 {{{
@@ -47,21 +37,22 @@ set formatlistpat+=\\\|^\\s*[-*]\\s*
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " MAPPINGS & COMMANDS                                                        {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Core keymaps moved to lua/config/keymaps.lua
-" NOTE: updatetime, mapleader, grepprg/grepformat moved to lua/config/options.lua
-" NOTE: sal, sG, sae, j/k navigation moved to lua/config/keymaps.lua
-
-nnoremap <leader>F :find <C-R>=expand('%:h') . g:os_path_sep<CR>
-nnoremap <leader>fo :find <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
-nnoremap <leader>S :sfind <C-R>=expand('%:h') . g:os_path_sep<CR>
-nnoremap <leader>V :vert sfind <C-R>=expand('%:h') . g:os_path_sep<CR>
-nnoremap <leader>T :tabfind <C-R>=expand('%:h') . g:os_path_sep<CR>
-
-nnoremap <leader>b :ls<CR>:buffer<Space>
-nnoremap <leader>bs :ls<CR>:sbuffer<Space>
-nnoremap <leader>bo :buffer <C-R>=substitute(expand('%:t'), '\(\(.\{1,}\.\)\w\+$\)\?', '\2', 'g')<CR>*<Tab>
-
-" NOTE: gr, <leader>rt moved to lua/config/keymaps.lua
+" NOTE: Moved to lua/config/keymaps.lua:
+"   - Core keymaps, sal/sG/sae, j/k navigation
+"   - <leader>F, <leader>fo, <leader>S, <leader>V, <leader>T (find mappings)
+"   - <leader>b, <leader>bs, <leader>bo (buffer mappings)
+"   - gr, <leader>rt, <C-f>, <C-6>, window/tab mappings
+"   - yosb, yocb, yomd, yoro, yot, yocl, yosw (option toggles)
+"   - yonf, yotw, yopw (format option toggles)
+"   - gpv, undo break points, Y, text objects, Q macro, cd, gp/gP
+"   - Command line navigation, file path yank mappings
+"   - <C-y> completion, %%date, ~f/~p/~df/~dfl shortcuts
+"   - Environment shortcuts ($zsh, $vim, etc.)
+"   - numend, numfront abbreviations
+" NOTE: Moved to lua/config/options.lua:
+"   - updatetime, mapleader, grepprg/grepformat
+" NOTE: Moved to lua/config/autocmds.lua:
+"   - terminal augroup
 
 " underline current line with character of choice
 nnoremap <silent> <leader>u :call <SID>under_line()<CR>
@@ -70,32 +61,6 @@ function! s:under_line() abort
     normal! yyp
     execute ':s#\m\S.*\S\|\S#\=repeat(''' . l:char . ''',strlen(submatch(0)))#g'
 endfunction
-
-" NOTE: <C-f>, <C-6>, window/tab mappings moved to lua/config/keymaps.lua
-
-" NOTE: yosb, yocb, yomd, yoro, yot, yocl, yosw moved to lua/config/keymaps.lua
-" NOTE: yonf, yotw, yopw (format option toggles) moved to lua/config/keymaps.lua
-
-" NOTE: gpv, window/buffer commands, undo break points, Y, text objects,
-" NOTE: Q macro, cd, gp/gP, command line navigation moved to lua/config/keymaps.lua
-" NOTE: File path yank mappings (<leader>y*, %*) moved to lua/config/keymaps.lua
-" NOTE: <C-y> completion, %%date moved to lua/config/keymaps.lua
-
-let $zsh = '~/.zshrc'
-let $zshl = '~/.zshrc_local'
-let $shf = '~/.config/shell/functions.sh'
-let $git = '~/.gitconfig'
-let $gitl = '~/.gitconfig_local'
-let $posh = '~/Documents/WindowsPowerShell/profile.ps1'
-let $vim = '$MYVIMRC'
-let $vimg = s:app_path . 'ginit.vim'
-let $viml = '~/.vimrc_local'
-let $tmux = '~/.tmux.conf'
-let $i = '~/files/inbox.md'
-let $j = '~/files/journal.md'
-
-" NOTE: ~f, ~p, ~df, ~dfl, terminal mappings moved to lua/config/keymaps.lua
-" NOTE: terminal augroup moved to lua/config/autocmds.lua
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " SCRIPTS                                                                    {{{
@@ -204,41 +169,18 @@ function! s:increment() abort
     return old_renumber_index
 endfunction
 
-" add numbers to the front or end of a line
-cabbrev numend s/$/\=1-line("'<")+line(".")/c
-cabbrev numfront s/^/\=1-line("'<")+line(".")/c
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" BEFORE PLUGINS                                                             {{{
+" PLUGIN SETUP                                                               {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if filereadable(glob('.vimrc_project'))
-    source .vimrc_project
-endif
-
-if filereadable(glob('~/.vimrc_local', 1))
-    source ~/.vimrc_local
-endif
-
-" Compatibility function for lazy.nvim (replaces vim-plug's g:plugs check)
-function! Is_plugin_installed(plugin_name) abort
-    return luaeval('pcall(require, "lazy") and require("lazy.core.config").plugins[_A] ~= nil', a:plugin_name)
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" LIGHTLINE FUNCTIONS                                                        {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NOTE: Lightline functions moved to lua/config/statusline.lua
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
-" AFTER PLUGINS                                                              {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if !exists(':CFilter')
-    packadd cfilter
-endif
-
-if exists('*Vimrc_local_plugin_config')
-    call Vimrc_local_plugin_config()
-endif
+" NOTE: Moved to init.lua:
+"   - .vimrc_project and ~/.vimrc_local sourcing
+"   - Is_plugin_installed() function
+"   - cfilter packadd
+"   - Vimrc_local_plugin_config() call
+" NOTE: Moved to lua/config/keymaps.lua:
+"   - numend, numfront abbreviations
+" NOTE: Moved to lua/config/statusline.lua:
+"   - Lightline functions
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""}}}
 " -                                                                          {{{

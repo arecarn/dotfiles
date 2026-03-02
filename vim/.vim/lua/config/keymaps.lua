@@ -313,6 +313,47 @@ map('n', 'yopw', function()
 end, { desc = 'Toggle paragraph auto-format' })
 
 -------------------------------------------------------------------------------}}}
+-- FIND & BUFFER                                                              {{{
+--------------------------------------------------------------------------------
+local path_sep = vim.g.os_path_sep or '/'
+
+-- Find file starting from current file's directory
+map('n', '<leader>F', function()
+    return ':find ' .. vim.fn.expand('%:h') .. path_sep
+end, { expr = true, desc = 'Find from current dir' })
+
+-- Find file with same stem (other extension)
+map('n', '<leader>fo', function()
+    local stem = vim.fn.expand('%:t:r')
+    return ':find ' .. stem .. '.*' .. string.char(9)  -- Tab character
+end, { expr = true, desc = 'Find file with same stem' })
+
+-- Split find from current directory
+map('n', '<leader>S', function()
+    return ':sfind ' .. vim.fn.expand('%:h') .. path_sep
+end, { expr = true, desc = 'Split find from current dir' })
+
+-- Vertical split find from current directory
+map('n', '<leader>V', function()
+    return ':vert sfind ' .. vim.fn.expand('%:h') .. path_sep
+end, { expr = true, desc = 'Vert split find from current dir' })
+
+-- Tab find from current directory
+map('n', '<leader>T', function()
+    return ':tabfind ' .. vim.fn.expand('%:h') .. path_sep
+end, { expr = true, desc = 'Tab find from current dir' })
+
+-- Buffer selection
+map('n', '<leader>b', ':ls<CR>:buffer<Space>', { desc = 'List and select buffer' })
+map('n', '<leader>bs', ':ls<CR>:sbuffer<Space>', { desc = 'List and split buffer' })
+
+-- Open buffer with same stem
+map('n', '<leader>bo', function()
+    local stem = vim.fn.expand('%:t:r')
+    return ':buffer ' .. stem .. '.*' .. string.char(9)
+end, { expr = true, desc = 'Buffer with same stem' })
+
+-------------------------------------------------------------------------------}}}
 -- SPELLING                                                                   {{{
 --------------------------------------------------------------------------------
 -- Repeat spell replacement for all matches
@@ -335,6 +376,32 @@ map('n', '<C-L>', function()
     end
     return '<C-l>'
 end, { expr = true, silent = true })
+
+-------------------------------------------------------------------------------}}}
+-- ENVIRONMENT SHORTCUTS                                                      {{{
+--------------------------------------------------------------------------------
+-- File shortcuts accessible via :e $var
+local config_path = vim.fn.stdpath('config') .. '/'
+vim.env.zsh = '~/.zshrc'
+vim.env.zshl = '~/.zshrc_local'
+vim.env.shf = '~/.config/shell/functions.sh'
+vim.env.git = '~/.gitconfig'
+vim.env.gitl = '~/.gitconfig_local'
+vim.env.posh = '~/Documents/WindowsPowerShell/profile.ps1'
+vim.env.vim = vim.env.MYVIMRC or ''
+vim.env.vimg = config_path .. 'ginit.vim'
+vim.env.viml = '~/.vimrc_local'
+vim.env.tmux = '~/.tmux.conf'
+vim.env.i = '~/files/inbox.md'
+vim.env.j = '~/files/journal.md'
+
+-------------------------------------------------------------------------------}}}
+-- COMMAND ABBREVIATIONS                                                      {{{
+--------------------------------------------------------------------------------
+-- Number lines (for use in visual mode ranges)
+-- Usage: :'<,'>numend or :'<,'>numfront
+vim.cmd([[cabbrev numend s/$/\=1-line("'<")+line(".")/c]])
+vim.cmd([[cabbrev numfront s/^/\=1-line("'<")+line(".")/c]])
 
 -------------------------------------------------------------------------------}}}
 -- vim: foldmethod=marker

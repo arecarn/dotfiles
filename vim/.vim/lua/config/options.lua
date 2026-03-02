@@ -63,7 +63,12 @@ g.man_hardwrap = 1
 opt.spell = true
 opt.spelllang = 'en_us'
 
--- spellfile and thesaurus set in vimrc due to path complexity
+local config_path = vim.fn.stdpath('config') .. '/'
+opt.spellfile = config_path .. 'utils/spell/spellfile.add'
+opt.thesaurus = config_path .. 'utils/thesaurus/thesaurus.txt'
+
+-- Generate help tags for custom help files
+vim.cmd('silent! helptags ' .. config_path .. 'doc')
 
 -------------------------------------------------------------------------------}}}
 -- TABS & INDENTING                                                           {{{
@@ -78,6 +83,9 @@ opt.autoindent = true
 opt.formatoptions:append('n')  -- recognize lists
 opt.formatoptions:append('j')  -- delete comment character when joining
 opt.formatoptions:remove('t') -- don't auto wrap based on textwidth
+
+-- Extend formatlistpat to recognize markdown lists
+opt.formatlistpat:append([[\|^\s*[-*]\s*]])
 
 -------------------------------------------------------------------------------}}}
 -- FOLDING                                                                    {{{

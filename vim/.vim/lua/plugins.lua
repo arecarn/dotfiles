@@ -71,7 +71,6 @@ local plugins = {
     { 'arecarn/vim-operator-mixed-case', dependencies = 'kana/vim-operator-user', event = 'VeryLazy' },
     { 'machakann/vim-sandwich', event = 'VeryLazy' },
     { 'tommcdo/vim-exchange', event = 'VeryLazy' },
-    { 'tpope/vim-commentary', event = 'VeryLazy' },
     { 'tpope/vim-repeat', event = 'VeryLazy' },
     { 'vim-scripts/visualrepeat', event = 'VeryLazy' },
 

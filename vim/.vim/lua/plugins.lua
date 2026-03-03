@@ -214,9 +214,17 @@ local plugins = {
 
             local function get_makefile_targets()
                 local targets = {}
-                local makefile = "Makefile"
+                local makefile = nil
 
-                if vim.fn.filereadable(makefile) == 0 then
+                -- Check in same order as GNU make
+                for _, name in ipairs({ "GNUmakefile", "makefile", "Makefile" }) do
+                    if vim.fn.filereadable(name) == 1 then
+                        makefile = name
+                        break
+                    end
+                end
+
+                if not makefile then
                     return targets
                 end
 

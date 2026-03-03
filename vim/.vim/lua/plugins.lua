@@ -178,6 +178,15 @@ local plugins = {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         event = { 'BufReadPost', 'BufNewFile' },
+        config = function()
+            require('nvim-treesitter').setup({
+                ensure_installed = {
+                    'bash', 'c', 'cpp', 'cmake', 'dockerfile', 'json', 'lua',
+                    'make', 'markdown', 'markdown_inline', 'python', 'vim',
+                    'vimdoc', 'yaml',
+                },
+            })
+        end,
     },
     {
         'edkolev/tmuxline.vim',

@@ -23,20 +23,6 @@ require('config.keymaps')
 require('config.autocmds')
 
 -------------------------------------------------------------------------------}}}
--- LOCAL CONFIG                                                               {{{
---------------------------------------------------------------------------------
--- Source project-local vimrc if it exists
-if vim.fn.filereadable('.vimrc_project') == 1 then
-    vim.cmd('source .vimrc_project')
-end
-
--- Source user-local vimrc if it exists
-local local_vimrc = vim.fn.expand('~/.vimrc_local')
-if vim.fn.filereadable(local_vimrc) == 1 then
-    vim.cmd('source ' .. local_vimrc)
-end
-
--------------------------------------------------------------------------------}}}
 -- PLUGIN UTILITIES                                                           {{{
 --------------------------------------------------------------------------------
 -- Check if a plugin is installed via lazy.nvim
@@ -47,14 +33,23 @@ function _G.Is_plugin_installed(plugin_name)
     return ok and lazy_config.plugins[plugin_name] ~= nil
 end
 
+-------------------------------------------------------------------------------}}}
+-- LOCAL CONFIG                                                               {{{
+--------------------------------------------------------------------------------
+-- Source project-local vimrc if it exists
+if vim.fn.filereadable('.vimrc_project') == 1 then
+    vim.cmd('source .vimrc_project')
+end
+
+-- Load user-local Lua config if it exists
+local local_lua = vim.fn.expand('~/.config/nvim/init_local.lua')
+if vim.fn.filereadable(local_lua) == 1 then
+    dofile(local_lua)
+end
+
 -- Load cfilter if not already loaded
 if not vim.fn.exists(':CFilter') then
     vim.cmd('packadd cfilter')
-end
-
--- Call local plugin config function if it exists
-if vim.fn.exists('*Vimrc_local_plugin_config') == 1 then
-    vim.cmd('call Vimrc_local_plugin_config()')
 end
 
 -------------------------------------------------------------------------------}}}

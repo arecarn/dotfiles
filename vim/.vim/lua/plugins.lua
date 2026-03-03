@@ -118,6 +118,13 @@ local plugins = {
                 indent = { enabled = true },
                 picker = {},
             })
+            vim.keymap.set('n', 'coig', function()
+                if Snacks.indent.enabled then
+                    Snacks.indent.disable()
+                else
+                    Snacks.indent.enable()
+                end
+            end, { silent = true })
         end,
     },
     {
@@ -165,19 +172,6 @@ local plugins = {
         init = function()
             local signcolumn_width = vim.o.signcolumn ~= 'no' and 2 or 0
             vim.g.goyo_width = 80 + signcolumn_width + vim.o.foldcolumn
-        end,
-    },
-    {
-        'nathanaelkane/vim-indent-guides',
-        event = 'VeryLazy',
-        init = function()
-            vim.g.indent_guides_enable_on_vim_startup = 0
-            vim.g.indent_guides_default_mapping = 0
-            vim.g.indent_guides_guide_size = 1
-            vim.g.indent_guides_start_level = 2
-        end,
-        config = function()
-            vim.keymap.set('n', 'coig', '<Plug>IndentGuidesToggle', { silent = true })
         end,
     },
     {

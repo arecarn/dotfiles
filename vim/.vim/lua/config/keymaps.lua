@@ -453,13 +453,10 @@ vim.env.zshl = '~/.zshrc_local'
 vim.env.shf = '~/.config/shell/functions.sh'
 vim.env.git = '~/.gitconfig'
 vim.env.gitl = '~/.gitconfig_local'
+vim.env.nvim = vim.env.MYVIMRC or ''
 vim.env.posh = '~/Documents/WindowsPowerShell/profile.ps1'
-vim.env.vim = vim.env.MYVIMRC or ''
-vim.env.vimg = config_path .. 'ginit.vim'
-vim.env.viml = '~/.vimrc_local'
 vim.env.tmux = '~/.tmux.conf'
 vim.env.i = '~/files/inbox.md'
-vim.env.j = '~/files/journal.md'
 
 -------------------------------------------------------------------------------}}}
 -- COMMAND ABBREVIATIONS                                                      {{{

@@ -5,25 +5,24 @@ export ZSH_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 export SH_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shell"
 mkdir -p "$ZSH_DATA_DIR" "$ZSH_CACHE_DIR"
 
-# Shell (before plugins)
-export SHELL=/usr/bin/zsh
+source_if_exists() { [[ -f "$1" ]] && source "$1"; }
 
-# Shared functions
-source "$SH_CONFIG_DIR/functions.sh"
-
-# Cargo (before PATH setup)
-[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+zsh_sources=(
+    "$SH_CONFIG_DIR/functions.sh"
+    "$HOME/.cargo/env"
+    "$ZSH_CONFIG_DIR/plugins.zsh"
+    "$ZSH_CONFIG_DIR/environment.zsh"
+    "$ZSH_CONFIG_DIR/options.zsh"
+    "$ZSH_CONFIG_DIR/keybindings.zsh"
+    "$ZSH_CONFIG_DIR/aliases.zsh"
+    "$ZSH_CONFIG_DIR/tmux.zsh"
+    "$ZSH_CONFIG_DIR/prompt.zsh"
+    "$HOME/.zshrc_local"
+)
+for f in "${zsh_sources[@]}"; do source_if_exists "$f"; done
 
 # bob neovim version manager
 export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 
-# Load modules
-for module in plugins environment options keybindings aliases tmux prompt; do
-    [[ -f "$ZSH_CONFIG_DIR/$module.zsh" ]] && source "$ZSH_CONFIG_DIR/$module.zsh"
-done
-
 # Flow control
 stty -ixon; stty stop undef
-
-# Local overrides
-[[ -f "$HOME/.zshrc_local" ]] && source "$HOME/.zshrc_local"

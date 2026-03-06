@@ -10,6 +10,7 @@ source "$ZINIT_HOME/zinit.zsh"
 zinit light zsh-users/zsh-completions
 
 # Oh-my-zsh snippets (turbo-loaded)
+ZSH_TMUX_FIXTERM=false # terminal already set in ~/.tmux.conf
 zinit wait lucid for \
     OMZP::command-not-found \
     OMZP::tmux
@@ -18,7 +19,7 @@ zinit wait lucid for \
 zinit wait lucid for \
     zdharma-continuum/fast-syntax-highlighting
 
-# zoxide (replaces rupa/z)
+# zoxide
 if (( $+commands[zoxide] )); then
     eval "$(zoxide init zsh)"
 fi
@@ -46,12 +47,3 @@ ge() {
     local files="$(git show --pretty="format:" --name-only "$version" | fzf)"
     [[ -n "$files" ]] && nvim "${files}"
 }
-
-# pyenv (if installed)
-if [[ -d "$HOME/.pyenv" ]]; then
-    export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-elif (( $+commands[pyenv] )); then
-    eval "$(pyenv init -)"
-fi

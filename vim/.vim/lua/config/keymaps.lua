@@ -437,7 +437,7 @@ map('n', '<leader>tp', ':ptjump <C-r><C-w><CR>', { desc = 'Preview tag jump' })
 map('n', '<C-L>', function()
     vim.cmd('redraw!')
     vim.cmd('nohlsearch')
-    if vim.fn.has('diff') == 1 then
+    if vim.wo.diff then
         vim.cmd('diffupdate')
     end
     return '<C-l>'

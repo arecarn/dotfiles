@@ -25,9 +25,9 @@ fi
 
 # easy way to swap windows
 if versionlt "3.0"; then
-    tmux bind-key -r < swap-window -t -1
-    tmux bind-key -r > swap-window -t +1
+    tmux bind-key -r '<' swap-window -t -1
+    tmux bind-key -r '>' swap-window -t +1
 else
-    tmux bind-key -r < swap-window -td -1
-    tmux bind-key -r > swap-window -td +1
+    tmux bind-key -r '<' swap-window -d -t -1
+    tmux bind-key -r '>' swap-window -d -t +1
 fi

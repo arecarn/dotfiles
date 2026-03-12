@@ -83,7 +83,7 @@ def lint_python(ctx):
     ]
     files_string = " ".join(files)
     cmds = ["pylint --output-format=parseable", "ruff check"]
-    base_cmd = "python3 -m {cmd} {files}"
+    base_cmd = "python -m {cmd} {files}"
     for cmd in cmds:
         ctx.run(base_cmd.format(cmd=cmd, files=files_string))
 
@@ -238,6 +238,13 @@ def stow(ctx):
     Run dploy unstow unlink all files into their respective repositories
     """
     # pylint: disable=unused-argument
+    if IS_WINDOWS:
+        try:
+            pathlib.Path("symlink_test").symlink_to("tasks.py")
+            pathlib.Path("symlink_test").unlink()
+        except OSError:
+            print("Symbolic link support not available on this Windows system. Skipping stow task.")
+            return
     Dploy().stow()
 
 
@@ -247,6 +254,13 @@ def unstow(ctx):
     Run dploy stow link all files into their respective repositories
     """
     # pylint: disable=unused-argument
+    if IS_WINDOWS:
+        try:
+            pathlib.Path("symlink_test").symlink_to("tasks.py")
+            pathlib.Path("symlink_test").unlink()
+        except OSError:
+            print("Symbolic link support not available on this Windows system. Skipping unstow task.")
+            return
     Dploy().unstow()
 
 

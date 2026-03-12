@@ -9,16 +9,30 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    env:
+      COREHOST_ALLOW_SYMLINKS: 1
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
-      - name: Install shellcheck
+      - name: Install shellcheck (Linux)
+        if: runner.os == 'Linux'
         run: sudo apt-get install -y shellcheck
+      - name: Install shellcheck (Windows)
+        if: runner.os == 'Windows'
+        run: choco install shellcheck
+      - name: Enable symbolic links (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /v "AllowDevelopmentWithoutDevLicense" /d 1 /f
+          git config --global core.symlinks true
       - name: Install dependencies
         run: uv sync
       - name: Lint
         run: uv run invoke lint
-      - name: Stow (dry run test)
+      - name: Stow (test)
         run: uv run invoke stow

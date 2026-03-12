@@ -27,7 +27,7 @@ try:
     GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
     GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
     os.chdir(GIT_ROOT)
-except (ImportError, git.GitCommadError):
+except (ImportError, git.GitCommandError):
     pass
 
 
@@ -73,11 +73,16 @@ def lint_yaml(ctx):
 @task
 def lint_python(ctx):
     """
-    Run pylint on this file
+    Run pylint and ruff on python files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.py")]
+    exclude_dirs = {".venv", ".git", "__pycache__", ".cache"}
+    files = [
+        str(f)
+        for f in pathlib.Path(".").rglob("*.py")
+        if not any(excluded in f.parts for excluded in exclude_dirs)
+    ]
     files_string = " ".join(files)
-    cmds = ["pylint --output-format=parseable", "flake8"]
+    cmds = ["pylint --output-format=parseable", "ruff check"]
     base_cmd = "python3 -m {cmd} {files}"
     for cmd in cmds:
         ctx.run(base_cmd.format(cmd=cmd, files=files_string))

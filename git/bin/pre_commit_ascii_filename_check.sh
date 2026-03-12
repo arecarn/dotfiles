@@ -23,11 +23,11 @@ exec 1>&2
 # them from being added to the repository. We exploit the fact that the
 # printable range starts at the space character and ends with tilde.
 if [ "$allow_non_ascii" != "true" ]; then
-    file_list=$(git diff --cached --name-only --diff-filter=A -z "${against}")
+    file_list=$(git diff --cached --name-only --diff-filter=A "${against}")
     # Note that the use of brackets around a tr range is ok here, (it's even
     # required, for portability to Solaris 10's /usr/bin/tr), since the square
     # bracket bytes happen to fall in the designated range.
-    non_ascii_chars=$(printf "%s" "${file_list}" | LC_ALL=C tr -d '[ -~]\0')
+    non_ascii_chars=$(printf "%s" "${file_list}" | LC_ALL=C tr -d '[ -~]\n')
     num_non_ascii_chars=$(printf "%s" "${non_ascii_chars}" | wc -c )
     num_non_ascii_chars_spaces_trimed=$(printf "%s" "${num_non_ascii_chars}" | tr -d ' ')
 

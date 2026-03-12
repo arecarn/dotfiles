@@ -387,6 +387,63 @@ local plugins = {
     { 'jonsmithers/apprentice-lightline-experimental', lazy = false },
 
     ---------------------------------------------------------------------------}}}
+    -- AI
+    ---------------------------------------------------------------------------
+    {
+        "carlos-algms/agentic.nvim",
+
+        opts = {
+            provider = "claude-agent-acp",
+        },
+        -- these are just suggested keymaps; customize as desired
+        keys = {
+            {
+                "<leader>at",
+                function() require("agentic").toggle() end,
+                mode = { "n"},
+                desc = "Toggle Agentic Chat"
+            },
+            {
+                "<leader>av",
+                function() require("agentic").add_selection_or_file_to_context() end,
+                mode = { "n", "v" },
+                desc = "Add file or selection to Agentic to Context"
+            },
+            {
+                "<leader>an",
+                function() require("agentic").new_session() end,
+                mode = { "n" },
+                desc = "New Agentic Session"
+            },
+            {
+                "<leader>ar", -- ai Restore
+                function()
+                    require("agentic").restore_session()
+                end,
+                desc = "Agentic Restore session",
+                silent = true,
+                mode = { "n" },
+            },
+            {
+                "<leader>ad", -- ai Diagnostics
+                function()
+                    require("agentic").add_current_line_diagnostics()
+                end,
+                desc = "Add current line diagnostic to Agentic",
+                mode = { "n" },
+            },
+            {
+                "<leader>aD", -- ai all Diagnostics
+                function()
+                    require("agentic").add_buffer_diagnostics()
+                end,
+                desc = "Add all buffer diagnostics to Agentic",
+                mode = { "n" },
+            },
+        },
+    },
+
+    ---------------------------------------------------------------------------}}}
     -- LSP & COMPLETION                                                       {{{
     ---------------------------------------------------------------------------
     {
@@ -704,7 +761,7 @@ local plugins = {
         'godlygeek/tabular',
         cmd = 'Tabularize',
         keys = {
-            { '<leader>a', ':Tabularize/', mode = { 'n', 'x' }, desc = 'Tabularize' },
+            { '<leader>t', ':Tabularize/', mode = { 'n', 'x' }, desc = 'Tabularize' },
         },
     },
     { 'arecarn/vim-split-join', cmd = { 'Split', 'Join' } },

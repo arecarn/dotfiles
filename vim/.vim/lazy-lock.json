@@ -4,6 +4,7 @@
   "NrrwRgn": { "branch": "master", "commit": "6a3f40bff37fcff7d4245932b47118f071b925f9" },
   "Preserve.vim": { "branch": "master", "commit": "f8c24b6910018ad0b35dd97be6efb81c09d8a554" },
   "UnconditionalPaste": { "branch": "master", "commit": "1ace5e3aae521499679f254950d4a06d176d7ba2" },
+  "agentic.nvim": { "branch": "main", "commit": "dcbb969167a9e24dc95fa7c213a28fbb1a600f13" },
   "agit.vim": { "branch": "master", "commit": "8b168d347bc746f772ac99e461099ca20ff12582" },
   "apprentice-lightline-experimental": { "branch": "master", "commit": "3e28e531dd99d5f47669eccbea247375e3eb5516" },
   "apprentice.nvim": { "branch": "main", "commit": "807256b5e16c255359fe09f04d954e8ea19e03fa" },

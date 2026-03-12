@@ -1,0 +1,2 @@
+# Force uv to use upstream PyPI instead of any configured indexes
+index-url = "https://pypi.org/simple"

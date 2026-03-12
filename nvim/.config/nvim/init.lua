@@ -48,7 +48,7 @@ if vim.fn.filereadable(local_lua) == 1 then
 end
 
 -- Load cfilter if not already loaded
-if not vim.fn.exists(':CFilter') then
+if vim.fn.exists(':CFilter') == 0 then
     vim.cmd('packadd cfilter')
 end
 

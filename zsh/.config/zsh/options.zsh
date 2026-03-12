@@ -9,7 +9,7 @@ HISTSIZE=500000
 SAVEHIST=500000
 
 # Completion Options
-# Cache compinit for faster startup (regenerate daily)
+# Cache compinit for faster startup (regenerate every 20 days)
 autoload -Uz compinit
 _comp_files=(${ZDOTDIR:-$HOME}/.zcompdump(Nm-20))
 if (( $#_comp_files )); then

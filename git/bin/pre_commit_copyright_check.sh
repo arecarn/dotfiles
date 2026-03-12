@@ -18,7 +18,7 @@ file_list=$(git diff --cached --name-only --diff-filter=d "${against}")
 year=$(date +"%Y")
 
 for file in ${file_list}; do
-    git show :"${file}" | grep -iP 'copyright.*\d{4}' >/dev/null 2>&1 || continue
+    git show :"${file}" | grep -iE 'copyright.*[0-9]{4}' >/dev/null 2>&1 || continue
 
     if ! git show :"${file}" | grep -i -e "copyright.*${year}" >/dev/null 2>&1; then
         missing_copyright_files="${missing_copyright_files} ${file}"
@@ -33,7 +33,7 @@ if [ -n "${missing_copyright_files}" ]; then
             # if we are in a shell use color otherwise use auto
             grep_color="always"
         fi
-        printf '    %s:%s\n' "${file}" "$(git show :"${file}" | grep -i -P -m1 -n --color="${grep_color}" "copyright.*\d{4}")"
+        printf '    %s:%s\n' "${file}" "$(git show :"${file}" | grep -i -E -m1 -n --color="${grep_color}" "copyright.*[0-9]{4}")"
     done
     exit 1
 fi

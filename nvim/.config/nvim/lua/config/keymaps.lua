@@ -348,8 +348,6 @@ end, { desc = 'Toggle paragraph auto-format' })
 -------------------------------------------------------------------------------}}}
 -- FIND & BUFFER                                                              {{{
 --------------------------------------------------------------------------------
-local path_sep = vim.g.os_path_sep or '/'
-
 -- Find file starting from current file's directory
 map('n', '<leader>F', function()
     return ':find ' .. vim.fn.expand('%:h') .. path_sep

@@ -4,8 +4,9 @@ alias -g send-right="tmux send-keys -t right"
 alias -g send-left="tmux send-keys -t left"
 
 del-history-pattern() {
-LC_ALL=C sed -i "/$@/d" $HISTFILE
-grep "$@" $HISTFILE
+    local tmp="${HISTFILE}.tmp"
+    LC_ALL=C sed "/$@/d" "$HISTFILE" > "$tmp" && mv "$tmp" "$HISTFILE"
+    grep "$@" "$HISTFILE"
 }
 
 # this allows aliases to mostly work when using sudo

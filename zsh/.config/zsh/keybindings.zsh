@@ -39,7 +39,6 @@ zle -N _complete_menu
 
 bindkey -M viins '^A'    beginning-of-line
 bindkey -M viins '^E'    end-of-line
-bindkey -M viins '^Y'    kill-line
 bindkey -M viins '^P'    history-beginning-search-backward
 bindkey -M viins '^N'    history-beginning-search-forward
 bindkey -M viins '^/'    undo

@@ -17,7 +17,7 @@ add_to_path () {
     fi
 }
 
-# check the wather
+# check the weather
 weather(){
     curl wttr.in/"$*"
 }
@@ -39,7 +39,7 @@ cdl()
 # cd to the physical location avoiding symlinks
 cdp()
 {
-    cd "$(pwd -P)" || exit
+    cd "$(pwd -P)" || return 1
 }
 
 # run a command until it fails
@@ -59,7 +59,7 @@ _nmod()
     permissions="$(($1 - umask))"
     shift
     expression="chmod ${permissions} ${*}"
-    print "${expression}"
+    printf '%s\n' "${expression}"
     eval "${expression}"
     )
 }

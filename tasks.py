@@ -238,14 +238,13 @@ def stow(ctx):
     Run dploy unstow unlink all files into their respective repositories
     """
     # pylint: disable=unused-argument
-    if IS_WINDOWS:
-        try:
-            pathlib.Path("symlink_test").symlink_to("tasks.py")
-            pathlib.Path("symlink_test").unlink()
-        except OSError:
-            print("Symbolic link support not available on this Windows system. Skipping stow task.")
-            return
-    Dploy().stow()
+    try:
+        Dploy().stow()
+    except OSError as e:
+        if IS_WINDOWS:
+            print(f"Skipping stow on Windows due to missing symlink permissions: {e}")
+        else:
+            raise
 
 
 @task
@@ -254,14 +253,13 @@ def unstow(ctx):
     Run dploy stow link all files into their respective repositories
     """
     # pylint: disable=unused-argument
-    if IS_WINDOWS:
-        try:
-            pathlib.Path("symlink_test").symlink_to("tasks.py")
-            pathlib.Path("symlink_test").unlink()
-        except OSError:
-            print("Symbolic link support not available on this Windows system. Skipping unstow task.")
-            return
-    Dploy().unstow()
+    try:
+        Dploy().unstow()
+    except OSError as e:
+        if IS_WINDOWS:
+            print(f"Skipping unstow on Windows due to missing symlink permissions: {e}")
+        else:
+            raise
 
 
 @task(provision, stow)

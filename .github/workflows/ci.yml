@@ -36,5 +36,10 @@ jobs:
         run: uv sync
       - name: Lint
         run: uv run invoke lint
+      # git config --global (above) creates ~/.gitconfig which conflicts
+      # with dploy stowing git/.gitconfig to the same path
+      - name: Remove .gitconfig before stow (Windows)
+        if: runner.os == 'Windows'
+        run: Remove-Item ~\.gitconfig -ErrorAction SilentlyContinue
       - name: Stow (test)
         run: uv run invoke stow

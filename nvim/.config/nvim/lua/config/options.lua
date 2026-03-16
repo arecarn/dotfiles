@@ -121,7 +121,29 @@ opt.tags = 'tags;/'
 -------------------------------------------------------------------------------}}}
 -- GENERAL BEHAVIOR                                                           {{{
 --------------------------------------------------------------------------------
-opt.clipboard = 'unnamedplus'
+-- Use OSC 52 for clipboard over SSH (works with WezTerm).
+-- Paste falls back to unnamed register since WezTerm doesn't support OSC 52
+-- clipboard queries. Use Ctrl+Shift+V to paste from host clipboard.
+vim.schedule(function()
+    opt.clipboard:append('unnamedplus')
+
+    if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
+        local function paste()
+            return vim.split(vim.fn.getreg('"'), '\n')
+        end
+        vim.g.clipboard = {
+            name = 'OSC 52',
+            copy = {
+                ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+                ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+            },
+            paste = {
+                ['+'] = paste,
+                ['*'] = paste,
+            },
+        }
+    end
+end)
 opt.splitright = true
 opt.nrformats:remove('octal')
 opt.belloff = 'all'

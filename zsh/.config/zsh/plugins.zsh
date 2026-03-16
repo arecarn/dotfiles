@@ -1,3 +1,12 @@
+# fzf (source early so widgets are defined before syntax highlighting)
+if (( $+commands[fzf] )); then
+    source <(fzf --zsh)
+fi
+
+# Fix for fzf unhandled widgets in syntax highlighting
+typeset -gA ZSH_HIGHLIGHT_WIDGETS_SKIP_REGEXP
+ZSH_HIGHLIGHT_WIDGETS_SKIP_REGEXP+='|fzf-.*'
+
 # zinit plugin manager
 ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
 if [[ ! -d "$ZINIT_HOME" ]]; then
@@ -13,7 +22,8 @@ zinit light zsh-users/zsh-completions
 ZSH_TMUX_FIXTERM=false # terminal already set in ~/.tmux.conf
 zinit wait lucid for \
     OMZP::command-not-found \
-    OMZP::tmux
+    OMZP::tmux \
+    zsh-users/zsh-history-substring-search
 
 # Turbo-loaded plugins (deferred)
 zinit wait lucid for \
@@ -21,15 +31,17 @@ zinit wait lucid for \
 
 # zoxide
 if (( $+commands[zoxide] )); then
-    eval "$(zoxide init zsh)"
+    eval "$(zoxide init zsh --cmd cd)"
 fi
 
-# fzf
-if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.zsh" ]]; then
-    source "${XDG_CONFIG_HOME:-$HOME/.config}/fzf/fzf.zsh"
-elif [[ -f "$HOME/.fzf.zsh" ]]; then
-    source "$HOME/.fzf.zsh"
-fi
+# history-substring-search keybindings
+_setup_history_substring_search_bindings() {
+    bindkey '^[[A' history-substring-search-up
+    bindkey '^[[B' history-substring-search-down
+    bindkey -M vicmd 'k' history-substring-search-up
+    bindkey -M vicmd 'j' history-substring-search-down
+}
+_setup_history_substring_search_bindings
 
 # fzf keybindings (set after plugins load)
 _setup_fzf_bindings() {

@@ -85,7 +85,10 @@ def lint_python(ctx):
     cmds = ["pylint --output-format=parseable", "ruff check"]
     base_cmd = "python -m {cmd} {files}"
     for cmd in cmds:
-        ctx.run(base_cmd.format(cmd=cmd, files=files_string))
+        if "ruff" in cmd:
+            ctx.run(f"{cmd} {files_string}")
+        else:
+            ctx.run(base_cmd.format(cmd=cmd, files=files_string))
 
 
 @task
@@ -95,6 +98,32 @@ def provision_all(ctx, args=""):
     """
     os.chdir("ansible")
     ctx.run("ansible-playbook site.yml --ask-vault-pass --inventory hosts" + " " + args)
+
+
+@task
+def provision_termux(ctx):
+    """
+    Provision this system using pkg on Termux
+    """
+    packages = [
+        "git",
+        "zsh",
+        "tmux",
+        "neovim",
+        "ripgrep",
+        "fd",
+        "fzf",
+        "bat",
+        "eza",
+        "zoxide",
+        "starship",
+        "openssh",
+        "build-essential",
+        "python",
+        "nodejs",
+    ]
+    ctx.run("pkg update -y")
+    ctx.run(f"pkg install -y {' '.join(packages)}")
 
 
 @task
@@ -130,6 +159,8 @@ def provision(ctx, args=""):
             ctx.run(f"choco upgrade {packages}")
         else:
             assert False, "You need to be admin to install things with Chocolaty"
+    elif "com.termux" in os.environ.get("PREFIX", ""):
+        provision_termux(ctx)
     else:
         os.chdir("ansible")
         ctx.run(

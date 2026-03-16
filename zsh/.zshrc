@@ -25,4 +25,6 @@ for f in "${zsh_sources[@]}"; do source_if_exists "$f"; done
 export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 
 # Flow control
-stty -ixon; stty stop undef
+if [[ -t 0 ]]; then
+    stty -ixon; stty stop undef
+fi

@@ -146,6 +146,7 @@ opt.shortmess:remove('S')
 
 opt.number = true
 opt.relativenumber = true
+opt.conceallevel = 2
 
 opt.showcmd = true
 opt.laststatus = 2

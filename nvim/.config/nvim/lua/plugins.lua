@@ -24,53 +24,100 @@ vim.opt.rtp:prepend(lazypath)
 local plugins = {
 
     ---------------------------------------------------------------------------}}}
-    -- TEXT OBJECTS                                                           {{{
+    -- MINI.NVIM (Modern Text Objects & Operators)                           {{{
     ---------------------------------------------------------------------------
-    { 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'saihoooooooo/vim-textobj-space', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
     {
-        'Julian/vim-textobj-variable-segment',
-        commit = '51c323dca5c44f7a8e5a689b9156ef818d02188e',
-        dependencies = 'kana/vim-textobj-user',
+        'echasnovski/mini.nvim',
+        version = false,
         event = 'VeryLazy',
-    },
-    { 'kana/vim-textobj-entire', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'kana/vim-textobj-indent', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'kana/vim-textobj-line', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'kana/vim-textobj-syntax', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'mattn/vim-textobj-url', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'glts/vim-textobj-comment', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    {
-        'thinca/vim-textobj-between',
-        dependencies = 'kana/vim-textobj-user',
-        event = 'VeryLazy',
-        init = function()
-            vim.g.textobj_between_no_default_key_mappings = 1
-        end,
         config = function()
-            vim.keymap.set({ 'x', 'o' }, 'am', '<Plug>(textobj-between-a)')
-            vim.keymap.set({ 'x', 'o' }, 'im', '<Plug>(textobj-between-i)')
-        end,
-    },
-    { 'osyo-manga/vim-textobj-multiblock', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'sgur/vim-textobj-parameter', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
-    { 'osyo-manga/vim-textobj-blockwise', dependencies = 'kana/vim-textobj-user', event = 'VeryLazy' },
+            -- Better Text Objects
+            local ai = require('mini.ai')
+            ai.setup({
+                custom_textobjects = {
+                    -- Entire buffer
+                    e = function()
+                        local n_lines = vim.api.nvim_buf_line_count(0)
+                        return {
+                            from = { line = 1, col = 1 },
+                            to = { line = n_lines, col = math.max(1, #vim.api.nvim_buf_get_lines(0, n_lines - 1, n_lines, false)[1]) }
+                        }
+                    end,
+                    -- Indent-based (simple implementation)
+                    i = function()
+                        local line = vim.fn.line('.')
+                        local indent = vim.fn.indent(line)
+                        local n_lines = vim.api.nvim_buf_line_count(0)
+                        local start_line, end_line = line, line
+                        while start_line > 1 and (vim.fn.indent(start_line - 1) >= indent or #vim.fn.getline(start_line - 1) == 0) do
+                            start_line = start_line - 1
+                        end
+                        while end_line < n_lines and (vim.fn.indent(end_line + 1) >= indent or #vim.fn.getline(end_line + 1) == 0) do
+                            end_line = end_line + 1
+                        end
+                        return { from = { line = start_line, col = 1 }, to = { line = end_line, col = #vim.fn.getline(end_line) } }
+                    end,
+                    -- Line
+                    l = function()
+                        return { from = { line = vim.fn.line('.'), col = 1 }, to = { line = vim.fn.line('.'), col = #vim.fn.getline('.') } }
+                    end,
+                    -- Arguments/Parameters
+                    a = ai.gen_spec.argument(),
+                    -- Between (matches your old 'am/im' mappings for underscores)
+                    m = ai.gen_spec.pair('_', '_', { type = 'greedy' }),
+                },
+            })
 
-    ---------------------------------------------------------------------------}}}
-    -- OPERATORS                                                              {{{
-    ---------------------------------------------------------------------------
-    { 'kana/vim-operator-user', event = 'VeryLazy' },
-    {
-        'kana/vim-operator-replace',
-        dependencies = 'kana/vim-operator-user',
-        event = 'VeryLazy',
-        config = function()
-            vim.keymap.set('', '_', '<Plug>(operator-replace)')
+            -- Surround (replaces vim-sandwich)
+            require('mini.surround').setup({
+                mappings = {
+                    add = 'sa',
+                    delete = 'sd',
+                    find = 'sf',
+                    find_left = 'sF',
+                    highlight = 'sh',
+                    replace = 'sr',
+                    update_n_lines = 'sn',
+                },
+            })
+
+            -- Operators (replaces vim-operator-replace)
+            require('mini.operators').setup({
+                replace = { prefix = '_' }, -- matches your old '_' mapping
+            })
+
+            -- Move (replaces textmanip)
+            require('mini.move').setup({
+                mappings = {
+                    left = '<C-h>',
+                    right = '<C-l>',
+                    down = '<C-j>',
+                    up = '<C-k>',
+                    line_left = '',
+                    line_right = '',
+                    line_down = '',
+                    line_up = '',
+                },
+            })
+
+            -- Picker (Emacs-like Readline bindings)
+            local pick = require('mini.pick')
+            pick.setup({
+                mappings = {
+                    move_down   = '<C-n>',
+                    move_up     = '<C-p>',
+                    caret_left  = '<C-b>',
+                    caret_right = '<C-f>',
+                    caret_start = '<C-a>',
+                    caret_end   = '<C-e>',
+                    scroll_down = '<PageDown>',
+                    scroll_up   = '<PageUp>',
+                    scroll_left = '<C-h>',
+                    scroll_right = '<C-l>',
+                },
+            })
         end,
     },
-    { 'arecarn/vim-operator-mixed-case', dependencies = 'kana/vim-operator-user', event = 'VeryLazy' },
-    { 'machakann/vim-sandwich', event = 'VeryLazy' },
-    { 'tommcdo/vim-exchange', event = 'VeryLazy' },
     { 'tpope/vim-repeat', event = 'VeryLazy' },
     { 'vim-scripts/visualrepeat', event = 'VeryLazy' },
 
@@ -88,6 +135,24 @@ local plugins = {
             { 'gos', '<cmd>Telescope live_grep<CR>', desc = 'Live grep' },
             { 'gor', '<cmd>Telescope oldfiles<CR>', desc = 'Recent files' },
         },
+        config = function()
+            local actions = require('telescope.actions')
+            require('telescope').setup({
+                defaults = {
+                    mappings = {
+                        i = {
+                            ['<C-a>'] = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Home>', true, false, true), 'n', true) end,
+                            ['<C-e>'] = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<End>', true, false, true), 'n', true) end,
+                            ['<C-f>'] = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Right>', true, false, true), 'n', true) end,
+                            ['<C-b>'] = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Left>', true, false, true), 'n', true) end,
+                            ['<C-d>'] = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Delete>', true, false, true), 'n', true) end,
+                            ['<C-n>'] = actions.move_selection_next,
+                            ['<C-p>'] = actions.move_selection_previous,
+                        },
+                    },
+                },
+            })
+        end,
     },
     { 'junegunn/fzf', build = ':call fzf#install()', event = 'VeryLazy' },
     { 'junegunn/fzf.vim', dependencies = 'junegunn/fzf', event = 'VeryLazy' },
@@ -128,31 +193,49 @@ local plugins = {
         end,
     },
     {
-        'itchyny/lightline.vim',
+        'nvim-lualine/lualine.nvim',
+        dependencies = { 'nvim-tree/nvim-web-devicons' },
         lazy = false,
-        init = function()
-            vim.g.lightline = {
-                colorscheme = 'apprentice',
-                active = {
-                    right = { { 'winnr' }, { 'fugitive', 'filename', 'bufnr' } },
-                    left = { { 'paste', 'lineinfo' }, { 'percent' }, { 'fileformat', 'fileencoding', 'filetype' } },
+        config = function()
+            local statusline = require('config.statusline')
+            require('lualine').setup({
+                options = {
+                    theme = 'auto',
+                    component_separators = { left = '|', right = '|' },
+                    section_separators = { left = '', right = '' },
+                    globalstatus = true,
                 },
-                inactive = {
-                    right = { { 'winnr' }, { 'filename', 'bufnr' } },
-                    left = { { 'lineinfo' }, { 'percent' }, { 'fileformat', 'fileencoding', 'filetype' } },
+                sections = {
+                    lualine_a = { 'mode' },
+                    lualine_b = {
+                        { 'location' },
+                        { 'progress' },
+                    },
+                    lualine_c = {
+                        { function() return statusline.fileformat() end },
+                        { function() return statusline.fileencoding() end },
+                        { function() return statusline.filetype() end },
+                    },
+                    lualine_x = {
+                        { function() return statusline.fugitive() end },
+                    },
+                    lualine_y = {
+                        { function() return statusline.filename() end },
+                    },
+                    lualine_z = {
+                        { function() return statusline.bufnr() end },
+                        { function() return 'w:' .. statusline.winnr() end },
+                    },
                 },
-                component_function = {
-                    modified = 'v:lua.Lightline_modified',
-                    readonly = 'v:lua.Lightline_readonly',
-                    fugitive = 'v:lua.Lightline_fugitive',
-                    filename = 'v:lua.Lightline_filename',
-                    fileformat = 'v:lua.Lightline_fileformat',
-                    filetype = 'v:lua.Lightline_filetype',
-                    fileencoding = 'v:lua.Lightline_fileencoding',
-                    winnr = 'v:lua.Lightline_winnr',
-                    bufnr = 'v:lua.Lightline_bufnr',
+                inactive_sections = {
+                    lualine_a = {},
+                    lualine_b = {},
+                    lualine_c = { { function() return statusline.filename() end } },
+                    lualine_x = { { 'location' } },
+                    lualine_y = {},
+                    lualine_z = {},
                 },
-            }
+            })
         end,
     },
     { 'chreekat/vim-paren-crosshairs', event = 'VeryLazy' },
@@ -305,6 +388,14 @@ local plugins = {
         end,
     },
     { 'jkramer/vim-checkbox', ft = 'markdown' },
+    {
+        'MeanderingProgrammer/render-markdown.nvim',
+        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+        ft = { 'markdown', 'agentic', 'AgenticChat' },
+        opts = {
+            file_types = { 'markdown', 'agentic', 'AgenticChat' },
+        },
+    },
     { 'aklt/plantuml-syntax', ft = 'plantuml' },
     {
         'kevinhwang91/nvim-bqf',
@@ -384,7 +475,6 @@ local plugins = {
             }))
         end,
     },
-    { 'jonsmithers/apprentice-lightline-experimental', lazy = false },
 
     ---------------------------------------------------------------------------}}}
     -- AI
@@ -392,9 +482,15 @@ local plugins = {
     {
         "carlos-algms/agentic.nvim",
 
-        opts = {
-            provider = "claude-agent-acp",
-        },
+        opts = function()
+            local provider = "gemini-acp"
+            if vim.fn.executable("claude") == 1 then
+                provider = "claude-agent-acp"
+            end
+            return {
+                provider = provider,
+            }
+        end,
         -- these are just suggested keymaps; customize as desired
         keys = {
             {
@@ -765,21 +861,6 @@ local plugins = {
         },
     },
     { 'arecarn/vim-split-join', cmd = { 'Split', 'Join' } },
-    { 'AndrewRadev/splitjoin.vim', keys = { 'gS', 'gJ' } },
-    {
-        't9md/vim-textmanip',
-        keys = {
-            { '<C-j>', '<Plug>(textmanip-move-down)', mode = 'x' },
-            { '<C-k>', '<Plug>(textmanip-move-up)', mode = 'x' },
-            { '<C-h>', '<Plug>(textmanip-move-left)', mode = 'x' },
-            { '<C-l>', '<Plug>(textmanip-move-right)', mode = 'x' },
-            { 'g<C-j>', '<Plug>(textmanip-duplicate-down)', mode = 'x' },
-            { 'g<C-k>', '<Plug>(textmanip-duplicate-up)', mode = 'x' },
-            { 'g<C-h>', '<Plug>(textmanip-duplicate-left)', mode = 'x' },
-            { 'g<C-l>', '<Plug>(textmanip-duplicate-right)', mode = 'x' },
-            { 'yotm', '<Plug>(textmanip-toggle-mode)', mode = 'n' },
-        },
-    },
     { 'vim-scripts/ingo-library', lazy = true },
     {
         'vim-scripts/FormatToWidth',

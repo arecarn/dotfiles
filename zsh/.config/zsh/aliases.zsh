@@ -44,10 +44,21 @@ alias untar='tar -xvf' # usage: untar ARCHIVE
 alias g='git'
 alias m="make"
 
-if [[ "${OSTYPE}" == 'linux'* ]]; then
+if (( $+commands[eza] )); then
+    alias ls='eza --icons --git'
+    alias l='ls -l'
+    alias la='ls -la'
+    alias lt='ls --tree'
+elif [[ "${OSTYPE}" == 'linux'* ]]; then
     alias ls='ls --color=auto'
 elif [[ "${OSTYPE}" == 'darwin'* ]]; then
     alias ls='ls -G'
+fi
+
+if (( $+commands[bat] )); then
+    alias cat='bat'
+elif (( $+commands[batcat] )); then
+    alias cat='batcat'
 fi
 
 alias l='ls -paF'

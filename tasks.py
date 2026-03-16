@@ -152,6 +152,7 @@ def provision(ctx, args=""):
                     "oh-my-posh",
                     "poshgit",
                     "openssh --pre",
+                    "wezterm",
                 ]
             )
             ctx.run("choco feature enable -n=allowGlobalConfirmation")
@@ -209,6 +210,7 @@ class Dploy:
             "ssh",
             "tmux",
             "nvim",
+            "wezterm",
             "zsh",
             "xfce4-terminal",
         ]

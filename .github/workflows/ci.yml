@@ -16,9 +16,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Install shellcheck (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get install -y shellcheck
@@ -27,6 +27,7 @@ jobs:
         run: choco install shellcheck
       - name: Enable symbolic links (Windows)
         if: runner.os == 'Windows'
+        shell: cmd
         run: |
           reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" ^
             /t REG_DWORD /v "AllowDevelopmentWithoutDevLicense" /d 1 /f

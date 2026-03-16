@@ -27,6 +27,7 @@ jobs:
         run: choco install shellcheck
       - name: Enable symbolic links (Windows)
         if: runner.os == 'Windows'
+        shell: cmd
         run: |
           reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" ^
             /t REG_DWORD /v "AllowDevelopmentWithoutDevLicense" /d 1 /f

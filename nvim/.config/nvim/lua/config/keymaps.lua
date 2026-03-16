@@ -562,4 +562,20 @@ vim.api.nvim_create_user_command('Renumber', function(opts)
 end, { range = true, bang = true, desc = 'Renumber lines sequentially' })
 
 -------------------------------------------------------------------------------}}}
+-- SYMLINKS                                                                  {{{
+--------------------------------------------------------------------------------
+-- Follow symlink to the real file (re-triggers fugitive git detection)
+vim.api.nvim_create_user_command('FollowSymlink', function()
+    local current = vim.fn.expand('%:p')
+    local resolved = vim.fn.resolve(current)
+    if resolved == current then
+        vim.notify('Not a symlink', vim.log.levels.INFO)
+        return
+    end
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    vim.cmd('edit ' .. vim.fn.fnameescape(resolved))
+    vim.api.nvim_win_set_cursor(0, cursor)
+end, { desc = 'Follow symlink to real file' })
+
+-------------------------------------------------------------------------------}}}
 -- vim: foldmethod=marker

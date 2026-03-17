@@ -116,6 +116,142 @@ local plugins = {
                     scroll_right = '<C-l>',
                 },
             })
+
+            -- Cursorword (replaces vim_current_word)
+            require('mini.cursorword').setup()
+
+            -- Trailspace (replaces Preserve.vim trimming)
+            require('mini.trailspace').setup()
+
+            -- Splitjoin (replaces vim-split-join)
+            require('mini.splitjoin').setup()
+
+            -- Align (replaces tabular)
+            require('mini.align').setup()
+
+            -- Comment (robust commenting)
+            require('mini.comment').setup()
+
+            -- Bracketed (replaces vim-unimpaired)
+            require('mini.bracketed').setup()
+
+            -- Bufremove (clean buffer delete)
+            require('mini.bufremove').setup()
+
+            -- Animate (smooth scrolling and cursor)
+            require('mini.animate').setup()
+
+            -- Hipatterns (highlight colors and patterns)
+            local hipatterns = require('mini.hipatterns')
+            hipatterns.setup({
+                highlighters = {
+                    hex_color = hipatterns.gen_highlighter.hex_color(),
+                },
+            })
+
+            -- Clue (keybinding hints)
+            local miniclue = require('mini.clue')
+            miniclue.setup({
+                triggers = {
+                    -- Leader triggers
+                    { mode = 'n', keys = '<Leader>' },
+                    { mode = 'x', keys = '<Leader>' },
+
+                    -- Built-in completion
+                    { mode = 'i', keys = '<C-x>' },
+
+                    -- G keys
+                    { mode = 'n', keys = 'g' },
+                    { mode = 'x', keys = 'g' },
+
+                    -- Marks
+                    { mode = 'n', keys = "'" },
+                    { mode = 'n', keys = '`' },
+                    { mode = 'x', keys = "'" },
+                    { mode = 'x', keys = '`' },
+
+                    -- Registers
+                    { mode = 'n', keys = '"' },
+                    { mode = 'x', keys = '"' },
+                    { mode = 'i', keys = '<C-r>' },
+                    { mode = 'c', keys = '<C-r>' },
+
+                    -- Window commands
+                    { mode = 'n', keys = '<C-w>' },
+
+                    -- Z keys
+                    { mode = 'n', keys = 'z' },
+                    { mode = 'x', keys = 'z' },
+                },
+
+                clues = {
+                    miniclue.gen_clues.builtin_completion(),
+                    miniclue.gen_clues.g(),
+                    miniclue.gen_clues.marks(),
+                    miniclue.gen_clues.registers(),
+                    miniclue.gen_clues.windows(),
+                    miniclue.gen_clues.z(),
+                },
+            })
+            end,
+            -- Map (global minimap)
+            require('mini.map').setup()
+
+            -- Animate (smooth scrolling and cursor)
+            require('mini.animate').setup()
+
+            -- Hipatterns (highlight colors and patterns)
+            local hipatterns = require('mini.hipatterns')
+            hipatterns.setup({
+                highlighters = {
+                    hex_color = hipatterns.gen_highlighter.hex_color(),
+                },
+            })
+
+            -- Clue (keybinding hints)
+            local miniclue = require('mini.clue')
+            miniclue.setup({
+                triggers = {
+                    -- Leader triggers
+                    { mode = 'n', keys = '<Leader>' },
+                    { mode = 'x', keys = '<Leader>' },
+
+                    -- Built-in completion
+                    { mode = 'i', keys = '<C-x>' },
+
+                    -- G keys
+                    { mode = 'n', keys = 'g' },
+                    { mode = 'x', keys = 'g' },
+
+                    -- Marks
+                    { mode = 'n', keys = "'" },
+                    { mode = 'n', keys = '`' },
+                    { mode = 'x', keys = "'" },
+                    { mode = 'x', keys = '`' },
+
+                    -- Registers
+                    { mode = 'n', keys = '"' },
+                    { mode = 'x', keys = '"' },
+                    { mode = 'i', keys = '<C-r>' },
+                    { mode = 'c', keys = '<C-r>' },
+
+                    -- Window commands
+                    { mode = 'n', keys = '<C-w>' },
+
+                    -- Z keys
+                    { mode = 'n', keys = 'z' },
+                    { mode = 'x', keys = 'z' },
+                },
+
+                clues = {
+                    miniclue.gen_clues.builtin_completion(),
+                    miniclue.gen_clues.g(),
+                    miniclue.gen_clues.marks(),
+                    miniclue.gen_clues.registers(),
+                    miniclue.gen_clues.windows(),
+                    miniclue.gen_clues.z(),
+                },
+            })
         end,
     },
     { 'tpope/vim-repeat', event = 'VeryLazy' },
@@ -179,10 +315,17 @@ local plugins = {
         lazy = false,
         config = function()
             require('snacks').setup({
+                bigfile = { enabled = true },
+                dashboard = { enabled = true },
                 input = { enabled = true },
                 indent = { enabled = true },
+                notifier = { enabled = true },
                 picker = {},
+                quickfile = { enabled = true },
+                statuscolumn = { enabled = true },
+                terminal = { enabled = true },
             })
+            vim.keymap.set('n', '<leader>st', function() Snacks.terminal() end, { desc = "Toggle Terminal" })
             vim.keymap.set('n', 'coig', function()
                 if Snacks.indent.enabled then
                     Snacks.indent.disable()
@@ -497,6 +640,9 @@ local plugins = {
             end
             return {
                 provider = provider,
+                spinner_chars = {
+                    thinking = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+                },
             }
         end,
         -- these are just suggested keymaps; customize as desired
@@ -861,14 +1007,14 @@ local plugins = {
     ---------------------------------------------------------------------------}}}
     -- TEXT MANIPULATION                                                      {{{
     ---------------------------------------------------------------------------
-    {
-        'godlygeek/tabular',
-        cmd = 'Tabularize',
-        keys = {
-            { '<leader>t', ':Tabularize/', mode = { 'n', 'x' }, desc = 'Tabularize' },
-        },
-    },
-    { 'arecarn/vim-split-join', cmd = { 'Split', 'Join' } },
+    -- {
+    --     'godlygeek/tabular',
+    --     cmd = 'Tabularize',
+    --     keys = {
+    --         { '<leader>t', ':Tabularize/', mode = { 'n', 'x' }, desc = 'Tabularize' },
+    --     },
+    -- },
+    -- { 'arecarn/vim-split-join', cmd = { 'Split', 'Join' } },
     { 'vim-scripts/ingo-library', lazy = true },
     {
         'vim-scripts/FormatToWidth',
@@ -881,7 +1027,7 @@ local plugins = {
     ---------------------------------------------------------------------------
     { 'kana/vim-niceblock', event = 'VeryLazy' },
     { 'tpope/vim-speeddating', keys = { '<C-a>', '<C-x>' } },
-    { 'tpope/vim-unimpaired', event = 'VeryLazy' },
+    -- { 'tpope/vim-unimpaired', event = 'VeryLazy' },
     { 'vim-scripts/UnconditionalPaste', event = 'VeryLazy' },
     { 'arecarn/vim-auto-autoread', event = 'VeryLazy' },
     {
@@ -909,11 +1055,11 @@ local plugins = {
             { 'gmx', '<Plug>(quickhl-manual-reset)', mode = { 'n', 'x' } },
         },
     },
-    {
-        'dominikduda/vim_current_word',
-        event = 'VeryLazy',
-        init = function() vim.g['vim_current_word#highlight_current_word'] = 0 end,
-    },
+    -- {
+    --     'dominikduda/vim_current_word',
+    --     event = 'VeryLazy',
+    --     init = function() vim.g['vim_current_word#highlight_current_word'] = 0 end,
+    -- },
 
     ---------------------------------------------------------------------------}}}
     -- SEARCH                                                                 {{{

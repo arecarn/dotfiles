@@ -3,7 +3,6 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 """
 
 import ctypes
-import fnmatch
 import os
 import pathlib
 
@@ -23,27 +22,15 @@ else:
 # to be called from there.
 try:
     import git
-
-    GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
-    GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
-    os.chdir(GIT_ROOT)
-except (ImportError, git.GitCommandError):
+except ImportError:
     pass
-
-
-def find_files(directory, pattern):
-    """
-    Recursively find files in directory using the glob expression pattern
-
-    The Python 3.5 glob module supports recursive globs, and the python 3.4
-    pathlib module also does, but for version 2.2 to 3.3 this is the work
-    around.  source: http://stackoverflow.com/a/2186673
-    """
-    for root, _, files in os.walk(directory):
-        for basename in files:
-            if fnmatch.fnmatch(basename, pattern):
-                filename = os.path.join(root, basename)
-                yield filename
+else:
+    try:
+        GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
+        GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
+        os.chdir(GIT_ROOT)
+    except git.GitCommandError:
+        pass
 
 
 @task
@@ -97,9 +84,7 @@ def provision_all(ctx, args=""):
     Provision this and other system using ansible
     """
     os.chdir("ansible")
-    ctx.run(
-        "ansible-playbook site.yml --ask-vault-pass --inventory localhost, " + args
-    )
+    ctx.run("ansible-playbook site.yml --inventory localhost, " + args)
 
 
 @task
@@ -175,21 +160,8 @@ def provision(ctx, args=""):
     else:
         os.chdir("ansible")
         ctx.run(
-            "ansible-playbook site.yml --inventory localhost, --ask-become-pass "
-            + args
+            "ansible-playbook site.yml --inventory localhost, --ask-become-pass " + args
         )
-
-
-@task
-def provision_minimal(ctx, args=""):
-    """
-    Provision this system using ansible
-    """
-    os.chdir("ansible")
-    ctx.run(
-        "ansible-playbook site-minimal.yml --ask-vault-pass --inventory localhost, "
-        "--ask-become-pass " + args
-    )
 
 
 @task
@@ -279,7 +251,7 @@ class Dploy:
 @task
 def stow(ctx):
     """
-    Run dploy unstow unlink all files into their respective repositories
+    Run dploy stow to link all files into their respective repositories
     """
     # pylint: disable=unused-argument
     try:
@@ -294,7 +266,7 @@ def stow(ctx):
 @task
 def unstow(ctx):
     """
-    Run dploy stow link all files into their respective repositories
+    Run dploy unstow to unlink all files from their respective repositories
     """
     # pylint: disable=unused-argument
     try:
@@ -342,9 +314,7 @@ def lint_ansible(ctx):
     """
     Run ansible-playbook syntax check on the ansible playbook
     """
-    ctx.run(
-        "ansible-playbook --syntax-check -i localhost, ansible/site.yml"
-    )
+    ctx.run("ansible-playbook --syntax-check -i localhost, ansible/site.yml")
 
 
 @task(lint_shell, lint_yaml, lint_python, lint_lua, lint_ansible, default=True)

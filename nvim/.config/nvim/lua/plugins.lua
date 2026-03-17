@@ -281,6 +281,14 @@ local plugins = {
                 left = '', left_alt = '|', right = '', right_alt = '|', space = ' '
             }
         end,
+        config = function()
+            if vim.env.TMUX == nil then return end
+            local snapshot = vim.fn.expand('~/.cache/tmux/statusline.conf')
+            if vim.fn.filereadable(snapshot) == 0 then
+                vim.cmd('Tmuxline')
+                vim.cmd('TmuxlineSnapshot! ' .. snapshot)
+            end
+        end,
     },
 
     ---------------------------------------------------------------------------}}}

@@ -121,9 +121,14 @@ def provision_termux(ctx):
         "build-essential",
         "python",
         "nodejs",
+        "luarocks",
+        "stylua",
+        "lua-language-server",
     ]
     ctx.run("pkg update -y")
     ctx.run(f"pkg install -y {' '.join(packages)}")
+    # Install luacheck via luarocks for linting
+    ctx.run("luarocks install luacheck", warn=True)
 
 
 @task
@@ -153,6 +158,9 @@ def provision(ctx, args=""):
                     "poshgit",
                     "openssh --pre",
                     "wezterm",
+                    "stylua",
+                    "selene",
+                    "luacheck",
                 ]
             )
             ctx.run("choco feature enable -n=allowGlobalConfirmation")
@@ -303,7 +311,30 @@ def install(ctx):
     # pylint: disable=unused-argument
 
 
-@task(lint_shell, lint_yaml, lint_python, default=True)
+@task
+def lint_lua(ctx):
+    """
+    Run luacheck and stylua on Lua files
+    """
+    exclude_dirs = {".git", ".cache", "node_modules"}
+    files = [
+        str(f)
+        for f in pathlib.Path(".").rglob("*.lua")
+        if not any(excluded in f.parts for excluded in exclude_dirs)
+    ]
+    if not files:
+        return
+    files_string = " ".join(files)
+
+    # Use stylua to check formatting
+    ctx.run(f"stylua --check {files_string}")
+
+    # Use luacheck for linting
+    cmd = "luacheck {files} --globals vim"
+    ctx.run(cmd.format(files=files_string))
+
+
+@task(lint_shell, lint_yaml, lint_python, lint_lua, default=True)
 def lint(ctx):
     """
     Lint task

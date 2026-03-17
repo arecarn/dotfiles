@@ -138,62 +138,6 @@ local plugins = {
             -- Bufremove (clean buffer delete)
             require('mini.bufremove').setup()
 
-            -- Animate (smooth scrolling and cursor)
-            require('mini.animate').setup()
-
-            -- Hipatterns (highlight colors and patterns)
-            local hipatterns = require('mini.hipatterns')
-            hipatterns.setup({
-                highlighters = {
-                    hex_color = hipatterns.gen_highlighter.hex_color(),
-                },
-            })
-
-            -- Clue (keybinding hints)
-            local miniclue = require('mini.clue')
-            miniclue.setup({
-                triggers = {
-                    -- Leader triggers
-                    { mode = 'n', keys = '<Leader>' },
-                    { mode = 'x', keys = '<Leader>' },
-
-                    -- Built-in completion
-                    { mode = 'i', keys = '<C-x>' },
-
-                    -- G keys
-                    { mode = 'n', keys = 'g' },
-                    { mode = 'x', keys = 'g' },
-
-                    -- Marks
-                    { mode = 'n', keys = "'" },
-                    { mode = 'n', keys = '`' },
-                    { mode = 'x', keys = "'" },
-                    { mode = 'x', keys = '`' },
-
-                    -- Registers
-                    { mode = 'n', keys = '"' },
-                    { mode = 'x', keys = '"' },
-                    { mode = 'i', keys = '<C-r>' },
-                    { mode = 'c', keys = '<C-r>' },
-
-                    -- Window commands
-                    { mode = 'n', keys = '<C-w>' },
-
-                    -- Z keys
-                    { mode = 'n', keys = 'z' },
-                    { mode = 'x', keys = 'z' },
-                },
-
-                clues = {
-                    miniclue.gen_clues.builtin_completion(),
-                    miniclue.gen_clues.g(),
-                    miniclue.gen_clues.marks(),
-                    miniclue.gen_clues.registers(),
-                    miniclue.gen_clues.windows(),
-                    miniclue.gen_clues.z(),
-                },
-            })
-            end,
             -- Map (global minimap)
             require('mini.map').setup()
 
@@ -703,12 +647,27 @@ local plugins = {
         config = function() require('mason').setup() end,
     },
     {
+        'WhoIsSethDaniel/mason-tool-installer.nvim',
+        dependencies = { 'williamboman/mason.nvim' },
+        config = function()
+            require('mason-tool-installer').setup({
+                ensure_installed = {
+                    'selene',
+                    'stylua',
+                    'shellcheck',
+                    'shfmt',
+                },
+                auto_install = true,
+            })
+        end,
+    },
+    {
         'williamboman/mason-lspconfig.nvim',
         event = { 'BufReadPre', 'BufNewFile' },
         dependencies = { 'williamboman/mason.nvim', 'neovim/nvim-lspconfig' },
         config = function()
             require('mason-lspconfig').setup({
-                ensure_installed = { 'yamlls', 'bashls', 'clangd', 'cmake', 'pyright', 'vimls', 'prosemd_lsp' },
+                ensure_installed = { 'yamlls', 'bashls', 'clangd', 'cmake', 'pyright', 'vimls', 'prosemd_lsp', 'lua_ls' },
             })
 
             -----------------------------------------------------------------
@@ -757,6 +716,23 @@ local plugins = {
                 root_markers = { 'compile_commands.json', 'compile_flags.txt', '.git' },
             }
 
+            vim.lsp.config.lua_ls = {
+                cmd = { 'lua-language-server' },
+                filetypes = { 'lua' },
+                root_markers = { '.git', 'init.lua' },
+                settings = {
+                    Lua = {
+                        runtime = { version = 'LuaJIT' },
+                        diagnostics = { globals = { 'vim' } },
+                        workspace = {
+                            library = vim.api.nvim_get_runtime_file("", true),
+                            checkThirdParty = false,
+                        },
+                        telemetry = { enabled = false },
+                    },
+                },
+            }
+
             -- Enable all LSP servers
             vim.lsp.enable('yamlls')
             vim.lsp.enable('bashls')
@@ -765,6 +741,7 @@ local plugins = {
             vim.lsp.enable('vimls')
             vim.lsp.enable('prosemd_lsp')
             vim.lsp.enable('clangd')
+            vim.lsp.enable('lua_ls')
 
             -----------------------------------------------------------------
             -- Clangd-specific keymap
@@ -864,6 +841,49 @@ local plugins = {
                 end,
             })
         end,
+    },
+    {
+        'mfussenegger/nvim-lint',
+        event = { 'BufReadPost', 'BufNewFile' },
+        config = function()
+            local lint = require('lint')
+            lint.linters_by_ft = {
+                lua = { 'selene' },
+                sh = { 'shellcheck' },
+            }
+
+            vim.api.nvim_create_autocmd({ 'BufWritePost', 'BufEnter' }, {
+                group = vim.api.nvim_create_augroup('lint', { clear = true }),
+                callback = function()
+                    lint.try_lint()
+                end,
+            })
+        end,
+    },
+    {
+        'stevearc/conform.nvim',
+        event = { 'BufWritePre' },
+        cmd = { 'ConformInfo' },
+        keys = {
+            {
+                'glf',
+                function()
+                    require('conform').format({ async = true, lsp_fallback = true })
+                end,
+                mode = '',
+                desc = 'Format buffer',
+            },
+        },
+        opts = {
+            formatters_by_ft = {
+                lua = { 'stylua' },
+                sh = { 'shfmt' },
+            },
+            format_on_save = {
+                timeout_ms = 500,
+                lsp_fallback = true,
+            },
+        },
     },
     { 'neovim/nvim-lspconfig', lazy = true },
     { 'mfussenegger/nvim-dap', lazy = true },

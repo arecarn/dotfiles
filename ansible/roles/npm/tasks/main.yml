@@ -1,7 +1,0 @@
----
-- name: npm
-  tags: npm
-  become: !!bool yes
-  package:
-    name: npm
-    state: latest

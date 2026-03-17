@@ -1,0 +1,43 @@
+---
+- name: Check if rustup is installed
+  become: false
+  ansible.builtin.command:
+    cmd: rustup --version
+  register: rustup_check
+  changed_when: false
+  failed_when: false
+
+- name: Install rustup
+  become: false
+  when: rustup_check.rc != 0
+  ansible.builtin.shell:
+    cmd: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  args:
+    creates: "{{ ansible_env.HOME }}/.cargo/bin/rustup"
+
+- name: Check if bob is installed
+  become: false
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/.cargo/bin/bob --version"
+  register: bob_check
+  changed_when: false
+  failed_when: false
+
+- name: Install bob-nvim via cargo
+  become: false
+  when: bob_check.rc != 0
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/.cargo/bin/cargo install bob-nvim"
+
+- name: Install stable Neovim via bob
+  become: false
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/.cargo/bin/bob install stable"
+  register: bob_install
+  changed_when: "'already installed' not in bob_install.stdout"
+
+- name: Use stable Neovim via bob
+  become: false
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/.cargo/bin/bob use stable"
+  changed_when: false

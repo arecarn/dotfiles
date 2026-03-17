@@ -1,7 +1,0 @@
----
-- name: fdupes
-  tags: fdupes
-  become: !!bool yes
-  package:
-    name: fdupes
-    state: latest

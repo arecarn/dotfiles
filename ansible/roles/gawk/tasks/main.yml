@@ -1,8 +1,0 @@
----
-# gawk is required by zplug the zsh plugin manger
-- name: gawk
-  tags: gawk
-  become: !!bool yes
-  package:
-    name: gawk
-    state: latest

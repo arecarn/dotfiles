@@ -1,7 +1,0 @@
----
-- name: shellcheck
-  tags: shellcheck
-  become: !!bool yes
-  package:
-    name: shellcheck
-    state: latest

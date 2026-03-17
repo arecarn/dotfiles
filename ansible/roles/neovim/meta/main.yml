@@ -1,7 +1,0 @@
----
-dependencies:
-  - package_manager
-  - pip
-  - ruby
-  - yarn
-  - nodejs

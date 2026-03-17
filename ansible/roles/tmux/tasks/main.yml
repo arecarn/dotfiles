@@ -1,7 +1,0 @@
----
-- name: tmux
-  tags: tmux
-  become: !!bool yes
-  package:
-    name: tmux
-    state: latest

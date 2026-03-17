@@ -1,7 +1,0 @@
----
-- name: wget
-  tags: wget
-  become: !!bool yes
-  package:
-    name: wget
-    state: latest

@@ -1,0 +1,30 @@
+---
+# Ubuntu: Install yarn from official apt repository
+- name: Download Yarn GPG key
+  when: ansible_os_family == "Debian"
+  ansible.builtin.get_url:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    dest: /usr/share/keyrings/yarn-archive-keyring.gpg
+    mode: "0644"
+
+- name: Add Yarn apt repository
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] https://dl.yarnpkg.com/debian/ stable main"
+    filename: yarn
+    state: present
+    update_cache: true
+
+- name: Install yarn (Debian)
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt:
+    name: yarn
+    state: present
+
+# RHEL: Install yarn globally via pnpm
+- name: Install yarn (RedHat)
+  when: ansible_os_family == "RedHat"
+  ansible.builtin.command:
+    cmd: pnpm add -g yarn
+  register: yarn_result
+  changed_when: "'Already up to date' not in yarn_result.stdout"

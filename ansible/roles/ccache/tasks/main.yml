@@ -1,7 +1,0 @@
----
-- name: ccache
-  tags: ccache
-  become: !!bool yes
-  package:
-    name: ccache
-    state: latest

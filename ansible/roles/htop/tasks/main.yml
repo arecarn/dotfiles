@@ -1,7 +1,0 @@
----
-- name: htop
-  tags: htop
-  become: !!bool yes
-  package:
-    name: htop
-    state: latest

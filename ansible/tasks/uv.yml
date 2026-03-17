@@ -1,0 +1,16 @@
+---
+- name: Check if uv is installed
+  become: false
+  ansible.builtin.command:
+    cmd: uv --version
+  register: uv_check
+  changed_when: false
+  failed_when: false
+
+- name: Install uv via official installer
+  become: false
+  when: uv_check.rc != 0
+  ansible.builtin.shell:
+    cmd: curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/bin/uv"

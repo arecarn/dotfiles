@@ -1,7 +1,0 @@
----
-- name: ncdu
-  tags: ncdu
-  become: !!bool yes
-  package:
-    name: ncdu
-    state: latest

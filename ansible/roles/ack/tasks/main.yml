@@ -1,7 +1,0 @@
----
-- name: ack
-  tags: ack
-  become: !!bool yes
-  package:
-    name: "{{ package[ansible_distribution | lower] }}"
-    state: latest

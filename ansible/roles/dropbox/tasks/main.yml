@@ -1,7 +1,0 @@
----
-- name: dropbox
-  tags: dropbox
-  become: !!bool yes
-  package:
-    name: nautilus-dropbox
-    state: latest

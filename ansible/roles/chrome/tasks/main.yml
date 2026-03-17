@@ -1,7 +1,0 @@
----
-- name: chrome
-  tags: chrome
-  become: !!bool yes
-  package:
-    name: chromium-browser
-    state: latest

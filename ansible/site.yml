@@ -3,12 +3,19 @@
   hosts: localhost
   connection: local
   become: true
+  vars:
+    user_home: "{{ lookup('env', 'HOME') }}"
   tasks:
+    - name: Verify sudo access
+      ansible.builtin.command:
+        cmd: whoami
+      changed_when: false
+      register: sudo_check
+      failed_when: sudo_check.stdout != "root"
+
     - ansible.builtin.import_tasks: tasks/repos.yml
     - ansible.builtin.import_tasks: tasks/packages.yml
     - ansible.builtin.import_tasks: tasks/neovim.yml
-    - ansible.builtin.import_tasks: tasks/yarn.yml
-    - ansible.builtin.import_tasks: tasks/uv.yml
-    - ansible.builtin.import_tasks: tasks/pip-packages.yml
-    - ansible.builtin.import_tasks: tasks/pnpm-packages.yml
+    - ansible.builtin.import_tasks: tasks/python-packages.yml
+    - ansible.builtin.import_tasks: tasks/javascript-packages.yml
     - ansible.builtin.import_tasks: tasks/zsh.yml

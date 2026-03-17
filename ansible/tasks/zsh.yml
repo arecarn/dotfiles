@@ -2,7 +2,7 @@
 - name: Source shell profile from .profile
   become: false
   ansible.builtin.lineinfile:
-    dest: "{{ ansible_env.HOME }}/.profile"
+    dest: "{{ user_home }}/.profile"
     insertafter: EOF
     line: ". ~/.config/shell/profile"
     create: true

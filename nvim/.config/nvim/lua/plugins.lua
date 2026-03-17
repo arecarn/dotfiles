@@ -108,8 +108,14 @@ local plugins = {
                     move_up     = '<C-p>',
                     caret_left  = '<C-b>',
                     caret_right = '<C-f>',
-                    caret_start = '<C-a>',
-                    caret_end   = '<C-e>',
+                    caret_start = {
+                        char = '<C-a>',
+                        func = function(picker, _) picker.caret = 1 end,
+                    },
+                    caret_end = {
+                        char = '<C-e>',
+                        func = function(picker, _) picker.caret = #picker.query + 1 end,
+                    },
                     scroll_down = '<PageDown>',
                     scroll_up   = '<PageUp>',
                     scroll_left = '<C-h>',

@@ -12,7 +12,9 @@
     cmd: >-
       dnf config-manager --set-enabled
       {{ (ansible_facts['distribution_major_version'] | int >= 10)
-         | ternary('codeready-builder-for-rhel-' + ansible_facts['distribution_major_version'] + '-x86_64-rpms', 'crb') }}
+         | ternary('codeready-builder-for-rhel-'
+         + ansible_facts['distribution_major_version']
+         + '-x86_64-rpms', 'crb') }}
   changed_when: false
 
 # Ubuntu: Add git PPA for latest version

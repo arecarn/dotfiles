@@ -2,7 +2,6 @@
 -- KEYMAPS                                                                    {{{
 --------------------------------------------------------------------------------
 -- Core keymaps migrated from vimrc
--- Plugin-specific keymaps remain in vimrc until lazy.nvim migration
 
 local map = vim.keymap.set
 
@@ -65,7 +64,7 @@ map({ 'n', 'v' }, '<leader>rt', ':retab<CR>', { silent = true })
 -- Underline current line with character of choice
 map('n', '<leader>u', function()
     local char = vim.fn.nr2char(vim.fn.getchar())
-    if char == '' or char == '\27' then return end  -- Escape pressed
+    if char == '' or char == '\27' then return end -- Escape pressed
     char = vim.fn.escape(char, '\\')
     vim.cmd('normal! yyp')
     vim.cmd([[s#\m\S.*\S\|\S#\=repeat(']] .. char .. [[',strlen(submatch(0)))#ge]])
@@ -275,10 +274,7 @@ end
 -- TERMINAL                                                                   {{{
 --------------------------------------------------------------------------------
 -- Exit terminal mode
-map('t', '<C-\\><C-\\>', '<C-\\><C-n>')
-map('s', '<C-\\><C-\\>', '<C-\\><C-n>')
-map('i', '<C-\\><C-\\>', '<C-\\><C-n>')
-map('n', '<C-\\><C-\\>', '<C-\\><C-n>')
+map('t', '<Esc><Esc>', '<C-\\><C-n>')
 
 -- Paste into terminal
 map('t', '<C-\\>p', '<C-\\><C-n>pi')
@@ -356,7 +352,7 @@ end, { expr = true, desc = 'Find from current dir' })
 -- Find file with same stem (other extension)
 map('n', '<leader>fo', function()
     local stem = vim.fn.expand('%:t:r')
-    return ':find ' .. stem .. '.*' .. string.char(9)  -- Tab character
+    return ':find ' .. stem .. '.*' .. string.char(9) -- Tab character
 end, { expr = true, desc = 'Find file with same stem' })
 
 -- Split find from current directory

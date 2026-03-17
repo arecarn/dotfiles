@@ -1,9 +1,9 @@
 ---
 - name: Install or update tools via uv
   become: false
-  when: pip_packages | length > 0
+  when: python_packages | length > 0
   ansible.builtin.command:
-    cmd: "{{ ansible_env.HOME }}/.local/bin/uv tool install --upgrade {{ item }}"
-  loop: "{{ pip_packages }}"
+    cmd: "{{ user_home }}/.local/bin/uv tool install --upgrade {{ item }}"
+  loop: "{{ python_packages }}"
   register: uv_tool_result
   changed_when: "'Installed' in uv_tool_result.stdout or 'Updated' in uv_tool_result.stdout"

@@ -4,7 +4,7 @@
     name: "{{ common_packages }}"
     state: present
 
-- name: Install OS-family-specific packages
+- name: Install OS-family-specific packages (RHEL/Ubuntu)
   ansible.builtin.package:
-    name: "{{ os_family_packages[ansible_os_family] }}"
+    name: "{{ os_family_packages[ansible_facts['os_family']] }}"
     state: present

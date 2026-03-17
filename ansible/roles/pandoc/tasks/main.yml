@@ -1,7 +1,0 @@
----
-- name: pandoc
-  tags: pandoc
-  become: !!bool yes
-  package:
-    name: pandoc
-    state: latest

@@ -1,7 +1,0 @@
----
-- name: moreutils
-  tags: moreutils
-  become: !!bool yes
-  package:
-    name: moreutils
-    state: latest

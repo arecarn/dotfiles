@@ -1,0 +1,21 @@
+---
+# RHEL: Enable EPEL and CodeReady Builder repositories
+- name: Install EPEL release package
+  when: ansible_os_family == "RedHat"
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+
+- name: Enable CodeReady Builder repository
+  when: ansible_os_family == "RedHat"
+  ansible.builtin.command:
+    cmd: dnf config-manager --set-enabled crb
+  changed_when: false
+
+# Ubuntu: Add git PPA for latest version
+- name: Add git PPA
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt_repository:
+    repo: ppa:git-core/ppa
+    state: present
+    update_cache: true

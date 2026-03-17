@@ -1,9 +1,0 @@
----
-- name: python 3 package
-  tags: invoke
-  become: !!bool yes
-  pip:
-    name: invoke
-    state: latest
-    executable: "{{pip3_executable[ansible_distribution | lower]\
-                 | default([pip3])}}"

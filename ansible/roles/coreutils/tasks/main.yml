@@ -1,7 +1,0 @@
----
-- name: coreutils
-  tags: coreutils
-  become: !!bool yes
-  package:
-    name: coreutils
-    state: present

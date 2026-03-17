@@ -1,9 +1,0 @@
----
-- name: Node package
-  tags: write-good
-  become: !!bool yes
-
-  npm:
-    name: write-good
-    global: !!bool yes
-    state: latest

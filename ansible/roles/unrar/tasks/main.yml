@@ -1,7 +1,0 @@
----
-- name: unrar
-  tags: unrar
-  become: !!bool yes
-  package:
-    name: unrar
-    state: latest

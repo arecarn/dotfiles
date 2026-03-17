@@ -1,7 +1,0 @@
----
-- name: xfce4-terminal
-  tags: xfce4-terminal
-  become: !!bool yes
-  package:
-    name: xfce4-terminal
-    state: latest

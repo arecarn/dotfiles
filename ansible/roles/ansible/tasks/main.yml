@@ -1,7 +1,0 @@
----
-- name: ansible
-  tags: ansible
-  become: !!bool yes
-  package:
-    name: ansible
-    state: latest

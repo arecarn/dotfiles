@@ -1,7 +1,0 @@
----
-- name: xsel
-  tags: xsel
-  become: !!bool yes
-  package:
-    name: xsel
-    state: latest

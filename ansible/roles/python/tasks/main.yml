@@ -1,8 +1,0 @@
----
-- name: python
-  tags: python
-  become: !!bool yes
-  with_items: "{{packages[ansible_distribution | lower]}}"
-  package:
-    name: "{{item}}"
-    state: latest

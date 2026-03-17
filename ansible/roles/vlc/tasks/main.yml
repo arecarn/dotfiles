@@ -1,8 +1,0 @@
----
-
-- name: vlc
-  tags: vlc
-  become: !!bool yes
-  package:
-    name: vlc
-    state: latest

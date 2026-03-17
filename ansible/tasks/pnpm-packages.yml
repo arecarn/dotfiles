@@ -1,0 +1,14 @@
+---
+- name: Install pnpm globally
+  ansible.builtin.command:
+    cmd: npm install -g pnpm
+  register: pnpm_install
+  changed_when: "'added' in pnpm_install.stdout"
+
+- name: Install global pnpm packages
+  when: pnpm_packages | length > 0
+  ansible.builtin.command:
+    cmd: "pnpm add -g {{ item }}"
+  loop: "{{ pnpm_packages }}"
+  register: pnpm_result
+  changed_when: "'Already up to date' not in pnpm_result.stdout"

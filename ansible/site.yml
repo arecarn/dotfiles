@@ -1,53 +1,14 @@
 ---
-- hosts: all
-  roles:
-    - ack
-    - ag
-    - ansible
-    # - ansible-lint
-    # - chrome
-    # - cmake
-    # - cmake-lint
-    - coreutils
-    # - cppcheck
-    # - cscope
-    # - ctags
-    - curl
-    - dploy
-    - firefox
-    - gawk
-    - git
-    - htop
-    # - latex
-    - llvm
-    # - markdownlint
-    - moreutils
-    - ncdu
-    - neovim
-    - npm
-    - nodejs
-    - package_manager
-    - pandoc
-    - picocom
-    - pip
-    # - proselint
-    # - pstree
-    # - pylint
-    - python
-    # - ruby
-    # - set_default_shell
-    # - shellcheck
-    - ssh
-    - tmux
-    - tree
-    - unrar
-    - vim
-    # - vint
-    - vlc
-    - wget
-    # - write-good
-    - xclip
-    - xsel
-    # - yamllint
-    - yarn
-    - zsh
+- name: Configure workstation
+  hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - ansible.builtin.import_tasks: tasks/repos.yml
+    - ansible.builtin.import_tasks: tasks/packages.yml
+    - ansible.builtin.import_tasks: tasks/neovim.yml
+    - ansible.builtin.import_tasks: tasks/yarn.yml
+    - ansible.builtin.import_tasks: tasks/uv.yml
+    - ansible.builtin.import_tasks: tasks/pip-packages.yml
+    - ansible.builtin.import_tasks: tasks/pnpm-packages.yml
+    - ansible.builtin.import_tasks: tasks/zsh.yml

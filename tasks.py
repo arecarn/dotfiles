@@ -97,7 +97,9 @@ def provision_all(ctx, args=""):
     Provision this and other system using ansible
     """
     os.chdir("ansible")
-    ctx.run("ansible-playbook site.yml --ask-vault-pass --inventory hosts" + " " + args)
+    ctx.run(
+        "ansible-playbook site.yml --ask-vault-pass --inventory localhost, " + args
+    )
 
 
 @task
@@ -173,7 +175,8 @@ def provision(ctx, args=""):
     else:
         os.chdir("ansible")
         ctx.run(
-            "ansible-playbook site.yml --inventory localhost --ask-become-pass " + args
+            "ansible-playbook site.yml --inventory localhost, --ask-become-pass "
+            + args
         )
 
 
@@ -184,7 +187,7 @@ def provision_minimal(ctx, args=""):
     """
     os.chdir("ansible")
     ctx.run(
-        "ansible-playbook site-minimal.yml --ask-vault-pass --inventory localhost "
+        "ansible-playbook site-minimal.yml --ask-vault-pass --inventory localhost, "
         "--ask-become-pass " + args
     )
 
@@ -334,7 +337,17 @@ def lint_lua(ctx):
     ctx.run(cmd.format(files=files_string))
 
 
-@task(lint_shell, lint_yaml, lint_python, lint_lua, default=True)
+@task
+def lint_ansible(ctx):
+    """
+    Run ansible-playbook syntax check on the ansible playbook
+    """
+    ctx.run(
+        "ansible-playbook --syntax-check -i localhost, ansible/site.yml"
+    )
+
+
+@task(lint_shell, lint_yaml, lint_python, lint_lua, lint_ansible, default=True)
 def lint(ctx):
     """
     Lint task

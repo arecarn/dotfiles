@@ -1,7 +1,0 @@
----
-- name: tree
-  tags: tree
-  become: !!bool yes
-  package:
-    name: tree
-    state: latest

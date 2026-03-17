@@ -1,7 +1,0 @@
----
-- name: curl
-  tags: curl
-  become: !!bool yes
-  package:
-    name: curl
-    state: latest

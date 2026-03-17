@@ -1,8 +1,0 @@
----
-shell:
-  macosx: /usr/local/bin/zsh
-  default: /bin/zsh
-
-group:
-  macosx: staff
-  default: ''

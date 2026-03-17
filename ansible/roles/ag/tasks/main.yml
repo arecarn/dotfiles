@@ -1,7 +1,0 @@
----
-- name: ag
-  tags: ag
-  become: !!bool yes
-  package:
-    name: "{{ package[ansible_distribution | lower] }}"
-    state: latest

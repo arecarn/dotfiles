@@ -1,4 +1,0 @@
----
-package:
-  ubuntu: ack-grep
-  centos: ack

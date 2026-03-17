@@ -1,7 +1,0 @@
----
-- name: xclip
-  tags: xclip
-  become: !!bool yes
-  package:
-    name: xclip
-    state: latest

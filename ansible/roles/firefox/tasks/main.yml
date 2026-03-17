@@ -1,7 +1,0 @@
----
-- name: firefox
-  tags: firefox
-  become: !!bool yes
-  package:
-    name: firefox
-    state: latest

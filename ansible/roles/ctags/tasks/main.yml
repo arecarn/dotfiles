@@ -1,7 +1,0 @@
----
-- name: ctags
-  tags: ctags
-  become: !!bool yes
-  package:
-    name: exuberant-ctags
-    state: latest

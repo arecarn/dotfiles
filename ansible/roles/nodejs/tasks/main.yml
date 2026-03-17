@@ -1,8 +1,0 @@
----
-
-- name: node
-  tags: node
-  become: !!bool yes
-  package:
-    name: nodejs
-    state: latest

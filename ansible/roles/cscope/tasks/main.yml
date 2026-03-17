@@ -1,7 +1,0 @@
----
-- name: cscope
-  tags: cscope
-  become: !!bool yes
-  package:
-    name: cscope
-    state: latest

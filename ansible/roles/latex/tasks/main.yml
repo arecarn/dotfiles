@@ -1,9 +1,0 @@
----
-
-- name: latex
-  tags: latex
-  become: !!bool yes
-  with_items: "{{packages[ansible_distribution | lower]}}"
-  package:
-    name: "{{item}}"
-    state: latest

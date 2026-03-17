@@ -1,7 +1,0 @@
----
-- name: picocom
-  tags: picocom
-  become: !!bool yes
-  package:
-    name: picocom
-    state: latest

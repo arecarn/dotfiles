@@ -1,7 +1,0 @@
----
-- name: cppcheck
-  tags: cppcheck
-  become: !!bool yes
-  package:
-    name: cppcheck
-    state: latest

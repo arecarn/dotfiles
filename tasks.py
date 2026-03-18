@@ -90,32 +90,22 @@ def provision_all(ctx, args=""):
 @task
 def provision_termux(ctx):
     """
-    Provision this system using pkg on Termux
+    Bootstrap Termux environment for Ansible and Python dependencies
     """
-    packages = [
-        "git",
-        "zsh",
-        "tmux",
-        "neovim",
-        "ripgrep",
-        "fd",
-        "fzf",
-        "bat",
-        "eza",
-        "zoxide",
-        "starship",
-        "openssh",
-        "build-essential",
+    bootstrap_packages = [
         "python",
-        "nodejs",
-        "luarocks",
-        "stylua",
-        "lua-language-server",
+        "rust",
+        "build-essential",
+        "git",
     ]
     ctx.run("pkg update -y")
-    ctx.run(f"pkg install -y {' '.join(packages)}")
+    ctx.run(f"pkg install -y {' '.join(bootstrap_packages)}")
+
     # Install luacheck via luarocks for linting
     ctx.run("luarocks install luacheck", warn=True)
+
+    # Sync dependencies via uv (including ansible and ruff)
+    ctx.run("uv sync")
 
 
 @task
@@ -155,12 +145,24 @@ def provision(ctx, args=""):
             ctx.run(f"choco upgrade {packages}")
         else:
             assert False, "You need to be admin to install things with Chocolaty"
-    elif "com.termux" in os.environ.get("PREFIX", ""):
-        provision_termux(ctx)
     else:
+        is_termux = "com.termux" in os.environ.get("PREFIX", "")
+        if is_termux:
+            provision_termux(ctx)
+
+        # cd into ansible directory to run the playbook
         os.chdir("ansible")
+
+        # Determine if we should use become (don't use it on Termux)
+        become_arg = "" if is_termux else "--ask-become-pass"
+
+        # Determine ansible-playbook path (use venv if available)
+        ansible_pb = "../.venv/bin/ansible-playbook"
+        if not pathlib.Path(ansible_pb).exists():
+            ansible_pb = "ansible-playbook"
+
         ctx.run(
-            "ansible-playbook site.yml --inventory localhost, --ask-become-pass " + args
+            f"{ansible_pb} site.yml --inventory localhost, {become_arg} {args}"
         )
 
 

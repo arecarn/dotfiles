@@ -2,7 +2,7 @@
 - name: Configure workstation
   hosts: localhost
   connection: local
-  become: true
+  become: "{{ ansible_os_family != 'Android' }}"
   vars:
     user_home: "{{ lookup('env', 'HOME') }}"
   tasks:
@@ -12,6 +12,7 @@
       changed_when: false
       register: sudo_check
       failed_when: sudo_check.stdout != "root"
+      when: ansible_os_family != 'Android'
 
     - ansible.builtin.import_tasks: tasks/repos.yml
     - ansible.builtin.import_tasks: tasks/packages.yml

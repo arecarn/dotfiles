@@ -1,11 +1,16 @@
 ---
 # Packages with the same name on both Debian and RedHat
 common_packages:
+  - bat
   - coreutils
   - curl
+  - eza
+  - fd-find
+  - fzf
   - gawk
   - git
   - htop
+  - lua-language-server
   - moreutils
   - ncdu
   - nodejs
@@ -13,11 +18,15 @@ common_packages:
   - openssh-server
   - pandoc
   - picocom
+  - ripgrep
   - shellcheck
+  - starship
+  - stylua
   - tmux
   - tree
   - wget
   - xclip
+  - zoxide
   - zsh
 
 # Packages with different names per OS family
@@ -39,6 +48,11 @@ os_family_packages:
     - openssh-askpass
     - unrar
     - vlc
+  Android:
+    - build-essential
+    - luarocks
+    - neovim
+    - openssh
 
 # Python tools (installed via uv)
 python_packages:

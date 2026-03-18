@@ -1,10 +1,26 @@
 ---
 - name: Install common packages
   ansible.builtin.package:
-    name: "{{ common_packages }}"
+    name: "{{ pkg_name }}"
     state: present
+  loop: "{{ common_packages }}"
+  vars:
+    # Map package names if they differ significantly or should be skipped
+    pkg_name: >-
+      {% if item == 'fd-find' %}
+        {{ (ansible_os_family == 'Android') | ternary('fd', (ansible_os_family == 'Debian') | ternary('fd-find', 'fd-find')) }}
+      {% elif item == 'bat' %}
+        {{ (ansible_os_family == 'Debian') | ternary('batcat', 'bat') }}
+      {% else %}
+        {{ item }}
+      {% endif %}
+  when: >-
+    (item != 'xclip' or ansible_os_family != 'Android') and
+    (item != 'openssh-server' or ansible_os_family != 'Android')
+  ignore_errors: true
 
-- name: Install OS-family-specific packages (RHEL/Ubuntu)
+- name: Install OS-family-specific packages
   ansible.builtin.package:
     name: "{{ os_family_packages[ansible_facts['os_family']] }}"
     state: present
+  when: ansible_facts['os_family'] in os_family_packages

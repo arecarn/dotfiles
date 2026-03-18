@@ -19,7 +19,7 @@
 
 # Ubuntu: Add git PPA for latest version
 - name: Add git PPA (Ubuntu)
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" and ansible_facts['os_family'] != "Android"
   ansible.builtin.apt_repository:
     repo: ppa:git-core/ppa
     state: present

@@ -3,7 +3,7 @@
   become: false
   when: python_packages | length > 0
   ansible.builtin.command:
-    cmd: "{{ user_home }}/.local/bin/uv tool install --upgrade {{ item }}"
+    cmd: "uv tool install --upgrade {{ item }}"
   loop: "{{ python_packages }}"
   register: uv_tool_result
   changed_when: "'Installed' in uv_tool_result.stdout or 'Updated' in uv_tool_result.stdout"

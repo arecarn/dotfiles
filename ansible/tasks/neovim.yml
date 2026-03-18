@@ -6,10 +6,11 @@
   register: rustup_check
   changed_when: false
   failed_when: false
+  when: ansible_os_family != 'Android'
 
 - name: Install rustup
   become: false
-  when: rustup_check.rc != 0
+  when: ansible_os_family != 'Android' and rustup_check.rc != 0
   ansible.builtin.shell:
     cmd: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
   args:
@@ -22,15 +23,17 @@
   register: bob_check
   changed_when: false
   failed_when: false
+  when: ansible_os_family != 'Android'
 
 - name: Install bob-nvim via cargo
   become: false
-  when: bob_check.rc != 0
+  when: ansible_os_family != 'Android' and bob_check.rc != 0
   ansible.builtin.command:
     cmd: "{{ user_home }}/.cargo/bin/cargo install bob-nvim"
 
 - name: Install stable Neovim via bob
   become: false
+  when: ansible_os_family != 'Android'
   ansible.builtin.command:
     cmd: "{{ user_home }}/.cargo/bin/bob install stable"
   register: bob_install
@@ -38,6 +41,7 @@
 
 - name: Use stable Neovim via bob
   become: false
+  when: ansible_os_family != 'Android'
   ansible.builtin.command:
     cmd: "{{ user_home }}/.cargo/bin/bob use stable"
   changed_when: false

@@ -191,6 +191,9 @@ local plugins = {
                     -- Z keys
                     { mode = 'n', keys = 'z' },
                     { mode = 'x', keys = 'z' },
+
+                    -- Option toggles (unimpaired style)
+                    { mode = 'n', keys = 'yo' },
                 },
 
                 clues = {
@@ -200,9 +203,29 @@ local plugins = {
                     miniclue.gen_clues.registers(),
                     miniclue.gen_clues.windows(),
                     miniclue.gen_clues.z(),
+                    { mode = 'n', keys = 'yo', desc = '+toggles' },
                 },
             })
         end,
+    },
+    {
+        'gregorias/toggle.nvim',
+        keys = { { 'yo', desc = 'Toggle Options' } },
+        opts = {
+            toggles = {
+                { 's', 'spell', 'Spell' },
+                { 'w', 'wrap', 'Wrap' },
+                { 'n', 'number', 'Number' },
+                { 'r', 'relativenumber', 'Relative Number' },
+                { 'l', 'list', 'List' },
+                { 'h', 'hlsearch', 'Search Highlight' },
+                { 'c', 'cursorline', 'Cursor Line' },
+                { 'b', 'scrollbind', 'Scroll Bind' },
+                { 'C', 'cursorbind', 'Cursor Bind' },
+                { 'm', 'modifiable', 'Modifiable' },
+                { 'R', 'readonly', 'Read Only' },
+            },
+        },
     },
     { 'tpope/vim-repeat', event = 'VeryLazy' },
     { 'vim-scripts/visualrepeat', event = 'VeryLazy' },

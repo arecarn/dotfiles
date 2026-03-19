@@ -15,18 +15,59 @@
 Set-Executionpolicy RemoteSigned -Scope CurrentUser
 
 Set-PSReadLineOption -EditMode Emacs
+# Ensure PSReadLine is loaded before version check
+Import-Module PSReadLine -ErrorAction SilentlyContinue
+$psrl = Get-Module PSReadLine
+if ($psrl -and $psrl.Version -ge [version]"2.1.0") {
+    Set-PSReadLineOption -PredictionSource History
+    # Only try to set view style if the parameter exists
+    $cmd = Get-Command Set-PSReadLineOption
+    if ($cmd.Parameters.ContainsKey('PredictionViewStyle')) {
+        Set-PSReadLineOption -PredictionViewStyle ListView
+    }
+}
+
 Set-PSReadLineKeyHandler -Chord 'Ctrl+p' -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Chord 'Ctrl+n' -Function HistorySearchForward
-Remove-PSReadlineKeyHandler 'Ctrl+r'
-Remove-PSReadlineKeyHandler 'Ctrl+t'
+# Accept prediction with RightArrow or Ctrl+f
+Set-PSReadLineKeyHandler -Chord 'Ctrl+f' -Function ForwardChar
 
+# oh-my-posh
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+    $ompConfig = oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json" | Out-String
+    if ($ompConfig) { Invoke-Expression $ompConfig }
+}
 
-# Import-Module PSFzf
-# Enable-PsFzfAliases
-# Import-Module posh-git
-# oh-my-posh init pwsh --config "$(scoop prefix oh-my-posh)\themes\avit.omp.json" | Invoke-Expression
+# zoxide (smarter cd)
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+    $zoxideInit = zoxide init powershell | Out-String
+    if ($zoxideInit) { Invoke-Expression $zoxideInit }
+}
 
-oh-my-posh init pwsh | Invoke-Expression
+# fzf
+if (Get-Module -ListAvailable PSFzf) {
+    Import-Module PSFzf
+    # Resolve ambiguity: Use specific chord providers instead of the generic -PSReadLine flag
+    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+}
+
+# Aliases and modern tool replacements
+if (Get-Command eza -ErrorAction SilentlyContinue) {
+    function global:ls { eza --icons --git $args }
+    function global:l { eza -l --icons --git $args }
+    function global:la { eza -la --icons --git $args }
+    function global:lt { eza --tree --icons $args }
+}
+
+if (Get-Command bat -ErrorAction SilentlyContinue) {
+    # Correct alias syntax: name, value
+    New-Alias -Name cat -Value bat -Force -ErrorAction SilentlyContinue
+}
+
+# git delta (if installed)
+if (Get-Command delta -ErrorAction SilentlyContinue) {
+    $env:GIT_PAGER = "delta"
+}
 
 # add a display for use with ssh
 $env:DISPLAY="127.0.0.1:0"
@@ -38,4 +79,4 @@ set-variable -Name VISUAL -Value nvim-qt.exe
 function sshx { ssh -Y $args }
 
 set-alias g git
-set-alias e nvim-qt.exe
+set-alias e nvim

@@ -101,8 +101,8 @@ def provision_termux(ctx):
     ctx.run("pkg update -y")
     ctx.run(f"pkg install -y {' '.join(bootstrap_packages)}")
 
-    # Install luacheck via luarocks for linting
-    ctx.run("luarocks install luacheck", warn=True)
+    # Install selene for linting
+    ctx.run("cargo install selene", warn=True)
 
     # Sync dependencies via uv (including ansible and ruff)
     ctx.run("uv sync")
@@ -124,9 +124,11 @@ def provision(ctx, args=""):
                     "neovim",
                     "nodejs",
                     "plantuml",
-                    "microsoft-windows-terminal --pre",
                     "vcxsrv",  # X-Server
                     "fzf",
+                    "zoxide",
+                    "eza",
+                    "bat",
                     "delta",  # A syntax-highlighting pager for git
                     "anki",
                     "gsudo",  # sudo for windows
@@ -137,7 +139,6 @@ def provision(ctx, args=""):
                     "wezterm",
                     "stylua",
                     "selene",
-                    "luacheck",
                 ]
             )
             ctx.run("choco feature enable -n=allowGlobalConfirmation")
@@ -306,9 +307,8 @@ def lint_lua(ctx):
     # Use stylua to check formatting
     ctx.run(f"stylua --check {files_string}")
 
-    # Use luacheck for linting
-    cmd = "luacheck {files} --globals vim"
-    ctx.run(cmd.format(files=files_string))
+    # Use selene for linting
+    ctx.run(f"selene {files_string}")
 
 
 @task

@@ -78,7 +78,7 @@ if (Get-Command delta -ErrorAction SilentlyContinue) {
 $env:DISPLAY="127.0.0.1:0"
 
 set-variable -Name posh -Value $PROFILE.CurrentUserAllHosts
-set-variable -Name VISUAL -Value nvim-qt.exe
+set-variable -Name VISUAL -Value nvim.exe
 
 # Convenience function to call ssh with X forwarding enabled
 function sshx { ssh -Y $args }

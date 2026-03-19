@@ -166,7 +166,14 @@ local plugins = {
 			require("mini.map").setup()
 
 			-- Animate (smooth scrolling and cursor)
-			require("mini.animate").setup()
+			require("mini.animate").setup({
+				-- Example: shorter times for faster, snappier animations
+				cursor = { timing = require("mini.animate").gen_timing.linear({ duration = 1, unit = "step" }) },
+				scroll = { timing = require("mini.animate").gen_timing.linear({ duration = 3, unit = "step" }) },
+				resize = { timing = require("mini.animate").gen_timing.linear({ duration = 3, unit = "step" }) },
+				open = { timing = require("mini.animate").gen_timing.linear({ duration = 3, unit = "step" }) },
+				close = { timing = require("mini.animate").gen_timing.linear({ duration = 3, unit = "step" }) },
+			})
 
 			-- Hipatterns (highlight colors and patterns)
 			local hipatterns = require("mini.hipatterns")
@@ -206,47 +213,47 @@ local plugins = {
 					-- Window commands
 					{ mode = "n", keys = "<C-w>" },
 
-                    -- Z keys
-                    { mode = 'n', keys = 'z' },
-                    { mode = 'x', keys = 'z' },
+					-- Z keys
+					{ mode = "n", keys = "z" },
+					{ mode = "x", keys = "z" },
 
-                    -- Option toggles (unimpaired style)
-                    { mode = 'n', keys = 'yo' },
-                },
+					-- Option toggles (unimpaired style)
+					{ mode = "n", keys = "yo" },
+				},
 
-                clues = {
-                    miniclue.gen_clues.builtin_completion(),
-                    miniclue.gen_clues.g(),
-                    miniclue.gen_clues.marks(),
-                    miniclue.gen_clues.registers(),
-                    miniclue.gen_clues.windows(),
-                    miniclue.gen_clues.z(),
-                    { mode = 'n', keys = 'yo', desc = '+toggles' },
-                },
-            })
-        end,
-    },
-    {
-        'gregorias/toggle.nvim',
-        keys = { { 'yo', desc = 'Toggle Options' } },
-        opts = {
-            toggles = {
-                { 's', 'spell', 'Spell' },
-                { 'w', 'wrap', 'Wrap' },
-                { 'n', 'number', 'Number' },
-                { 'r', 'relativenumber', 'Relative Number' },
-                { 'l', 'list', 'List' },
-                { 'h', 'hlsearch', 'Search Highlight' },
-                { 'c', 'cursorline', 'Cursor Line' },
-                { 'b', 'scrollbind', 'Scroll Bind' },
-                { 'C', 'cursorbind', 'Cursor Bind' },
-                { 'm', 'modifiable', 'Modifiable' },
-                { 'R', 'readonly', 'Read Only' },
-            },
-        },
-    },
-    { 'tpope/vim-repeat', event = 'VeryLazy' },
-    { 'vim-scripts/visualrepeat', event = 'VeryLazy' },
+				clues = {
+					miniclue.gen_clues.builtin_completion(),
+					miniclue.gen_clues.g(),
+					miniclue.gen_clues.marks(),
+					miniclue.gen_clues.registers(),
+					miniclue.gen_clues.windows(),
+					miniclue.gen_clues.z(),
+					{ mode = "n", keys = "yo", desc = "+toggles" },
+				},
+			})
+		end,
+	},
+	{
+		"gregorias/toggle.nvim",
+		keys = { { "yo", desc = "Toggle Options" } },
+		opts = {
+			toggles = {
+				{ "s", "spell", "Spell" },
+				{ "w", "wrap", "Wrap" },
+				{ "n", "number", "Number" },
+				{ "r", "relativenumber", "Relative Number" },
+				{ "l", "list", "List" },
+				{ "h", "hlsearch", "Search Highlight" },
+				{ "c", "cursorline", "Cursor Line" },
+				{ "b", "scrollbind", "Scroll Bind" },
+				{ "C", "cursorbind", "Cursor Bind" },
+				{ "m", "modifiable", "Modifiable" },
+				{ "R", "readonly", "Read Only" },
+			},
+		},
+	},
+	{ "tpope/vim-repeat", event = "VeryLazy" },
+	{ "vim-scripts/visualrepeat", event = "VeryLazy" },
 
 	---------------------------------------------------------------------------}}}
 	-- FUZZY FINDING                                                          {{{
@@ -424,11 +431,13 @@ local plugins = {
 				inactive_sections = {
 					lualine_a = {},
 					lualine_b = {},
-					lualine_c = { {
-						function()
-							return statusline.filename()
-						end,
-					} },
+					lualine_c = {
+						{
+							function()
+								return statusline.filename()
+							end,
+						},
+					},
 					lualine_x = { { "location" } },
 					lualine_y = {},
 					lualine_z = {},
@@ -1386,12 +1395,18 @@ local plugins = {
 	---------------------------------------------------------------------------}}}
 	-- PROJECT MANAGEMENT                                                     {{{
 	---------------------------------------------------------------------------
+	-- {
+	--  "ludovicchabant/vim-gutentags",
+	--  event = { "BufReadPre", "BufNewFile" },
+	--  init = function()
+	--      vim.g.gutentags_project_root = { ".project_root" }
+	--      vim.g.gutentags_define_advanced_commands = 1
+	--  end,
+	-- },
 	{
-		"ludovicchabant/vim-gutentags",
-		event = { "BufReadPre", "BufNewFile" },
-		init = function()
-			vim.g.gutentags_project_root = { ".project_root" }
-			vim.g.gutentags_define_advanced_commands = 1
+		"linrongbin16/gentags.nvim",
+		config = function()
+			require("gentags").setup()
 		end,
 	},
 	{ "liuchengxu/vista.vim", cmd = "Vista" },

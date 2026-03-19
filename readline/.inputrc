@@ -5,6 +5,18 @@ set editing-mode emacs
 # NOTE: This doesn't seem to work with combination of vi/emacs editing modes
 set show-mode-in-prompt on
 
+# Better interface feedback
+set echo-control-characters off
+set blink-matching-paren on
+
+# Modern terminal features
+set enable-bracketed-paste on
+
+# Unicode/8-bit support (for Emojis/Termux)
+set input-meta on
+set output-meta on
+set convert-meta off
+
 # disable bells
 set bell-style none
 
@@ -15,11 +27,16 @@ set bell-style none
 set keymap emacs
 "\e": vi-movement-mode
 "\C-x": alias-expand-line
+"\C-x\C-e": edit-and-execute-command
 "\C-p": history-search-backward
 "\C-n": history-search-forward
 "\C-d": possible-completions
 "\t": menu-complete
 "\C-w": backward-kill-word
+
+# Word navigation
+"\eb": backward-word
+"\ef": forward-word
 
 set keymap vi-command
 "i": emacs-editing-mode
@@ -35,6 +52,16 @@ set keymap vi-command
 
 set show-all-if-ambiguous on
 set completion-ignore-case on
+set completion-map-case on
+set skip-completed-text on
+
+# Better vertical listing for narrow (mobile) screens
+set completion-display-width 0
+
+# Path and History convenience
+set expand-tilde on
+set history-preserve-point on
+set match-hidden-files off
 
 # Color files by types
 set colored-stats On

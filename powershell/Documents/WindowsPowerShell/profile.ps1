@@ -44,6 +44,11 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
     if ($zoxideInit) { Invoke-Expression $zoxideInit }
 }
 
+# posh-git
+if (Get-Module -ListAvailable posh-git) {
+    Import-Module posh-git
+}
+
 # fzf
 if (Get-Module -ListAvailable PSFzf) {
     Import-Module PSFzf

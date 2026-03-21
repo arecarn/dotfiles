@@ -34,6 +34,10 @@ jobs:
           git config --global core.symlinks true
       - name: Install dependencies
         run: uv sync
+      - name: Provision (headless)
+        run: uv run invoke provision
+      - name: Add cargo to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - name: Lint
         run: uv run invoke lint
       # git config --global (above) creates ~/.gitconfig which conflicts

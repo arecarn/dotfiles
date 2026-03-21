@@ -1,0 +1,26 @@
+---
+- name: Ensure cargo and rustc are installed (Debian/RedHat)
+  ansible.builtin.package:
+    name:
+      - cargo
+      - rustc
+    state: present
+  when: ansible_os_family != 'Android'
+
+- name: Check if selene is already installed
+  ansible.builtin.command:
+    cmd: "command -v selene"
+  register: selene_exists
+  changed_when: false
+  failed_when: false
+  environment:
+    PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/.cargo/bin"
+
+- name: Install selene via cargo
+  ansible.builtin.command:
+    cmd: "cargo install selene"
+  when: selene_exists.rc != 0
+  register: cargo_install
+  changed_when: cargo_install.rc == 0
+  environment:
+    PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/.cargo/bin"

@@ -4,6 +4,9 @@
     name: "{{ pkg_name }}"
     state: present
   loop: "{{ common_packages }}"
+  tags:
+    - packages
+    - common
   vars:
     # Map package names if they differ significantly or should be skipped
     pkg_name: >-
@@ -23,4 +26,18 @@
   ansible.builtin.package:
     name: "{{ os_family_packages[ansible_facts['os_family']] }}"
     state: present
+  tags:
+    - packages
+    - os-specific
   when: ansible_facts['os_family'] in os_family_packages
+
+- name: Install GUI packages
+  ansible.builtin.package:
+    name: "{{ gui_packages[ansible_facts['os_family']] }}"
+    state: present
+  tags:
+    - packages
+    - gui
+  when: >-
+    ansible_facts['os_family'] in gui_packages and
+    gui_packages[ansible_facts['os_family']] | length > 0

@@ -5,6 +5,7 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 import ctypes
 import os
 import pathlib
+import shutil
 
 from invoke import task
 
@@ -113,34 +114,40 @@ def provision(ctx, args=""):
     """
     Provision this system using ansible
     """
+    is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
     if IS_WINDOWS:
         if IS_ADMIN:
-            packages = " ".join(
-                [
-                    "llvm",
-                    "pandoc",
-                    "git",
-                    "ctags",
-                    "neovim",
-                    "nodejs",
-                    "plantuml",
-                    "vcxsrv",  # X-Server
-                    "fzf",
-                    "zoxide",
-                    "eza",
-                    "bat",
-                    "delta",  # A syntax-highlighting pager for git
-                    "anki",
-                    "gsudo",  # sudo for windows
-                    "ripgrep",
-                    "oh-my-posh",
-                    "poshgit",
-                    "openssh --pre",
-                    "wezterm",
-                    "stylua",
-                    "selene",
-                ]
-            )
+            gui_packages = [
+                "vcxsrv",
+                "anki",
+                "wezterm",
+            ]
+            common_packages = [
+                "llvm",
+                "pandoc",
+                "git",
+                "ctags",
+                "neovim",
+                "nodejs",
+                "plantuml",
+                "fzf",
+                "zoxide",
+                "eza",
+                "bat",
+                "delta",
+                "gsudo",
+                "ripgrep",
+                "oh-my-posh",
+                "poshgit",
+                "openssh --pre",
+                "stylua",
+                "selene",
+            ]
+            packages_to_install = common_packages
+            if not is_ci:
+                packages_to_install.extend(gui_packages)
+
+            packages = " ".join(packages_to_install)
             ctx.run("choco feature enable -n=allowGlobalConfirmation")
             ctx.run(f"choco install {packages}")
             ctx.run(f"choco upgrade {packages}")
@@ -159,13 +166,16 @@ def provision(ctx, args=""):
         # Determine if we should use become (don't use it on Termux)
         become_arg = "" if is_termux else "--ask-become-pass"
 
+        # Skip GUI packages in CI
+        ci_args = "--skip-tags gui" if is_ci else ""
+
         # Determine ansible-playbook path (use venv if available)
         ansible_pb = "../.venv/bin/ansible-playbook"
         if not pathlib.Path(ansible_pb).exists():
             ansible_pb = "ansible-playbook"
 
         ctx.run(
-            f"{ansible_pb} site.yml --inventory localhost, {become_arg} {args}"
+            f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {args}"
         )
 
 
@@ -307,10 +317,16 @@ def lint_lua(ctx):
     files_string = " ".join(files)
 
     # Use stylua to check formatting
-    ctx.run(f"stylua --check {files_string}")
+    if shutil.which("stylua"):
+        ctx.run(f"stylua --check {files_string}")
+    else:
+        print("stylua not found, skipping...")
 
     # Use selene for linting
-    ctx.run(f"selene {files_string}")
+    if shutil.which("selene"):
+        ctx.run(f"selene {files_string}")
+    else:
+        print("selene not found, skipping...")
 
 
 @task

@@ -64,6 +64,14 @@ if (Get-Command eza -ErrorAction SilentlyContinue) {
     function global:lt { eza --tree --icons $args }
 }
 
+# pnpm
+if ($null -eq $env:PNPM_HOME) {
+    $env:PNPM_HOME = "$env:LOCALAPPDATA\pnpm"
+}
+if ($env:PATH -notlike "*$env:PNPM_HOME*") {
+    $env:PATH += ";$env:PNPM_HOME"
+}
+
 if (Get-Command bat -ErrorAction SilentlyContinue) {
     # Correct alias syntax: name, value
     New-Alias -Name cat -Value bat -Force -ErrorAction SilentlyContinue

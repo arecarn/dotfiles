@@ -63,4 +63,6 @@ python_packages:
 
 # JavaScript tools (installed via pnpm)
 javascript_packages:
+  - "@anthropic-ai/claude-code"
+  - "@google/gemini-cli"
   - write-good

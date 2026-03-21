@@ -144,6 +144,8 @@ def provision(ctx, args=""):
             ctx.run("choco feature enable -n=allowGlobalConfirmation")
             ctx.run(f"choco install {packages}")
             ctx.run(f"choco upgrade {packages}")
+            # Enable corepack for pnpm and yarn
+            ctx.run("corepack enable", warn=True)
         else:
             assert False, "You need to be admin to install things with Chocolaty"
     else:

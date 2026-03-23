@@ -31,7 +31,7 @@ zinit wait lucid for \
 
 # zoxide
 if (( $+commands[zoxide] )); then
-    eval "$(zoxide init zsh --cmd cd)"
+    eval "$(zoxide init zsh --cmd z)"
 fi
 
 # history-substring-search keybindings

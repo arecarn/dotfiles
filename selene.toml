@@ -1,0 +1,6 @@
+std = "vim"
+
+[rules]
+mixed_table = "allow"
+multiple_statements = "allow"
+global_usage = "allow"

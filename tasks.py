@@ -13,6 +13,7 @@ from invoke import task
 # pylint: disable=unused-argument
 
 IS_WINDOWS = os.name == "nt"
+EXCLUDE_DIRS = {".venv", ".git", "__pycache__", ".cache", "node_modules"}
 if IS_WINDOWS:
     STOW_LOCATION = "USERPROFILE"
     IS_ADMIN = ctypes.windll.shell32.IsUserAnAdmin() != 0
@@ -39,7 +40,7 @@ def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.sh")]
+    files = [str(f) for f in pathlib.Path(".").rglob("*.sh") if not EXCLUDE_DIRS & set(f.parts)]
     files_string = " ".join(files)
 
     cmd = "shellcheck --format gcc {files}"
@@ -51,7 +52,7 @@ def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.yml")]
+    files = [str(f) for f in pathlib.Path(".").rglob("*.yml") if not EXCLUDE_DIRS & set(f.parts)]
     files_string = " ".join(files)
 
     cmd = "yamllint --format parsable {files}"
@@ -63,12 +64,7 @@ def lint_python(ctx):
     """
     Run pylint and ruff on python files
     """
-    exclude_dirs = {".venv", ".git", "__pycache__", ".cache"}
-    files = [
-        str(f)
-        for f in pathlib.Path(".").rglob("*.py")
-        if not any(excluded in f.parts for excluded in exclude_dirs)
-    ]
+    files = [str(f) for f in pathlib.Path(".").rglob("*.py") if not EXCLUDE_DIRS & set(f.parts)]
     files_string = " ".join(files)
     cmds = ["pylint --output-format=parseable", "ruff check"]
     base_cmd = "python -m {cmd} {files}"
@@ -306,12 +302,7 @@ def lint_lua(ctx):
     """
     Run luacheck and stylua on Lua files
     """
-    exclude_dirs = {".git", ".cache", "node_modules"}
-    files = [
-        str(f)
-        for f in pathlib.Path(".").rglob("*.lua")
-        if not any(excluded in f.parts for excluded in exclude_dirs)
-    ]
+    files = [str(f) for f in pathlib.Path(".").rglob("*.lua") if not EXCLUDE_DIRS & set(f.parts)]
     if not files:
         return
     files_string = " ".join(files)

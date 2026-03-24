@@ -437,7 +437,6 @@ end, { expr = true, silent = true })
 -- ENVIRONMENT SHORTCUTS                                                      {{{
 --------------------------------------------------------------------------------
 -- File shortcuts accessible via :e $var
-local config_path = vim.fn.stdpath('config') .. '/'
 vim.env.zsh = '~/.zshrc'
 vim.env.zshl = '~/.zshrc_local'
 vim.env.shf = '~/.config/shell/functions.sh'
@@ -518,7 +517,7 @@ vim.api.nvim_create_user_command('Seq', function(opts)
         local line = template:gsub('{(.-)}', function(expr)
             -- Create environment with 'i' as the index variable
             local env = setmetatable({ i = idx }, { __index = _G })
-            local fn, err = load('return ' .. expr, 'seq', 't', env)
+            local fn = load('return ' .. expr, 'seq', 't', env)
             if fn then
                 local ok, result = pcall(fn)
                 return ok and tostring(result) or expr

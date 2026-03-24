@@ -2,18 +2,25 @@
 - name: Configure workstation
   hosts: localhost
   connection: local
-  become: "{{ ansible_os_family != 'Android' }}"
+  become: "{{ not is_termux }}"
+  gather_facts: false
   vars:
     user_home: "{{ lookup('env', 'HOME') }}"
-  tasks:
+    is_termux: "{{ 'com.termux' in lookup('env', 'PREFIX') }}"
+  pre_tasks:
+    - name: Gather facts
+      ansible.builtin.setup:
+      become: false
+
     - name: Verify sudo access
       ansible.builtin.command:
         cmd: whoami
       changed_when: false
       register: sudo_check
       failed_when: sudo_check.stdout != "root"
-      when: ansible_os_family != 'Android'
+      when: not is_termux
 
+  tasks:
     - ansible.builtin.import_tasks: tasks/repos.yml
     - ansible.builtin.import_tasks: tasks/packages.yml
     - ansible.builtin.import_tasks: tasks/neovim.yml

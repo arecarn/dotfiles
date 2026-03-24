@@ -2,13 +2,19 @@
 - name: Ensure pnpm is available (try Corepack first)
   when: javascript_packages | length > 0
   block:
+    - name: Install Corepack via npm
+      ansible.builtin.command:
+        cmd: npm install -g --force corepack
+      register: corepack_install
+      changed_when: "'added' in corepack_install.stdout"
+      become: "{{ not is_termux }}"
+
     - name: Enable Corepack
       ansible.builtin.command:
         cmd: corepack enable
       register: corepack_res
       ignore_errors: true
-      # On Termux, we don't need sudo; on other systems, it might be required if node is in /usr/bin
-      become: "{{ ansible_os_family != 'Android' }}"
+      become: "{{ not is_termux }}"
 
     - name: Fallback to npm install pnpm if Corepack fails
       ansible.builtin.command:
@@ -16,7 +22,7 @@
       register: pnpm_install
       changed_when: "'added' in pnpm_install.stdout"
       when: corepack_res.failed
-      become: "{{ ansible_os_family != 'Android' }}"
+      become: "{{ not is_termux }}"
 
 - name: Install global pnpm packages
   when: javascript_packages | length > 0

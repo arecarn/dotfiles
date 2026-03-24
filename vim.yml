@@ -1,0 +1,20 @@
+---
+base: lua51
+name: vim
+globals:
+  vim:
+    any: true
+  Snacks:
+    any: true
+  load:
+    args:
+      - type: any
+      - type: any
+        required: false
+      - type: any
+        required: false
+      - type: any
+        required: false
+    returns:
+      - type: any
+      - type: any

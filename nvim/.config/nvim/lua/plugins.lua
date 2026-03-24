@@ -227,7 +227,7 @@ local plugins = {
                 { "c", "cursorline",     "Cursor Line" },
                 { "b", "scrollbind",     "Scroll Bind" },
                 { "C", "cursorbind",     "Cursor Bind" },
-                { "m", "modifiable",     "Modifiable" },
+                { "m", "modifable",      "Modifiable" },
                 { "R", "readonly",       "Read Only" },
             },
         },
@@ -969,8 +969,8 @@ local plugins = {
             -- Global diagnostic keymaps
             -----------------------------------------------------------------
             vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
-            vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
-            vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+            -- vim.keymap.set("n", "[d", vim.diagnostic.jump({count=1, float=true}))
+            -- vim.keymap.set("n", "]d", vim.diagnostic.jump({count=-1, float=true}))
             vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 
             -----------------------------------------------------------------
@@ -979,11 +979,6 @@ local plugins = {
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("UserLspConfig", {}),
                 callback = function(ev)
-                    vim.lsp.handlers["textDocument/hover"] =
-                        vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-                    vim.lsp.handlers["textDocument/signatureHelp"] =
-                        vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
-
                     local opts = { buffer = ev.buf }
                     vim.keymap.set("n", "gld", vim.lsp.buf.declaration, opts)
                     vim.keymap.set("n", "glD", vim.lsp.buf.definition, opts)
@@ -1011,11 +1006,6 @@ local plugins = {
         event = { "BufReadPost", "BufNewFile" },
         config = function()
             local lint = require("lint")
-            lint.linters.selene.args = {
-                "--display-style", "quiet",
-                "--config", vim.fn.stdpath("config") .. "/selene.toml",
-                "-",
-            }
             lint.linters_by_ft = {
                 lua = { "selene" },
                 sh = { "shellcheck" },
@@ -1098,7 +1088,7 @@ local plugins = {
         dependencies = { "williamboman/mason.nvim", "mfussenegger/nvim-dap" },
         lazy = true,
     },
-    { "rcarriga/nvim-dap-ui", dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }, lazy = true },
+    { "rcarriga/nvim-dap-ui",        dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }, lazy = true },
     {
         "saghen/blink.cmp",
         version = "1.*",
@@ -1147,8 +1137,6 @@ local plugins = {
             { "<leader>gd2", "<cmd>Gdiffsplit HEAD~2<CR>", desc = "Git diff HEAD~2" },
         },
     },
-    { "lambdalisue/gina.vim", cmd = "Gina" },
-    { "jreybert/vimagit",     cmd = "Magit" },
     {
         "airblade/vim-rooter",
         event = "VeryLazy",
@@ -1156,7 +1144,6 @@ local plugins = {
             vim.g.rooter_manual_only = 1
         end,
     },
-    { "cohama/agit.vim",             cmd = { "Agit", "AgitFile" } },
     {
         "lewis6991/gitsigns.nvim",
         event = { "BufReadPre", "BufNewFile" },
@@ -1194,7 +1181,7 @@ local plugins = {
         keys = { { "<leader>lnd", ":Linediff<CR>", mode = "x", desc = "Line diff" } },
     },
     { "vim-scripts/diffchanges.vim", cmd = "DiffChangesDiffToggle" },
-    { "arecarn/vim-diff-utils",      branch = "visual_mapping",    event = "VeryLazy" },
+    { "arecarn/vim-diff-utils",      branch = "visual_mapping",                                           event = "VeryLazy" },
     {
         "chrisbra/vim-diff-enhanced",
         event = "VeryLazy",

@@ -1,0 +1,14 @@
+---
+- name: Check if direnv is installed
+  ansible.builtin.command:
+    cmd: direnv version
+  register: direnv_check
+  changed_when: false
+  failed_when: false
+
+- name: Install direnv from GitHub releases
+  when: direnv_check.rc != 0
+  ansible.builtin.get_url:
+    url: "https://github.com/direnv/direnv/releases/latest/download/direnv.linux-amd64"
+    dest: /usr/local/bin/direnv
+    mode: "0755"

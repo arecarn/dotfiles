@@ -5,9 +5,19 @@
       - cargo
       - rustc
     state: present
-  when: ansible_os_family != 'Android'
+  when: not is_termux
+
+- name: Set rustup default toolchain to stable
+  become: false
+  ansible.builtin.command:
+    cmd: rustup default stable
+  register: rustup_default
+  changed_when: "'unchanged' not in rustup_default.stderr"
+  environment:
+    PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/.cargo/bin"
 
 - name: Check if selene is already installed
+  become: false
   ansible.builtin.command:
     cmd: "command -v selene"
   register: selene_exists
@@ -17,6 +27,7 @@
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/.cargo/bin"
 
 - name: Install selene via cargo
+  become: false
   ansible.builtin.command:
     cmd: "cargo install selene"
   when: selene_exists.rc != 0

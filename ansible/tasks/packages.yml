@@ -11,15 +11,15 @@
     # Map package names if they differ significantly or should be skipped
     pkg_name: >-
       {% if item == 'fd-find' %}
-        {{ (ansible_os_family == 'Android') | ternary('fd', (ansible_os_family == 'Debian') | ternary('fd-find', 'fd-find')) }}
+        {{ is_termux | ternary('fd', (ansible_facts['os_family'] == 'Debian') | ternary('fd-find', 'fd-find')) }}
       {% elif item == 'bat' %}
-        {{ (ansible_os_family == 'Debian') | ternary('batcat', 'bat') }}
+        {{ (ansible_facts['os_family'] == 'Debian') | ternary('batcat', 'bat') }}
       {% else %}
         {{ item }}
       {% endif %}
   when: >-
-    (item != 'xclip' or ansible_os_family != 'Android') and
-    (item != 'openssh-server' or ansible_os_family != 'Android')
+    (item != 'xclip' or not is_termux) and
+    (item != 'openssh-server' or not is_termux)
   ignore_errors: true
 
 - name: Install OS-family-specific packages

@@ -122,33 +122,6 @@ local plugins = {
                 },
             })
 
-            -- Picker (Emacs-like Readline bindings)
-            local pick = require("mini.pick")
-            pick.setup({
-                mappings = {
-                    move_down = "<C-n>",
-                    move_up = "<C-p>",
-                    caret_left = "<C-b>",
-                    caret_right = "<C-f>",
-                    caret_start = {
-                        char = "<C-a>",
-                        func = function(picker, _)
-                            picker.caret = 1
-                        end,
-                    },
-                    caret_end = {
-                        char = "<C-e>",
-                        func = function(picker, _)
-                            picker.caret = #picker.query + 1
-                        end,
-                    },
-                    scroll_down = "<PageDown>",
-                    scroll_up = "<PageUp>",
-                    scroll_left = "<C-h>",
-                    scroll_right = "<C-l>",
-                },
-            })
-
             require("mini.cursorword").setup()
 
             -- Trailspace (replaces Preserve.vim trimming)
@@ -162,7 +135,9 @@ local plugins = {
             require("mini.comment").setup()
 
             -- Bracketed (replaces vim-unimpaired)
-            require("mini.bracketed").setup()
+            require("mini.bracketed").setup({
+                comment = { suffix = "/" },
+            })
 
             -- Bufremove (clean buffer delete)
             require("mini.bufremove").setup()
@@ -263,68 +238,34 @@ local plugins = {
     ---------------------------------------------------------------------------}}}
     -- FUZZY FINDING                                                          {{{
     ---------------------------------------------------------------------------
-    { "nvim-lua/plenary.nvim",    lazy = true },
     {
-        "nvim-telescope/telescope.nvim",
-        dependencies = "nvim-lua/plenary.nvim",
-        cmd = "Telescope",
+        "ibhagwan/fzf-lua",
+        cmd = "FzfLua",
         keys = {
-            { "z=",  "<cmd>Telescope spell_suggest theme=cursor<CR>", desc = "Spell suggest" },
-            { "gof", "<cmd>Telescope find_files<CR>",                 desc = "Find files" },
-            { "gos", "<cmd>Telescope live_grep<CR>",                  desc = "Live grep" },
-            { "gor", "<cmd>Telescope oldfiles<CR>",                   desc = "Recent files" },
+            { "z=",  "<cmd>FzfLua spell_suggest<CR>", desc = "Spell suggest" },
+            { "gof", "<cmd>FzfLua files<CR>",         desc = "Find files" },
+            { "gos", "<cmd>FzfLua live_grep<CR>",     desc = "Live grep" },
+            { "gor", "<cmd>FzfLua oldfiles<CR>",      desc = "Recent files" },
         },
-        config = function()
-            local actions = require("telescope.actions")
-            require("telescope").setup({
-                defaults = {
-                    mappings = {
-                        i = {
-                            ["<C-a>"] = function()
-                                vim.api.nvim_feedkeys(
-                                    vim.api.nvim_replace_termcodes("<Home>", true, false, true),
-                                    "n",
-                                    true
-                                )
-                            end,
-                            ["<C-e>"] = function()
-                                vim.api.nvim_feedkeys(
-                                    vim.api.nvim_replace_termcodes("<End>", true, false, true),
-                                    "n",
-                                    true
-                                )
-                            end,
-                            ["<C-f>"] = function()
-                                vim.api.nvim_feedkeys(
-                                    vim.api.nvim_replace_termcodes("<Right>", true, false, true),
-                                    "n",
-                                    true
-                                )
-                            end,
-                            ["<C-b>"] = function()
-                                vim.api.nvim_feedkeys(
-                                    vim.api.nvim_replace_termcodes("<Left>", true, false, true),
-                                    "n",
-                                    true
-                                )
-                            end,
-                            ["<C-d>"] = function()
-                                vim.api.nvim_feedkeys(
-                                    vim.api.nvim_replace_termcodes("<Delete>", true, false, true),
-                                    "n",
-                                    true
-                                )
-                            end,
-                            ["<C-n>"] = actions.move_selection_next,
-                            ["<C-p>"] = actions.move_selection_previous,
-                        },
-                    },
+        opts = {
+            keymap = {
+                fzf = {
+                    ["ctrl-n"] = "down",
+                    ["ctrl-p"] = "up",
+                    ["ctrl-a"] = "beginning-of-line",
+                    ["ctrl-e"] = "end-of-line",
+                    ["ctrl-f"] = "forward-char",
+                    ["ctrl-b"] = "backward-char",
+                    ["ctrl-d"] = "delete-char",
                 },
-            })
+            },
+            fzf_opts = { ["--layout"] = "reverse" },
+        },
+        config = function(_, opts)
+            require("fzf-lua").setup(opts)
+            require("fzf-lua").register_ui_select()
         end,
     },
-    { "junegunn/fzf",     build = ":call fzf#install()", event = "VeryLazy" },
-    { "junegunn/fzf.vim", dependencies = "junegunn/fzf", event = "VeryLazy" },
 
     ---------------------------------------------------------------------------}}}
     -- FOLDS                                                                  {{{
@@ -353,7 +294,6 @@ local plugins = {
                 input = { enabled = true },
                 indent = { enabled = true },
                 notifier = { enabled = true },
-                picker = {},
                 quickfile = { enabled = true },
                 statuscolumn = { enabled = true },
                 terminal = { enabled = true },
@@ -735,11 +675,9 @@ local plugins = {
             require("lush")(require("apprentice").setup({
                 plugins = {
                     "buftabline",
-                    "fzf",
+                    "gitsigns",
                     "lsp",
                     "lspsaga",
-                    "signify",
-                    "telescope",
                     "treesitter",
                 },
                 langs = {
@@ -998,7 +936,7 @@ local plugins = {
                     focusable = false,
                     style = "minimal",
                     border = "rounded",
-                    source = "always",
+                    source = true,
                     header = "",
                     prefix = "",
                 },
@@ -1013,7 +951,7 @@ local plugins = {
                         return
                     end
                 end
-                vim.diagnostic.open_float(0, {
+                vim.diagnostic.open_float({
                     scope = "line",
                     focusable = false,
                     close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "InsertCharPre", "WinLeave" },
@@ -1073,6 +1011,11 @@ local plugins = {
         event = { "BufReadPost", "BufNewFile" },
         config = function()
             local lint = require("lint")
+            lint.linters.selene.args = {
+                "--display-style", "quiet",
+                "--config", vim.fn.stdpath("config") .. "/selene.toml",
+                "-",
+            }
             lint.linters_by_ft = {
                 lua = { "selene" },
                 sh = { "shellcheck" },
@@ -1213,8 +1156,34 @@ local plugins = {
             vim.g.rooter_manual_only = 1
         end,
     },
-    { "cohama/agit.vim",   cmd = { "Agit", "AgitFile" } },
-    { "mhinz/vim-signify", event = { "BufReadPre", "BufNewFile" } },
+    { "cohama/agit.vim",             cmd = { "Agit", "AgitFile" } },
+    {
+        "lewis6991/gitsigns.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {
+            on_attach = function(bufnr)
+                local gs = require("gitsigns")
+                local map = function(mode, l, r, desc)
+                    vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
+                end
+                map("n", "]c", function()
+                    if vim.wo.diff then return "]c" end
+                    vim.schedule(gs.next_hunk)
+                    return "<Ignore>"
+                end, "Next hunk")
+                map("n", "[c", function()
+                    if vim.wo.diff then return "[c" end
+                    vim.schedule(gs.prev_hunk)
+                    return "<Ignore>"
+                end, "Prev hunk")
+                map("n", "<leader>hs", gs.stage_hunk, "Stage hunk")
+                map("n", "<leader>hr", gs.reset_hunk, "Reset hunk")
+                map("n", "<leader>hp", gs.preview_hunk, "Preview hunk")
+                map("n", "<leader>hb", gs.toggle_current_line_blame, "Toggle line blame")
+                map({ "o", "x" }, "ih", gs.select_hunk, "Hunk text object")
+            end,
+        },
+    },
 
     ---------------------------------------------------------------------------}}}
     -- DIFF                                                                   {{{

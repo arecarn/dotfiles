@@ -38,3 +38,8 @@ if [[ -d "$PNPM_HOME" ]]; then
   esac
 fi
 # pnpm end
+
+# direnv
+if command -v direnv &>/dev/null; then
+  eval "$(direnv hook zsh)"
+fi

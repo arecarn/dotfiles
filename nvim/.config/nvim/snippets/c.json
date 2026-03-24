@@ -1,0 +1,204 @@
+{
+  "if": {
+    "prefix": "if",
+    "body": [
+      "if (${1:condition})",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "else": {
+    "prefix": "else",
+    "body": [
+      "else",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "elseif": {
+    "prefix": "elseif",
+    "body": [
+      "else if (${1:condition})",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "ifelse": {
+    "prefix": "ifelse",
+    "body": [
+      "if (${1:condition})",
+      "{",
+      "\t$2",
+      "}",
+      "else",
+      "{",
+      "\t$3",
+      "}"
+    ]
+  },
+  "for": {
+    "prefix": "for",
+    "body": [
+      "for (${1:i} = 0; $1 < ${2:n}; $1++)",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "while": {
+    "prefix": "while",
+    "body": [
+      "while (${1:condition})",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "do_while": {
+    "prefix": ["do_while", "do"],
+    "body": [
+      "do",
+      "{",
+      "\t$0",
+      "} while (${1:condition});"
+    ]
+  },
+  "switch": {
+    "prefix": "switch",
+    "body": [
+      "switch (${1:var})",
+      "{",
+      "\tcase ${2:val}:",
+      "\t\t$0",
+      "\t\tbreak;",
+      "}"
+    ]
+  },
+  "function": {
+    "prefix": ["function", "func"],
+    "body": [
+      "${1:void} ${2:func_name}(${3:args})",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "struct": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:name}",
+      "{",
+      "\t$0",
+      "};"
+    ]
+  },
+  "struct_typedef": {
+    "prefix": "struct_typedef",
+    "body": [
+      "typedef struct ${1:name}",
+      "{",
+      "\t$0",
+      "};"
+    ]
+  },
+  "enum": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:name}",
+      "{",
+      "\t$0",
+      "};"
+    ]
+  },
+  "main": {
+    "prefix": "main",
+    "body": [
+      "int main(int argc, char const* argv[])",
+      "{",
+      "\t$0",
+      "\treturn 0;",
+      "}"
+    ]
+  },
+  "include": {
+    "prefix": ["inc", "#include"],
+    "body": "#include <${1:stdio}.h>$0"
+  },
+  "include_local": {
+    "prefix": ["inc2", "#include2"],
+    "body": "#include \"${1}.h\"$0"
+  },
+  "ifndef": {
+    "prefix": ["ifndef", "#ifndef"],
+    "body": [
+      "#ifndef $1",
+      "#define ${1:SYMBOL}",
+      "#endif // $1",
+      "$0"
+    ]
+  },
+  "ifdef": {
+    "prefix": ["ifdef", "#ifdef"],
+    "body": [
+      "#ifdef ${1:SYMBOL}",
+      "$2",
+      "#endif // $1",
+      "$0"
+    ]
+  },
+  "define": {
+    "prefix": ["def", "#define"],
+    "body": "#define "
+  },
+  "include_guard": {
+    "prefix": "once",
+    "body": [
+      "#ifndef ${1:SYMBOL}",
+      "\t#define $1",
+      "",
+      "\t$0",
+      "#endif /* end of include guard */"
+    ]
+  },
+  "ternary": {
+    "prefix": "ternary",
+    "body": "(${1:condition}) ? ${2:a} : ${3:b}"
+  },
+  "typedef": {
+    "prefix": "typedef",
+    "body": "typedef ${1:base_type} ${2:custom_type};"
+  },
+  "printf": {
+    "prefix": "printf",
+    "body": "printf(\"${1}\\n\", ${2});"
+  },
+  "fprintf": {
+    "prefix": "fprintf",
+    "body": "fprintf(${1:stderr}, \"${2}\\n\"${3});"
+  },
+  "comment": {
+    "prefix": ["comment", "/*"],
+    "body": [
+      "/* ${1:comment} */",
+      "$0"
+    ]
+  },
+  "sizeof": {
+    "prefix": ["sizeof", "size"],
+    "body": "sizeof($0)"
+  },
+  "helloworld": {
+    "prefix": "helloworld",
+    "body": [
+      "#include <stdio.h>",
+      "int main(int argc, char const* argv[])",
+      "{",
+      "\tputs(\"hello, world!\");",
+      "\treturn 0;",
+      "}"
+    ]
+  }
+}

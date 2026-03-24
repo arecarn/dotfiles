@@ -1,0 +1,9 @@
+{
+  "related_issues": {
+    "prefix": ["related_issues", "issues", "related"],
+    "body": [
+      "----",
+      "Related Issues: $0"
+    ]
+  }
+}

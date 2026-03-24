@@ -1,0 +1,6 @@
+{
+  "todo": {
+    "prefix": ["todo", "td"],
+    "body": "$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE $0"
+  }
+}

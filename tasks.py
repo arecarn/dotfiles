@@ -160,7 +160,7 @@ def provision(ctx, args=""):
         os.chdir("ansible")
 
         # Determine if we should use become (don't use it on Termux)
-        become_arg = "" if is_termux else "--ask-become-pass"
+        become_arg = "" if is_termux or is_ci else "--ask-become-pass"
 
         # Skip GUI packages in CI
         ci_args = "--skip-tags gui" if is_ci else ""

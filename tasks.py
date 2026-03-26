@@ -324,6 +324,9 @@ def lint_ansible(ctx):
     """
     Run ansible-playbook syntax check on the ansible playbook
     """
+    if IS_WINDOWS:
+        print("ansible-playbook syntax check not supported on Windows, skipping...")
+        return
     ctx.run("ansible-playbook --syntax-check -i localhost, ansible/site.yml")
 
 

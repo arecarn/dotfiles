@@ -206,7 +206,6 @@ class Dploy:
             "nvim",
             "wezterm",
             "zsh",
-            "xfce4-terminal",
         ]
 
         if IS_WINDOWS:

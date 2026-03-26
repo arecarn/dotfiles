@@ -263,12 +263,14 @@ def stow(ctx):
     """
     Run dploy stow to link all files into their respective repositories
     """
-    # pylint: disable=unused-argument
+    # pylint: disable=unused-argument,import-outside-toplevel
+    from dploy.error import DployError
+
     try:
         Dploy().stow()
-    except OSError as e:
+    except (OSError, DployError) as e:
         if IS_WINDOWS:
-            print(f"Skipping stow on Windows due to missing symlink permissions: {e}")
+            print(f"Skipping stow on Windows: {e}")
         else:
             raise
 
@@ -278,12 +280,14 @@ def unstow(ctx):
     """
     Run dploy unstow to unlink all files from their respective repositories
     """
-    # pylint: disable=unused-argument
+    # pylint: disable=unused-argument,import-outside-toplevel
+    from dploy.error import DployError
+
     try:
         Dploy().unstow()
-    except OSError as e:
+    except (OSError, DployError) as e:
         if IS_WINDOWS:
-            print(f"Skipping unstow on Windows due to missing symlink permissions: {e}")
+            print(f"Skipping unstow on Windows: {e}")
         else:
             raise
 

@@ -186,6 +186,7 @@ opt.listchars = {
 opt.signcolumn = 'yes'
 opt.termguicolors = true
 opt.background = 'dark'
+opt.winborder = 'rounded'
 
 -------------------------------------------------------------------------------}}}
 -- TIMING                                                                     {{{

@@ -39,8 +39,16 @@ jobs:
         run: uv run invoke provision
       - name: Add cargo to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      - name: Lint
-        run: uv run invoke lint
+      - name: Lint (shell)
+        run: uv run invoke lint-shell
+      - name: Lint (yaml)
+        run: uv run invoke lint-yaml
+      - name: Lint (python)
+        run: uv run invoke lint-python
+      - name: Lint (lua)
+        run: uv run invoke lint-lua
+      - name: Lint (ansible)
+        run: uv run invoke lint-ansible
       # git config --global (above) creates ~/.gitconfig which conflicts
       # with dploy stowing git/.gitconfig to the same path
       - name: Clean conflicting dotfiles before stow (Windows)

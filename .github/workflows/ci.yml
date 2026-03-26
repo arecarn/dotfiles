@@ -13,6 +13,7 @@ jobs:
     env:
       COREHOST_ALLOW_SYMLINKS: 1
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:

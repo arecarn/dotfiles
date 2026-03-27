@@ -204,7 +204,7 @@ class Dploy:
             "ssh",
             "tmux",
             "nvim",
-            "windows-terminal"
+            "windows-terminal",
             "wezterm",
             "zsh",
         ]

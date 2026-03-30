@@ -108,9 +108,9 @@ opt.maxmempattern = 2000000
 opt.grepformat = "%f:%l:%c:%m"
 
 if vim.fn.executable("rg") == 1 then
-	opt.grepprg = "rg --vimgrep $*"
+    opt.grepprg = "rg --vimgrep $*"
 elseif vim.fn.executable("ag") == 1 then
-	opt.grepprg = "ag --vimgrep $*"
+    opt.grepprg = "ag --vimgrep $*"
 end
 
 -------------------------------------------------------------------------------}}}
@@ -125,24 +125,24 @@ opt.tags = "tags;/"
 -- Paste falls back to unnamed register since WezTerm doesn't support OSC 52
 -- clipboard queries. Use Ctrl+Shift+V to paste from host clipboard.
 vim.schedule(function()
-	opt.clipboard:append("unnamedplus")
+    opt.clipboard:append("unnamedplus")
 
-	if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
-		local function paste()
-			return vim.split(vim.fn.getreg('"'), "\n")
-		end
-		vim.g.clipboard = {
-			name = "OSC 52",
-			copy = {
-				["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-				["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-			},
-			paste = {
-				["+"] = paste,
-				["*"] = paste,
-			},
-		}
-	end
+    if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
+        local function paste()
+            return vim.split(vim.fn.getreg('"'), "\n")
+        end
+        vim.g.clipboard = {
+            name = "OSC 52",
+            copy = {
+                ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+                ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+            },
+            paste = {
+                ["+"] = paste,
+                ["*"] = paste,
+            },
+        }
+    end
 end)
 opt.splitright = true
 opt.nrformats:remove("octal")
@@ -176,11 +176,11 @@ opt.showtabline = 2
 
 opt.list = true
 opt.listchars = {
-	trail = "·",
-	tab = "→→",
-	extends = "▶",
-	precedes = "◀",
-	nbsp = "‾",
+    trail = "·",
+    tab = "→→",
+    extends = "▶",
+    precedes = "◀",
+    nbsp = "‾",
 }
 
 opt.signcolumn = "yes"

@@ -53,12 +53,18 @@ os_family_packages:
 # GUI packages (skipped in headless/CI environments)
 gui_packages:
   Debian:
+    - alacritty
     - firefox
     - vlc
   RedHat:
+    - alacritty
     - firefox
     - vlc
   Android: []
+
+# Nerd Fonts to install (downloaded from GitHub releases)
+nerd_fonts:
+  - DejaVuSansMono
 
 # Python tools (installed via uv)
 python_packages:

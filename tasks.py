@@ -114,6 +114,8 @@ def provision(ctx, args=""):
     if IS_WINDOWS:
         if IS_ADMIN:
             gui_packages = [
+                "alacritty",
+                "nerd-fonts-dejavusansmono",
                 "vcxsrv",
                 "anki",
                 "wezterm",
@@ -196,6 +198,7 @@ class Dploy:
         self.dploy = dploy
         self.home = pathlib.Path().home()
         self.packages = [
+            "alacritty",
             "ctags",
             "git",
             "readline",

@@ -1,0 +1,65 @@
+[terminal]
+# Enable bidirectional OSC 52 clipboard (copy and paste)
+# Default is "OnlyCopy" which only allows applications to set the clipboard
+osc52 = "CopyPaste"
+
+[env]
+# Ensure proper terminfo for undercurl, true color, etc.
+TERM = "alacritty"
+
+[font]
+size = 11.0
+
+[font.normal]
+family = "DejaVuSansMono Nerd Font"
+
+[font.bold]
+family = "DejaVuSansMono Nerd Font"
+
+[font.italic]
+family = "DejaVuSansMono Nerd Font"
+
+[scrolling]
+history = 50000
+
+[mouse]
+bindings = []
+
+[cursor]
+style = { shape = "Block", blinking = "Off" }
+
+[selection]
+save_to_clipboard = true
+
+# Apprentice color scheme (matches Windows Terminal config)
+[colors.primary]
+foreground = "#BCBCBC"
+background = "#262626"
+
+[colors.cursor]
+cursor = "#FFFFFF"
+text = "#262626"
+
+[colors.selection]
+background = "#FFFFFF"
+text = "#262626"
+
+[colors.normal]
+black   = "#1C1C1C"
+red     = "#AF5F5F"
+green   = "#5F875F"
+yellow  = "#87875F"
+blue    = "#5F87AF"
+magenta = "#5F5F87"
+cyan    = "#5F8787"
+white   = "#6C6C6C"
+
+[colors.bright]
+black   = "#6C6C6C"
+red     = "#FF8700"
+green   = "#87AF87"
+yellow  = "#FFFFAF"
+blue    = "#8FAFD7"
+magenta = "#8787AF"
+cyan    = "#5FAFAF"
+white   = "#FFFFFF"

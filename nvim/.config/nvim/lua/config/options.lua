@@ -121,25 +121,35 @@ opt.tags = "tags;/"
 -------------------------------------------------------------------------------}}}
 -- GENERAL BEHAVIOR                                                           {{{
 --------------------------------------------------------------------------------
--- Use OSC 52 for clipboard over SSH (works with WezTerm).
--- Paste falls back to unnamed register since WezTerm doesn't support OSC 52
--- clipboard queries. Use Ctrl+Shift+V to paste from host clipboard.
+-- Clipboard over SSH: OSC 52 for copy (yank reaches host clipboard via terminal).
+-- Paste: Alacritty supports OSC 52 read (opt-in), so full bidirectional clipboard
+-- works there. Other terminals fall back to tmux paste buffer or Ctrl+Shift+V.
 vim.schedule(function()
     opt.clipboard:append("unnamedplus")
 
     if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
-        local function paste()
+        local osc52 = require("vim.ui.clipboard.osc52")
+        local alacritty = vim.env.ALACRITTY_LOG ~= nil or vim.env.ALACRITTY_SOCKET ~= nil
+
+        local function paste(reg)
+            if alacritty then
+                return osc52.paste(reg)
+            end
+            if vim.env.TMUX then
+                return vim.split(vim.fn.system("tmux save-buffer -"), "\n")
+            end
             return vim.split(vim.fn.getreg('"'), "\n")
         end
+
         vim.g.clipboard = {
-            name = "OSC 52",
+            name = alacritty and "OSC 52" or "OSC 52 + tmux",
             copy = {
-                ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-                ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+                ["+"] = osc52.copy("+"),
+                ["*"] = osc52.copy("*"),
             },
             paste = {
-                ["+"] = paste,
-                ["*"] = paste,
+                ["+"] = function() return paste("+") end,
+                ["*"] = function() return paste("*") end,
             },
         }
     end

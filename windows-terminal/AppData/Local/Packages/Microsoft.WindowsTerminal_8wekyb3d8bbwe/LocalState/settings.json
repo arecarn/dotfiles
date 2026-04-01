@@ -22,7 +22,10 @@
         {
             // Put settings here that you want to apply to all profiles.
             "cursorShape": "filledBox",
-            "colorScheme": "Apprentice"
+            "colorScheme": "Apprentice",
+            "font": {
+                "face": "DejaVuSansMono Nerd Font"
+            }
         },
         "list":
         [

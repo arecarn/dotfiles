@@ -1,0 +1,67 @@
+---
+- name: Create fonts directory
+  ansible.builtin.file:
+    path: "{{ user_home }}/.local/share/fonts"
+    state: directory
+    mode: "0755"
+  become: false
+  tags:
+    - fonts
+    - gui
+
+- name: Check for existing Nerd Font installations
+  ansible.builtin.find:
+    paths: "{{ user_home }}/.local/share/fonts"
+    patterns: "*{{ item }}*NerdFont*"
+    file_type: file
+  register: installed_fonts
+  become: false
+  loop: "{{ nerd_fonts }}"
+  tags:
+    - fonts
+    - gui
+
+- name: Download Nerd Fonts
+  ansible.builtin.get_url:
+    url: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/{{ item.item }}.tar.xz"
+    dest: "/tmp/{{ item.item }}.tar.xz"
+    mode: "0644"
+  become: false
+  loop: "{{ installed_fonts.results }}"
+  when: item.files | length == 0
+  tags:
+    - fonts
+    - gui
+
+- name: Extract Nerd Fonts
+  ansible.builtin.unarchive:
+    src: "/tmp/{{ item.item }}.tar.xz"
+    dest: "{{ user_home }}/.local/share/fonts"
+    remote_src: true
+  become: false
+  loop: "{{ installed_fonts.results }}"
+  when: item.files | length == 0
+  tags:
+    - fonts
+    - gui
+
+- name: Clean up Nerd Font archives
+  ansible.builtin.file:
+    path: "/tmp/{{ item.item }}.tar.xz"
+    state: absent
+  become: false
+  loop: "{{ installed_fonts.results }}"
+  when: item.files | length == 0
+  tags:
+    - fonts
+    - gui
+
+- name: Refresh font cache
+  ansible.builtin.command:
+    cmd: fc-cache -fv
+  changed_when: true
+  become: false
+  when: installed_fonts.results | selectattr('files', 'equalto', []) | list | length > 0
+  tags:
+    - fonts
+    - gui

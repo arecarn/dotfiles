@@ -28,4 +28,5 @@
     - ansible.builtin.import_tasks: tasks/javascript-packages.yml
     - ansible.builtin.import_tasks: tasks/rust-packages.yml
     - ansible.builtin.import_tasks: tasks/direnv.yml
+    - ansible.builtin.import_tasks: tasks/nerd-fonts.yml
     - ansible.builtin.import_tasks: tasks/zsh.yml

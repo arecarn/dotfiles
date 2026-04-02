@@ -11,13 +11,13 @@ TERM = "alacritty"
 size = 11.0
 
 [font.normal]
-family = "DejaVuSansM Nerd Font Mono"
+family = "DejaVuSansMonoM Nerd Font Mono"
 
 [font.bold]
-family = "DejaVuSansM Nerd Font Mono Bold"
+family = "DejaVuSansMonoM Nerd Font Mono"
 
 [font.italic]
-family = "DejaVuSansM Nerd Font Mono Oblique"
+family = "DejaVuSansMonoM Nerd Font Mono"
 
 [scrolling]
 history = 50000

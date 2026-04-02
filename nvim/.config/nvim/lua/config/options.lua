@@ -129,7 +129,15 @@ vim.schedule(function()
 
     if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
         local osc52 = require("vim.ui.clipboard.osc52")
-        local alacritty = vim.env.ALACRITTY_LOG ~= nil or vim.env.ALACRITTY_SOCKET ~= nil
+        -- Detect Alacritty via TERM (works over SSH) or tmux's original
+        -- terminal (since tmux overrides TERM to tmux-256color).
+        -- ALACRITTY_LOG/ALACRITTY_SOCKET don't survive SSH.
+        local term = vim.env.TERM or ""
+        local alacritty = term:find("alacritty") ~= nil
+        if not alacritty and vim.env.TMUX then
+            local outer = vim.fn.system("tmux display -p '#{client_termname}'"):gsub("%s+$", "")
+            alacritty = outer:find("alacritty") ~= nil
+        end
 
         local function paste(reg)
             if alacritty then

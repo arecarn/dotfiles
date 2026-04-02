@@ -237,6 +237,10 @@ class Dploy:
         if IS_WINDOWS:
             self.links += [
                 (self.home / p(".config/nvim"), self.home / p("AppData/Local/nvim")),
+                (
+                    self.home / p(".config/alacritty"),
+                    self.home / p("AppData/Roaming/alacritty"),
+                ),
             ]
 
     def stow(self):

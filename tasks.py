@@ -22,17 +22,16 @@ else:
 
 # try to cd to the root of the git directory because all of the tasks expect
 # to be called from there.
+import subprocess
 try:
-    import git
-except ImportError:
+    GIT_ROOT = subprocess.check_output(
+        ["git", "rev-parse", "--show-toplevel"],
+        stderr=subprocess.DEVNULL,
+        text=True
+    ).strip()
+    os.chdir(GIT_ROOT)
+except (subprocess.CalledProcessError, FileNotFoundError):
     pass
-else:
-    try:
-        GIT_REPO = git.Repo(os.getcwd(), search_parent_directories=True)
-        GIT_ROOT = GIT_REPO.git.rev_parse("--show-toplevel")
-        os.chdir(GIT_ROOT)
-    except git.GitCommandError:
-        pass
 
 
 @task
@@ -101,8 +100,8 @@ def provision_termux(ctx):
     # Install selene for linting
     ctx.run("cargo install selene", warn=True)
 
-    # Sync dependencies via uv (including ansible and ruff)
-    ctx.run("uv sync")
+    # Sync dependencies via uv (excluding dev dependencies like ruff)
+    ctx.run("uv sync --no-dev")
 
 
 @task

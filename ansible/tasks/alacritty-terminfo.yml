@@ -1,0 +1,26 @@
+---
+- name: Check if alacritty terminfo is installed
+  ansible.builtin.command:
+    cmd: infocmp alacritty
+  register: alacritty_terminfo
+  changed_when: false
+  failed_when: false
+
+- name: Install alacritty terminfo
+  when: alacritty_terminfo.rc != 0
+  block:
+    - name: Download alacritty terminfo source
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/alacritty/alacritty/master/extra/alacritty.info
+        dest: /tmp/alacritty.info
+        mode: "0644"
+
+    - name: Compile alacritty terminfo
+      ansible.builtin.command:
+        cmd: tic -x /tmp/alacritty.info
+      changed_when: true
+
+    - name: Remove temporary terminfo source
+      ansible.builtin.file:
+        path: /tmp/alacritty.info
+        state: absent

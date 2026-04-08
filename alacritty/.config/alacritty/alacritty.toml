@@ -19,6 +19,10 @@ family = "DejaVuSansM Nerd Font Mono Bold"
 [font.italic]
 family = "DejaVuSansM Nerd Font Mono Oblique"
 
+[bell]
+animation = "EaseOutExpo"
+duration = 150
+
 [scrolling]
 history = 50000
 

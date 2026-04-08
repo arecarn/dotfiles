@@ -23,6 +23,7 @@
   tasks:
     - ansible.builtin.import_tasks: tasks/repos.yml
     - ansible.builtin.import_tasks: tasks/packages.yml
+    - ansible.builtin.import_tasks: tasks/alacritty-terminfo.yml
     - ansible.builtin.import_tasks: tasks/neovim.yml
     - ansible.builtin.import_tasks: tasks/python-packages.yml
     - ansible.builtin.import_tasks: tasks/javascript-packages.yml

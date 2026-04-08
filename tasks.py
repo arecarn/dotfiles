@@ -216,7 +216,7 @@ class Dploy:
         ]
 
         if IS_WINDOWS:
-            self.packages.extend(["vcxsrv", "powershell", "windows-terminal"])
+            self.packages.extend(["vcxsrv", "powershell"])
 
         # pylint: disable=invalid-name
         p = pathlib.Path

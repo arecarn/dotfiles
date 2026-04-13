@@ -347,7 +347,7 @@ def claude_install_plugins(ctx):
             echo=True, warn=True, pty=pty,
         )
     for package in manifest["npx"]:
-        ctx.run(f"npx {package}", echo=True, warn=True, pty=pty)
+        ctx.run(f"npx --yes {package}", echo=True, warn=True, pty=pty)
 
 
 @task
@@ -362,7 +362,7 @@ def claude_update_plugins(ctx):
             echo=True, warn=True, pty=pty,
         )
     for package in manifest["npx"]:
-        ctx.run(f"npx {package}", echo=True, warn=True, pty=pty)
+        ctx.run(f"npx --yes {package}", echo=True, warn=True, pty=pty)
 
 
 @task(provision, stow)

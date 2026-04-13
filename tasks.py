@@ -118,6 +118,8 @@ def provision(ctx, args=""):
                 "vcxsrv",
                 "anki",
                 "wezterm",
+                "glazewm",
+                "zebar",
             ]
             common_packages = [
                 "llvm",
@@ -204,6 +206,7 @@ class Dploy:
         self.home = pathlib.Path().home()
         self.packages = [
             "alacritty",
+            "claude-code",
             "ctags",
             "git",
             "readline",
@@ -216,7 +219,7 @@ class Dploy:
         ]
 
         if IS_WINDOWS:
-            self.packages.extend(["vcxsrv", "powershell"])
+            self.packages.extend(["glazewm", "powershell", "vcxsrv", "zebar"])
 
         # pylint: disable=invalid-name
         p = pathlib.Path
@@ -301,6 +304,65 @@ def unstow(ctx):
             print(f"Skipping unstow on Windows: {e}")
         else:
             raise
+
+
+def _load_claude_plugins():
+    """Load and merge base and local Claude Code plugin manifests"""
+    import json
+
+    claude_dir = pathlib.Path.home() / ".claude"
+    empty = {"marketplaces": [], "plugins": [], "npx": []}
+
+    base = dict(empty)
+    base_path = claude_dir / "plugins.json"
+    if base_path.exists():
+        base = {**empty, **json.loads(base_path.read_text())}
+
+    local = dict(empty)
+    local_path = claude_dir / "plugins_local.json"
+    if local_path.exists():
+        local = {**empty, **json.loads(local_path.read_text())}
+
+    return {
+        "marketplaces": base["marketplaces"] + local["marketplaces"],
+        "plugins": base["plugins"] + local["plugins"],
+        "npx": base["npx"] + local["npx"],
+    }
+
+
+@task
+def claude_install_plugins(ctx):
+    """Install Claude Code plugins from base and local manifests (requires a TTY)"""
+    manifest = _load_claude_plugins()
+    pty = not IS_WINDOWS
+
+    for marketplace in manifest["marketplaces"]:
+        ctx.run(
+            f"claude plugin marketplace add {marketplace}",
+            echo=True, warn=True, pty=pty,
+        )
+    for plugin in manifest["plugins"]:
+        ctx.run(
+            f"claude plugin install {plugin}",
+            echo=True, warn=True, pty=pty,
+        )
+    for package in manifest["npx"]:
+        ctx.run(f"npx {package}", echo=True, warn=True, pty=pty)
+
+
+@task
+def claude_update_plugins(ctx):
+    """Update installed Claude Code plugins to latest versions (requires a TTY)"""
+    manifest = _load_claude_plugins()
+    pty = not IS_WINDOWS
+
+    for plugin in manifest["plugins"]:
+        ctx.run(
+            f"claude plugin update {plugin}",
+            echo=True, warn=True, pty=pty,
+        )
+    for package in manifest["npx"]:
+        ctx.run(f"npx {package}", echo=True, warn=True, pty=pty)
 
 
 @task(provision, stow)

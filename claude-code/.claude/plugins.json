@@ -1,0 +1,11 @@
+{
+  "marketplaces": [
+    "JuliusBrussee/caveman"
+  ],
+  "plugins": [
+    "caveman@caveman"
+  ],
+  "npx": [
+    "get-shit-done-cc@latest --claude --global"
+  ]
+}

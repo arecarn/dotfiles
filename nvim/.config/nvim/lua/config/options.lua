@@ -121,47 +121,29 @@ opt.tags = "tags;/"
 -------------------------------------------------------------------------------}}}
 -- GENERAL BEHAVIOR                                                           {{{
 --------------------------------------------------------------------------------
--- Clipboard over SSH: OSC 52 for copy (yank reaches host clipboard via terminal).
--- Paste: Alacritty supports OSC 52 read (opt-in), so full bidirectional clipboard
--- works there. Other terminals fall back to tmux paste buffer or Ctrl+Shift+V.
-vim.schedule(function()
-    opt.clipboard:append("unnamedplus")
-
-    if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
-        local osc52 = require("vim.ui.clipboard.osc52")
-        -- Detect Alacritty via TERM (works over SSH) or tmux's original
-        -- terminal (since tmux overrides TERM to tmux-256color).
-        -- ALACRITTY_LOG/ALACRITTY_SOCKET don't survive SSH.
-        local term = vim.env.TERM or ""
-        local alacritty = term:find("alacritty") ~= nil
-        if not alacritty and vim.env.TMUX then
-            local outer = vim.fn.system("tmux display -p '#{client_termname}'"):gsub("%s+$", "")
-            alacritty = outer:find("alacritty") ~= nil
-        end
-
-        local function paste(reg)
-            if alacritty then
-                return osc52.paste(reg)
-            end
-            if vim.env.TMUX then
-                return vim.split(vim.fn.system("tmux save-buffer -"), "\n")
-            end
-            return vim.split(vim.fn.getreg('"'), "\n")
-        end
-
-        vim.g.clipboard = {
-            name = alacritty and "OSC 52" or "OSC 52 + tmux",
-            copy = {
-                ["+"] = osc52.copy("+"),
-                ["*"] = osc52.copy("*"),
-            },
-            paste = {
-                ["+"] = function() return paste("+") end,
-                ["*"] = function() return paste("*") end,
-            },
-        }
-    end
-end)
+-- Clipboard over SSH: OSC 52 for copy (yank reaches host clipboard).
+-- OSC 52 read (paste) doesn't work over SSH — the terminal writes the
+-- response locally but SSH can't route it back to the remote PTY.
+-- Paste uses the Neovim register instead; use Ctrl+Shift+V for host clipboard.
+vim.opt.clipboard = "unnamedplus"
+if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
+    local osc52 = require("vim.ui.clipboard.osc52")
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = {
+            ["+"] = osc52.copy("+"),
+            ["*"] = osc52.copy("*"),
+        },
+        paste = {
+            ["+"] = function()
+                return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+            end,
+            ["*"] = function()
+                return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+            end,
+        },
+    }
+end
 opt.splitright = true
 opt.nrformats:remove("octal")
 opt.belloff = "all"

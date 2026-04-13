@@ -5,6 +5,9 @@ else
     export EDITOR='vim'
 fi
 
+# Terminal color support
+export COLORTERM=truecolor
+
 export LANG='en_US.UTF-8'
 
 # improved less option

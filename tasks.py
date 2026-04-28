@@ -271,6 +271,12 @@ class Dploy:
 
         self.dploy.unstow(self.packages, self.home, is_silent=False)
 
+    def clean(self):
+        """
+        remove dead symlinks left over from stowing
+        """
+        self.dploy.clean(self.packages, self.home, is_silent=False)
+
 
 @task
 def stow(ctx):
@@ -281,7 +287,9 @@ def stow(ctx):
     from dploy.error import DployError
 
     try:
-        Dploy().stow()
+        d = Dploy()
+        d.clean()
+        d.stow()
     except (OSError, DployError) as e:
         if IS_WINDOWS:
             print(f"Skipping stow on Windows: {e}")
@@ -302,6 +310,23 @@ def unstow(ctx):
     except (OSError, DployError) as e:
         if IS_WINDOWS:
             print(f"Skipping unstow on Windows: {e}")
+        else:
+            raise
+
+
+@task
+def clean_stow(ctx):
+    """
+    Remove dead symlinks left over from stowing
+    """
+    # pylint: disable=unused-argument,import-outside-toplevel
+    from dploy.error import DployError
+
+    try:
+        Dploy().clean()
+    except (OSError, DployError) as e:
+        if IS_WINDOWS:
+            print(f"Skipping clean on Windows: {e}")
         else:
             raise
 

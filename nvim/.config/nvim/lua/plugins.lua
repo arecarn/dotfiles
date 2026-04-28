@@ -27,6 +27,28 @@ local plugins = {
     -- MINI.NVIM (Modern Text Objects & Operators)                           {{{
     ---------------------------------------------------------------------------
     {
+        "goolord/alpha-nvim",
+        lazy = false,
+        priority = 999,
+        config = function()
+            local alpha = require("alpha")
+            local theta = require("alpha.themes.theta")
+            local dashboard = require("alpha.themes.dashboard")
+            theta.buttons.val = {
+                { type = "text", val = "Quick links", opts = { hl = "SpecialComment", position = "center" } },
+                { type = "padding", val = 1 },
+                dashboard.button("e", "New file", "<cmd>ene<CR>"),
+                dashboard.button("f", "Find file", "<cmd>FzfLua files<CR>"),
+                dashboard.button("g", "Live grep", "<cmd>FzfLua live_grep<CR>"),
+                dashboard.button("r", "Recent files", "<cmd>FzfLua oldfiles<CR>"),
+                dashboard.button("c", "Configuration", "<cmd>edit $MYVIMRC<CR>"),
+                dashboard.button("u", "Update plugins", "<cmd>Lazy sync<CR>"),
+                dashboard.button("q", "Quit", "<cmd>qa<CR>"),
+            }
+            alpha.setup(theta.config)
+        end,
+    },
+    {
         "echasnovski/mini.nvim",
         version = false,
         event = "VeryLazy",
@@ -292,7 +314,7 @@ local plugins = {
         config = function()
             require("snacks").setup({
                 bigfile = { enabled = true },
-                dashboard = { enabled = true },
+                dashboard = { enabled = false },
                 input = { enabled = true },
                 indent = { enabled = true },
                 notifier = { enabled = true },
@@ -1397,6 +1419,9 @@ local plugins = {
 require("lazy").setup(plugins, {
     defaults = {
         lazy = true,
+    },
+    rocks = {
+        enabled = false,
     },
     install = {
         colorscheme = { "apprentice" },

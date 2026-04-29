@@ -467,7 +467,6 @@ local plugins = {
     },
     {
         "edkolev/tmuxline.vim",
-        cond = vim.fn.has("win32") == 0 and vim.fn.has("win64") == 0,
         event = "VeryLazy",
         init = function()
             vim.g.tmuxline_powerline_separators = 0
@@ -480,11 +479,9 @@ local plugins = {
             }
         end,
         config = function()
-            if vim.env.TMUX == nil then
-                return
-            end
             local snapshot = vim.fn.expand("~/.cache/tmux/statusline.conf")
             if vim.fn.filereadable(snapshot) == 0 then
+                vim.fn.mkdir(vim.fn.fnamemodify(snapshot, ":h"), "p")
                 vim.cmd("Tmuxline")
                 vim.cmd("TmuxlineSnapshot! " .. snapshot)
             end

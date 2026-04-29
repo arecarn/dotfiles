@@ -209,12 +209,13 @@ class Dploy:
             "claude-code",
             "ctags",
             "git",
+            "nvim",
             "readline",
             "scripts",
             "shell",
             "ssh",
             "tmux",
-            "nvim",
+            "wezterm",
             "zsh",
         ]
 
@@ -288,7 +289,12 @@ def stow(ctx):
 
     try:
         d = Dploy()
-        d.clean()
+        # Skip clean on Windows: dploy walks self.home and hits
+        # AppData\Local\Application Data, a protected system junction point
+        # that returns [WinError 5] Access Denied. ignore_patterns only applies
+        # to sources, not the dest traversal, so there's no way to exclude it.
+        if not IS_WINDOWS:
+            d.clean()
         d.stow()
     except (OSError, DployError) as e:
         if IS_WINDOWS:

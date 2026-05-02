@@ -113,7 +113,6 @@ def provision(ctx, args=""):
     if IS_WINDOWS:
         if IS_ADMIN:
             gui_packages = [
-                "alacritty",
                 "nerd-fonts-dejavusansmono",
                 "vcxsrv",
                 "anki",
@@ -152,12 +151,6 @@ def provision(ctx, args=""):
             ctx.run(f"choco upgrade {packages}")
             # Enable corepack for pnpm and yarn
             ctx.run("corepack enable", warn=True)
-            # Install alacritty terminfo into Git for Windows' MSYS2 environment
-            # so that TERM=alacritty is recognized by tools running under Git Bash
-            ctx.run(
-                'bash -c "curl --ssl-no-revoke -sL https://raw.githubusercontent.com/alacritty/alacritty/master/extra/alacritty.info -o /tmp/alacritty.info && mkdir -p ~/.terminfo && tic -x -o ~/.terminfo /tmp/alacritty.info"',
-                warn=True,
-            )
         else:
             assert False, "You need to be admin to install things with Chocolaty"
     else:
@@ -205,7 +198,6 @@ class Dploy:
         self.dploy = dploy
         self.home = pathlib.Path().home()
         self.packages = [
-            "alacritty",
             "claude-code",
             "ctags",
             "git",
@@ -220,7 +212,7 @@ class Dploy:
         ]
 
         if IS_WINDOWS:
-            self.packages.extend(["glazewm", "powershell", "vcxsrv", "zebar"])
+            self.packages.extend(["powershell", "vcxsrv"])
 
         # pylint: disable=invalid-name
         p = pathlib.Path

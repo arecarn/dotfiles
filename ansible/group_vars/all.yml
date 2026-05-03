@@ -8,6 +8,7 @@ common_packages:
   - fd-find
   - fzf
   - gawk
+  - gh
   - git
   - htop
   - lua-language-server

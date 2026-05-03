@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Repo-local pre-push hook for dotfiles.
+# Runs global hooks (on PATH via stow) then repo-specific lint.
+#
+# Git feeds ref info on stdin to pre-push hooks. Scripts that read stdin
+# need it saved to a temp file so multiple scripts can consume it.
+
+exit_code=0
+stdin_file=$(mktemp)
+cat > "$stdin_file"
+
+# --- global hooks (same as ~/.config/git/hooks/pre-push) ---
+pre_push_check_for_fixup_and_wip_commits.sh < "$stdin_file"
+exit_code=$((exit_code + $?))
+
+pre_push_check_for_valid_branch_name.sh < "$stdin_file"
+exit_code=$((exit_code + $?))
+
+rm -f "$stdin_file"
+
+# --- repo-specific: lint ---
+echo "pre-push: running linters..."
+if ! uv run invoke lint; then
+    echo "pre-push: lint failed — fix issues before pushing"
+    exit_code=$((exit_code + 1))
+else
+    echo "pre-push: lint passed"
+fi
+
+if [ "${exit_code}" != 0 ]; then
+    echo 'pre-push: pass --no-verify to "git push" to bypass pre-push hooks'
+fi
+
+exit ${exit_code}

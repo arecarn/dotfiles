@@ -95,7 +95,7 @@ config.keys = {
         mods = "LEADER",
         action = wezterm.action.PromptInputLine({
             description = "Rename workspace",
-            action = wezterm.action_callback(function(window, pane, line)
+            action = wezterm.action_callback(function(_window, _pane, line)
                 if line then
                     wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), line)
                 end
@@ -130,7 +130,7 @@ config.key_tables = {
 config.scrollback_lines = 50000
 
 -- Status bar: workspace name + leader indicator
-wezterm.on("update-status", function(window, pane)
+wezterm.on("update-status", function(window, _pane)
     local ws = window:active_workspace()
     local leader = window:leader_is_active() and " [WAIT]" or ""
     window:set_left_status(wezterm.format({

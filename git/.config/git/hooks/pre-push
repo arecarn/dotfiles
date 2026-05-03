@@ -8,6 +8,9 @@ exit_code=$((exit_code + $?))
 pre_push_check_for_valid_branch_name.sh
 exit_code=$((exit_code + $?))
 
+pre_push_lint_dotfiles.sh
+exit_code=$((exit_code + $?))
+
 if [ "${exit_code}" != 0 ]; then
     echo 'pre-push: pass --no-verify to "git push" to bypass pre-push hooks'
 fi

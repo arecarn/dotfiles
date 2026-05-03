@@ -112,9 +112,9 @@ opt.maxmempattern = 2000000
 opt.grepformat = "%f:%l:%c:%m"
 
 if vim.fn.executable("rg") == 1 then
-	opt.grepprg = "rg --vimgrep $*"
+    opt.grepprg = "rg --vimgrep $*"
 elseif vim.fn.executable("ag") == 1 then
-	opt.grepprg = "ag --vimgrep $*"
+    opt.grepprg = "ag --vimgrep $*"
 end
 
 -------------------------------------------------------------------------------}}}
@@ -131,22 +131,22 @@ opt.tags = "tags;/"
 -- Paste uses the Neovim register instead; use Ctrl+Shift+V for host clipboard.
 vim.opt.clipboard = "unnamedplus"
 if vim.env.SSH_CLIENT or vim.env.SSH_TTY then
-	local osc52 = require("vim.ui.clipboard.osc52")
-	vim.g.clipboard = {
-		name = "OSC 52",
-		copy = {
-			["+"] = osc52.copy("+"),
-			["*"] = osc52.copy("*"),
-		},
-		paste = {
-			["+"] = function()
-				return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-			end,
-			["*"] = function()
-				return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-			end,
-		},
-	}
+    local osc52 = require("vim.ui.clipboard.osc52")
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = {
+            ["+"] = osc52.copy("+"),
+            ["*"] = osc52.copy("*"),
+        },
+        paste = {
+            ["+"] = function()
+                return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+            end,
+            ["*"] = function()
+                return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+            end,
+        },
+    }
 end
 opt.splitright = true
 opt.nrformats:remove("octal")
@@ -180,11 +180,11 @@ opt.showtabline = 2
 
 opt.list = true
 opt.listchars = {
-	trail = "·",
-	tab = "→→",
-	extends = "▶",
-	precedes = "◀",
-	nbsp = "‾",
+    trail = "·",
+    tab = "→→",
+    extends = "▶",
+    precedes = "◀",
+    nbsp = "‾",
 }
 
 opt.signcolumn = "yes"

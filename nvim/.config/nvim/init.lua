@@ -54,10 +54,10 @@ end
 
 -- GUI font (Neovide)
 if vim.g.neovide then
-	vim.o.guifont = "DejaVuSansM Nerd Font Mono:h14"
-	vim.g.neovide_cursor_trail_size = 0
-	vim.g.neovide_cursor_animation_length = 0
-	vim.g.neovide_scroll_animation_length = 0
+    vim.o.guifont = "DejaVuSansM Nerd Font Mono:h14"
+    vim.g.neovide_cursor_trail_size = 0
+    vim.g.neovide_cursor_animation_length = 0
+    vim.g.neovide_scroll_animation_length = 0
 end
 
 -------------------------------------------------------------------------------}}}

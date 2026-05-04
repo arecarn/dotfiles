@@ -70,6 +70,11 @@ config.keys = {
     -- Reload config (prefix + s)
     { key = "s", mods = "LEADER", action = wezterm.action.ReloadConfiguration },
 
+    -- Font size
+    { key = "=", mods = "CTRL", action = wezterm.action.IncreaseFontSize },
+    { key = "-", mods = "CTRL", action = wezterm.action.DecreaseFontSize },
+    { key = "0", mods = "CTRL", action = wezterm.action.ResetFontSize },
+
     -- Workspaces (= tmux sessions)
     { key = "W", mods = "LEADER", action = wezterm.action.ShowLauncherArgs({ flags = "WORKSPACES" }) },
     { key = "(", mods = "LEADER", action = wezterm.action.SwitchWorkspaceRelative(-1) },
@@ -113,18 +118,21 @@ for i = 1, 9 do
     })
 end
 
--- Copy mode vi bindings: y yanks to clipboard and exits
-config.key_tables = {
-    copy_mode = {
-        {
-            key = "y",
-            action = wezterm.action.Multiple({
-                wezterm.action.CopyTo("ClipboardAndPrimarySelection"),
-                wezterm.action.CopyMode("Close"),
-            }),
-        },
-    },
-}
+-- Copy mode: start from defaults, override y to yank to clipboard
+local copy_mode = wezterm.gui.default_key_tables().copy_mode
+for i = #copy_mode, 1, -1 do
+    if copy_mode[i].key == "y" then
+        table.remove(copy_mode, i)
+    end
+end
+table.insert(copy_mode, {
+    key = "y",
+    action = wezterm.action.Multiple({
+        wezterm.action.CopyTo("ClipboardAndPrimarySelection"),
+        wezterm.action.CopyMode("Close"),
+    }),
+})
+config.key_tables = { copy_mode = copy_mode }
 
 -- Scrollback
 config.scrollback_lines = 50000

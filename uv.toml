@@ -1,2 +1,3 @@
 # Force uv to use upstream PyPI instead of any configured indexes
+# (override global pip config that points at blueorigin-python artifactory)
 index-url = "https://pypi.org/simple"

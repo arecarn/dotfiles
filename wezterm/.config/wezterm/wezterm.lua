@@ -67,6 +67,10 @@ config.keys = {
     -- Paste (prefix + p)
     { key = "p", mods = "LEADER", action = wezterm.action.PasteFrom("Clipboard") },
 
+    -- Copy/Paste (Ctrl+Shift+C/V)
+    { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
+    { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
+
     -- Reload config (prefix + s)
     { key = "s", mods = "LEADER", action = wezterm.action.ReloadConfiguration },
 

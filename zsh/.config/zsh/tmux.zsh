@@ -1,7 +1,7 @@
 # Auto-start tmux on interactive shells
 # Guards: not already in tmux, not in VS Code's integrated terminal, tmux installed
 if [[ -z "$TMUX" ]] && [[ -z "$VSCODE_RESOLVING_ENVIRONMENT" ]] && command -v tmux &>/dev/null; then
-    tmux new-session -A -s main
+    tmux attach 2>/dev/null || tmux new-session -s main
 fi
 
 # By default tmux updates the DISPLAY and SSH_AUTH_SOCK variables in tmux's

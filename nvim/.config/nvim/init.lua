@@ -1,4 +1,4 @@
--------------------------------------------------------------------------------}}}
+------------------------------------------------------------------------------}}}
 -- INIT.LUA                                                                   {{{
 --------------------------------------------------------------------------------
 -- Neovim configuration entry point
@@ -50,6 +50,14 @@ end
 -- Load cfilter if not already loaded
 if vim.fn.exists(":CFilter") == 0 then
     vim.cmd("packadd cfilter")
+end
+
+-- GUI font (Neovide)
+if vim.g.neovide then
+	vim.o.guifont = "DejaVuSansM Nerd Font Mono:h14"
+	vim.g.neovide_cursor_trail_size = 0
+	vim.g.neovide_cursor_animation_length = 0
+	vim.g.neovide_scroll_animation_length = 0
 end
 
 -------------------------------------------------------------------------------}}}

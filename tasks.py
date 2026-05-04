@@ -217,6 +217,7 @@ class Dploy:
             "claude-code",
             "ctags",
             "git",
+            "neovide",
             "readline",
             "scripts",
             "shell",
@@ -254,6 +255,10 @@ class Dploy:
                 (
                     self.home / p(".config/alacritty"),
                     self.home / p("AppData/Roaming/alacritty"),
+                ),
+                (
+                    self.home / p(".config/neovide"),
+                    self.home / p("AppData/Roaming/neovide"),
                 ),
             ]
 

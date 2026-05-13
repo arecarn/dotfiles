@@ -30,7 +30,7 @@
     pnpm_bin_dir: "{{ lookup('env', 'HOME') }}/.local/share/pnpm"
   environment:
     PNPM_HOME: "{{ pnpm_bin_dir }}"
-    PATH: "{{ lookup('env', 'PATH') }}:{{ pnpm_bin_dir }}"
+    PATH: "{{ lookup('env', 'PATH') }}:{{ pnpm_bin_dir }}:{{ pnpm_bin_dir }}/bin"
   ansible.builtin.command:
     cmd: "pnpm add -g {{ item }}"
   loop: "{{ javascript_packages }}"

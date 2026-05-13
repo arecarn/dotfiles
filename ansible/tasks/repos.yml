@@ -38,15 +38,3 @@
   ansible.builtin.apt:
     name: nodejs
     state: latest
-
-- name: Override pre-installed Node.js with NodeSource version (Debian)
-  when: ansible_facts['os_family'] == "Debian" and not is_termux
-  ansible.builtin.file:
-    src: "/usr/bin/{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
-    state: link
-    force: true
-  loop:
-    - node
-    - npm
-    - npx

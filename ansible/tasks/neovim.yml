@@ -34,6 +34,7 @@
   tags: [neovim, bob]
   ansible.builtin.command:
     cmd: "{{ user_home }}/.cargo/bin/cargo install bob-nvim"
+  ignore_errors: true
 
 - name: Install stable Neovim via bob
   become: false
@@ -43,6 +44,7 @@
     cmd: "{{ user_home }}/.cargo/bin/bob install stable"
   register: bob_install
   changed_when: "'already installed' not in bob_install.stdout"
+  ignore_errors: true
 
 - name: Use stable Neovim via bob
   become: false
@@ -51,3 +53,4 @@
   ansible.builtin.command:
     cmd: "{{ user_home }}/.cargo/bin/bob use stable"
   changed_when: false
+  ignore_errors: true

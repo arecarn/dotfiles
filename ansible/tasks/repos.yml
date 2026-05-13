@@ -24,3 +24,4 @@
     repo: ppa:git-core/ppa
     state: present
     update_cache: true
+  ignore_errors: true

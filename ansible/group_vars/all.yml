@@ -15,7 +15,6 @@ common_packages:
   - moreutils
   - ncdu
   - nodejs
-  - npm
   - openssh-server
   - pandoc
   - picocom

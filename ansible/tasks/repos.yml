@@ -25,3 +25,10 @@
     state: present
     update_cache: true
   ignore_errors: true
+
+# Ubuntu: Add NodeSource PPA for Node.js 22
+- name: Add NodeSource Node.js 22 repository (Debian)
+  when: ansible_facts['os_family'] == "Debian" and not is_termux
+  ansible.builtin.shell:
+    cmd: curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    creates: /etc/apt/sources.list.d/nodesource.list

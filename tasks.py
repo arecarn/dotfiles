@@ -235,7 +235,6 @@ class Dploy:
         self.dploy = dploy
         self.home = pathlib.Path().home()
         self.packages = [
-            "alacritty",
             "claude-code",
             "ctags",
             "git",

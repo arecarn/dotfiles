@@ -105,11 +105,19 @@ def provision_termux(ctx):
     ctx.run("uv sync --no-dev")
 
 
+def _setup_gitconfig_local():
+    gitconfig_local = pathlib.Path.home() / ".gitconfig_local"
+    if not gitconfig_local.exists():
+        gitconfig_local.write_text("[include]\n    path = ~/.gitconfig_personal\n")
+        print(f"Created {gitconfig_local}")
+
+
 @task
 def provision(ctx, args=""):
     """
     Provision this system using ansible
     """
+    _setup_gitconfig_local()
     is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
     if IS_WINDOWS:
         if IS_ADMIN:

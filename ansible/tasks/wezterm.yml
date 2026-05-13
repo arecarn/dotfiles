@@ -1,0 +1,26 @@
+---
+- name: Install WezTerm GNOME desktop override
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  block:
+    - name: Ensure user applications directory exists
+      ansible.builtin.file:
+        path: "{{ user_home }}/.local/share/applications"
+        state: directory
+        mode: "0755"
+
+    - name: Deploy WezTerm desktop override (force XWayland on GNOME Wayland)
+      ansible.builtin.copy:
+        dest: "{{ user_home }}/.local/share/applications/org.wezfurlong.wezterm.desktop"
+        mode: "0644"
+        content: |
+          [Desktop Entry]
+          Name=WezTerm
+          Comment=Wez's Terminal Emulator
+          Keywords=shell;prompt;command;commandline;cmd;
+          Icon=org.wezfurlong.wezterm
+          StartupWMClass=org.wezfurlong.wezterm
+          TryExec=wezterm
+          Exec=env WAYLAND_DISPLAY= wezterm start --cwd .
+          Type=Application
+          Categories=System;TerminalEmulator;Utility;
+          Terminal=false

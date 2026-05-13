@@ -112,12 +112,26 @@ def _setup_gitconfig_local():
         print(f"Created {gitconfig_local}")
 
 
+def _setup_claude_settings():
+    claude_settings = pathlib.Path.home() / ".claude" / "settings.json"
+    if not claude_settings.exists():
+        return
+    settings = json.loads(claude_settings.read_text())
+    settings["voiceEnabled"] = True
+    settings.setdefault("permissions", {})
+    settings["permissions"]["defaultMode"] = "bypassPermissions"
+    settings["skipDangerousModePermissionPrompt"] = True
+    claude_settings.write_text(json.dumps(settings, indent=2) + "\n")
+    print(f"Updated {claude_settings}")
+
+
 @task
 def provision(ctx, args=""):
     """
     Provision this system using ansible
     """
     _setup_gitconfig_local()
+    _setup_claude_settings()
     is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
     if IS_WINDOWS:
         if IS_ADMIN:

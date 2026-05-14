@@ -158,7 +158,6 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         "ripgrep",
         "oh-my-posh",
         "poshgit",
-        "openssh --pre",
         "stylua",
         "selene",
     ]
@@ -168,7 +167,9 @@ def _provision_windows(ctx, is_ci: bool) -> None:
 
     packages = " ".join(packages_to_install)
     ctx.run(f"choco install -y {packages}")
+    ctx.run("choco install -y openssh --pre")
     ctx.run(f"choco upgrade -y {packages}")
+    ctx.run("choco upgrade -y openssh --pre")
     ctx.run("corepack enable", warn=True)
 
 

@@ -35,16 +35,21 @@ except (subprocess.CalledProcessError, FileNotFoundError):
     pass
 
 
+def _find_files(pattern: str) -> list[str]:
+    return [
+        str(f)
+        for f in pathlib.Path(".").rglob(pattern)
+        if not EXCLUDE_DIRS & set(f.parts)
+    ]
+
+
 @task
 def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.sh") if not EXCLUDE_DIRS & set(f.parts)]
-    files_string = " ".join(files)
-
-    cmd = "shellcheck --format gcc {files}"
-    ctx.run(cmd.format(files=files_string))
+    files_string = " ".join(_find_files("*.sh"))
+    ctx.run(f"shellcheck --format gcc {files_string}")
 
 
 @task
@@ -52,11 +57,8 @@ def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.yml") if not EXCLUDE_DIRS & set(f.parts)]
-    files_string = " ".join(files)
-
-    cmd = "yamllint --format parsable {files}"
-    ctx.run(cmd.format(files=files_string))
+    files_string = " ".join(_find_files("*.yml"))
+    ctx.run(f"yamllint --format parsable {files_string}")
 
 
 @task
@@ -64,7 +66,7 @@ def lint_python(ctx):
     """
     Run pylint and ruff on python files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.py") if not EXCLUDE_DIRS & set(f.parts)]
+    files = _find_files("*.py")
     files_string = " ".join(files)
     cmds = ["pylint --output-format=parseable", "ruff check"]
     base_cmd = "python -m {cmd} {files}"
@@ -125,6 +127,67 @@ def _setup_claude_settings():
     print(f"Updated {claude_settings}")
 
 
+def _provision_windows(ctx, is_ci: bool) -> None:
+    if not IS_ADMIN:
+        raise SystemExit("You need to be admin to install things with Chocolatey")
+
+    gui_packages = [
+        "nerd-fonts-dejavusansmono",
+        "vcxsrv",
+        "anki",
+        "wezterm",
+        "glazewm",
+        "zebar",
+    ]
+    common_packages = [
+        "llvm",
+        "pandoc",
+        "git",
+        "ctags",
+        "neovim",
+        "nodejs",
+        "plantuml",
+        "fzf",
+        "zoxide",
+        "eza",
+        "bat",
+        "delta",
+        "gsudo",
+        "ripgrep",
+        "oh-my-posh",
+        "poshgit",
+        "openssh --pre",
+        "stylua",
+        "selene",
+    ]
+    packages_to_install = common_packages
+    if not is_ci:
+        packages_to_install.extend(gui_packages)
+
+    packages = " ".join(packages_to_install)
+    ctx.run("choco feature enable -n=allowGlobalConfirmation")
+    ctx.run(f"choco install {packages}")
+    ctx.run(f"choco upgrade {packages}")
+    ctx.run("corepack enable", warn=True)
+
+
+def _provision_linux(ctx, is_ci: bool, args: str) -> None:
+    is_termux = "com.termux" in os.environ.get("PREFIX", "")
+    if is_termux:
+        provision_termux(ctx)
+
+    os.chdir("ansible")
+
+    become_arg = "" if is_termux or is_ci else "--ask-become-pass"
+    ci_args = "--skip-tags gui" if is_ci else ""
+
+    ansible_pb = "../.venv/bin/ansible-playbook"
+    if not pathlib.Path(ansible_pb).exists():
+        ansible_pb = "ansible-playbook"
+
+    ctx.run(f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {args}")
+
+
 @task
 def provision(ctx, args=""):
     """
@@ -134,84 +197,9 @@ def provision(ctx, args=""):
     _setup_claude_settings()
     is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
     if IS_WINDOWS:
-        if IS_ADMIN:
-            gui_packages = [
-                "alacritty",
-                "nerd-fonts-dejavusansmono",
-                "vcxsrv",
-                "anki",
-                "wezterm",
-                "glazewm",
-                "zebar",
-            ]
-            common_packages = [
-                "llvm",
-                "pandoc",
-                "git",
-                "ctags",
-                "neovim",
-                "nodejs",
-                "plantuml",
-                "fzf",
-                "zoxide",
-                "eza",
-                "bat",
-                "delta",
-                "gsudo",
-                "ripgrep",
-                "oh-my-posh",
-                "poshgit",
-                "openssh --pre",
-                "stylua",
-                "selene",
-            ]
-            packages_to_install = common_packages
-            if not is_ci:
-                packages_to_install.extend(gui_packages)
-
-            packages = " ".join(packages_to_install)
-            ctx.run("choco feature enable -n=allowGlobalConfirmation")
-            ctx.run(f"choco install {packages}")
-            ctx.run(f"choco upgrade {packages}")
-            # Enable corepack for pnpm and yarn
-            ctx.run("corepack enable", warn=True)
-            # Install alacritty terminfo into Git for Windows' MSYS2 environment
-            # so that TERM=alacritty is recognized by tools running under Git Bash
-            ctx.run(
-                "bash -c '"
-                "curl --ssl-no-revoke -sL"
-                " https://raw.githubusercontent.com/alacritty/alacritty"
-                "/master/extra/alacritty.info"
-                " -o /tmp/alacritty.info"
-                " && mkdir -p ~/.terminfo"
-                " && tic -x -o ~/.terminfo /tmp/alacritty.info"
-                "'",
-                warn=True,
-            )
-        else:
-            assert False, "You need to be admin to install things with Chocolaty"
+        _provision_windows(ctx, is_ci)
     else:
-        is_termux = "com.termux" in os.environ.get("PREFIX", "")
-        if is_termux:
-            provision_termux(ctx)
-
-        # cd into ansible directory to run the playbook
-        os.chdir("ansible")
-
-        # Determine if we should use become (don't use it on Termux)
-        become_arg = "" if is_termux or is_ci else "--ask-become-pass"
-
-        # Skip GUI packages in CI
-        ci_args = "--skip-tags gui" if is_ci else ""
-
-        # Determine ansible-playbook path (use venv if available)
-        ansible_pb = "../.venv/bin/ansible-playbook"
-        if not pathlib.Path(ansible_pb).exists():
-            ansible_pb = "ansible-playbook"
-
-        ctx.run(
-            f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {args}"
-        )
+        _provision_linux(ctx, is_ci, args)
 
 
 @task
@@ -273,10 +261,6 @@ class Dploy:
         if IS_WINDOWS:
             self.links += [
                 (self.home / p(".config/nvim"), self.home / p("AppData/Local/nvim")),
-                (
-                    self.home / p(".config/alacritty"),
-                    self.home / p("AppData/Roaming/alacritty"),
-                ),
                 (
                     self.home / p(".config/neovide"),
                     self.home / p("AppData/Roaming/neovide"),
@@ -435,7 +419,7 @@ def lint_lua(ctx):
     """
     Run luacheck and stylua on Lua files
     """
-    files = [str(f) for f in pathlib.Path(".").rglob("*.lua") if not EXCLUDE_DIRS & set(f.parts)]
+    files = _find_files("*.lua")
     if not files:
         return
     files_string = " ".join(files)

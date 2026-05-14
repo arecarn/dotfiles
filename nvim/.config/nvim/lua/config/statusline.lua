@@ -35,7 +35,7 @@ end
 ---@return string
 function M.readonly()
     local ft = vim.bo.filetype
-    if ft:match("help|dirvish") then
+    if ft:match(special_ft_pattern) then
         return ""
     end
     return vim.bo.readonly and "RO" or ""
@@ -73,7 +73,7 @@ end
 ---@return string
 function M.fugitive()
     local ft = vim.bo.filetype
-    if ft:match("dirvish") then
+    if ft:match(special_ft_pattern) then
         return ""
     end
     if vim.fn.winwidth(0) <= 80 then

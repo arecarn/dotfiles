@@ -44,9 +44,6 @@
     autoStash = true
     autoSquash = true
 
-[mergetool]
-    prompt = false
-
 [fetch]
     prune = true
 

@@ -44,7 +44,10 @@ end
 -- Load user-local Lua config if it exists
 local local_lua = vim.fn.expand("~/.config/nvim/init_local.lua")
 if vim.fn.filereadable(local_lua) == 1 then
-    dofile(local_lua)
+    local ok, err = pcall(dofile, local_lua)
+    if not ok then
+        vim.notify("Error in init_local.lua: " .. err, vim.log.levels.ERROR)
+    end
 end
 
 -- Load cfilter if not already loaded

@@ -19,12 +19,11 @@
 
 # Ubuntu: Add git PPA for latest version
 - name: Add git PPA (Ubuntu)
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['os_family'] != "Android"
+  when: ansible_facts['distribution'] == "Ubuntu"
   ansible.builtin.apt_repository:
     repo: ppa:git-core/ppa
     state: present
     update_cache: true
-  ignore_errors: true
 
 # Ubuntu: Add NodeSource PPA for Node.js 22
 - name: Add NodeSource Node.js 22 repository (Debian)

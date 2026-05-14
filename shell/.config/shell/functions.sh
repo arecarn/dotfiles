@@ -58,9 +58,8 @@ _nmod()
     umask=$(umask)
     permissions="$(($1 - umask))"
     shift
-    expression="chmod ${permissions} ${*}"
-    printf '%s\n' "${expression}"
-    eval "${expression}"
+    printf '%s\n' "chmod ${permissions} ${*}"
+    chmod "${permissions}" "$@"
     )
 }
 
@@ -79,7 +78,11 @@ nmodf()
 # start the ssh-agent && and prompt for ssh passphrase only after first login
 ssh_start_agent() {
     if [ ! -S "${HOME}/.ssh/ssh_auth_sock_$(hostname)" ]; then
-        eval "$(ssh-agent)"
+        _agent_output=$(ssh-agent 2>/dev/null)
+        SSH_AUTH_SOCK=$(printf '%s\n' "$_agent_output" | sed -n 's/^SSH_AUTH_SOCK=\([^;]*\).*/\1/p')
+        SSH_AGENT_PID=$(printf '%s\n' "$_agent_output" | sed -n 's/^SSH_AGENT_PID=\([^;]*\).*/\1/p')
+        export SSH_AUTH_SOCK SSH_AGENT_PID
+        unset _agent_output
         ln -sf "$SSH_AUTH_SOCK" "${HOME}/.ssh/ssh_auth_sock_$(hostname)"
     fi
     SSH_AUTH_SOCK="${HOME}/.ssh/ssh_auth_sock_$(hostname)"

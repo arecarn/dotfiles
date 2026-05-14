@@ -8,7 +8,13 @@
 
 - name: Install direnv from GitHub releases
   when: direnv_check.rc != 0
+  become: true
   ansible.builtin.get_url:
-    url: "https://github.com/direnv/direnv/releases/latest/download/direnv.linux-amd64"
+    url: >-
+      https://github.com/direnv/direnv/releases/latest/download/direnv.linux-{{
+        ansible_facts['architecture']
+        | replace('x86_64', 'amd64')
+        | replace('aarch64', 'arm64')
+      }}
     dest: /usr/local/bin/direnv
     mode: "0755"

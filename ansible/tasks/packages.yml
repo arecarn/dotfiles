@@ -30,7 +30,6 @@
     - packages
     - os-specific
   when: ansible_facts['os_family'] in os_family_packages
-  ignore_errors: true
 
 - name: Install GUI packages
   ansible.builtin.package:

@@ -167,8 +167,8 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         packages_to_install.extend(gui_packages)
 
     packages = " ".join(packages_to_install)
-    ctx.run(f"choco install {packages}")
-    ctx.run(f"choco upgrade {packages}")
+    ctx.run(f"choco install -y {packages}")
+    ctx.run(f"choco upgrade -y {packages}")
     ctx.run("corepack enable", warn=True)
 
 

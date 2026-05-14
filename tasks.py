@@ -6,6 +6,7 @@ import ctypes
 import json
 import os
 import pathlib
+import shlex
 import shutil
 import subprocess
 
@@ -48,7 +49,7 @@ def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
-    files_string = " ".join(_find_files("*.sh"))
+    files_string = " ".join(shlex.quote(f) for f in _find_files("*.sh"))
     ctx.run(f"shellcheck --format gcc {files_string}")
 
 
@@ -57,7 +58,7 @@ def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files_string = " ".join(_find_files("*.yml"))
+    files_string = " ".join(shlex.quote(f) for f in _find_files("*.yml"))
     ctx.run(f"yamllint --format parsable {files_string}")
 
 
@@ -67,7 +68,7 @@ def lint_python(ctx):
     Run pylint and ruff on python files
     """
     files = _find_files("*.py")
-    files_string = " ".join(files)
+    files_string = " ".join(shlex.quote(f) for f in files)
     cmds = ["pylint --output-format=parseable", "ruff check"]
     base_cmd = "python -m {cmd} {files}"
     for cmd in cmds:
@@ -83,7 +84,7 @@ def provision_all(ctx, args=""):
     Provision this and other system using ansible
     """
     os.chdir("ansible")
-    ctx.run("ansible-playbook site.yml --inventory localhost, " + args)
+    ctx.run("ansible-playbook site.yml --inventory localhost, " + shlex.join(shlex.split(args)))
 
 
 @task
@@ -185,7 +186,7 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
     if not pathlib.Path(ansible_pb).exists():
         ansible_pb = "ansible-playbook"
 
-    ctx.run(f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {args}")
+    ctx.run(f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {shlex.join(shlex.split(args))}")
 
 
 @task
@@ -382,16 +383,16 @@ def claude_install_plugins(ctx):
 
     for marketplace in manifest["marketplaces"]:
         ctx.run(
-            f"claude plugin marketplace add {marketplace}",
+            f"claude plugin marketplace add {shlex.quote(marketplace)}",
             echo=True, warn=True, pty=pty,
         )
     for plugin in manifest["plugins"]:
         ctx.run(
-            f"claude plugin install {plugin}",
+            f"claude plugin install {shlex.quote(plugin)}",
             echo=True, warn=True, pty=pty,
         )
     for package in manifest["npx"]:
-        ctx.run(f"npx --yes {package}", echo=True, warn=True, pty=pty)
+        ctx.run(f"npx --yes {shlex.quote(package)}", echo=True, warn=True, pty=pty)
 
 
 @task
@@ -402,11 +403,11 @@ def claude_update_plugins(ctx):
 
     for plugin in manifest["plugins"]:
         ctx.run(
-            f"claude plugin update {plugin}",
+            f"claude plugin update {shlex.quote(plugin)}",
             echo=True, warn=True, pty=pty,
         )
     for package in manifest["npx"]:
-        ctx.run(f"npx --yes {package}", echo=True, warn=True, pty=pty)
+        ctx.run(f"npx --yes {shlex.quote(package)}", echo=True, warn=True, pty=pty)
 
 
 @task(provision, stow)
@@ -425,7 +426,7 @@ def lint_lua(ctx):
     files = _find_files("*.lua")
     if not files:
         return
-    files_string = " ".join(files)
+    files_string = " ".join(shlex.quote(f) for f in files)
 
     # Use stylua to check formatting
     if shutil.which("stylua"):

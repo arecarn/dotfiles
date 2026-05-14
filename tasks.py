@@ -200,6 +200,8 @@ def provision(ctx, args=""):
         _provision_windows(ctx, is_ci)
     else:
         _provision_linux(ctx, is_ci, args)
+    if not is_ci:
+        claude_install_plugins(ctx)
 
 
 @task

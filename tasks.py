@@ -39,7 +39,7 @@ except (subprocess.CalledProcessError, FileNotFoundError):
 
 def _find_files(pattern: str) -> list[str]:
     return [
-        str(f)
+        f.as_posix()
         for f in pathlib.Path(".").rglob(pattern)
         if not EXCLUDE_DIRS & set(f.parts)
     ]
@@ -50,7 +50,7 @@ def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
-    files_string = " ".join(shlex.quote(f) for f in _find_files("*.sh"))
+    files_string = " ".join(_find_files("*.sh"))
     ctx.run(f"shellcheck --format gcc {files_string}")
 
 
@@ -59,7 +59,7 @@ def lint_yaml(ctx):
     """
     Run yamllint on YAML Ansible configuration files
     """
-    files_string = " ".join(shlex.quote(f) for f in _find_files("*.yml"))
+    files_string = " ".join(_find_files("*.yml"))
     ctx.run(f"yamllint --format parsable {files_string}")
 
 
@@ -69,7 +69,7 @@ def lint_python(ctx):
     Run pylint and ruff on python files
     """
     files = _find_files("*.py")
-    files_string = " ".join(shlex.quote(f) for f in files)
+    files_string = " ".join(files)
     cmds = ["pylint --output-format=parseable", "ruff check"]
     base_cmd = "python -m {cmd} {files}"
     for cmd in cmds:
@@ -428,7 +428,7 @@ def lint_lua(ctx):
     files = _find_files("*.lua")
     if not files:
         return
-    files_string = " ".join(shlex.quote(f) for f in files)
+    files_string = " ".join(files)
 
     # Use stylua to check formatting
     if shutil.which("stylua"):

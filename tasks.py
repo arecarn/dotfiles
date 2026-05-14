@@ -166,11 +166,11 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         packages_to_install.extend(gui_packages)
 
     packages = " ".join(packages_to_install)
-    ctx.run(f"choco install -y {packages}")
-    ctx.run("choco install -y openssh --pre")
-    ctx.run(f"choco upgrade -y {packages}")
-    ctx.run("choco upgrade -y openssh --pre")
-    ctx.run("corepack enable", warn=True)
+    ctx.run(f"choco install -y {packages}", pty=False)
+    ctx.run("choco install -y openssh --pre", pty=False)
+    ctx.run(f"choco upgrade -y {packages}", pty=False)
+    ctx.run("choco upgrade -y openssh --pre", pty=False)
+    ctx.run("corepack enable", warn=True, pty=False)
 
 
 def _provision_linux(ctx, is_ci: bool, args: str) -> None:

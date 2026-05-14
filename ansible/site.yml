@@ -12,18 +12,10 @@
       ansible.builtin.setup:
       become: false
 
-    - name: Verify sudo access
-      ansible.builtin.command:
-        cmd: whoami
-      changed_when: false
-      register: sudo_check
-      failed_when: sudo_check.stdout != "root"
-      when: not is_termux
 
   tasks:
     - ansible.builtin.import_tasks: tasks/repos.yml
     - ansible.builtin.import_tasks: tasks/packages.yml
-    - ansible.builtin.import_tasks: tasks/alacritty-terminfo.yml
     - ansible.builtin.import_tasks: tasks/neovim.yml
     - ansible.builtin.import_tasks: tasks/python-packages.yml
     - ansible.builtin.import_tasks: tasks/javascript-packages.yml

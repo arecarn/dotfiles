@@ -2,7 +2,11 @@
 
 versionlt() {
     version=$(tmux -V | sed 's/[^0-9.]//g')
-    [ "$(echo "${version} < $1" | bc)" = 1 ]
+    if command -v bc > /dev/null 2>&1; then
+        [ "$(echo "${version} < $1" | bc)" = 1 ]
+    else
+        awk -v v="$version" -v t="$1" 'BEGIN { exit !(v+0 < t+0) }'
+    fi
 }
 
 if  versionlt "2.4"; then

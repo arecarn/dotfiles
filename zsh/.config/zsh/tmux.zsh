@@ -8,8 +8,11 @@ fi
 # own environment, so we have to propagate the environment to our shell.
 if [ -n "$TMUX" ]; then
     tmux_refresh_env() {
-        export $(tmux show-environment | grep "^SSH_AUTH_SOCK") > /dev/null
-        export $(tmux show-environment | grep "^DISPLAY") > /dev/null
+        local val
+        val=$(tmux show-environment SSH_AUTH_SOCK 2>/dev/null)
+        [[ $val != -* && -n $val ]] && export "$val"
+        val=$(tmux show-environment DISPLAY 2>/dev/null)
+        [[ $val != -* && -n $val ]] && export "$val"
 
         if [[ -f "$HOME/.Xauthority" ]]; then
             # see https://kerneltalks.com/troubleshooting/mobaxterm-x11-proxy-authorisation-not-recognised/

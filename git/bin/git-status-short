@@ -5,26 +5,26 @@ no_color='\033[0m'
 
 if git rev-parse; then # if we are in a git repo
     git_dir=$(git rev-parse --git-dir)
-    rebase_messageg=''
+    rebase_message=''
 
     if [ -f "${git_dir}/rebase-merge/interactive" ]; then
-        rebase_messageg='interactive rebase in progress'
+        rebase_message='interactive rebase in progress'
     elif [ -d "${git_dir}/rebase-merge" ]; then
-        rebase_messageg="rebase merge in progress"
+        rebase_message="rebase merge in progress"
     else
         if [ -d "${git_dir}/rebase-apply" ]; then
             if [ -f "${git_dir}/rebase-apply/rebasing" ]; then
-                rebase_messageg="rebase in progress"
+                rebase_message="rebase in progress"
             elif [ -f "${git_dir}/rebase-apply/applying" ]; then
-                rebase_messageg="am in progress"
+                rebase_message="am in progress"
             else
-                rebase_messageg="am rebase in progress"
+                rebase_message="am rebase in progress"
             fi
         fi
     fi
 
     # shellcheck disable=SC2059
-    printf "${yellow}${rebase_messageg}${no_color}\n"
+    printf "${yellow}${rebase_message}${no_color}\n"
 
     git status --short --branch "$@"
     git --no-pager stash-list-pretty

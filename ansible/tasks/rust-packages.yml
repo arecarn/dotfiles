@@ -1,4 +1,6 @@
 ---
+# cargo/rustc from the distro are a bootstrap so rustup is available;
+# the 'rustup default stable' task below then takes over toolchain management.
 - name: Ensure cargo and rustc are installed (Debian/RedHat)
   ansible.builtin.package:
     name:

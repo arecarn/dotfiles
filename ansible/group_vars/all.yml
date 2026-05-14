@@ -53,11 +53,9 @@ os_family_packages:
 # GUI packages (skipped in headless/CI environments)
 gui_packages:
   Debian:
-    - alacritty
     - firefox
     - vlc
   RedHat:
-    - alacritty
     - firefox
     - vlc
   Android: []

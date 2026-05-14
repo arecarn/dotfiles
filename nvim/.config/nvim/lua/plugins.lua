@@ -1014,7 +1014,7 @@ local plugins = {
                     vim.keymap.set("n", "glr", vim.lsp.buf.references, opts)
                     vim.keymap.set("n", "gls", vim.lsp.buf.rename, opts)
                     vim.keymap.set({ "n", "v" }, "gla", vim.lsp.buf.code_action, opts)
-                    vim.keymap.set("n", "glf", function()
+                    vim.keymap.set("n", "glF", function()
                         vim.lsp.buf.format({ async = true })
                     end, opts)
                     vim.keymap.set("n", "glwa", vim.lsp.buf.add_workspace_folder, opts)

@@ -1,4 +1,4 @@
 ---
 run:
    echo: true
-   pty: auto
+   pty: false

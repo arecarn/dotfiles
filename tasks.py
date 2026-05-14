@@ -212,7 +212,7 @@ def clean(ctx):
     """
     Clean repository using git
     """
-    ctx.run("git clean --interactive")
+    ctx.run("git clean --interactive", pty=True)
 
 
 class Dploy:

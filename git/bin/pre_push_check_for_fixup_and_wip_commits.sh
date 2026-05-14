@@ -52,7 +52,7 @@ do
     commit=$(git rev-list -n 1 --grep '^\(fixup\|squash\)!' "${range}")
     if [ -n "${commit}" ]
     then
-      echo 'pre-push: Aborting push due to detected autosquash commit (starts with "!fixup"i or "!squash"'
+      echo 'pre-push: Aborting push due to detected autosquash commit (starts with "fixup!" or "squash!")'
       exit 1
     fi
   fi

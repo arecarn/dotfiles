@@ -167,7 +167,6 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         packages_to_install.extend(gui_packages)
 
     packages = " ".join(packages_to_install)
-    ctx.run("choco feature enable -n=allowGlobalConfirmation", warn=True)
     ctx.run(f"choco install {packages}")
     ctx.run(f"choco upgrade {packages}")
     ctx.run("corepack enable", warn=True)
@@ -187,7 +186,8 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
     if not pathlib.Path(ansible_pb).exists():
         ansible_pb = "ansible-playbook"
 
-    ctx.run(f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {shlex.join(shlex.split(args))}")
+    safe_args = shlex.join(shlex.split(args))
+    ctx.run(f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {safe_args}")
 
 
 @task

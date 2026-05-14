@@ -16,6 +16,7 @@ from invoke import task
 # pylint: disable=unused-argument
 
 IS_WINDOWS = os.name == "nt"
+IS_ADMIN = False
 EXCLUDE_DIRS = {".venv", ".git", "__pycache__", ".cache", "node_modules"}
 if IS_WINDOWS:
     STOW_LOCATION = "USERPROFILE"
@@ -166,7 +167,7 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         packages_to_install.extend(gui_packages)
 
     packages = " ".join(packages_to_install)
-    ctx.run("choco feature enable -n=allowGlobalConfirmation")
+    ctx.run("choco feature enable -n=allowGlobalConfirmation", warn=True)
     ctx.run(f"choco install {packages}")
     ctx.run(f"choco upgrade {packages}")
     ctx.run("corepack enable", warn=True)

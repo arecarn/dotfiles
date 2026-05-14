@@ -233,6 +233,7 @@ class Dploy:
             "ssh",
             "tmux",
             "nvim",
+            "wezterm",
             "zsh",
         ]
 

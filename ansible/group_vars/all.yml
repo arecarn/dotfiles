@@ -53,9 +53,11 @@ os_family_packages:
 # GUI packages (skipped in headless/CI environments)
 gui_packages:
   Debian:
+    - wezterm
     - firefox
     - vlc
   RedHat:
+    - wezterm
     - firefox
     - vlc
   Android: []

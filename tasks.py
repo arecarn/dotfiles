@@ -299,7 +299,37 @@ class Dploy:
         """
         remove dead symlinks left over from stowing
         """
-        self.dploy.clean(self.packages, self.home, is_silent=False)
+        repo_dir = pathlib.Path(__file__).resolve().parent
+        max_depth = max(
+            len(p.relative_to(pkg).parts)
+            for pkg in self.packages
+            for p in pathlib.Path(pkg).rglob("*")
+        )
+        self._clean_dead_links(self.home, repo_dir, max_depth)
+
+    def _clean_dead_links(self, directory, repo_dir, max_depth, current_depth=0):
+        """
+        Recursively find and remove dead symlinks that point into the dotfiles
+        repo, limited by depth and skipping permission-denied directories.
+        """
+        if current_depth > max_depth:
+            return
+
+        try:
+            entries = list(directory.iterdir())
+        except PermissionError:
+            return
+
+        for entry in entries:
+            if entry.is_symlink():
+                target = (entry.parent / entry.readlink()).resolve()
+                if not target.exists() and repo_dir in target.parents:
+                    print(f"removing dead link: {entry}")
+                    entry.unlink()
+            elif entry.is_dir() and not entry.is_symlink():
+                if entry.name in EXCLUDE_DIRS:
+                    continue
+                self._clean_dead_links(entry, repo_dir, max_depth, current_depth + 1)
 
 
 @task

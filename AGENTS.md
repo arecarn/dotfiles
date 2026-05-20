@@ -1,4 +1,4 @@
-# GEMINI.md - Instructional Context for Gemini CLI
+# Agent Context File
 
 ## Project Overview
 This repository manages personal configuration files (dotfiles) across multiple operating systems, including Linux, Windows, and Termux. It provides an automated way to provision system packages and symlink configurations to the user's home directory.

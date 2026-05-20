@@ -46,13 +46,25 @@ alias m="make"
 
 if (( $+commands[eza] )); then
     alias ls='eza --icons --git'
-    alias l='ls -l'
-    alias la='ls -la'
-    alias lt='ls --tree'
+    alias l='ls'
+    alias ll='ls -lh'
+    alias l1='ls -1'
+    alias ld='ls -d *(/D)'
+    alias lld='ls -lh -d *(/D)'
 elif [[ "${OSTYPE}" == 'linux'* ]]; then
     alias ls='ls --color=auto'
+    alias l='ls'
+    alias ll='ls -lh'
+    alias l1='ls -1'
+    alias ld='ls -d *(/D)'
+    alias lld='ls -lh -d *(/D)'
 elif [[ "${OSTYPE}" == 'darwin'* ]]; then
     alias ls='ls -G'
+    alias l='ls'
+    alias ll='ls -lh'
+    alias l1='ls -1'
+    alias ld='ls -d *(/D)'
+    alias lld='ls -lh -d *(/D)'
 fi
 
 if (( $+commands[bat] )); then
@@ -60,11 +72,6 @@ if (( $+commands[bat] )); then
 elif (( $+commands[batcat] )); then
     alias cat='batcat'
 fi
-
-alias l='ls -paF'
-alias ll='l -lh'
-alias ld='l -d *(/D)'
-alias lld='ld -lh *(/D)'
 
 alias t='pwd; tree'
 alias t1='pwd; tree -L 1'

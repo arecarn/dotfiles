@@ -1,0 +1,24 @@
+# Plugin manifest for AI coding agents.
+#
+# Default behavior (when only `repo` + `plugin` are specified):
+#   claude:   claude plugin marketplace add {repo}
+#             claude plugin install {plugin}
+#   opencode: npx --yes skills add {repo} --agent opencode --global --yes
+#
+# Update defaults:
+#   claude:   claude plugin marketplace update {marketplace}
+#             claude plugin update {plugin}
+#   opencode: npx --yes skills update --global
+#
+# Override with explicit `install` and/or `update` keys per tool.
+# Values can be a string (single command) or a list (multiple commands).
+# If `update` is omitted, `install` commands are re-run.
+
+caveman:
+  repo: JuliusBrussee/caveman
+  plugin: caveman@caveman
+
+gsd:
+  install:
+    claude: npx --yes get-shit-done-cc@latest --claude --global
+    opencode: npx --yes get-shit-done-cc@latest --opencode --global

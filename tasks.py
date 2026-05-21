@@ -11,6 +11,7 @@ import shutil
 import subprocess
 
 from invoke import task
+from ruamel.yaml import YAML
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
@@ -204,7 +205,9 @@ def provision(ctx, args=""):
     else:
         _provision_linux(ctx, is_ci, args)
     if not is_ci:
+        _link_shared_skills()
         claude_install_plugins(ctx)
+        opencode_install_plugins(ctx)
 
 
 @task
@@ -228,6 +231,7 @@ class Dploy:
         self.dploy = dploy
         self.home = pathlib.Path().home()
         self.packages = [
+            "agents",
             "claude-code",
             "ctags",
             "git",
@@ -385,61 +389,146 @@ def clean_stow(ctx):
             raise
 
 
-def _load_claude_plugins():
-    """Load and merge base and local Claude Code plugin manifests"""
-    claude_dir = pathlib.Path.home() / ".claude"
-    empty = {"marketplaces": [], "plugins": [], "npx": []}
+_USE_PTY = not IS_WINDOWS
+_YAML = YAML()
+_SHARED_SKILLS_DIR = pathlib.Path.home() / ".config" / "agents" / "skills"
 
-    base = dict(empty)
-    base_path = claude_dir / "plugins.json"
+
+def _link_shared_skills():
+    """Stow shared skills from ~/.config/agents/ into each tool's discovery path."""
+    import dploy  # pylint: disable=C
+
+    if not _SHARED_SKILLS_DIR.exists():
+        return
+
+    targets = [
+        pathlib.Path.home() / ".claude",
+        pathlib.Path.home() / ".config" / "opencode",
+    ]
+
+    src = _SHARED_SKILLS_DIR.parent  # ~/.config/agents/
+    for target_dir in targets:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        dploy.stow([src], target_dir, is_silent=False, ignore_patterns=["*.yaml"])
+
+
+def _run_cmd(ctx, cmd):
+    """Run a shell command with standard echo/warn/pty settings."""
+    ctx.run(cmd, echo=True, warn=True, pty=_USE_PTY)
+
+
+def _run_cmds(ctx, cmds):
+    """Run one or more commands (string or list of strings)."""
+    if isinstance(cmds, str):
+        _run_cmd(ctx, cmds)
+    else:
+        for cmd in cmds:
+            _run_cmd(ctx, cmd)
+
+
+def _load_plugins_manifest():
+    """Load and merge base and local plugin manifests.
+
+    Reads ~/.config/agents/plugins.yaml (base) and ~/.config/agents/plugins_local.yaml
+    (local overrides), merging them together.
+    """
+    agents_dir = pathlib.Path.home() / ".config" / "agents"
+    base_path = agents_dir / "plugins.yaml"
+    local_path = agents_dir / "plugins_local.yaml"
+
+    base = {}
     if base_path.exists():
-        base = {**empty, **json.loads(base_path.read_text())}
+        base = _YAML.load(base_path) or {}
 
-    local = dict(empty)
-    local_path = claude_dir / "plugins_local.json"
+    local = {}
     if local_path.exists():
-        local = {**empty, **json.loads(local_path.read_text())}
+        local = _YAML.load(local_path) or {}
 
-    return {
-        "marketplaces": base["marketplaces"] + local["marketplaces"],
-        "plugins": base["plugins"] + local["plugins"],
-        "npx": base["npx"] + local["npx"],
-    }
+    # Merge local plugins into base (local additions win on conflict)
+    return {**base, **local}
+
+
+def _default_install_cmds(plugin_cfg, tool):
+    """Derive default install commands from repo + plugin fields."""
+    repo = plugin_cfg["repo"]
+    plugin = plugin_cfg["plugin"]
+    if tool == "claude":
+        return [
+            f"claude plugin marketplace add {shlex.quote(repo)}",
+            f"claude plugin install {shlex.quote(plugin)}",
+        ]
+    if tool == "opencode":
+        return f"npx --yes skills add {shlex.quote(repo)} --agent opencode --global --yes"
+    return None
+
+
+def _default_update_cmds(plugin_cfg, tool):
+    """Derive default update commands from repo + plugin fields."""
+    repo = plugin_cfg["repo"]
+    plugin = plugin_cfg["plugin"]
+    # marketplace name is the part after @ in plugin spec (e.g. "caveman@caveman" -> "caveman")
+    marketplace = plugin.split("@")[-1] if "@" in plugin else repo.split("/")[-1]
+    if tool == "claude":
+        return [
+            f"claude plugin marketplace update {shlex.quote(marketplace)}",
+            f"claude plugin update {shlex.quote(plugin)}",
+        ]
+    if tool == "opencode":
+        return "npx --yes skills update --global"
+    return None
+
+
+def _install_plugins(ctx, tool):
+    """Install plugins for a given tool ('claude' or 'opencode')."""
+    manifest = _load_plugins_manifest()
+
+    for _name, cfg in manifest.items():
+        if "install" in cfg and tool in cfg["install"]:
+            _run_cmds(ctx, cfg["install"][tool])
+        elif "repo" in cfg and "plugin" in cfg:
+            cmds = _default_install_cmds(cfg, tool)
+            if cmds:
+                _run_cmds(ctx, cmds)
+
+
+def _update_plugins(ctx, tool):
+    """Update plugins for a given tool ('claude' or 'opencode')."""
+    manifest = _load_plugins_manifest()
+
+    for _name, cfg in manifest.items():
+        if "update" in cfg and tool in cfg["update"]:
+            _run_cmds(ctx, cfg["update"][tool])
+        elif "repo" in cfg and "plugin" in cfg:
+            cmds = _default_update_cmds(cfg, tool)
+            if cmds:
+                _run_cmds(ctx, cmds)
+        elif "install" in cfg and tool in cfg["install"]:
+            # Fallback: re-run install commands
+            _run_cmds(ctx, cfg["install"][tool])
 
 
 @task
 def claude_install_plugins(ctx):
-    """Install Claude Code plugins from base and local manifests (requires a TTY)"""
-    manifest = _load_claude_plugins()
-    pty = not IS_WINDOWS
-
-    for marketplace in manifest["marketplaces"]:
-        ctx.run(
-            f"claude plugin marketplace add {shlex.quote(marketplace)}",
-            echo=True, warn=True, pty=pty,
-        )
-    for plugin in manifest["plugins"]:
-        ctx.run(
-            f"claude plugin install {shlex.quote(plugin)}",
-            echo=True, warn=True, pty=pty,
-        )
-    for package in manifest["npx"]:
-        ctx.run(f"npx --yes {shlex.quote(package)}", echo=True, warn=True, pty=pty)
+    """Install Claude Code plugins from manifest (requires a TTY)"""
+    _install_plugins(ctx, "claude")
 
 
 @task
 def claude_update_plugins(ctx):
     """Update installed Claude Code plugins to latest versions (requires a TTY)"""
-    manifest = _load_claude_plugins()
-    pty = not IS_WINDOWS
+    _update_plugins(ctx, "claude")
 
-    for plugin in manifest["plugins"]:
-        ctx.run(
-            f"claude plugin update {shlex.quote(plugin)}",
-            echo=True, warn=True, pty=pty,
-        )
-    for package in manifest["npx"]:
-        ctx.run(f"npx --yes {shlex.quote(package)}", echo=True, warn=True, pty=pty)
+
+@task
+def opencode_install_plugins(ctx):
+    """Install OpenCode plugins from manifest"""
+    _install_plugins(ctx, "opencode")
+
+
+@task
+def opencode_update_plugins(ctx):
+    """Update OpenCode plugins to latest versions"""
+    _update_plugins(ctx, "opencode")
 
 
 @task(provision, stow)

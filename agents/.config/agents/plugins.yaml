@@ -20,5 +20,5 @@ caveman:
 
 gsd:
   install:
-    claude: npx --yes get-shit-done-cc@latest --claude --global
-    opencode: npx --yes get-shit-done-cc@latest --opencode --global
+    claude: npx --yes @opengsd/get-shit-done-redux@latest --claude --global
+    opencode: npx --yes @opengsd/get-shit-done-redux@latest --opencode --global

@@ -353,6 +353,7 @@ def stow(ctx):
             print(f"Skipping stow on Windows: {e}")
         else:
             raise
+    _link_shared_skills()
 
 
 @task

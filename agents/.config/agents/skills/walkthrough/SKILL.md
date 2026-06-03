@@ -9,8 +9,7 @@ Walk through a list of items individually. For each item, give the user enough
 background to decide, then let them choose an option, write their own, or open a
 discussion. Record decisions and act on them — usually in a batch at the end.
 
-This is the interactive, item-at-a-time pattern used by plan mode and
-`gsd-discuss-phase`, generalized to any list.
+This is the interactive, item-at-a-time pattern generalized to any list.
 
 ## When to use
 

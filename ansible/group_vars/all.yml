@@ -77,4 +77,5 @@ python_packages:
 javascript_packages:
   - "@anthropic-ai/claude-code"
   - "@google/gemini-cli"
+  - opencode-ai
   - write-good

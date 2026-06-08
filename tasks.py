@@ -139,8 +139,6 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         "vcxsrv",
         "anki",
         "wezterm",
-        "glazewm",
-        "zebar",
     ]
     common_packages = [
         "llvm",
@@ -161,6 +159,8 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         "poshgit",
         "stylua",
         "selene",
+        "claude-code",
+        "opencode",
     ]
     packages_to_install = common_packages
     if not is_ci:
@@ -247,7 +247,7 @@ class Dploy:
         ]
 
         if IS_WINDOWS:
-            self.packages.extend(["glazewm", "powershell", "vcxsrv", "zebar"])
+            self.packages.extend(["powershell", "vcxsrv"])
 
         # pylint: disable=invalid-name
         p = pathlib.Path

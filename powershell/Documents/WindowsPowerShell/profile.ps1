@@ -93,3 +93,10 @@ function sshx { ssh -Y $args }
 
 set-alias g git
 set-alias e nvim
+
+# Machine-local profile (mirrors the .zshrc -> .zshrc_local pattern). Lives in
+# the dotfiles_local repo so machine-specific functions stay out of this shared
+# one. Dot-sourced by path because dotfiles_local can't stow into this dir (it
+# is itself a symlink owned by this repo).
+$localProfile = "$HOME/dotfiles_local/powershell/profile_local.ps1"
+if (Test-Path $localProfile) { . $localProfile }

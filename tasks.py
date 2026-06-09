@@ -17,6 +17,7 @@ from ruamel.yaml import YAML
 # pylint: disable=unused-argument
 
 IS_WINDOWS = os.name == "nt"
+IS_CI = os.environ.get("GITHUB_ACTIONS") == "true"
 IS_ADMIN = False
 EXCLUDE_DIRS = {".venv", ".git", "__pycache__", ".cache", "node_modules"}
 if IS_WINDOWS:
@@ -130,6 +131,27 @@ def _setup_claude_settings():
     print(f"Updated {claude_settings}")
 
 
+def _setup_claude_mcp():
+    claude_json = pathlib.Path.home() / ".claude.json"
+    if not claude_json.exists():
+        return
+    config = json.loads(claude_json.read_text())
+    config.setdefault("mcpServers", {})
+
+    manifest = _load_plugins_manifest()
+    added = []
+    for name, cfg in manifest.items():
+        if "mcp" not in cfg or name in config["mcpServers"]:
+            continue
+        config["mcpServers"][name] = cfg["mcp"]
+        added.append(name)
+
+    if added:
+        claude_json.write_text(json.dumps(config, indent=2) + "\n")
+        print(f"Added MCP servers to {claude_json}: {', '.join(added)}")
+        print("Run /mcp in Claude Code to complete OAuth authorization for new servers.")
+
+
 def _provision_windows(ctx, is_ci: bool) -> None:
     if not IS_ADMIN:
         raise SystemExit("You need to be admin to install things with Chocolatey")
@@ -193,21 +215,55 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
 
 
 @task
+def claude_setup(ctx):
+    """Configure Claude Code settings (voice, permissions)"""
+    _setup_claude_settings()
+
+
+@task
+def link_skills(ctx):
+    """Link shared skills into agent config directories"""
+    _link_shared_skills()
+
+
+@task
+def claude_install_mcp(ctx):
+    """Register MCP servers from manifest into ~/.claude.json (user scope)"""
+    _setup_claude_mcp()
+
+
+@task
+def claude_install_plugins(ctx):
+    """Install Claude Code plugins from manifest (requires a TTY)"""
+    if IS_CI:
+        return
+    _install_plugins(ctx, "claude")
+
+
+@task
+def opencode_install_plugins(ctx):
+    """Install OpenCode plugins from manifest"""
+    if IS_CI:
+        return
+    _install_plugins(ctx, "opencode")
+
+
+@task(claude_setup, link_skills, claude_install_mcp, claude_install_plugins, opencode_install_plugins)
+def setup_ai(ctx):
+    """Set up AI coding agent settings, MCP servers, skills, and plugins"""
+    # pylint: disable=unused-argument
+
+
+@task(post=[setup_ai])
 def provision(ctx, args=""):
     """
     Provision this system using ansible
     """
     _setup_gitconfig_local()
-    _setup_claude_settings()
-    is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
     if IS_WINDOWS:
-        _provision_windows(ctx, is_ci)
+        _provision_windows(ctx, IS_CI)
     else:
-        _provision_linux(ctx, is_ci, args)
-    if not is_ci:
-        _link_shared_skills()
-        claude_install_plugins(ctx)
-        opencode_install_plugins(ctx)
+        _provision_linux(ctx, IS_CI, args)
 
 
 @task
@@ -509,21 +565,9 @@ def _update_plugins(ctx, tool):
 
 
 @task
-def claude_install_plugins(ctx):
-    """Install Claude Code plugins from manifest (requires a TTY)"""
-    _install_plugins(ctx, "claude")
-
-
-@task
 def claude_update_plugins(ctx):
     """Update installed Claude Code plugins to latest versions (requires a TTY)"""
     _update_plugins(ctx, "claude")
-
-
-@task
-def opencode_install_plugins(ctx):
-    """Install OpenCode plugins from manifest"""
-    _install_plugins(ctx, "opencode")
 
 
 @task

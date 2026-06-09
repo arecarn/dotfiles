@@ -1,6 +1,6 @@
-# Plugin manifest for AI coding agents.
+# Plugin/MCP manifest for AI coding agents.
 #
-# Default behavior (when only `repo` + `plugin` are specified):
+# Plugin defaults (when only `repo` + `plugin` are specified):
 #   claude:   claude plugin marketplace add {repo}
 #             claude plugin install {plugin}
 #   opencode: npx --yes skills add {repo} --agent opencode --global --yes
@@ -13,6 +13,13 @@
 # Override with explicit `install` and/or `update` keys per tool.
 # Values can be a string (single command) or a list (multiple commands).
 # If `update` is omitted, `install` commands are re-run.
+#
+# MCP servers (registered at user scope in ~/.claude.json):
+#   mcp:
+#     type: http | sse | stdio
+#     url: https://...          # for http/sse
+#     command: npx              # for stdio
+#     args: [...]               # for stdio
 
 caveman:
   repo: JuliusBrussee/caveman
@@ -22,3 +29,18 @@ gsd:
   install:
     claude: npx --yes @opengsd/get-shit-done-redux@latest --claude --global
     opencode: npx --yes @opengsd/get-shit-done-redux@latest --opencode --global
+
+ticktick:
+  mcp:
+    type: http
+    url: https://mcp.ticktick.com/
+
+gmail:
+  mcp:
+    type: http
+    url: https://gmailmcp.googleapis.com/mcp/v1
+
+google-calendar:
+  mcp:
+    type: http
+    url: https://calendarmcp.googleapis.com/mcp/v1

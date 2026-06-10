@@ -19,6 +19,13 @@
 #   -q            quiet; no status line on success
 #
 # Exit codes: 0 ok, 1 usage error, 2 no pty found, 3 empty input.
+#
+# tmux note: when run inside tmux with set-clipboard on (the usual config),
+# tmux intercepts inner OSC52 and re-emits it to the outer terminal itself.
+# Hand-rolling the DCS passthrough wrap then fights tmux's own handling and
+# leaks a stray glyph to the pane. So inside tmux we delegate to
+# `tmux load-buffer -w` (tmux >=3.2), which drives tmux's native clipboard
+# path. The manual OSC52 emit is used only outside tmux (or via -m/-t override).
 set -euo pipefail
 
 FORCE_PTY=""
@@ -46,6 +53,19 @@ else
   PAYLOAD=$(cat)
 fi
 [ -n "$PAYLOAD" ] || { echo "osc52-copy: empty input, nothing copied" >&2; exit 3; }
+
+# --- tmux fast path --------------------------------------------------------
+# Inside tmux, let tmux own the clipboard write. This avoids the DCS-wrap vs
+# set-clipboard conflict that leaks a stray glyph to the pane. Skipped when a
+# pty/wrap override is forced (-t/-m), which signals manual control is wanted.
+if [ -n "${TMUX:-}" ] && [ -z "$FORCE_PTY" ] && [ "$TMUX_WRAP" -eq 0 ] \
+   && command -v tmux >/dev/null 2>&1; then
+  if printf '%s' "$PAYLOAD" | tmux load-buffer -w - 2>/dev/null; then
+    [ "$QUIET" -eq 1 ] || echo "osc52-copy: ${#PAYLOAD} bytes copied via tmux load-buffer -w"
+    exit 0
+  fi
+  # -w unsupported (tmux <3.2) or failed: fall through to manual OSC52 below.
+fi
 
 B64=$(printf '%s' "$PAYLOAD" | base64 | tr -d '\n')
 

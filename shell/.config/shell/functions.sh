@@ -1,5 +1,9 @@
 #!/bin/sh
 
+bwu() {
+    export BW_SESSION=$(bw unlock --raw)
+}
+
 # check if a command exists
 exists(){
     command -v "$1" > /dev/null 2>&1

@@ -1,6 +1,7 @@
 ---
 description: Walk through a list of items one at a time — present each with enough context to decide, offer numbered options plus custom input and a discuss-more escape, and act on decisions. Use when the user says "walk me through these", "/walkthrough", "one by one", "go through these individually", "let's take these one at a time", or when a response contains a list (features, actions, findings, options, tasks) the user wants to address item-by-item instead of all at once.
 argument-hint: "[list source or topic] [--apply-as-you-go]"
+model: haiku
 ---
 
 # Walkthrough

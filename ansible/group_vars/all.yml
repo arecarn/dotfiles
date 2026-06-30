@@ -76,6 +76,7 @@ python_packages:
 # JavaScript tools (installed via pnpm)
 javascript_packages:
   - "@anthropic-ai/claude-code"
+  - "@bitwarden/cli"
   - "@google/gemini-cli"
   - opencode-ai
   - write-good

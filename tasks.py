@@ -339,6 +339,12 @@ class Dploy:
         """
         # pylint: disable=invalid-name
         print(self.packages)
+        # Pre-create the shared skills hub as real dirs so dploy places per-entry
+        # symlinks from each repo instead of folding ~/.config/ai-skills into a
+        # single directory symlink (the `agents` package exists in both this repo
+        # and dotfiles_local; folding would cross-contaminate their working trees).
+        for d in (self.home / ".config/ai-skills", self.home / ".config/ai-skills/skills"):
+            d.mkdir(parents=True, exist_ok=True)
         self.dploy.stow(self.packages, self.home, is_silent=False)
         for src, dest in self.links:
             self.dploy.link(src, dest, is_silent=False)
@@ -448,11 +454,11 @@ def clean_stow(ctx):
 
 _USE_PTY = not IS_WINDOWS
 _YAML = YAML()
-_SHARED_SKILLS_DIR = pathlib.Path.home() / ".config" / "agents" / "skills"
+_SHARED_SKILLS_DIR = pathlib.Path.home() / ".config" / "ai-skills" / "skills"
 
 
 def _link_shared_skills():
-    """Stow shared skills from ~/.config/agents/ into each tool's discovery path."""
+    """Stow shared skills from ~/.config/ai-skills/ into each tool's discovery path."""
     import dploy  # pylint: disable=C
 
     if not _SHARED_SKILLS_DIR.exists():
@@ -463,7 +469,7 @@ def _link_shared_skills():
         pathlib.Path.home() / ".config" / "opencode",
     ]
 
-    src = _SHARED_SKILLS_DIR.parent  # ~/.config/agents/
+    src = _SHARED_SKILLS_DIR.parent  # ~/.config/ai-skills/
     for target_dir in targets:
         target_dir.mkdir(parents=True, exist_ok=True)
         dploy.stow([src], target_dir, is_silent=False, ignore_patterns=["*.yaml"])
@@ -486,10 +492,10 @@ def _run_cmds(ctx, cmds):
 def _load_plugins_manifest():
     """Load and merge base and local plugin manifests.
 
-    Reads ~/.config/agents/plugins.yaml (base) and ~/.config/agents/plugins_local.yaml
+    Reads ~/.config/ai-skills/plugins.yaml (base) and ~/.config/ai-skills/plugins_local.yaml
     (local overrides), merging them together.
     """
-    agents_dir = pathlib.Path.home() / ".config" / "agents"
+    agents_dir = pathlib.Path.home() / ".config" / "ai-skills"
     base_path = agents_dir / "plugins.yaml"
     local_path = agents_dir / "plugins_local.yaml"
 
@@ -523,7 +529,7 @@ def _default_update_cmds(plugin_cfg, tool):
     """Derive default update commands from repo + plugin fields."""
     repo = plugin_cfg["repo"]
     plugin = plugin_cfg["plugin"]
-    # marketplace name is the part after @ in plugin spec (e.g. "caveman@caveman" -> "caveman")
+    # marketplace name is the part after @ in plugin spec (e.g. "foo@bar" -> "bar")
     marketplace = plugin.split("@")[-1] if "@" in plugin else repo.split("/")[-1]
     if tool == "claude":
         return [

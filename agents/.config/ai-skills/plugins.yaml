@@ -21,10 +21,6 @@
 #     command: npx              # for stdio
 #     args: [...]               # for stdio
 
-caveman:
-  repo: JuliusBrussee/caveman
-  plugin: caveman@caveman
-
 gsd:
   install:
     claude: npx --yes @opengsd/get-shit-done-redux@latest --claude --global

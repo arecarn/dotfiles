@@ -19,6 +19,7 @@
     - ansible.builtin.import_tasks: tasks/neovim.yml
     - ansible.builtin.import_tasks: tasks/python-packages.yml
     - ansible.builtin.import_tasks: tasks/javascript-packages.yml
+    - ansible.builtin.import_tasks: tasks/npm-packages.yml
     - ansible.builtin.import_tasks: tasks/rust-packages.yml
     - ansible.builtin.import_tasks: tasks/direnv.yml
     - ansible.builtin.import_tasks: tasks/nerd-fonts.yml

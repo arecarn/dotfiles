@@ -20,3 +20,9 @@ compile_commands.json
 # Files used by GDB
 *.gdb
 *.gdb_history
+
+# Local git worktrees (superpowers / manual)
+.worktrees/
+
+# Local-only superpowers specs & plans (not part of any MR)
+docs/superpowers/

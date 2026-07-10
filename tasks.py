@@ -248,7 +248,13 @@ def opencode_install_plugins(ctx):
     _install_plugins(ctx, "opencode")
 
 
-@task(claude_setup, link_skills, claude_install_mcp, claude_install_plugins, opencode_install_plugins)
+@task(
+    claude_setup,
+    link_skills,
+    claude_install_mcp,
+    claude_install_plugins,
+    opencode_install_plugins,
+)
 def setup_ai(ctx):
     """Set up AI coding agent settings, MCP servers, skills, and plugins"""
     # pylint: disable=unused-argument

@@ -1,7 +1,8 @@
 #!/bin/sh
 
 bwu() {
-    export BW_SESSION=$(bw unlock --raw)
+    BW_SESSION="$(bw unlock --raw)"
+    export BW_SESSION
 }
 
 # check if a command exists

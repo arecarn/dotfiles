@@ -1,0 +1,18 @@
+---
+- name: Mask redundant systemd --user ssh-agent
+  become: false
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    scope: user
+    masked: true
+    state: stopped
+    enabled: false
+  loop:
+    - ssh-agent.socket
+    - ssh-agent.service
+  when: ansible_facts['os_family'] == 'Debian'
+  # gcr-ssh-agent already owns SSH_AUTH_SOCK on Debian/Ubuntu GNOME desktops
+  # (exported via `systemctl --user show-environment`); the plain openssh
+  # ssh-agent.service unit is enabled by default but nothing ever points at
+  # its socket, so it just sits there. Socket must be masked too — it's what
+  # triggers the service via socket activation.

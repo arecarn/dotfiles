@@ -11,7 +11,7 @@ SAVEHIST=500000
 # Completion Options
 # Cache compinit for faster startup (regenerate every 20 days)
 autoload -Uz compinit
-_comp_files=(${ZDOTDIR:-$HOME}/.zcompdump(Nm-20))
+_comp_files=("${ZSH_CACHE_DIR}/zcompdump"(Nm-20))
 if (( $#_comp_files )); then
     compinit -C -d "${ZSH_CACHE_DIR}/zcompdump"
 else

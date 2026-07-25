@@ -96,8 +96,6 @@ elif [[ "${OSTYPE}" == 'darwin'* ]]; then
     alias rcp='rsync -aHE'
 fi
 
-alias sa="ssh_start_agent"
-
 # WezTerm: force XWayland to avoid broken pipe crash on GNOME Wayland (wezterm/wezterm#5263)
 if [[ "${OSTYPE}" == 'linux'* ]] && (( $+commands[wezterm] )); then
     alias wezterm='WAYLAND_DISPLAY= wezterm'

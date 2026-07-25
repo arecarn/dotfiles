@@ -11,7 +11,6 @@ common_packages:
   - gh
   - git
   - htop
-  - moreutils
   - ncdu
   - nodejs
   - openssh-server
@@ -19,7 +18,6 @@ common_packages:
   - picocom
   - ripgrep
   - shellcheck
-  - starship
   - tmux
   - tree
   - wget

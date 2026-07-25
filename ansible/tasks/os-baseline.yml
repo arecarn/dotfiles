@@ -16,3 +16,36 @@
   # ssh-agent.service unit is enabled by default but nothing ever points at
   # its socket, so it just sits there. Socket must be masked too — it's what
   # triggers the service via socket activation.
+
+- name: Mask unused Evolution Data Server user services
+  become: false
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    scope: user
+    masked: true
+    state: stopped
+    enabled: false
+  loop:
+    - evolution-addressbook-factory.service
+    - evolution-calendar-factory.service
+    - evolution-source-registry.service
+  when: ansible_facts['os_family'] == 'Debian'
+  # GNOME Shell's calendar/contacts integration auto-starts these even with
+  # zero accounts configured. Re-enable if a GNOME Online Account (synced
+  # calendar/contacts) is ever added.
+
+- name: Mask cups/cups-browsed with no printers configured
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    masked: true
+    state: stopped
+    enabled: false
+  loop:
+    - cups.service
+    - cups-browsed.service
+    - cups.path
+    - cups.socket
+  when: ansible_facts['os_family'] == 'Debian'
+  # cups.path/cups.socket trigger cups.service via activation and must be
+  # masked too, or they just relaunch it.

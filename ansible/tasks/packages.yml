@@ -9,11 +9,13 @@
     - common
   vars:
     # Map package names if they differ significantly or should be skipped
+    # Debian/Ubuntu package is 'bat' in both cases; only the installed binary
+    # is renamed 'batcat' there (upstream naming clash with a preexisting
+    # unrelated 'bat' package) — that's a shell-alias concern, not a package
+    # name difference.
     pkg_name: >-
       {% if item == 'fd-find' %}
-        {{ is_termux | ternary('fd', (ansible_facts['os_family'] == 'Debian') | ternary('fd-find', 'fd-find')) }}
-      {% elif item == 'bat' %}
-        {{ (ansible_facts['os_family'] == 'Debian') | ternary('batcat', 'bat') }}
+        {{ is_termux | ternary('fd', 'fd-find') }}
       {% else %}
         {{ item }}
       {% endif %}

@@ -1,0 +1,59 @@
+---
+# Not packaged on Debian (or reliably elsewhere outside Arch), so install the
+# upstream release binary directly, same approach as nerd-fonts.yml.
+- name: Check if lua-language-server is already installed
+  ansible.builtin.stat:
+    path: "{{ user_home }}/.local/bin/lua-language-server"
+  register: lua_ls_exists
+  become: false
+  when: not is_termux
+
+- name: Get latest lua-language-server release info
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/LuaLS/lua-language-server/releases/latest
+    return_content: true
+  register: lua_ls_release
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists
+
+- name: Download lua-language-server
+  ansible.builtin.get_url:
+    url: >-
+      {{ (lua_ls_release.json.assets
+          | selectattr('name', 'search', 'linux-x64.tar.gz')
+          | first).browser_download_url }}
+    dest: /tmp/lua-language-server.tar.gz
+    mode: "0644"
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists
+
+- name: Create lua-language-server install directory
+  ansible.builtin.file:
+    path: "{{ user_home }}/.local/share/lua-language-server"
+    state: directory
+    mode: "0755"
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists
+
+- name: Extract lua-language-server
+  ansible.builtin.unarchive:
+    src: /tmp/lua-language-server.tar.gz
+    dest: "{{ user_home }}/.local/share/lua-language-server"
+    remote_src: true
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists
+
+- name: Symlink lua-language-server into ~/.local/bin
+  ansible.builtin.file:
+    src: "{{ user_home }}/.local/share/lua-language-server/bin/lua-language-server"
+    dest: "{{ user_home }}/.local/bin/lua-language-server"
+    state: link
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists
+
+- name: Clean up lua-language-server archive
+  ansible.builtin.file:
+    path: /tmp/lua-language-server.tar.gz
+    state: absent
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists

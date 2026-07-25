@@ -17,6 +17,27 @@
          + '-x86_64-rpms', 'crb') }}
   changed_when: false
 
+# Debian: enable contrib/non-free for packages like unrar (main-only by default)
+- name: Enable contrib/non-free components (Debian)
+  when: ansible_facts['distribution'] == "Debian"
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list.d/debian.sources
+    regexp: '^Components: main$'
+    replace: "Components: main contrib non-free non-free-firmware"
+  register: debian_components
+
+- name: Update apt cache after enabling contrib/non-free (Debian)
+  when: ansible_facts['distribution'] == "Debian" and debian_components.changed
+  ansible.builtin.apt:
+    update_cache: true
+
+# Ubuntu: PPA support (add-apt-repository) isn't packaged on Debian, which has no PPAs
+- name: Install software-properties-common (Ubuntu)
+  when: ansible_facts['distribution'] == "Ubuntu"
+  ansible.builtin.apt:
+    name: software-properties-common
+    state: present
+
 # Ubuntu: Add git PPA for latest version
 - name: Add git PPA (Ubuntu)
   when: ansible_facts['distribution'] == "Ubuntu"

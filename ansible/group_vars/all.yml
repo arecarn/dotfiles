@@ -71,9 +71,14 @@ python_packages:
   - pylint
 
 # JavaScript tools (installed via pnpm)
+# claude-code is deliberately not here: its postinstall (downloads a
+# platform-native binary) unreliably no-ops under pnpm's content-addressable
+# store even with enable-pre-post-scripts on — installed via plain npm instead.
 javascript_packages:
-  - "@anthropic-ai/claude-code"
   - "@bitwarden/cli"
   - "@google/gemini-cli"
   - opencode-ai
   - write-good
+
+npm_global_packages:
+  - "@anthropic-ai/claude-code"

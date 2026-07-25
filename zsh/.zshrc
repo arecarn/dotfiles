@@ -29,12 +29,12 @@ if [[ -t 0 ]]; then
     stty -ixon; stty stop undef
 fi
 
-# pnpm
+# pnpm (global install shims land in $PNPM_HOME/bin, not $PNPM_HOME itself)
 export PNPM_HOME="${HOME}/.local/share/pnpm"
-if [[ -d "$PNPM_HOME" ]]; then
+if [[ -d "$PNPM_HOME/bin" ]]; then
   case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$PNPM_HOME:$PATH" ;;
+    *":$PNPM_HOME/bin:"*) ;;
+    *) export PATH="$PNPM_HOME/bin:$PATH" ;;
   esac
 fi
 # pnpm end

@@ -1,2 +1,9 @@
 ---
-[]
+- name: Install global npm packages
+  when: npm_global_packages | default([]) | length > 0
+  become: "{{ not is_termux }}"
+  ansible.builtin.command:
+    cmd: "npm install -g {{ item }}"
+  loop: "{{ npm_global_packages | default([]) }}"
+  register: npm_result
+  changed_when: "'up to date' not in npm_result.stdout"

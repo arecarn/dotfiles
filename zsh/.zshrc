@@ -19,7 +19,10 @@ zsh_sources=(
     "$ZSH_CONFIG_DIR/prompt.zsh"
     "$HOME/.zshrc_local"
 )
-for f in "${zsh_sources[@]}"; do source_if_exists "$f"; done
+# Use a namespaced loop variable: a plain `f` would clobber the `f` shortcut
+# set in environment.zsh, which .zshrc_local expands.
+for _zsh_src in "${zsh_sources[@]}"; do source_if_exists "$_zsh_src"; done
+unset _zsh_src
 
 # bob neovim version manager
 export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"

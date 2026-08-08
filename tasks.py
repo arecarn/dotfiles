@@ -478,7 +478,20 @@ def _link_shared_skills():
     src = _SHARED_SKILLS_DIR.parent  # ~/.config/ai-skills/
     for target_dir in targets:
         target_dir.mkdir(parents=True, exist_ok=True)
+        _prune_dead_symlinks(target_dir / "skills")
         dploy.stow([src], target_dir, is_silent=False, ignore_patterns=["*.yaml"])
+
+
+def _prune_dead_symlinks(path):
+    """Remove broken symlinks at path or directly inside it (e.g. links left
+    behind after the shared skills hub moved)."""
+    if path.is_symlink() and not path.exists():
+        path.unlink()
+        return
+    if path.is_dir():
+        for entry in path.iterdir():
+            if entry.is_symlink() and not entry.exists():
+                entry.unlink()
 
 
 def _run_cmd(ctx, cmd):

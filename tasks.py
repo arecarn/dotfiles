@@ -370,6 +370,11 @@ class Dploy:
     def clean(self):
         """
         remove dead symlinks left over from stowing
+
+        Replaces dploy's own clean sub-command, which traverses the entire stow
+        destination and chokes on permission-denied entries along the way (a
+        frequent failure on Windows). This walk is depth-limited to the deepest
+        package path, skips EXCLUDE_DIRS, and swallows PermissionError.
         """
         repo_dir = pathlib.Path(__file__).resolve().parent
         max_depth = max(
@@ -484,7 +489,16 @@ def _link_shared_skills():
 
 def _prune_dead_symlinks(path):
     """Remove broken symlinks at path or directly inside it (e.g. links left
-    behind after the shared skills hub moved)."""
+    behind after the shared skills hub moved).
+
+    Deliberately separate from Dploy.clean, despite the surface similarity.
+    This is a precondition for the stow call that follows it: dploy cannot stow
+    into a destination that is itself a dangling symlink, so the prune has to
+    run immediately before that specific call, and it also runs from the
+    link_skills task where no Dploy sweep happens. Dploy.clean is a periodic
+    sweep of $HOME limited to links pointing into the dotfiles repo, so it
+    would not touch these links regardless.
+    """
     if path.is_symlink() and not path.exists():
         path.unlink()
         return

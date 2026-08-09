@@ -221,9 +221,9 @@ def claude_setup(ctx):
 
 
 @task
-def link_skills(ctx):
-    """Link shared skills into agent config directories"""
-    _link_shared_skills()
+def stow_skills(ctx):
+    """Stow shared skills into each tool's skills discovery path"""
+    _stow_shared_skills()
 
 
 @task
@@ -250,7 +250,7 @@ def opencode_install_plugins(ctx):
 
 @task(
     claude_setup,
-    link_skills,
+    stow_skills,
     claude_install_mcp,
     claude_install_plugins,
     opencode_install_plugins,
@@ -427,7 +427,7 @@ def stow(ctx):
             print(f"Skipping stow on Windows: {e}")
         else:
             raise
-    _link_shared_skills()
+    _stow_shared_skills()
 
 
 @task
@@ -469,7 +469,7 @@ _YAML = YAML()
 _SHARED_SKILLS_DIR = pathlib.Path.home() / ".config" / "ai-skills" / "skills"
 
 
-def _link_shared_skills():
+def _stow_shared_skills():
     """Stow shared skills from ~/.config/ai-skills/ into each tool's discovery path."""
     import dploy  # pylint: disable=C
 
@@ -496,7 +496,7 @@ def _prune_dead_symlinks(path):
     This is a precondition for the stow call that follows it: dploy cannot stow
     into a destination that is itself a dangling symlink, so the prune has to
     run immediately before that specific call, and it also runs from the
-    link_skills task where no Dploy sweep happens. Dploy.clean is a periodic
+    stow_skills task where no Dploy sweep happens. Dploy.clean is a periodic
     sweep of $HOME limited to links pointing into the dotfiles repo, so it
     would not touch these links regardless.
     """
@@ -616,10 +616,10 @@ def opencode_update_plugins(ctx):
     _update_plugins(ctx, "opencode")
 
 
-@task(provision, stow)
-def install(ctx):
+@task(provision, stow, name="all")
+def all_(ctx):
     """
-    Install task
+    Provision this system and stow every stow package
     """
     # pylint: disable=unused-argument
 

@@ -14,7 +14,7 @@
 
 
   tasks:
-    - ansible.builtin.import_tasks: tasks/repos.yml
+    - ansible.builtin.import_tasks: tasks/package-repos.yml
     - ansible.builtin.import_tasks: tasks/system-packages.yml
     # Every task here masks a unit that only runs on a GNOME desktop.
     - ansible.builtin.import_tasks: tasks/os-baseline.yml

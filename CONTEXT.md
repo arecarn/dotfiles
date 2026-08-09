@@ -14,8 +14,10 @@ Linux, Chocolatey on Windows, `pkg` on Termux.
 _Avoid_: install, bootstrap, setup
 
 **Stow**:
-Placing this repo's configuration into the home directory as symlinks, so the
-repo remains the single copy. The inverse is **unstow**.
+Mirroring a source tree into a destination as symlinks, so the source remains
+the single copy. The inverse is **unstow**. Two trees are stowed here: this
+repo's stow packages into the home directory, and the shared skills hub into
+each skills discovery path.
 _Avoid_: deploy, install, sync, link
 
 ### Units
@@ -39,6 +41,11 @@ Software installed by a language ecosystem's package manager — Python, npm,
 Rust.
 _Avoid_: package, library, dependency
 
+**Package repository**:
+A source the operating system's package manager installs from — EPEL, Debian
+contrib, a PPA. Always qualified; a bare "repo" is a git repository.
+_Avoid_: repo, repository, source
+
 ### Placement
 
 **Link**:
@@ -53,11 +60,26 @@ exists, left behind when a package's contents change. Removed by `clean-stow`,
 which is distinct from `clean`.
 _Avoid_: broken link, orphan, stale symlink
 
+**Shared skill**:
+An agent skill authored in one of these repos and stowed out to every agent
+tool, so one copy serves all of them.
+_Avoid_: skill, custom skill, local skill
+
+**Plugin skill**:
+An agent skill installed by the tool itself from a marketplace, listed in a
+manifest rather than authored here. Never stowed, never edited in place.
+_Avoid_: skill, marketplace skill, installed skill
+
 **Shared skills hub**:
-The directory where agent skills from several repos are collected so more than
-one repo can contribute to it. Because it has multiple contributors, it holds
+The directory where shared skills from several repos are collected so more than
+one repo can contribute to them. Because it has multiple contributors, it holds
 per-entry symlinks rather than one directory symlink.
 _Avoid_: skills directory, skills folder
+
+**Skills discovery path**:
+The directory a given agent tool reads its skills from. Each tool has its own,
+and the hub is stowed into all of them.
+_Avoid_: skills directory, tool config
 
 ### Environments
 

@@ -204,7 +204,7 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
     os.chdir("ansible")
 
     become_arg = "" if is_termux or is_ci else "--ask-become-pass"
-    ci_args = "--skip-tags gui,editor-tools" if is_ci else ""
+    ci_args = "--skip-tags gui" if is_ci else ""
 
     ansible_pb = "../.venv/bin/ansible-playbook"
     if not pathlib.Path(ansible_pb).exists():

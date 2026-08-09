@@ -59,7 +59,7 @@ Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, both created
 
 ### Gotchas
 
-[docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. Search with `grep -ri "<term>" docs/gotchas/`.
+[docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. Search with `grep -ri "<term>" docs/gotchas/`. The `record-gotcha` and `review-gotchas` skills drive writing and re-verifying entries.
 
 - **One trap per file, named for the trap**, leading with the symptom you would grep for mid-debug. Deliberately unnumbered, unlike ADRs: entries are deleted when they stop reproducing, which would leave numbering gappy.
 - **A gotcha is not an ADR.** Something *decided* — alternatives weighed, a call made — goes in `docs/adr/`. Something the system simply does, that nobody chose, goes here.

@@ -1,11 +1,11 @@
 ---
-- name: Install common packages
+- name: Install common system packages
   ansible.builtin.package:
     name: "{{ pkg_name }}"
     state: present
-  loop: "{{ common_packages }}"
+  loop: "{{ common_system_packages }}"
   tags:
-    - packages
+    - system-packages
     - common
   vars:
     # Map package names if they differ significantly or should be skipped
@@ -24,22 +24,22 @@
     (item != 'openssh-server' or not is_termux)
   ignore_errors: true
 
-- name: Install OS-family-specific packages
+- name: Install OS-family-specific system packages
   ansible.builtin.package:
-    name: "{{ os_family_packages[ansible_facts['os_family']] }}"
+    name: "{{ os_family_system_packages[ansible_facts['os_family']] }}"
     state: present
   tags:
-    - packages
+    - system-packages
     - os-specific
-  when: ansible_facts['os_family'] in os_family_packages
+  when: ansible_facts['os_family'] in os_family_system_packages
 
-- name: Install GUI packages
+- name: Install GUI system packages
   ansible.builtin.package:
-    name: "{{ gui_packages[ansible_facts['os_family']] }}"
+    name: "{{ gui_system_packages[ansible_facts['os_family']] }}"
     state: present
   tags:
-    - packages
+    - system-packages
     - gui
   when: >-
-    ansible_facts['os_family'] in gui_packages and
-    gui_packages[ansible_facts['os_family']] | length > 0
+    ansible_facts['os_family'] in gui_system_packages and
+    gui_system_packages[ansible_facts['os_family']] | length > 0

@@ -95,14 +95,14 @@ def provision_termux(ctx):
     """
     Bootstrap Termux environment for Ansible and Python dependencies
     """
-    bootstrap_packages = [
+    bootstrap_system_packages = [
         "python",
         "rust",
         "build-essential",
         "git",
     ]
     ctx.run("pkg update -y")
-    ctx.run(f"pkg install -y {' '.join(bootstrap_packages)}")
+    ctx.run(f"pkg install -y {' '.join(bootstrap_system_packages)}")
 
     # Install selene for linting
     ctx.run("cargo install selene", warn=True)
@@ -156,13 +156,13 @@ def _provision_windows(ctx, is_ci: bool) -> None:
     if not IS_ADMIN:
         raise SystemExit("You need to be admin to install things with Chocolatey")
 
-    gui_packages = [
+    gui_system_packages = [
         "nerd-fonts-dejavusansmono",
         "vcxsrv",
         "anki",
         "wezterm",
     ]
-    common_packages = [
+    common_system_packages = [
         "llvm",
         "pandoc",
         "git",
@@ -184,14 +184,14 @@ def _provision_windows(ctx, is_ci: bool) -> None:
         "claude-code",
         "opencode",
     ]
-    packages_to_install = common_packages
+    system_packages_to_install = common_system_packages
     if not is_ci:
-        packages_to_install.extend(gui_packages)
+        system_packages_to_install.extend(gui_system_packages)
 
-    packages = " ".join(packages_to_install)
-    ctx.run(f"choco install -y {packages}", pty=False)
+    system_packages = " ".join(system_packages_to_install)
+    ctx.run(f"choco install -y {system_packages}", pty=False)
     ctx.run("choco install -y openssh --pre", pty=False)
-    ctx.run(f"choco upgrade -y {packages}", pty=False)
+    ctx.run(f"choco upgrade -y {system_packages}", pty=False)
     ctx.run("choco upgrade -y openssh --pre", pty=False)
     ctx.run("corepack enable", warn=True, pty=False)
 
@@ -292,7 +292,7 @@ class Dploy:
 
         self.dploy = dploy
         self.home = pathlib.Path().home()
-        self.packages = [
+        self.stow_packages = [
             "agents",
             "claude-code",
             "ctags",
@@ -309,7 +309,7 @@ class Dploy:
         ]
 
         if IS_WINDOWS:
-            self.packages.extend(["powershell", "vcxsrv"])
+            self.stow_packages.extend(["powershell", "vcxsrv"])
 
         # pylint: disable=invalid-name
         p = pathlib.Path
@@ -344,14 +344,14 @@ class Dploy:
         stow and link the specified files
         """
         # pylint: disable=invalid-name
-        print(self.packages)
+        print(self.stow_packages)
         # Pre-create the shared skills hub as real dirs so dploy places per-entry
         # symlinks from each repo instead of folding ~/.config/ai-skills into a
         # single directory symlink (the `agents` package exists in both this repo
         # and dotfiles_local; folding would cross-contaminate their working trees).
         for d in (self.home / ".config/ai-skills", self.home / ".config/ai-skills/skills"):
             d.mkdir(parents=True, exist_ok=True)
-        self.dploy.stow(self.packages, self.home, is_silent=False)
+        self.dploy.stow(self.stow_packages, self.home, is_silent=False)
         for src, dest in self.links:
             self.dploy.link(src, dest, is_silent=False)
 
@@ -365,7 +365,7 @@ class Dploy:
             except FileNotFoundError:
                 pass
 
-        self.dploy.unstow(self.packages, self.home, is_silent=False)
+        self.dploy.unstow(self.stow_packages, self.home, is_silent=False)
 
     def clean(self):
         """
@@ -379,7 +379,7 @@ class Dploy:
         repo_dir = pathlib.Path(__file__).resolve().parent
         max_depth = max(
             len(p.relative_to(pkg).parts)
-            for pkg in self.packages
+            for pkg in self.stow_packages
             for p in pathlib.Path(pkg).rglob("*")
         )
         self._clean_dead_links(self.home, repo_dir, max_depth)

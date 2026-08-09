@@ -24,7 +24,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 ## Development Conventions
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Termux, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
 - **Modular Provisioning:** New tools should be added as Ansible roles in `ansible/roles/` and included in `ansible/site.yml`.
-- **Symlink Strategy:** `dploy` is used to map package directories to the home directory. New packages must be added to the `Dploy` class in `tasks.py`.
+- **Symlink Strategy:** `dploy` is used to map stow package directories to the home directory. New stow packages must be added to the `Dploy` class in `tasks.py`.
 - **Windows symlink privilege:** Creating symlinks on Windows is privilege-gated — `inv stow` fails with `OSError: [WinError 1314] A required privilege is not held by the client` unless run elevated or with Developer Mode enabled (`Settings > For developers > Developer Mode`). Run stow from any elevated shell (admin terminal); `gsudo uv run inv stow` is a convenient inline way since `gsudo` is on PATH. Or enable Developer Mode once. Existing symlinks keep working without elevation; only *creating* them needs the privilege.
 - **Linting Standards:**
     - **Python:** `ruff` and `pylint`.
@@ -41,7 +41,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
     ```
 
     Use the `Monitor` tool so the result arrives as a notification instead of blocking (CI takes ~7 min). On failure, pull the cause with `gh run view <id> --log-failed` and fix before moving on.
-- **Ansible on headless hosts:** CI runners have no desktop session, so units/packages that only exist on a GNOME desktop must not hard-fail the play. Gate desktop-only tasks with `failed_when: false` (see `ansible/tasks/os-baseline.yml`) rather than `os_family` alone.
+- **Ansible on headless hosts:** CI runners have no desktop session, so units and system packages that only exist on a GNOME desktop must not hard-fail the play. Gate desktop-only tasks with `failed_when: false` (see `ansible/tasks/os-baseline.yml`) rather than `os_family` alone.
 
 ## Agent skills
 

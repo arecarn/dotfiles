@@ -15,7 +15,7 @@
 
   tasks:
     - ansible.builtin.import_tasks: tasks/repos.yml
-    - ansible.builtin.import_tasks: tasks/packages.yml
+    - ansible.builtin.import_tasks: tasks/system-packages.yml
     - ansible.builtin.import_tasks: tasks/os-baseline.yml
     # editor-tools: skipped in CI — an editor LSP binary is of no use on a
     # runner, and pulling it from GitHub releases just adds a flaky download.

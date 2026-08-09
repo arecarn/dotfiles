@@ -1,6 +1,6 @@
 ---
 # Packages with the same name on both Debian and RedHat
-common_packages:
+common_system_packages:
   - bat
   - coreutils
   - curl
@@ -26,7 +26,7 @@ common_packages:
   - zsh
 
 # Packages with different names per OS family
-os_family_packages:
+os_family_system_packages:
   Debian:
     - python3
     - python3-dev
@@ -46,7 +46,7 @@ os_family_packages:
     - openssh
 
 # GUI packages (skipped in headless/CI environments)
-gui_packages:
+gui_system_packages:
   Debian:
     - wezterm
     - firefox

@@ -41,6 +41,10 @@ jobs:
       - name: Install dependencies
         run: uv sync
       - name: Provision (headless)
+        # Lets ansible's GitHub API calls use the per-token rate limit rather
+        # than the runner IP's shared anonymous quota.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: uv run invoke provision --args="-v"
       - name: Add cargo to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH

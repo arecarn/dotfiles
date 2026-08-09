@@ -8,11 +8,22 @@
   become: false
   when: not is_termux
 
+# Unauthenticated calls get 60/hour keyed to the source IP, which hosted CI
+# runners share -- a neighbouring repo can exhaust it and fail this task. A
+# token raises the limit to 5000/hour for that token instead. GITHUB_TOKEN is
+# set by CI; locally it is usually absent, which just falls back to anonymous.
 - name: Get latest lua-language-server release info
   ansible.builtin.uri:
     url: https://api.github.com/repos/LuaLS/lua-language-server/releases/latest
     return_content: true
+    headers: >-
+      {{ {'Authorization': 'Bearer ' + github_token} if github_token else {} }}
+  vars:
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
   register: lua_ls_release
+  until: lua_ls_release is succeeded
+  retries: 3
+  delay: 5
   become: false
   when: not is_termux and not lua_ls_exists.stat.exists
 

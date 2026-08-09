@@ -25,14 +25,14 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Termux, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
 - **Modular Provisioning:** New tools should be added as Ansible roles in `ansible/roles/` and included in `ansible/site.yml`.
 - **Symlink Strategy:** `dploy` is used to map stow package directories to the home directory. New stow packages must be added to the `Dploy` class in `tasks.py`.
-- **Windows symlink privilege:** Creating symlinks on Windows is privilege-gated — `inv stow` fails with `OSError: [WinError 1314] A required privilege is not held by the client` unless run elevated or with Developer Mode enabled (`Settings > For developers > Developer Mode`). Run stow from any elevated shell (admin terminal); `gsudo uv run inv stow` is a convenient inline way since `gsudo` is on PATH. Or enable Developer Mode once. Existing symlinks keep working without elevation; only *creating* them needs the privilege.
+- **Windows symlink privilege:** stowing on Windows needs an elevated shell or Developer Mode — see [docs/gotchas/windows-symlink-creation-needs-elevation.md](docs/gotchas/windows-symlink-creation-needs-elevation.md).
 - **Linting Standards:**
     - **Python:** `ruff` and `pylint`.
     - **Shell:** `shellcheck`.
     - **YAML:** `yamllint`.
     - **Lua:** `stylua` and `luacheck`.
 - **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
-- **Watch CI after every push:** The pre-push hook only runs `inv lint`; CI additionally runs `provision` and `stow` on bare Linux and Windows runners, which is where nearly all failures come from (a provisioned dev machine makes `provision` a no-op, so it passes locally and breaks in CI). After pushing, start a monitor on the run and report the result:
+- **Watch CI after every push:** a green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. After pushing, start a monitor on the run and report the result:
 
     ```bash
     gh run watch "$(gh run list --branch "$(git branch --show-current)" \
@@ -41,7 +41,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
     ```
 
     Use the `Monitor` tool so the result arrives as a notification instead of blocking (CI takes ~7 min). On failure, pull the cause with `gh run view <id> --log-failed` and fix before moving on.
-- **Ansible on headless hosts:** CI runners have no desktop session, so units and system packages that only exist on a GNOME desktop must not hard-fail the play. Gate desktop-only tasks with `failed_when: false` (see `ansible/tasks/os-baseline.yml`) rather than `os_family` alone.
+- **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).
 
 ## Agent skills
 
@@ -56,3 +56,12 @@ The five canonical triage roles used verbatim as label strings, plus a local `bl
 ### Domain docs
 
 Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, both created lazily. See `docs/agents/domain.md`.
+
+### Gotchas
+
+[docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. Search with `grep -ri "<term>" docs/gotchas/`.
+
+- **One trap per file, named for the trap**, leading with the symptom you would grep for mid-debug. Deliberately unnumbered, unlike ADRs: entries are deleted when they stop reproducing, which would leave numbering gappy.
+- **A gotcha is not an ADR.** Something *decided* — alternatives weighed, a call made — goes in `docs/adr/`. Something the system simply does, that nobody chose, goes here.
+- **Every entry ends with a `**Confirmed:**` line** — the date it last reproduced and what against. Without it a live trap is indistinguishable from one fixed two years ago. Never backfill a date you cannot stand behind; write `unknown, predates this convention`.
+- **Review on a trigger, not a calendar:** when a tool an entry names is upgraded, when its symptom recurs, or when you open it mid-debug and it does not help. Then update the `**Confirmed:**` line, or delete the entry if it no longer reproduces or a check now prevents it. **Deletion is the goal, not the failure case** — a trap engineered out of existence beats the best entry describing it.

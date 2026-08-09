@@ -345,10 +345,11 @@ class Dploy:
         """
         # pylint: disable=invalid-name
         print(self.stow_packages)
-        # Pre-create the shared skills hub as real dirs so dploy places per-entry
-        # symlinks from each repo instead of folding ~/.config/ai-skills into a
-        # single directory symlink (the `agents` package exists in both this repo
-        # and dotfiles_local; folding would cross-contaminate their working trees).
+        # Pre-create the shared skills hub as real dirs. This constrains dploy to
+        # folding at the `skills` level, where its unfold is correct; left alone it
+        # folds at ~/.config and the second repo to stow (the `agents` package
+        # exists here and in dotfiles_local) writes dangling links into the first
+        # repo's working tree. See docs/adr/0001-pre-create-the-shared-skills-hub.md
         for d in (self.home / ".config/ai-skills", self.home / ".config/ai-skills/skills"):
             d.mkdir(parents=True, exist_ok=True)
         self.dploy.stow(self.stow_packages, self.home, is_silent=False)

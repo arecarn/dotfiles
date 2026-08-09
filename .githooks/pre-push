@@ -20,6 +20,9 @@ exit_code=$((exit_code + $?))
 rm -f "$stdin_file"
 
 # --- repo-specific: lint ---
+# Lint only — provision is too slow to gate every push, and it is a near no-op
+# on an already-provisioned machine anyway, so provision/stow breakage only
+# shows up in CI. Watch the run after pushing.
 echo "pre-push: running linters..."
 if ! uv run invoke lint; then
     echo "pre-push: lint failed — fix issues before pushing"

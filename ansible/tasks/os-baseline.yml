@@ -11,6 +11,10 @@
     - ssh-agent.socket
     - ssh-agent.service
   when: ansible_facts['os_family'] == 'Debian'
+  failed_when: false
+  # These units only exist on desktop installs; masking absent units is a
+  # no-op, so a headless/minimal host must not fail the play over them.
+  #
   # gcr-ssh-agent already owns SSH_AUTH_SOCK on Debian/Ubuntu GNOME desktops
   # (exported via `systemctl --user show-environment`); the plain openssh
   # ssh-agent.service unit is enabled by default but nothing ever points at
@@ -30,6 +34,9 @@
     - evolution-calendar-factory.service
     - evolution-source-registry.service
   when: ansible_facts['os_family'] == 'Debian'
+  failed_when: false
+  # Desktop-only units; absent on headless hosts (see ssh-agent note above).
+  #
   # GNOME Shell's calendar/contacts integration auto-starts these even with
   # zero accounts configured. Re-enable if a GNOME Online Account (synced
   # calendar/contacts) is ever added.
@@ -47,5 +54,8 @@
     - cups.path
     - cups.socket
   when: ansible_facts['os_family'] == 'Debian'
+  failed_when: false
+  # Desktop-only units; absent on headless hosts (see ssh-agent note above).
+  #
   # cups.path/cups.socket trigger cups.service via activation and must be
   # masked too, or they just relaunch it.

@@ -3,7 +3,7 @@ name = "dotfiles"
 version = "0.0.0"
 description = ""
 authors = [{ name = "Ryan Carney", email = "arecarn@gmail.com" }]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "invoke>=2.2",
     "dploy>=0.1.3",

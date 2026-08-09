@@ -3,7 +3,7 @@
 ## Project Overview
 This repository manages personal configuration files (dotfiles) across multiple operating systems, including Linux, Windows, and Termux. It provides an automated way to provision system packages and symlink configurations to the user's home directory.
 
-- **Main Technologies:** Python 3.10+, `uv` (package management), `invoke` (task running), `dploy` (symlink management), and `Ansible` (Linux provisioning).
+- **Main Technologies:** Python, `uv` (package management), `invoke` (task running), `dploy` (symlink management), and `Ansible` (Linux provisioning).
 - **Core Architecture:**
     - **Tool Configurations:** Located in root-level directories (e.g., `git/`, `nvim/`, `tmux/`, `zsh/`).
     - **Provisioning:** Modular Ansible roles in `ansible/roles/` for Linux systems.

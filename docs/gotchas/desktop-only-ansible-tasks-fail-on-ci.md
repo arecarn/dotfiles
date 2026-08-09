@@ -13,4 +13,8 @@ This is the headless half of a wider trap: provisioning behaves differently on a
 bare runner than on a developed machine. The other half is
 [lint passing locally proving nothing about CI](lint-passing-locally-proves-nothing-about-ci.md).
 
-**Confirmed:** unknown, predates this convention — migrated from `AGENTS.md`.
+**Confirmed:** the mitigation is current as of 2026-08-09 — `os-baseline.yml`
+still carries `failed_when: false` on the ssh-agent, evolution, and cups user
+units, each gated only by `os_family`, and CI provisions green with it. The trap
+itself is not re-verified: reproducing it means removing a gate and pushing, so
+the entry stands on the incident that produced it rather than on a fresh run.

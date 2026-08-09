@@ -21,4 +21,7 @@ CI works around this separately: the Windows job sets the
 `AllowDevelopmentWithoutDevLicense` registry key and `git config --global
 core.symlinks true` before stowing (see `.github/workflows/ci.yml`).
 
-**Confirmed:** unknown, predates this convention — migrated from `AGENTS.md`.
+**Confirmed:** not re-verified as of 2026-08-09 — this review ran on Linux, and
+the trap needs a Windows host to reproduce. What is current is the workaround:
+CI's Windows job still sets `AllowDevelopmentWithoutDevLicense` before stowing
+and passes. Whether stow would now fail without it is untested.

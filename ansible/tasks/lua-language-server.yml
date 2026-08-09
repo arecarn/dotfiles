@@ -43,6 +43,14 @@
   become: false
   when: not is_termux and not lua_ls_exists.stat.exists
 
+- name: Create ~/.local/bin
+  ansible.builtin.file:
+    path: "{{ user_home }}/.local/bin"
+    state: directory
+    mode: "0755"
+  become: false
+  when: not is_termux and not lua_ls_exists.stat.exists
+
 - name: Symlink lua-language-server into ~/.local/bin
   ansible.builtin.file:
     src: "{{ user_home }}/.local/share/lua-language-server/bin/lua-language-server"

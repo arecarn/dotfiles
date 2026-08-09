@@ -1,7 +1,10 @@
 # Pre-create the shared skills hub before stowing
 
 The `agents` stow package exists in both this repo and `dotfiles_local`, so two
-independent dploy runs write into `~/.config/ai-skills`. `Dploy.stow` creates
+independent dploy runs write into `~/.config/ai-skills`. Not every machine has
+both: on a personal machine the hub may show only this repo's skills, which
+makes the pre-create look like it is guarding nothing. It is not — work
+machines run both repos, and that is where the damage would land. `Dploy.stow` creates
 that directory and its `skills` child as real directories first, which looks
 like dead code — the stow would create them anyway — but constrains where dploy
 is allowed to fold, and is load-bearing.

@@ -56,12 +56,15 @@ it is invalid. A label is a filter, not an explanation.
 Every issue here is filed by the repo owner. The repo is public, but no one else
 has ever opened an issue or a pull request.
 
-That makes parts of the skills' model inapplicable. `needs-info` means the owner
-has to go find something out, not that a reporter owes an answer — so it never
-clears on its own and nothing arrives to re-trigger triage. There is no `question`
-label, because a question needs someone else to be asking it. Discovery buckets
-that look for "reporter activity since the last triage notes" will always be
-empty.
+`needs-info` still applies — plenty of issues wait on something being reproduced,
+checked upstream, or seen to recur. What changes is who owes the answer: the
+owner does, so nothing arrives to clear it. The skills re-surface a `needs-info`
+issue on reporter activity, and that event will never fire here, so treat the
+`needs-info` bucket as a list to revisit deliberately rather than one that
+refills itself.
+
+There is no `question` label, because a question needs someone else to be asking
+it.
 
 Revisit this section if the repo ever attracts outside issues.
 

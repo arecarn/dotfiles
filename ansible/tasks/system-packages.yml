@@ -39,7 +39,7 @@
     state: present
   tags:
     - system-packages
-    - gui
+    - desktop-only
   when: >-
     ansible_facts['os_family'] in gui_system_packages and
     gui_system_packages[ansible_facts['os_family']] | length > 0

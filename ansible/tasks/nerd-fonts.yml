@@ -7,7 +7,7 @@
   become: false
   tags:
     - fonts
-    - gui
+    - desktop-only
 
 - name: Check for existing Nerd Font installations
   ansible.builtin.find:
@@ -19,7 +19,7 @@
   loop: "{{ nerd_fonts }}"
   tags:
     - fonts
-    - gui
+    - desktop-only
 
 - name: Download Nerd Fonts
   ansible.builtin.get_url:
@@ -31,7 +31,7 @@
   when: item.files | length == 0
   tags:
     - fonts
-    - gui
+    - desktop-only
 
 - name: Extract Nerd Fonts
   ansible.builtin.unarchive:
@@ -43,7 +43,7 @@
   when: item.files | length == 0
   tags:
     - fonts
-    - gui
+    - desktop-only
 
 - name: Clean up Nerd Font archives
   ansible.builtin.file:
@@ -54,7 +54,7 @@
   when: item.files | length == 0
   tags:
     - fonts
-    - gui
+    - desktop-only
 
 - name: Refresh font cache
   ansible.builtin.command:
@@ -64,4 +64,4 @@
   when: installed_fonts.results | selectattr('files', 'equalto', []) | list | length > 0
   tags:
     - fonts
-    - gui
+    - desktop-only

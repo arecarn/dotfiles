@@ -71,3 +71,10 @@ A machine with no desktop session — chiefly CI runners. Desktop-only units and
 packages are absent there, so anything assuming a desktop must not fail the
 provisioning run.
 _Avoid_: server, CI box, bare machine
+
+**Desktop-only**:
+Provisioning work that is pointless on a headless host, whether or not it would
+succeed there — installing a browser, a font, a launcher entry, or masking a
+unit that only a desktop starts. Also the Ansible tag naming exactly that set,
+which provisioning skips on a headless host.
+_Avoid_: gui, graphical, interactive

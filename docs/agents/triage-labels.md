@@ -5,7 +5,7 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 | Label in mattpocock/skills | Label in our tracker | Meaning                                  |
 | -------------------------- | -------------------- | ---------------------------------------- |
 | `needs-triage`             | `needs-triage`       | Maintainer needs to evaluate this issue  |
-| `needs-info`               | `needs-info`         | Waiting on reporter for more information |
+| `needs-info`               | `needs-info`         | Blocked on information the owner has to go find |
 | `ready-for-agent`          | `ready-for-agent`    | Fully specified, ready for an AFK agent  |
 | `ready-for-human`          | `ready-for-human`    | Requires human implementation            |
 | `wontfix`                  | `wontfix`            | Will not be actioned                     |
@@ -14,7 +14,9 @@ When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the 
 
 Edit the right-hand column to match whatever vocabulary you actually use.
 
-## Local addition
+## Local additions
+
+### Extra state
 
 | Label     | Meaning                                            |
 | --------- | -------------------------------------------------- |
@@ -36,3 +38,35 @@ is not blocked; it is unclear, which is `needs-info`.
 It exists because "ready" was a lie for issues waiting on an upstream fix: the
 work is fully specified and nobody can start it. Move it to a canonical state
 once the blocker lands.
+
+### Closure reasons
+
+| Label       | Meaning                                        |
+| ----------- | ---------------------------------------------- |
+| `duplicate` | Already tracked by another issue               |
+| `invalid`   | Not a real defect, or not actionable as filed  |
+
+These sit *alongside* `wontfix`, never instead of it — the state stays readable
+on its own, and the reason label records why without having to open the issue.
+They do not replace the closing comment: say which issue it duplicates, or why
+it is invalid. A label is a filter, not an explanation.
+
+## This tracker has one participant
+
+Every issue here is filed by the repo owner. The repo is public, but no one else
+has ever opened an issue or a pull request.
+
+That makes parts of the skills' model inapplicable. `needs-info` means the owner
+has to go find something out, not that a reporter owes an answer — so it never
+clears on its own and nothing arrives to re-trigger triage. There is no `question`
+label, because a question needs someone else to be asking it. Discovery buckets
+that look for "reporter activity since the last triage notes" will always be
+empty.
+
+Revisit this section if the repo ever attracts outside issues.
+
+## Not triage labels
+
+`dependencies`, `python`, and `python:uv` are created and applied by Dependabot
+on its own pull requests. Ignore them when triaging, and do not apply them by
+hand — deleting them achieves nothing, as the next Dependabot PR recreates them.

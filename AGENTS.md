@@ -51,7 +51,7 @@ Issues live as GitHub issues on `arecarn/dotfiles`, managed with the `gh` CLI. S
 
 ### Triage labels
 
-The five canonical triage roles used verbatim as label strings, plus a local `blocked` state. See `docs/agents/triage-labels.md`.
+The five canonical triage roles used verbatim as label strings, plus a local `blocked` state and two closure reasons. Single-participant tracker, so parts of the skills' reporter model do not apply. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 

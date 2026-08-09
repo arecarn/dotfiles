@@ -32,3 +32,27 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
     - **YAML:** `yamllint`.
     - **Lua:** `stylua` and `luacheck`.
 - **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
+- **Watch CI after every push:** The pre-push hook only runs `inv lint`; CI additionally runs `provision` and `stow` on bare Linux and Windows runners, which is where nearly all failures come from (a provisioned dev machine makes `provision` a no-op, so it passes locally and breaks in CI). After pushing, start a monitor on the run and report the result:
+
+    ```bash
+    gh run watch "$(gh run list --branch "$(git branch --show-current)" \
+        --workflow CI --limit 1 --json databaseId --jq '.[0].databaseId')" \
+        --exit-status
+    ```
+
+    Use the `Monitor` tool so the result arrives as a notification instead of blocking (CI takes ~7 min). On failure, pull the cause with `gh run view <id> --log-failed` and fix before moving on.
+- **Ansible on headless hosts:** CI runners have no desktop session, so units/packages that only exist on a GNOME desktop must not hard-fail the play. Gate desktop-only tasks with `failed_when: false` (see `ansible/tasks/os-baseline.yml`) rather than `os_family` alone.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues on `arecarn/dotfiles`, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles, used verbatim as label strings. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, both created lazily. See `docs/agents/domain.md`.

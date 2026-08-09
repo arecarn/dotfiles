@@ -1,11 +1,13 @@
 ---
 name: CI
 
+# "*" does not match "/", so it silently skips branches like "deps/foo" --
+# no run, no failure. "**" matches slashes.
 on:  # yamllint disable-line rule:truthy
   push:
-    branches: "*"
+    branches: "**"
   pull_request:
-    branches: "*"
+    branches: "**"
 
 jobs:
   ci:

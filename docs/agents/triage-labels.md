@@ -14,6 +14,25 @@ When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the 
 
 Edit the right-hand column to match whatever vocabulary you actually use.
 
+## Labels carry state, bodies describe work
+
+The label communicates the state of the ticket. The body describes the work or
+the problem the ticket represents. Nothing in a body should name a label or
+argue for the state it was given — not "labelled `ready-for-human` because…",
+not "this is `needs-info` until…".
+
+Such a sentence is wrong the moment the label changes, and nothing forces the
+two back into agreement, so the body ends up asserting a state the tracker
+disagrees with. The reasoning it tries to preserve is better expressed as the
+fact underneath it: not "labelled `ready-for-human` because it needs a real
+Wayland session", just "verifying this needs a real Wayland session". That
+sentence stays true whatever the label says, and a reader can see the state
+without being told it twice.
+
+The `blocked` state's required `Blocked by:` first line is not an exception. It
+names another ticket or an upstream issue, which is a fact about the work; it
+does not name the label or justify it.
+
 ## Local additions
 
 ### Extra state

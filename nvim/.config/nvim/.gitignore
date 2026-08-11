@@ -1,2 +1,5 @@
 init.vim
 .netrwhist
+
+# Vim compiles these from the .add files; regenerated automatically when .add is newer.
+*.spl

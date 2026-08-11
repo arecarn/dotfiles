@@ -218,7 +218,7 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
 
 @task
 def claude_setup(ctx):
-    """Configure Claude Code settings (voice, permissions)"""
+    """Merge this repo's Claude Code settings into ~/.claude/settings.json"""
     _setup_claude_settings()
 
 

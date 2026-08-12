@@ -1,2 +1,9 @@
 __pycache__/
 *.pyc
+
+# Bridge symlink to private work instructions, created by dotfiles_local's stow.
+# ~/.claude/CLAUDE.md is a symlink into this repo, and Claude Code resolves its
+# @imports relative to the symlink's real target directory rather than ~/.claude/,
+# so @references/local.md must resolve HERE. The target lives in dotfiles_local,
+# so the link itself must never be committed to this public repo.
+/claude-code/.claude/references/local.md

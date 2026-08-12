@@ -1,7 +1,13 @@
 ---
+# Global npm packages. Installed under the user's npm prefix (~/.local), NOT
+# system-wide, so no `become` -- as root, npm reads root's ~/.npmrc and ignores
+# the prefix set in ours, so the packages land outside PATH while the play still
+# reports success. Kept separate from javascript-packages.yml (pnpm) for tools
+# that must be npm-managed: Claude Code self-updates under the npm global prefix
+# and `claude --update` targets that location.
 - name: Install global npm packages
   when: npm_global_packages | default([]) | length > 0
-  become: "{{ not is_termux }}"
+  become: false  # override the play-wide become in site.yml
   ansible.builtin.command:
     cmd: "npm install -g {{ item }}"
   loop: "{{ npm_global_packages | default([]) }}"

@@ -6,7 +6,7 @@ This repository manages personal configuration files (dotfiles) across multiple 
 - **Main Technologies:** Python, `uv` (package management), `invoke` (task running), `dploy` (symlink management), and `Ansible` (Linux provisioning).
 - **Core Architecture:**
     - **Tool Configurations:** Located in root-level directories (e.g., `git/`, `nvim/`, `tmux/`, `zsh/`).
-    - **Provisioning:** Modular Ansible roles in `ansible/roles/` for Linux systems.
+    - **Provisioning:** Ansible task files in `ansible/tasks/` for Linux systems, imported by `ansible/site.yml`.
     - **Task Automation:** `tasks.py` defines the CLI interface for management.
 
 ## Building and Running
@@ -23,7 +23,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 
 ## Development Conventions
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Termux, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
-- **Modular Provisioning:** New tools should be added as Ansible roles in `ansible/roles/` and included in `ansible/site.yml`.
+- **Modular Provisioning:** Add a new tool as a task file in `ansible/tasks/`, then add an `ansible.builtin.import_tasks` line for it to the `tasks:` list in `ansible/site.yml`. A task file that nothing imports is never run, and provisioning still succeeds — so the omission is silent. Tag anything desktop-only with `desktop-only`, as `os-baseline.yml` and `wezterm.yml` do.
 - **Symlink Strategy:** `dploy` is used to map stow package directories to the home directory. New stow packages must be added to the `Dploy` class in `tasks.py`.
 - **This repo is public:** config that is private goes in a `dotfiles_local` repo instead — employer-internal hostnames, registries, proxies, project or team names, work email addresses, VPN or corporate tooling, and equally any personal config the user would not publish. A `dotfiles_local` exists per work or personal setup, and can span several machines. Keep what lands here public-safe and portable.
 - **Windows symlink privilege:** stowing on Windows needs an elevated shell or Developer Mode — see [docs/gotchas/windows-symlink-creation-needs-elevation.md](docs/gotchas/windows-symlink-creation-needs-elevation.md).

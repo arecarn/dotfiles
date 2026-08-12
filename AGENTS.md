@@ -55,6 +55,14 @@ Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, both created
 
 [docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. Search with `grep -ri "<term>" docs/gotchas/`. The `record-gotcha` and `review-gotchas` skills drive writing and re-verifying entries.
 
+**This directory is not the whole set.** A trap that cannot be described without private detail (internal hostnames, employer tooling, credential variable names, project or team names) is recorded in the `dotfiles_local` checkout instead, so searching here alone can come up empty on a trap already known. Search both:
+
+```bash
+grep -ri "<term>" docs/gotchas/ ~/dotfiles_local/ 2>/dev/null
+```
+
+When recording a new one, put it wherever it can be stated fully: public-safe traps here, everything else there. Split an entry across both when only part of it is sensitive — the public half describes the mechanism and the private half supplies the specifics. A missing `dotfiles_local` is normal; the grep just finds nothing.
+
 - **One trap per file, named for the trap**, leading with the symptom you would grep for mid-debug. Deliberately unnumbered, unlike ADRs: entries are deleted when they stop reproducing, which would leave numbering gappy.
 - **A gotcha is not an ADR.** Something *decided* — alternatives weighed, a call made — goes in `docs/adr/`. Something the system simply does, that nobody chose, goes here.
 - **Every entry ends with a `**Confirmed:**` line** — the date it last reproduced and what against. Without it a live trap is indistinguishable from one fixed two years ago. Never backfill a date you cannot stand behind; write `unknown, predates this convention`.

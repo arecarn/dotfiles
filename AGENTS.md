@@ -25,6 +25,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Termux, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
 - **Modular Provisioning:** New tools should be added as Ansible roles in `ansible/roles/` and included in `ansible/site.yml`.
 - **Symlink Strategy:** `dploy` is used to map stow package directories to the home directory. New stow packages must be added to the `Dploy` class in `tasks.py`.
+- **This repo is public:** config that is private goes in a `dotfiles_local` repo instead — employer-internal hostnames, registries, proxies, project or team names, work email addresses, VPN or corporate tooling, and equally any personal config the user would not publish. A `dotfiles_local` exists per work or personal setup, and can span several machines. Keep what lands here public-safe and portable.
 - **Windows symlink privilege:** stowing on Windows needs an elevated shell or Developer Mode — see [docs/gotchas/windows-symlink-creation-needs-elevation.md](docs/gotchas/windows-symlink-creation-needs-elevation.md).
 - **Linting Standards:**
     - **Python:** `ruff` and `pylint`.

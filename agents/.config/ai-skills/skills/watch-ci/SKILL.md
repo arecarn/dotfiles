@@ -15,6 +15,11 @@ Two things generalize across providers, and everything below is a consequence of
 2. **Branch on the reported status, not on the CLI's exit code.** Both providers exit
    non-zero for "cancelled" exactly as they do for "failed", and those demand opposite
    responses.
+3. **A dead watch command is not a result.** A dropped connection
+   (`error connecting to api.github.com`) also exits non-zero, and looks identical to a
+   red build. Both recipes below loop until the API reports a terminal status, so a blip
+   costs a retry instead of a false alarm. If no status ever arrives, report that the
+   watch failed — never that the run failed.
 
 ## Detect the provider first
 
@@ -57,7 +62,11 @@ until id=$(gh run list --commit "$sha" --limit 1 \
     --json databaseId --jq '.[0].databaseId') && [ -n "$id" ]; do
     sleep 5
 done
-gh run watch "$id" --exit-status > /dev/null 2>&1
+# Re-enter the watch if it drops; a lost connection is not a finished run.
+until conclusion=$(gh run view "$id" --json conclusion --jq '.conclusion') \
+    && [ -n "$conclusion" ]; do
+    gh run watch "$id" > /dev/null 2>&1 || sleep 30
+done
 gh run view "$id" --json conclusion,url --jq '"\(.conclusion) \(.url)"'
 ```
 

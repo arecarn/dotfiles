@@ -36,10 +36,14 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **Watch CI after every push:** a green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. After pushing, start a monitor on the run and report the result:
 
     ```bash
-    gh run watch "$(gh run list --branch "$(git branch --show-current)" \
-        --workflow CI --limit 1 --json databaseId --jq '.[0].databaseId')" \
-        --exit-status
+    until id=$(gh run list --commit "$(git rev-parse HEAD)" --workflow CI \
+        --limit 1 --json databaseId --jq '.[0].databaseId') && [ -n "$id" ]; do
+        sleep 5
+    done
+    gh run watch "$id" --exit-status
     ```
+
+    Select the run by commit SHA, not by branch: several runs can be in flight on one branch, so the newest branch run may be an earlier commit's. The loop covers the few seconds before GitHub registers the run.
 
     Use the `Monitor` tool so the result arrives as a notification instead of blocking (CI takes ~7 min). On failure, pull the cause with `gh run view <id> --log-failed` and fix before moving on.
 - **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).

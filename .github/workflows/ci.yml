@@ -9,6 +9,13 @@ on:  # yamllint disable-line rule:truthy
   pull_request:
     branches: "**"
 
+# A new push cancels the in-flight run for the same branch. The PR number keys
+# the group when present, so a branch's push run and pull_request run do not
+# cancel each other. master always runs to completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   ci:
     runs-on: ${{ matrix.os }}

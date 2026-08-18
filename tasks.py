@@ -678,6 +678,14 @@ def gen_instructions(ctx, check=False):
 
 
 @task
+def lint_instructions(ctx):
+    """
+    Check generated instruction files match their fragments
+    """
+    gen_instructions(ctx, check=True)
+
+
+@task
 def test(ctx):
     """
     Run the Python test suite
@@ -685,7 +693,15 @@ def test(ctx):
     ctx.run("pytest -q")
 
 
-@task(lint_shell, lint_yaml, lint_python, lint_lua, lint_ansible, default=True)
+@task(
+    lint_shell,
+    lint_yaml,
+    lint_python,
+    lint_lua,
+    lint_ansible,
+    lint_instructions,
+    default=True,
+)
 def lint(ctx):
     """
     Lint task

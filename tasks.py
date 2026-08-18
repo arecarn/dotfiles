@@ -13,6 +13,8 @@ import subprocess
 from invoke import task
 from ruamel.yaml import YAML
 
+import instructions
+
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
 
@@ -658,6 +660,29 @@ def lint_ansible(ctx):
         print("ansible-playbook syntax check not supported on Windows, skipping...")
         return
     ctx.run("ansible-playbook --syntax-check -i localhost, ansible/site.yml")
+
+
+@task(help={"check": "Report drift instead of writing files"})
+def gen_instructions(ctx, check=False):
+    """
+    Generate agent instruction files from shared fragments
+    """
+    drift = instructions.generate(check=check)
+    if drift:
+        paths = "\n  ".join(drift)
+        raise SystemExit(
+            "Generated instruction files are out of date:\n  "
+            f"{paths}\n"
+            "Run `uv run inv gen-instructions` and commit the result."
+        )
+
+
+@task
+def test(ctx):
+    """
+    Run the Python test suite
+    """
+    ctx.run("pytest -q")
 
 
 @task(lint_shell, lint_yaml, lint_python, lint_lua, lint_ansible, default=True)

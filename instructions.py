@@ -48,7 +48,7 @@ def render_output(
     sources = ", ".join(f"{name}.md" for name in fragments)
     banner = BANNER.format(sources=f"{fragment_dir.as_posix()}/{{{sources}}}")
     bodies = [
-        _render((fragment_dir / f"{name}.md").read_text().strip())
+        _render((fragment_dir / f"{name}.md").read_text(encoding="utf-8").strip())
         for name in fragments
     ]
     return banner + "\n" + "\n\n".join(bodies) + "\n"
@@ -68,12 +68,12 @@ def generate(
     for out, fragments in load_manifest(manifest_path).items():
         expected = render_output(fragments, fragment_dir)
         path = pathlib.Path(out)
-        current = path.read_text() if path.exists() else None
+        current = path.read_text(encoding="utf-8") if path.exists() else None
         if current == expected:
             continue
         if check:
             drift.append(out)
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(expected)
+            path.write_text(expected, encoding="utf-8")
     return drift

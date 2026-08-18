@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring,use-implicit-booleaness-not-comparison,unused-import
 """Tests for the shared-instruction generator."""
 
 import pathlib

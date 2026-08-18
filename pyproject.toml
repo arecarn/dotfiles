@@ -22,13 +22,7 @@ ignore = ["E501"]
 "tests/*" = ["F401"]  # fixture modules import symbols only for type context
 
 [tool.pylint."messages control"]
-disable = [
-    "locally-disabled",
-    "missing-function-docstring",  # test names are the documentation
-    "unspecified-encoding",        # repo scripts run on machines with a consistent locale
-    "use-implicit-booleaness-not-comparison",  # `== []` reads clearer than `not x` for drift lists
-    "unused-import",               # pytest fixture modules import symbols only for type context
-]
+disable = ["locally-disabled"]
 
 [tool.pylint.reports]
 output-format = "colorized"

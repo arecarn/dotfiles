@@ -78,5 +78,11 @@ javascript_packages:
   - opencode-ai
   - write-good
 
+# Installed with pnpm but with scripts disabled, per pi.dev's documented
+# install (`pnpm add -g --ignore-scripts`). Kept separate from
+# javascript_packages, whose loop forces scripts on for claude-code's sake.
+javascript_packages_no_scripts:
+  - "@earendil-works/pi-coding-agent"
+
 npm_global_packages:
   - "@anthropic-ai/claude-code"

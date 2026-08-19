@@ -350,12 +350,24 @@ class Dploy:
         """
         # pylint: disable=invalid-name
         print(self.stow_packages)
-        # Pre-create the shared skills hub as real dirs. This constrains dploy to
-        # folding at the `skills` level, where its unfold is correct; left alone it
-        # folds at ~/.config and the second repo to stow (the `agents` package
-        # exists here and in dotfiles_local) writes dangling links into the first
-        # repo's working tree. See docs/adr/0001-pre-create-the-shared-skills-hub.md
-        for d in (self.home / ".config/ai-skills", self.home / ".config/ai-skills/skills"):
+        # Pre-create real dirs so dploy can only fold at the leaf, not higher up.
+        # ai-skills: the shared skills hub exists in both this repo and
+        # dotfiles_local, so two independent dploy runs write into
+        # ~/.config/ai-skills. Left alone, folding happens at ~/.config and the
+        # second repo to stow writes dangling links into the first repo's working
+        # tree. See docs/adr/0001-pre-create-the-shared-skills-hub.md
+        # pi: pi writes runtime state (npm package payloads, per-project
+        # trust.json decisions with real local paths and project names, session
+        # history) into ~/.pi/agent/ during normal use. Left alone, ~/.pi did not
+        # previously exist, so stowing folds the whole directory into a single
+        # symlink into this repo, and that runtime state lands inside the working
+        # tree of a repo that is public on GitHub.
+        for d in (
+            self.home / ".config/ai-skills",
+            self.home / ".config/ai-skills/skills",
+            self.home / ".pi",
+            self.home / ".pi/agent",
+        ):
             d.mkdir(parents=True, exist_ok=True)
         self.dploy.stow(self.stow_packages, self.home, is_silent=False)
         for src, dest in self.links:

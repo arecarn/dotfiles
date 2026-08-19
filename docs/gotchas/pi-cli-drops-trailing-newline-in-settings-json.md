@@ -12,12 +12,10 @@ pi's writer does not emit a trailing newline. The committed file has one, so
 the rewrite always drops it — a change that is easy to stage and commit
 without noticing, since it carries no semantic content.
 
-This is why package installation goes through `uv run inv pi-install-plugins`
-(`pi update --extensions`) instead: it reconciles installed packages against
-the `packages` array already declared in `settings.json` without writing to
-the file at all. The committed `packages` list is the source of truth; `pi
-install`/`pi remove` are for interactively changing that list, not for
-provisioning.
+Provisioning does not hit this trap: `uv run inv pi-install-plugins` runs `pi
+update --extensions`, which does not write to `settings.json`. Why
+provisioning is built that way is recorded in
+[docs/adr/0002-reconcile-pi-packages-instead-of-installing-per-package.md](../adr/0002-reconcile-pi-packages-instead-of-installing-per-package.md).
 
 If the drift happens, `git checkout -- pi/.pi/agent/settings.json` restores
 the exact committed bytes — no manual newline fix needed.

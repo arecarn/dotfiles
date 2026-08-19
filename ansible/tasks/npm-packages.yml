@@ -8,6 +8,12 @@
 - name: Install global npm packages
   when: npm_global_packages | default([]) | length > 0
   become: false  # override the play-wide become in site.yml
+  environment:
+    # Set the prefix explicitly rather than inheriting it from ~/.npmrc. Without
+    # become, npm falls back to the system prefix on any machine whose ~/.npmrc
+    # does not set one -- a CI runner, or a fresh machine provisioned before the
+    # npm config is stowed -- and fails with EACCES on /usr/lib/node_modules.
+    NPM_CONFIG_PREFIX: "{{ user_home }}/.local"
   ansible.builtin.command:
     cmd: "npm install -g {{ item }}"
   loop: "{{ npm_global_packages | default([]) }}"

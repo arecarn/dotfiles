@@ -11,17 +11,21 @@ outputs:
     fragments:
       - build-ci
       - docker-makefile
+      - merge-requests
       - output-formatting
       - python
       - teams
+      - local-pointer
   # Global instructions, symlinked into $HOME by the pi stow package.
   pi/.pi/agent/AGENTS.md:
     fragments:
       - build-ci
       - docker-makefile
+      - merge-requests
       - output-formatting
       - python
       - teams
+      - local-pointer
   # This repo's own project instructions, read in place.
   CLAUDE.md:
     fragments:

@@ -378,12 +378,16 @@ class Dploy:
         # OS credential store, but it is third-party and fast-moving; if it
         # ever writes a token cache or state file into ~/.config/mcp/, that
         # would land directly in this public repo's working tree.
+        # ai-instructions: a dotfiles_local repo drops a private local.md beside
+        # these fragments, and the generated instruction files tell every agent to
+        # read it. Folding would make that private file land in this public repo.
         for d in (
             self.home / ".config/ai-skills",
             self.home / ".config/ai-skills/skills",
             self.home / ".pi",
             self.home / ".pi/agent",
             self.home / ".config/mcp",
+            self.home / ".config/ai-instructions",
         ):
             d.mkdir(parents=True, exist_ok=True)
         self.dploy.stow(self.stow_packages, self.home, is_silent=False)

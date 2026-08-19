@@ -38,6 +38,10 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
 - **Watch CI after every push:** a green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. Use the `watch-ci` skill, which selects the run by commit SHA and distinguishes a cancelled run from a failed one. CI here takes ~7 min.
 - **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).
+- **Private instructions are read, not imported:** the generated instruction files
+  point every agent at `~/.config/ai-instructions/local.md`, which a `dotfiles_local`
+  repo places there and which never enters this repo. Claude's `@` imports are no
+  longer used, so their resolution rules no longer apply here.
 - **Instruction files are generated:** global and project instruction files are
   assembled from fragments in `agents/.config/ai-instructions/` by
   `uv run inv gen-instructions`, per `manifest.yaml`. Edit the fragments, never
@@ -66,6 +70,14 @@ Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, both created
 ### Gotchas
 
 [docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. Search with `grep -ri "<term>" docs/gotchas/`. The `record-gotcha` and `review-gotchas` skills drive writing and re-verifying entries.
+
+**This directory is not the whole set.** A trap that cannot be described without private detail (internal hostnames, employer tooling, credential variable names, project or team names) is recorded in the `dotfiles_local` checkout instead, so searching here alone can come up empty on a trap already known. Search both:
+
+```bash
+grep -ri "<term>" docs/gotchas/ ~/dotfiles_local/ 2>/dev/null
+```
+
+When recording a new one, put it wherever it can be stated fully: public-safe traps here, everything else there. Split an entry across both when only part of it is sensitive — the public half describes the mechanism and the private half supplies the specifics. A missing `dotfiles_local` is normal; the grep just finds nothing.
 
 - **One trap per file, named for the trap**, leading with the symptom you would grep for mid-debug. Deliberately unnumbered, unlike ADRs: entries are deleted when they stop reproducing, which would leave numbering gappy.
 - **A gotcha is not an ADR.** Something *decided* — alternatives weighed, a call made — goes in `docs/adr/`. Something the system simply does, that nobody chose, goes here.

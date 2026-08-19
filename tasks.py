@@ -371,11 +371,19 @@ class Dploy:
         # previously exist, so stowing folds the whole directory into a single
         # symlink into this repo, and that runtime state lands inside the working
         # tree of a repo that is public on GitHub.
+        # mcp: same hazard as pi. ~/.config/mcp did not previously exist, so
+        # stowing would fold the whole directory into a single symlink into
+        # this repo. pi-mcp-adapter documents that it writes its overrides
+        # elsewhere (~/.pi/agent/mcp.json) and keeps OAuth credentials in the
+        # OS credential store, but it is third-party and fast-moving; if it
+        # ever writes a token cache or state file into ~/.config/mcp/, that
+        # would land directly in this public repo's working tree.
         for d in (
             self.home / ".config/ai-skills",
             self.home / ".config/ai-skills/skills",
             self.home / ".pi",
             self.home / ".pi/agent",
+            self.home / ".config/mcp",
         ):
             d.mkdir(parents=True, exist_ok=True)
         self.dploy.stow(self.stow_packages, self.home, is_silent=False)

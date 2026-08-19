@@ -302,6 +302,7 @@ class Dploy:
             "ctags",
             "git",
             "neovide",
+            "pi",
             "readline",
             "scripts",
             "shell",

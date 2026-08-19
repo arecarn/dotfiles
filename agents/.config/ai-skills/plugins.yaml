@@ -9,10 +9,17 @@
 #   claude:   claude plugin marketplace update {marketplace}
 #             claude plugin update {plugin}
 #   opencode: npx --yes skills update --global
+#   pi:       pi update git:github.com/{repo}
 #
 # Override with explicit `install` and/or `update` keys per tool.
 # Values can be a string (single command) or a list (multiple commands).
 # If `update` is omitted, `install` commands are re-run.
+#
+# pi packages are declared, not installed here: pi owns its package list in
+# pi/.pi/agent/settings.json, and `inv pi-install-plugins` just runs
+# `pi update --extensions` to reconcile disk state against that file. Add or
+# remove a pi package by editing settings.json's `packages` array, not this
+# manifest. `update` entries below still drive `inv pi-update-plugins`.
 #
 # MCP servers (registered at user scope in ~/.claude.json):
 #   mcp:
@@ -32,6 +39,21 @@ mattpocock-skills:
 superpowers:
   repo: obra/superpowers
   plugin: superpowers@superpowers-dev
+  # No `pi:` key: this package is declared in pi/.pi/agent/settings.json and
+  # reconciled by `pi update --extensions`, so its default `pi install
+  # git:github.com/{repo}` command above is intentionally unreachable.
+
+# Pi core ships no subagent tool and no MCP support; both are deliberate
+# omissions upstream. These fill the gaps superpowers skills expect.
+# Third-party, single-maintainer, fast-moving: pi packages run with full
+# system access, so review before bumping.
+pi-subagents:
+  update:
+    pi: pi update npm:pi-subagents
+
+pi-mcp-adapter:
+  update:
+    pi: pi update npm:pi-mcp-adapter
 
 gsd:
   install:

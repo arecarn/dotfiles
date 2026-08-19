@@ -11,9 +11,15 @@ dependencies = [
     "ansible>=9.0; sys_platform != 'win32'",
 ]
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
 [tool.ruff.lint]
 select = ["E", "F", "I"]  # E/F = flake8, I = isort
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F401"]  # fixture modules import symbols only for type context
 
 [tool.pylint."messages control"]
 disable = ["locally-disabled"]
@@ -25,6 +31,7 @@ reports = false
 [dependency-groups]
 dev = [
     "pylint>=3.3",
+    "pytest>=8.0",
     "ruff>=0.9",
     "yamllint>=1.35",
 ]

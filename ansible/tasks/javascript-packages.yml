@@ -1,6 +1,6 @@
 ---
 - name: Ensure pnpm is available (try Corepack first)
-  when: javascript_packages | length > 0
+  when: (javascript_packages | length > 0) or (javascript_packages_no_scripts | default([]) | length > 0)
   block:
     - name: Install Corepack via npm
       ansible.builtin.command:
@@ -39,3 +39,17 @@
   loop: "{{ javascript_packages }}"
   register: pnpm_result
   changed_when: "'Already up to date' not in pnpm_result.stdout"
+
+- name: Install global pnpm packages without running scripts
+  when: javascript_packages_no_scripts | default([]) | length > 0
+  become: false
+  vars:
+    pnpm_bin_dir: "{{ lookup('env', 'HOME') }}/.local/share/pnpm"
+  environment:
+    PNPM_HOME: "{{ pnpm_bin_dir }}"
+    PATH: "{{ pnpm_bin_dir }}/bin:{{ pnpm_bin_dir }}:{{ lookup('env', 'PATH') }}"
+  ansible.builtin.command:
+    cmd: "pnpm add -g {{ item }} --ignore-scripts"
+  loop: "{{ javascript_packages_no_scripts | default([]) }}"
+  register: pnpm_no_scripts_result
+  changed_when: "'Already up to date' not in pnpm_no_scripts_result.stdout"

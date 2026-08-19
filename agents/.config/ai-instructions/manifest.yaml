@@ -1,0 +1,31 @@
+---
+# Maps each generated instruction file to its ordered fragments.
+#
+# Identical fragment lists across harnesses are expected and correct: fragments
+# contain no harness-specific syntax, so every harness gets the same content.
+# When one harness genuinely needs more, give it an extra fragment here rather
+# than forking a shared document.
+outputs:
+  # Global instructions, symlinked into $HOME by the claude-code stow package.
+  claude-code/.claude/CLAUDE.md:
+    fragments:
+      - build-ci
+      - docker-makefile
+      - output-formatting
+      - python
+      - teams
+  # Global instructions, symlinked into $HOME by the pi stow package.
+  pi/.pi/agent/AGENTS.md:
+    fragments:
+      - build-ci
+      - docker-makefile
+      - output-formatting
+      - python
+      - teams
+  # This repo's own project instructions, read in place.
+  CLAUDE.md:
+    fragments:
+      - project-overview
+  AGENTS.md:
+    fragments:
+      - project-overview

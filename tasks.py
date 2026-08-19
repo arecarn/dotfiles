@@ -13,6 +13,8 @@ import subprocess
 from invoke import task
 from ruamel.yaml import YAML
 
+import instructions
+
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
 
@@ -250,12 +252,21 @@ def opencode_install_plugins(ctx):
     _install_plugins(ctx, "opencode")
 
 
+@task
+def pi_install_plugins(ctx):
+    """Reconcile pi packages declared in settings.json"""
+    if IS_CI:
+        return
+    _run_cmd(ctx, "pi update --extensions")
+
+
 @task(
     claude_setup,
     stow_skills,
     claude_install_mcp,
     claude_install_plugins,
     opencode_install_plugins,
+    pi_install_plugins,
 )
 def setup_ai(ctx):
     """Set up AI coding agent settings, MCP servers, skills, and plugins"""
@@ -300,6 +311,7 @@ class Dploy:
             "ctags",
             "git",
             "neovide",
+            "pi",
             "readline",
             "scripts",
             "shell",
@@ -347,12 +359,32 @@ class Dploy:
         """
         # pylint: disable=invalid-name
         print(self.stow_packages)
-        # Pre-create the shared skills hub as real dirs. This constrains dploy to
-        # folding at the `skills` level, where its unfold is correct; left alone it
-        # folds at ~/.config and the second repo to stow (the `agents` package
-        # exists here and in dotfiles_local) writes dangling links into the first
-        # repo's working tree. See docs/adr/0001-pre-create-the-shared-skills-hub.md
-        for d in (self.home / ".config/ai-skills", self.home / ".config/ai-skills/skills"):
+        # Pre-create real dirs so dploy can only fold at the leaf, not higher up.
+        # ai-skills: the shared skills hub exists in both this repo and
+        # dotfiles_local, so two independent dploy runs write into
+        # ~/.config/ai-skills. Left alone, folding happens at ~/.config and the
+        # second repo to stow writes dangling links into the first repo's working
+        # tree. See docs/adr/0001-pre-create-the-shared-skills-hub.md
+        # pi: pi writes runtime state (npm package payloads, per-project
+        # trust.json decisions with real local paths and project names, session
+        # history) into ~/.pi/agent/ during normal use. Left alone, ~/.pi did not
+        # previously exist, so stowing folds the whole directory into a single
+        # symlink into this repo, and that runtime state lands inside the working
+        # tree of a repo that is public on GitHub.
+        # mcp: same hazard as pi. ~/.config/mcp did not previously exist, so
+        # stowing would fold the whole directory into a single symlink into
+        # this repo. pi-mcp-adapter documents that it writes its overrides
+        # elsewhere (~/.pi/agent/mcp.json) and keeps OAuth credentials in the
+        # OS credential store, but it is third-party and fast-moving; if it
+        # ever writes a token cache or state file into ~/.config/mcp/, that
+        # would land directly in this public repo's working tree.
+        for d in (
+            self.home / ".config/ai-skills",
+            self.home / ".config/ai-skills/skills",
+            self.home / ".pi",
+            self.home / ".pi/agent",
+            self.home / ".config/mcp",
+        ):
             d.mkdir(parents=True, exist_ok=True)
         self.dploy.stow(self.stow_packages, self.home, is_silent=False)
         for src, dest in self.links:
@@ -424,12 +456,12 @@ def stow(ctx):
         d = Dploy()
         d.clean()
         d.stow()
+        _stow_shared_skills()
     except (OSError, DployError) as e:
         if IS_WINDOWS:
-            print(f"Skipping stow on Windows: {e}")
+            print(f"Skipping stow: {e}")
         else:
             raise
-    _stow_shared_skills()
 
 
 @task
@@ -481,6 +513,7 @@ def _stow_shared_skills():
     targets = [
         pathlib.Path.home() / ".claude",
         pathlib.Path.home() / ".config" / "opencode",
+        pathlib.Path.home() / ".pi" / "agent",
     ]
 
     src = _SHARED_SKILLS_DIR.parent  # ~/.config/ai-skills/
@@ -574,6 +607,9 @@ def _default_update_cmds(plugin_cfg, tool):
         ]
     if tool == "opencode":
         return "npx --yes skills update --global"
+    if tool == "pi":
+        source = f"git:github.com/{repo}"
+        return f"pi update {shlex.quote(source)}"
     return None
 
 
@@ -618,6 +654,14 @@ def opencode_update_plugins(ctx):
     _update_plugins(ctx, "opencode")
 
 
+@task
+def pi_update_plugins(ctx):
+    """Update pi packages from manifest"""
+    if IS_CI:
+        return
+    _update_plugins(ctx, "pi")
+
+
 @task(provision, stow, name="all")
 def all_(ctx):
     """
@@ -660,7 +704,46 @@ def lint_ansible(ctx):
     ctx.run("ansible-playbook --syntax-check -i localhost, ansible/site.yml")
 
 
-@task(lint_shell, lint_yaml, lint_python, lint_lua, lint_ansible, default=True)
+@task(help={"check": "Report drift instead of writing files"})
+def gen_instructions(ctx, check=False):
+    """
+    Generate agent instruction files from shared fragments
+    """
+    drift = instructions.generate(check=check)
+    if drift:
+        paths = "\n  ".join(drift)
+        raise SystemExit(
+            "Generated instruction files are out of date:\n  "
+            f"{paths}\n"
+            "Run `uv run inv gen-instructions` and commit the result."
+        )
+
+
+@task
+def lint_instructions(ctx):
+    """
+    Check generated instruction files match their fragments
+    """
+    gen_instructions(ctx, check=True)
+
+
+@task
+def test(ctx):
+    """
+    Run the Python test suite
+    """
+    ctx.run("pytest -q")
+
+
+@task(
+    lint_shell,
+    lint_yaml,
+    lint_python,
+    lint_lua,
+    lint_ansible,
+    lint_instructions,
+    default=True,
+)
 def lint(ctx):
     """
     Lint task

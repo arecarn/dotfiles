@@ -496,6 +496,7 @@ def _stow_shared_skills():
     targets = [
         pathlib.Path.home() / ".claude",
         pathlib.Path.home() / ".config" / "opencode",
+        pathlib.Path.home() / ".pi" / "agent",
     ]
 
     src = _SHARED_SKILLS_DIR.parent  # ~/.config/ai-skills/

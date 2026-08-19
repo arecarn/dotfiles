@@ -254,10 +254,10 @@ def opencode_install_plugins(ctx):
 
 @task
 def pi_install_plugins(ctx):
-    """Install pi packages from manifest"""
+    """Reconcile pi packages declared in settings.json"""
     if IS_CI:
         return
-    _install_plugins(ctx, "pi")
+    _run_cmd(ctx, "pi update --extensions")
 
 
 @task(

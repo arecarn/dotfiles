@@ -4,7 +4,6 @@
 #   claude:   claude plugin marketplace add {repo}
 #             claude plugin install {plugin}
 #   opencode: npx --yes skills add {repo} --agent opencode --global --yes
-#   pi:       pi install git:github.com/{repo}
 #
 # Update defaults:
 #   claude:   claude plugin marketplace update {marketplace}
@@ -15,6 +14,12 @@
 # Override with explicit `install` and/or `update` keys per tool.
 # Values can be a string (single command) or a list (multiple commands).
 # If `update` is omitted, `install` commands are re-run.
+#
+# pi packages are declared, not installed here: pi owns its package list in
+# pi/.pi/agent/settings.json, and `inv pi-install-plugins` just runs
+# `pi update --extensions` to reconcile disk state against that file. Add or
+# remove a pi package by editing settings.json's `packages` array, not this
+# manifest. `update` entries below still drive `inv pi-update-plugins`.
 #
 # MCP servers (registered at user scope in ~/.claude.json):
 #   mcp:
@@ -40,14 +45,10 @@ superpowers:
 # Third-party, single-maintainer, fast-moving: pi packages run with full
 # system access, so review before bumping.
 pi-subagents:
-  install:
-    pi: pi install npm:pi-subagents
   update:
     pi: pi update npm:pi-subagents
 
 pi-mcp-adapter:
-  install:
-    pi: pi install npm:pi-mcp-adapter
   update:
     pi: pi update npm:pi-mcp-adapter
 

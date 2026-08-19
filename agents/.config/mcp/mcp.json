@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "ticktick": {
+      "type": "http",
+      "url": "https://mcp.ticktick.com/"
+    },
+    "gmail": {
+      "type": "http",
+      "url": "https://gmailmcp.googleapis.com/mcp/v1"
+    },
+    "google-calendar": {
+      "type": "http",
+      "url": "https://calendarmcp.googleapis.com/mcp/v1"
+    }
+  }
+}

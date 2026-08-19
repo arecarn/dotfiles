@@ -39,6 +39,9 @@ mattpocock-skills:
 superpowers:
   repo: obra/superpowers
   plugin: superpowers@superpowers-dev
+  # No `pi:` key: this package is declared in pi/.pi/agent/settings.json and
+  # reconciled by `pi update --extensions`, so its default `pi install
+  # git:github.com/{repo}` command above is intentionally unreachable.
 
 # Pi core ships no subagent tool and no MCP support; both are deliberate
 # omissions upstream. These fill the gaps superpowers skills expect.

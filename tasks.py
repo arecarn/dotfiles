@@ -456,12 +456,12 @@ def stow(ctx):
         d = Dploy()
         d.clean()
         d.stow()
+        _stow_shared_skills()
     except (OSError, DployError) as e:
         if IS_WINDOWS:
-            print(f"Skipping stow on Windows: {e}")
+            print(f"Skipping stow: {e}")
         else:
             raise
-    _stow_shared_skills()
 
 
 @task
@@ -591,9 +591,6 @@ def _default_install_cmds(plugin_cfg, tool):
         ]
     if tool == "opencode":
         return f"npx --yes skills add {shlex.quote(repo)} --agent opencode --global --yes"
-    if tool == "pi":
-        source = f"git:github.com/{repo}"
-        return f"pi install {shlex.quote(source)}"
     return None
 
 

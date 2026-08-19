@@ -23,7 +23,7 @@ and `~/.pi/agent/git` moved aside — removing every package of both source
 types from disk — a single `pi update --extensions` run restored all of them:
 `npm:`-sourced packages reappeared under `~/.pi/agent/npm/node_modules/`, and
 the `git:`-sourced package was freshly cloned (`Cloning into
-'/home/arecarn/.pi/agent/git/github.com/obra/superpowers'...`) with its full
+'~/.pi/agent/git/github.com/obra/superpowers'...`) with its full
 payload present, not an empty directory — confirmed by listing its `skills/`
 subdirectory and finding all fourteen expected entries. `settings.json`
 stayed untouched (`git status --short` clean) throughout. Verified against pi

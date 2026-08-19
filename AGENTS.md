@@ -38,6 +38,16 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
 - **Watch CI after every push:** a green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. Use the `watch-ci` skill, which selects the run by commit SHA and distinguishes a cancelled run from a failed one. CI here takes ~7 min.
 - **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).
+- **Instruction files are generated:** global and project instruction files are
+  assembled from fragments in `agents/.config/ai-instructions/` by
+  `uv run inv gen-instructions`, per `manifest.yaml`. Edit the fragments, never
+  the generated files; `inv lint` fails on drift. Fragments carry no
+  harness-specific syntax (no `@` imports, no glob arrays) because pi expands
+  none, so every harness gets the same flat content.
+- **Pi config:** `pi/.pi/agent/` holds pi's `settings.json` and its generated
+  `AGENTS.md`. Skills arrive via the shared hub fan-out, not the package. Pi
+  ships no MCP or subagent support by design; both come from third-party
+  packages declared in the plugin manifest.
 
 ## Agent skills
 

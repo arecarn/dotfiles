@@ -584,7 +584,8 @@ def _default_install_cmds(plugin_cfg, tool):
     if tool == "opencode":
         return f"npx --yes skills add {shlex.quote(repo)} --agent opencode --global --yes"
     if tool == "pi":
-        return f"pi install git:github.com/{shlex.quote(repo)}"
+        source = f"git:github.com/{repo}"
+        return f"pi install {shlex.quote(source)}"
     return None
 
 
@@ -602,7 +603,8 @@ def _default_update_cmds(plugin_cfg, tool):
     if tool == "opencode":
         return "npx --yes skills update --global"
     if tool == "pi":
-        return f"pi update git:github.com/{shlex.quote(repo)}"
+        source = f"git:github.com/{repo}"
+        return f"pi update {shlex.quote(source)}"
     return None
 
 

@@ -252,12 +252,21 @@ def opencode_install_plugins(ctx):
     _install_plugins(ctx, "opencode")
 
 
+@task
+def pi_install_plugins(ctx):
+    """Install pi packages from manifest"""
+    if IS_CI:
+        return
+    _install_plugins(ctx, "pi")
+
+
 @task(
     claude_setup,
     stow_skills,
     claude_install_mcp,
     claude_install_plugins,
     opencode_install_plugins,
+    pi_install_plugins,
 )
 def setup_ai(ctx):
     """Set up AI coding agent settings, MCP servers, skills, and plugins"""
@@ -574,6 +583,8 @@ def _default_install_cmds(plugin_cfg, tool):
         ]
     if tool == "opencode":
         return f"npx --yes skills add {shlex.quote(repo)} --agent opencode --global --yes"
+    if tool == "pi":
+        return f"pi install git:github.com/{shlex.quote(repo)}"
     return None
 
 
@@ -590,6 +601,8 @@ def _default_update_cmds(plugin_cfg, tool):
         ]
     if tool == "opencode":
         return "npx --yes skills update --global"
+    if tool == "pi":
+        return f"pi update git:github.com/{shlex.quote(repo)}"
     return None
 
 
@@ -632,6 +645,14 @@ def claude_update_plugins(ctx):
 def opencode_update_plugins(ctx):
     """Update OpenCode plugins to latest versions"""
     _update_plugins(ctx, "opencode")
+
+
+@task
+def pi_update_plugins(ctx):
+    """Update pi packages from manifest"""
+    if IS_CI:
+        return
+    _update_plugins(ctx, "pi")
 
 
 @task(provision, stow, name="all")

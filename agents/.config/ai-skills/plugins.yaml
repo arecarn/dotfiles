@@ -4,11 +4,13 @@
 #   claude:   claude plugin marketplace add {repo}
 #             claude plugin install {plugin}
 #   opencode: npx --yes skills add {repo} --agent opencode --global --yes
+#   pi:       pi install git:github.com/{repo}
 #
 # Update defaults:
 #   claude:   claude plugin marketplace update {marketplace}
 #             claude plugin update {plugin}
 #   opencode: npx --yes skills update --global
+#   pi:       pi update git:github.com/{repo}
 #
 # Override with explicit `install` and/or `update` keys per tool.
 # Values can be a string (single command) or a list (multiple commands).
@@ -32,6 +34,22 @@ mattpocock-skills:
 superpowers:
   repo: obra/superpowers
   plugin: superpowers@superpowers-dev
+
+# Pi core ships no subagent tool and no MCP support; both are deliberate
+# omissions upstream. These fill the gaps superpowers skills expect.
+# Third-party, single-maintainer, fast-moving: pi packages run with full
+# system access, so review before bumping.
+pi-subagents:
+  install:
+    pi: pi install npm:pi-subagents
+  update:
+    pi: pi update npm:pi-subagents
+
+pi-mcp-adapter:
+  install:
+    pi: pi install npm:pi-mcp-adapter
+  update:
+    pi: pi update npm:pi-mcp-adapter
 
 gsd:
   install:

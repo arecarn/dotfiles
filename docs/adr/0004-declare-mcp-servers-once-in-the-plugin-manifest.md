@@ -10,10 +10,10 @@ config file: `~/.claude.json` for Claude Code, `~/.agents/mcp.json` for pi.
 Every harness reads a different file, and none of them reads another's, so a
 server has to appear in as many files as there are harnesses. Hand-maintaining
 those copies had already gone wrong: this repo declared three servers in both
-`plugins.yaml` and a stowed `agents/.config/mcp/mcp.json`, while nine work
-servers existed only in `~/.claude.json` — a file nothing versions — leaving pi
-without them, and a `dotfiles_local` opencode config had drifted to a different
-Jira token variable and a different knowledge-base id for servers it shared with
+`plugins.yaml` and a stowed `agents/.config/mcp/mcp.json`, another nine existed
+only in `~/.claude.json` — a file nothing versions — leaving pi without them, and
+a third copy in a `dotfiles_local` opencode config had drifted to a different
+credential variable and a different server parameter for servers it shared with
 Claude Code.
 
 Generating from one declaration removes the copies a person has to keep in sync.

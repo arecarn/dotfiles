@@ -1,18 +1,20 @@
 # Reconcile pi packages via `pi update --extensions` instead of `pi install`
 
-Pi packages are declared in the committed `packages` array in
-`pi/.pi/agent/settings.json`. Provisioning (`uv run inv pi-install-plugins`)
-reconciles installed packages against that array by running `pi update
---extensions`, rather than running `pi install <source>` once per declared
-package.
+Pi packages are declared by a `pi_package:` key in
+`agents/.config/ai-skills/plugins.yaml`. `uv run inv pi-setup` writes them into
+the `packages` array of pi's own `~/.pi/agent/settings.json`, and
+`uv run inv pi-install-plugins` reconciles installed packages against that array
+by running `pi update --extensions`, rather than running `pi install <source>`
+once per declared package.
 
 ## Why
 
-`~/.pi/agent/settings.json` is a symlink into this repo, at
-`pi/.pi/agent/settings.json`. `pi install <source>` writes to `settings.json`
-whenever the source is not already in the `packages` array — that write lands
-on a committed file, through the symlink, every time provisioning's declared
-list and the currently-installed set differ.
+`pi install <source>` writes to `settings.json` whenever the source is not
+already in the `packages` array. When this repo committed that file and stowed
+it as a symlink, every such write landed on a committed file. The file is no
+longer committed, but the reasoning survives the change: provisioning should not
+write to a file the harness owns and rewrites on its own schedule, and
+`pi install` would fight `pi-setup` over the same array.
 
 `pi update --extensions` does not write to `settings.json`. It reads the
 `packages` array already there and installs whatever is declared but absent
@@ -31,19 +33,14 @@ stayed untouched (`git status --short` clean) throughout. Verified against pi
 
 ## Consequences
 
-`agents/.config/ai-skills/plugins.yaml` and the `packages` array in
-`pi/.pi/agent/settings.json` both name pi packages, and nothing keeps them in
-sync. `settings.json` is the list that actually drives installation via
-`pi update --extensions`; `plugins.yaml`'s pi-related entries (where present)
-are not consulted by `pi-install-plugins` and can drift without any check
-catching it.
+Add or remove a pi package by editing `plugins.yaml`, not by running
+`pi install`. A manual `pi install` still works, but `pi-setup` owns the
+`packages` array and will drop anything not declared in the manifest on the next
+provisioning run. Everything else in `settings.json` is pi's own and is
+preserved, so the preferences pi writes there survive.
 
-Manual `pi install`/`pi remove` runs remain the correct way to *change* the
-declared package list — they are just not part of provisioning. Whatever they
-write to `settings.json` becomes the new committed source of truth once
-reviewed and committed normally. A `pi install`/`pi remove` run does drop the
-file's trailing newline as a side effect; see
-[docs/gotchas/pi-cli-drops-trailing-newline-in-settings-json.md](../gotchas/pi-cli-drops-trailing-newline-in-settings-json.md).
+`pi-setup` must run before `pi-install-plugins` in the `setup_ai` chain, or
+reconciliation reads a `packages` array that predates the manifest.
 
 Not re-verified since 2026-08-18; a pi upgrade should be re-tested rather
 than assumed compatible, since this behaviour is not documented upstream.

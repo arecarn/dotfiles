@@ -14,6 +14,7 @@ outputs:
       - docker-makefile
       - merge-requests
       - output-formatting
+      - prose-style
       - python
       - teams
       - local-pointer
@@ -25,6 +26,7 @@ outputs:
       - docker-makefile
       - merge-requests
       - output-formatting
+      - prose-style
       - python
       - teams
       - local-pointer

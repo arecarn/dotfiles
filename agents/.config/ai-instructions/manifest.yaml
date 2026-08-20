@@ -14,10 +14,21 @@ outputs:
       - docker-makefile
       - merge-requests
       - output-formatting
-      - prose-style
       - python
       - teams
       - local-pointer
+  # Claude Code gets prose-style as an output style instead, so selecting it
+  # replaces Claude's own brevity instructions rather than arguing with them
+  # from context. Selected by `_setup_claude_settings` in tasks.py. The header
+  # is here because an output style reserves the first line for frontmatter.
+  claude-code/.claude/output-styles/concise.md:
+    header: |
+      ---
+      name: Concise
+      description: Concise, direct prose that expands when needed; structured when it aids reading; no filler, no AI-tell punctuation
+      ---
+    fragments:
+      - prose-style
   # Global instructions, symlinked into $HOME by the pi stow package.
   pi/.pi/agent/AGENTS.md:
     fragments:

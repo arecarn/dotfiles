@@ -8,6 +8,7 @@ a generated file assembled from them.
 """
 
 import pathlib
+from typing import NamedTuple
 
 from ruamel.yaml import YAML
 
@@ -22,6 +23,18 @@ BANNER = (
 _YAML = YAML()
 
 
+class Output(NamedTuple):
+    """One generated file: its ordered fragments and an optional literal header.
+
+    `header` exists for outputs whose format reserves the first line, such as a
+    Claude Code output style needing YAML frontmatter. It is emitted verbatim
+    above the banner.
+    """
+
+    fragments: list[str]
+    header: str | None = None
+
+
 def _render(text: str) -> str:
     """Transform one fragment on its way into an output.
 
@@ -34,24 +47,30 @@ def _render(text: str) -> str:
     return text
 
 
-def load_manifest(path: pathlib.Path = MANIFEST_PATH) -> dict[str, list[str]]:
-    """Map each output path to its ordered list of fragment names."""
+def load_manifest(path: pathlib.Path = MANIFEST_PATH) -> dict[str, Output]:
+    """Map each output path to its manifest entry."""
     data = _YAML.load(path) or {}
     outputs = data.get("outputs") or {}
-    return {out: list(cfg["fragments"]) for out, cfg in outputs.items()}
+    return {
+        out: Output(list(cfg["fragments"]), cfg.get("header"))
+        for out, cfg in outputs.items()
+    }
 
 
 def render_output(
-    fragments: list[str], fragment_dir: pathlib.Path = FRAGMENT_DIR
+    fragments: list[str],
+    fragment_dir: pathlib.Path = FRAGMENT_DIR,
+    header: str | None = None,
 ) -> str:
     """Assemble one output file's full text from its fragments."""
     sources = ", ".join(f"{name}.md" for name in fragments)
     banner = BANNER.format(sources=f"{fragment_dir.as_posix()}/{{{sources}}}")
+    prefix = f"{header.strip()}\n\n" if header else ""
     bodies = [
         _render((fragment_dir / f"{name}.md").read_text(encoding="utf-8").strip())
         for name in fragments
     ]
-    return banner + "\n" + "\n\n".join(bodies) + "\n"
+    return prefix + banner + "\n" + "\n\n".join(bodies) + "\n"
 
 
 def generate(
@@ -65,8 +84,8 @@ def generate(
     fragments. Always empty when check is False, because they were just written.
     """
     drift = []
-    for out, fragments in load_manifest(manifest_path).items():
-        expected = render_output(fragments, fragment_dir)
+    for out, spec in load_manifest(manifest_path).items():
+        expected = render_output(spec.fragments, fragment_dir, spec.header)
         path = pathlib.Path(out)
         current = path.read_text(encoding="utf-8") if path.exists() else None
         if current == expected:

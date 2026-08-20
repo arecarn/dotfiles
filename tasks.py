@@ -126,11 +126,10 @@ def _setup_claude_settings():
         return
     settings = json.loads(claude_settings.read_text())
     settings["voiceEnabled"] = True
-    # Prose style is a shared instruction fragment, so no output style is
-    # selected. Drop the value this repo used to write, which would otherwise
-    # name a style that no longer exists; leave a style the user chose alone.
-    if settings.get("outputStyle") == "Concise":
-        del settings["outputStyle"]
+    # Selects claude-code/.claude/output-styles/concise.md, generated from the
+    # prose-style fragment. Deleting the key here would leave Claude's own
+    # brevity instructions in force, which the fragment is meant to replace.
+    settings["outputStyle"] = "Concise"
     settings.setdefault("permissions", {})
     settings["permissions"]["defaultMode"] = "bypassPermissions"
     settings["skipDangerousModePermissionPrompt"] = True

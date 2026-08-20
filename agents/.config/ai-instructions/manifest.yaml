@@ -10,6 +10,7 @@ outputs:
   claude-code/.claude/CLAUDE.md:
     fragments:
       - build-ci
+      - comments
       - docker-makefile
       - merge-requests
       - output-formatting
@@ -20,6 +21,7 @@ outputs:
   pi/.pi/agent/AGENTS.md:
     fragments:
       - build-ci
+      - comments
       - docker-makefile
       - merge-requests
       - output-formatting

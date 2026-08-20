@@ -49,6 +49,12 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   `AGENTS.md`. Skills arrive via the shared hub fan-out, not the package. Pi
   ships no MCP or subagent support by design; both come from third-party
   packages declared in the plugin manifest.
+- **MCP servers are declared once,** in `plugins.yaml` (plus a `dotfiles_local`
+  repo's `plugins_local.yaml`), and `inv install-mcp` writes them into each
+  harness's own config file: `~/.claude.json` is amended, `~/.agents/mcp.json` is
+  generated whole for pi. Add or change a server in the manifest, never in those
+  files. Credentials belong in the manifest only as `${ENV_VAR}` references. See
+  [docs/adr/0003-declare-mcp-servers-once-in-the-plugin-manifest.md](docs/adr/0003-declare-mcp-servers-once-in-the-plugin-manifest.md).
 
 ## Agent skills
 

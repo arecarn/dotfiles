@@ -137,25 +137,76 @@ def _setup_claude_settings():
     print(f"Updated {claude_settings}")
 
 
-def _setup_claude_mcp():
-    claude_json = pathlib.Path.home() / ".claude.json"
-    if not claude_json.exists():
-        return
-    config = json.loads(claude_json.read_text())
-    config.setdefault("mcpServers", {})
-
+def _manifest_mcp_servers():
+    """MCP server definitions from the merged plugin manifest, keyed by server name."""
     manifest = _load_plugins_manifest()
-    added = []
-    for name, cfg in manifest.items():
-        if "mcp" not in cfg or name in config["mcpServers"]:
-            continue
-        config["mcpServers"][name] = cfg["mcp"]
-        added.append(name)
+    return {name: cfg["mcp"] for name, cfg in manifest.items() if "mcp" in cfg}
 
+
+def _amend_mcp_servers(config_path, servers):
+    """Add manifest servers missing from a harness-owned MCP config; return names added.
+
+    For a file the harness itself creates and writes far more than MCP config into.
+    Existing entries are left untouched, so a server whose definition changed here
+    has to be edited (or deleted and regenerated) in that file by hand. An absent
+    file stays absent: a stub written before the harness's first run would be a
+    config file it never asked for.
+    """
+    if not config_path.exists():
+        return []
+
+    config = json.loads(config_path.read_text())
+    config.setdefault("mcpServers", {})
+    added = [name for name in servers if name not in config["mcpServers"]]
+    if not added:
+        return []
+
+    for name in added:
+        config["mcpServers"][name] = servers[name]
+    config_path.write_text(json.dumps(config, indent=2) + "\n")
+    return added
+
+
+def _write_mcp_config(config_path, servers):
+    """Generate a whole MCP config file from the manifest; return True if it changed.
+
+    Unlike _amend_mcp_servers this owns the file outright, so an edited or removed
+    manifest entry propagates. Only use it for a path no harness writes to itself,
+    or the harness's own writes get discarded on the next provisioning run.
+    """
+    content = json.dumps({"mcpServers": servers}, indent=2) + "\n"
+    if config_path.exists() and config_path.read_text() == content:
+        return False
+
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    config_path.write_text(content)
+    return True
+
+
+def _setup_mcp_servers():
+    """Register manifest MCP servers with every harness that reads an MCP config file.
+
+    One manifest entry per server feeds both harnesses, so neither drifts from the
+    declaration. The two are written differently because the files differ in
+    ownership: Claude Code creates ~/.claude.json and keeps its whole state there,
+    while ~/.agents/mcp.json is one of the global paths pi-mcp-adapter merges and
+    the only one it never writes to itself (its /mcp panel writes
+    ~/.pi/agent/mcp.json, which is left free for exactly that).
+    """
+    servers = _manifest_mcp_servers()
+    if not servers:
+        return
+
+    home = pathlib.Path.home()
+    claude_json = home / ".claude.json"
+    added = _amend_mcp_servers(claude_json, servers)
     if added:
-        claude_json.write_text(json.dumps(config, indent=2) + "\n")
         print(f"Added MCP servers to {claude_json}: {', '.join(added)}")
-        print("Run /mcp in Claude Code to complete OAuth authorization for new servers.")
+        print("Run /mcp in Claude Code to authorize any of them that use OAuth.")
+
+    pi_config = home / ".agents" / "mcp.json"
+    if _write_mcp_config(pi_config, servers):
+        print(f"Wrote {len(servers)} MCP servers to {pi_config}")
 
 
 def _provision_windows(ctx, is_ci: bool) -> None:
@@ -233,9 +284,9 @@ def stow_skills(ctx):
 
 
 @task
-def claude_install_mcp(ctx):
-    """Register MCP servers from manifest into ~/.claude.json (user scope)"""
-    _setup_claude_mcp()
+def install_mcp(ctx):
+    """Register MCP servers from the manifest for Claude Code and pi"""
+    _setup_mcp_servers()
 
 
 @task
@@ -265,7 +316,7 @@ def pi_install_plugins(ctx):
 @task(
     claude_setup,
     stow_skills,
-    claude_install_mcp,
+    install_mcp,
     claude_install_plugins,
     opencode_install_plugins,
     pi_install_plugins,
@@ -373,13 +424,6 @@ class Dploy:
         # previously exist, so stowing folds the whole directory into a single
         # symlink into this repo, and that runtime state lands inside the working
         # tree of a repo that is public on GitHub.
-        # mcp: same hazard as pi. ~/.config/mcp did not previously exist, so
-        # stowing would fold the whole directory into a single symlink into
-        # this repo. pi-mcp-adapter documents that it writes its overrides
-        # elsewhere (~/.pi/agent/mcp.json) and keeps OAuth credentials in the
-        # OS credential store, but it is third-party and fast-moving; if it
-        # ever writes a token cache or state file into ~/.config/mcp/, that
-        # would land directly in this public repo's working tree.
         # ai-instructions: a dotfiles_local repo drops a private local.md beside
         # these fragments, and the generated instruction files tell every agent to
         # read it. Folding would make that private file land in this public repo.
@@ -388,7 +432,6 @@ class Dploy:
             self.home / ".config/ai-skills/skills",
             self.home / ".pi",
             self.home / ".pi/agent",
-            self.home / ".config/mcp",
             self.home / ".config/ai-instructions",
         ):
             d.mkdir(parents=True, exist_ok=True)

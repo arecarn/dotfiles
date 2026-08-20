@@ -21,12 +21,18 @@
 # remove a pi package by editing settings.json's `packages` array, not this
 # manifest. `update` entries below still drive `inv pi-update-plugins`.
 #
-# MCP servers (registered at user scope in ~/.claude.json):
+# MCP servers. `inv install-mcp` writes each entry below into every harness's own
+# MCP config file — ~/.claude.json for Claude Code, ~/.agents/mcp.json for pi — so
+# a server is declared here once and no harness drifts from another. Entries
+# already present in a harness's file are left alone; redefining a server means
+# editing it there. Work-specific servers are declared the same way in
+# plugins_local.yaml, which a dotfiles_local repo supplies.
 #   mcp:
 #     type: http | sse | stdio
 #     url: https://...          # for http/sse
 #     command: npx              # for stdio
 #     args: [...]               # for stdio
+#     headers: {TOKEN: "${ENV_VAR}"}   # ${VAR} is expanded by both harnesses
 
 # Ships in the built-in official marketplace, so there is no marketplace to add
 # and no opencode equivalent to install.

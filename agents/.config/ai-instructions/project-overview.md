@@ -54,7 +54,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   harness's own config file: `~/.claude.json` is amended, `~/.agents/mcp.json` is
   generated whole for pi. Add or change a server in the manifest, never in those
   files. Credentials belong in the manifest only as `${ENV_VAR}` references. See
-  [docs/adr/0003-declare-mcp-servers-once-in-the-plugin-manifest.md](docs/adr/0003-declare-mcp-servers-once-in-the-plugin-manifest.md).
+  [docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md](docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md).
 
 ## Agent skills
 

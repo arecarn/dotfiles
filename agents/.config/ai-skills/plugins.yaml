@@ -55,11 +55,6 @@ pi-mcp-adapter:
   update:
     pi: pi update npm:pi-mcp-adapter
 
-gsd:
-  install:
-    claude: npx --yes @opengsd/get-shit-done-redux@latest --claude --global
-    opencode: npx --yes @opengsd/get-shit-done-redux@latest --opencode --global
-
 ticktick:
   mcp:
     type: http

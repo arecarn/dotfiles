@@ -5,7 +5,7 @@ import pathlib
 
 import pytest
 
-from manage import instructions
+from manage.agents import instructions
 
 
 @pytest.fixture(name="fragment_dir")

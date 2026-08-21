@@ -12,7 +12,7 @@ import subprocess
 
 from invoke import task
 
-from manage import instructions, plugins, skills_hub
+from manage import agents
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
@@ -194,7 +194,7 @@ def _setup_mcp_servers():
     the only one it never writes to itself (its /mcp panel writes
     ~/.pi/agent/mcp.json, which is left free for exactly that).
     """
-    servers = plugins.load().mcp_servers()
+    servers = agents.plugins.load().mcp_servers()
     if not servers:
         return
 
@@ -224,7 +224,7 @@ def _setup_pi_settings():
     this file is what `pi update --extensions` reconciles against, so skipping it
     on a machine that has never run pi would mean no package is ever installed.
     """
-    packages = plugins.load().pi_packages()
+    packages = agents.plugins.load().pi_packages()
     if not packages:
         return
 
@@ -326,7 +326,7 @@ def claude_setup(ctx):
 @task
 def stow_skills(ctx):
     """Stow shared skills into each tool's skills discovery path"""
-    skills_hub.stow_out()
+    agents.skills_hub.stow_out()
 
 
 @task
@@ -466,7 +466,7 @@ class Dploy:
         # pylint: disable=invalid-name
         print(self.stow_packages)
         # The hub's own pre-create, and the rationale for it, live with the hub.
-        skills_hub.pre_create(self.home)
+        agents.skills_hub.pre_create(self.home)
         # Pre-create real dirs so dploy can only fold at the leaf, not higher up.
         # pi: pi writes runtime state (npm package payloads, per-project
         # trust.json decisions with real local paths and project names, session
@@ -553,7 +553,7 @@ def stow(ctx):
         d = Dploy()
         d.clean()
         d.stow()
-        skills_hub.stow_out(d.home)
+        agents.skills_hub.stow_out(d.home)
     except (OSError, DployError) as e:
         if IS_WINDOWS:
             print(f"Skipping stow: {e}")
@@ -603,7 +603,7 @@ def _run_cmd(ctx, cmd):
 
 def _run_plugin_cmds(ctx, tool, action):
     """Run every manifest command for a tool and an action ("install"/"update")."""
-    for cmd in plugins.load().commands(tool, action):
+    for cmd in agents.plugins.load().commands(tool, action):
         _run_cmd(ctx, cmd)
 
 
@@ -674,7 +674,7 @@ def gen_instructions(ctx, check=False):
     """
     Generate agent instruction files from shared fragments
     """
-    drift = instructions.generate(check=check)
+    drift = agents.instructions.generate(check=check)
     if drift:
         paths = "\n  ".join(drift)
         raise SystemExit(

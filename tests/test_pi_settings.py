@@ -11,7 +11,7 @@ import pytest
 from ruamel.yaml import YAML
 
 import tasks
-from manage import plugins
+from manage.agents import plugins
 
 
 @pytest.fixture(name="pi_home")

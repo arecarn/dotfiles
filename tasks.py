@@ -12,9 +12,7 @@ import subprocess
 
 from invoke import task
 
-import instructions
-import plugins
-import skills_hub
+from manage import instructions, plugins, skills_hub
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument

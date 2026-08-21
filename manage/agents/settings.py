@@ -24,14 +24,18 @@ def _home(home):
 def setup_claude(home=None):
     """Merge this repo's Claude Code preferences into ~/.claude/settings.json.
 
-    An absent file is left absent: Claude Code creates it on first run, and a
-    stub written before that would be a config file it never asked for.
+    The file is created when absent rather than skipped. Claude Code writes it
+    on first run, so skipping meant provisioning a fresh machine applied none of
+    these settings and said nothing about it -- and a fresh machine is exactly
+    when they are wanted. Claude Code merges its own defaults into whatever it
+    finds, so a file holding only these keys is not a problem for it.
+
+    Relies on ~/.claude being a real directory, which manage.stow guarantees by
+    pre-creating it: unstowed, it folds into a symlink into this repo and the
+    file written here would land in the working tree.
     """
     path = _home(home) / _CLAUDE_SETTINGS
-    if not path.exists():
-        return
-
-    settings = json.loads(path.read_text())
+    settings = json.loads(path.read_text()) if path.exists() else {}
     settings["voiceEnabled"] = True
     # Selects claude-code/.claude/output-styles/concise.md, generated from the
     # prose-style fragment. Deleting the key here would leave Claude's own
@@ -40,8 +44,11 @@ def setup_claude(home=None):
     settings.setdefault("permissions", {})
     settings["permissions"]["defaultMode"] = "bypassPermissions"
     settings["skipDangerousModePermissionPrompt"] = True
+
+    existed = path.exists()
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(settings, indent=2) + "\n")
-    print(f"Updated {path}")
+    print(f"{'Updated' if existed else 'Created'} {path}")
 
 
 def setup_pi(home=None):

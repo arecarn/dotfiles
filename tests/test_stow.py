@@ -224,3 +224,38 @@ def test_a_plain_windows_path_is_left_alone():
 
 def test_a_posix_path_is_left_alone():
     assert stow._strip_extended_prefix("/home/x/repo/gone") == "/home/x/repo/gone"
+
+
+def test_the_barrier_keeps_the_claude_directory_real(tmp_path):
+    """Claude Code writes credentials and session history into ~/.claude, and
+    the stow package supplies only two entries, so folding would put all of it
+    in this public repo."""
+    home = tmp_path / "home"
+    home.mkdir()
+    package = tmp_path / "src" / "claude-code"
+    (package / ".claude" / "output-styles").mkdir(parents=True)
+    (package / ".claude" / "CLAUDE.md").write_text("x")
+    for barrier in stow._FOLD_BARRIERS:
+        (home / barrier).mkdir(parents=True, exist_ok=True)
+
+    dploy.stow([package], home, is_silent=True)
+
+    assert (home / ".claude").is_dir() and not (home / ".claude").is_symlink()
+    assert (home / ".claude" / "CLAUDE.md").is_symlink()
+
+    # What Claude Code writes afterwards stays out of the source tree.
+    (home / ".claude" / ".credentials.json").write_text("{}\n")
+    assert not (package / ".claude" / ".credentials.json").exists()
+
+
+def test_without_the_barrier_the_claude_directory_folds(tmp_path):
+    """Establishes the failure the barrier prevents."""
+    home = tmp_path / "home"
+    home.mkdir()
+    package = tmp_path / "src" / "claude-code"
+    (package / ".claude").mkdir(parents=True)
+    (package / ".claude" / "CLAUDE.md").write_text("x")
+
+    dploy.stow([package], home, is_silent=True)
+
+    assert (home / ".claude").is_symlink()

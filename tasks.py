@@ -13,14 +13,14 @@ import subprocess
 from invoke import task
 
 from manage import agents
+from manage.repo import EXCLUDE_DIRS, IS_WINDOWS
+from manage.stow import Dploy
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
 
-IS_WINDOWS = os.name == "nt"
 IS_CI = os.environ.get("GITHUB_ACTIONS") == "true"
 IS_ADMIN = False
-EXCLUDE_DIRS = {".venv", ".git", "__pycache__", ".cache", "node_modules"}
 # Ansible resolves ansible.cfg from the working directory, so the playbook runs
 # from here. Entered per command with ctx.cd rather than os.chdir: invoke runs
 # pre-tasks in one process, so a chdir that outlives its command leaves every
@@ -397,148 +397,6 @@ def clean(ctx):
     Clean repository using git
     """
     ctx.run("git clean --interactive", pty=True)
-
-
-class Dploy:
-    """
-    Class to handle logic and data to stow and unstow using dploy
-    """
-
-    def __init__(self):
-        # do a file level import so this whole script isn't dependant on dploy
-        # preventing us from installing it using the provision task
-        import dploy  # pylint: disable=C
-
-        self.dploy = dploy
-        self.home = pathlib.Path().home()
-        self.stow_packages = [
-            "agents",
-            "claude-code",
-            "ctags",
-            "git",
-            "neovide",
-            "pi",
-            "readline",
-            "scripts",
-            "shell",
-            "ssh",
-            "tmux",
-            "nvim",
-            "wezterm",
-            "zsh",
-        ]
-
-        if IS_WINDOWS:
-            self.stow_packages.extend(["powershell", "vcxsrv"])
-
-        # pylint: disable=invalid-name
-        p = pathlib.Path
-
-        self.links = []
-
-        dropbox = self.home / p("Dropbox")
-        files = self.home / p("files")
-        if dropbox.exists():
-            self.links.append((dropbox, files))
-        else:
-
-            def mkdir(path):
-                path.mkdir(parents=True, exist_ok=True)
-                print(f"Creating Directory {path}")
-
-            mkdir(files / p("documents") / p("archive"))
-            mkdir(files / p("projects") / p("archive"))
-            mkdir(files / p("notes") / p("archive"))
-
-        if IS_WINDOWS:
-            self.links += [
-                (self.home / p(".config/nvim"), self.home / p("AppData/Local/nvim")),
-                (
-                    self.home / p(".config/neovide"),
-                    self.home / p("AppData/Roaming/neovide"),
-                ),
-            ]
-
-    def stow(self):
-        """
-        stow and link the specified files
-        """
-        # pylint: disable=invalid-name
-        print(self.stow_packages)
-        # The hub's own pre-create, and the rationale for it, live with the hub.
-        agents.skills_hub.pre_create(self.home)
-        # Pre-create real dirs so dploy can only fold at the leaf, not higher up.
-        # pi: pi writes runtime state (npm package payloads, per-project
-        # trust.json decisions with real local paths and project names, session
-        # history) into ~/.pi/agent/ during normal use. Left alone, ~/.pi did not
-        # previously exist, so stowing folds the whole directory into a single
-        # symlink into this repo, and that runtime state lands inside the working
-        # tree of a repo that is public on GitHub.
-        # ai-instructions: a dotfiles_local repo drops a private local.md beside
-        # these fragments, and the generated instruction files tell every agent to
-        # read it. Folding would make that private file land in this public repo.
-        for d in (
-            self.home / ".pi",
-            self.home / ".pi/agent",
-            self.home / ".config/ai-instructions",
-        ):
-            d.mkdir(parents=True, exist_ok=True)
-        self.dploy.stow(self.stow_packages, self.home, is_silent=False)
-        for src, dest in self.links:
-            self.dploy.link(src, dest, is_silent=False)
-
-    def unstow(self):
-        """
-        unstow and link the specified files
-        """
-        for _, dest in reversed(self.links):
-            try:
-                os.unlink(dest)
-            except FileNotFoundError:
-                pass
-
-        self.dploy.unstow(self.stow_packages, self.home, is_silent=False)
-
-    def clean(self):
-        """
-        remove dead symlinks left over from stowing
-
-        Replaces dploy's own clean sub-command, which traverses the entire stow
-        destination and chokes on permission-denied entries along the way (a
-        frequent failure on Windows). This walk is depth-limited to the deepest
-        package path, skips EXCLUDE_DIRS, and swallows PermissionError.
-        """
-        repo_dir = pathlib.Path(__file__).resolve().parent
-        max_depth = max(
-            len(p.relative_to(pkg).parts)
-            for pkg in self.stow_packages
-            for p in pathlib.Path(pkg).rglob("*")
-        )
-        self._clean_dead_links(self.home, repo_dir, max_depth)
-
-    def _clean_dead_links(self, directory, repo_dir, max_depth, current_depth=0):
-        """
-        Recursively find and remove dead symlinks that point into the dotfiles
-        repo, limited by depth and skipping permission-denied directories.
-        """
-        if current_depth > max_depth:
-            return
-
-        try:
-            entries = list(directory.iterdir())
-        except PermissionError:
-            return
-
-        for entry in entries:
-            if entry.is_symlink():
-                target = (entry.parent / entry.readlink()).resolve()
-                if not target.exists() and repo_dir in target.parents:
-                    print(f"removing dead link: {entry}")
-                    entry.unlink()
-            elif entry.is_dir() and not entry.is_symlink():
-                if entry.name in EXCLUDE_DIRS:
-                    continue
-                self._clean_dead_links(entry, repo_dir, max_depth, current_depth + 1)
 
 
 @task

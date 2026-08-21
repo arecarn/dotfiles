@@ -22,6 +22,11 @@ IS_WINDOWS = os.name == "nt"
 IS_CI = os.environ.get("GITHUB_ACTIONS") == "true"
 IS_ADMIN = False
 EXCLUDE_DIRS = {".venv", ".git", "__pycache__", ".cache", "node_modules"}
+# Ansible resolves ansible.cfg from the working directory, so the playbook runs
+# from here. Entered per command with ctx.cd rather than os.chdir: invoke runs
+# pre-tasks in one process, so a chdir that outlives its command leaves every
+# task composed after it resolving relative paths from the wrong root.
+ANSIBLE_DIR = "ansible"
 if IS_WINDOWS:
     STOW_LOCATION = "USERPROFILE"
     IS_ADMIN = ctypes.windll.shell32.IsUserAnAdmin() != 0
@@ -88,8 +93,11 @@ def provision_all(ctx, args=""):
     """
     Provision this and other system using ansible
     """
-    os.chdir("ansible")
-    ctx.run("ansible-playbook site.yml --inventory localhost, " + shlex.join(shlex.split(args)))
+    with ctx.cd(ANSIBLE_DIR):
+        ctx.run(
+            "ansible-playbook site.yml --inventory localhost, "
+            + shlex.join(shlex.split(args))
+        )
 
 
 @task
@@ -305,17 +313,21 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
     if is_termux:
         provision_termux(ctx)
 
-    os.chdir("ansible")
-
     become_arg = "" if is_termux or is_ci else "--ask-become-pass"
     ci_args = "--skip-tags desktop-only" if is_ci else ""
 
-    ansible_pb = "../.venv/bin/ansible-playbook"
-    if not pathlib.Path(ansible_pb).exists():
-        ansible_pb = "ansible-playbook"
+    # Paths are relative to ANSIBLE_DIR, which the command runs in; the check is
+    # relative to the repo root, which this process stays in.
+    ansible_pb = "ansible-playbook"
+    if (pathlib.Path(".venv") / "bin" / "ansible-playbook").exists():
+        ansible_pb = "../.venv/bin/ansible-playbook"
 
     safe_args = shlex.join(shlex.split(args))
-    ctx.run(f"{ansible_pb} site.yml --inventory localhost, {become_arg} {ci_args} {safe_args}")
+    with ctx.cd(ANSIBLE_DIR):
+        ctx.run(
+            f"{ansible_pb} site.yml --inventory localhost, "
+            f"{become_arg} {ci_args} {safe_args}"
+        )
 
 
 @task

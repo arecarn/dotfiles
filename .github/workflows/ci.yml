@@ -35,9 +35,8 @@ jobs:
       - name: Install shellcheck (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get install -y shellcheck
-      - name: Install shellcheck (Windows)
-        if: runner.os == 'Windows'
-        run: choco install shellcheck
+      # No shellcheck on Windows: `lint_shell` skips there, because the Linux
+      # job lints the same scripts and nothing runs them on Windows.
       - name: Enable symbolic links (Windows)
         if: runner.os == 'Windows'
         shell: cmd

@@ -53,13 +53,54 @@ def _find_files(pattern: str) -> list[str]:
     ]
 
 
+# Missing-linter policy, applied by every lint task through _run_linter:
+# a linter whose binary is absent is a hard error in CI and a loud skip
+# locally. CI installs the tools deliberately, so an absent one there means
+# the install broke and a green run would be green for the wrong reason.
+# Locally a developer may not have every tool, so the run continues -- but
+# each skip is announced and the set of skips is repeated at the end of the
+# lint run, so a clean run cannot be mistaken for a complete one.
+#
+# Two things this policy is not about. A linter that does not apply to the
+# platform at all (shellcheck on Windows, ansible-playbook on Windows) is
+# scoped out by its task and never reaches here. Linters run as `python -m`
+# (pylint, ruff) are declared dependencies of this repo's own environment,
+# so their absence is a broken `uv sync`, not a missing system package.
+SKIPPED_LINTERS: list[str] = []
+
+
+def _run_linter(ctx, tool: str, command: str) -> None:
+    """
+    Run `command` if `tool` is on PATH.
+
+    Raises SystemExit when the tool is missing under CI; otherwise records the
+    skip in SKIPPED_LINTERS and returns. See the missing-linter policy above.
+    """
+    if shutil.which(tool):
+        ctx.run(command)
+        return
+    if IS_CI:
+        raise SystemExit(
+            f"{tool} not found on PATH. CI installs every linter, so this is an "
+            "install failure, not an optional tool -- fix the install step "
+            "rather than skipping the check."
+        )
+    print(f"{tool} not found, skipping...")
+    SKIPPED_LINTERS.append(tool)
+
+
 @task
 def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
+    # The shell scripts here target Linux and Termux; nothing runs them on
+    # Windows, and the Linux job already lints the same files.
+    if IS_WINDOWS:
+        print("shell scripts are not a Windows target, skipping...")
+        return
     files_string = " ".join(_find_files("*.sh"))
-    ctx.run(f"shellcheck --format gcc {files_string}")
+    _run_linter(ctx, "shellcheck", f"shellcheck --format gcc {files_string}")
 
 
 @task
@@ -68,7 +109,7 @@ def lint_yaml(ctx):
     Run yamllint on YAML Ansible configuration files
     """
     files_string = " ".join(_find_files("*.yml"))
-    ctx.run(f"yamllint --format parsable {files_string}")
+    _run_linter(ctx, "yamllint", f"yamllint --format parsable {files_string}")
 
 
 @task
@@ -333,18 +374,8 @@ def lint_lua(ctx):
     if not files:
         return
     files_string = " ".join(files)
-
-    # Use stylua to check formatting
-    if shutil.which("stylua"):
-        ctx.run(f"stylua --check {files_string}")
-    else:
-        print("stylua not found, skipping...")
-
-    # Use selene for linting
-    if shutil.which("selene"):
-        ctx.run(f"selene {files_string}")
-    else:
-        print("selene not found, skipping...")
+    _run_linter(ctx, "stylua", f"stylua --check {files_string}")
+    _run_linter(ctx, "selene", f"selene {files_string}")
 
 
 @task
@@ -403,3 +434,11 @@ def lint(ctx):
     Lint task
     """
     # pylint: disable=unused-argument
+    # The per-linter skip messages scroll away behind the output of the
+    # linters that did run, so repeat them once at the end: this is the line
+    # that keeps a clean run from reading as a complete one.
+    if SKIPPED_LINTERS:
+        print(
+            "Lint incomplete -- these linters were not installed and were "
+            f"skipped: {', '.join(SKIPPED_LINTERS)}"
+        )

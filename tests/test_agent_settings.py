@@ -1,4 +1,4 @@
-"""Tests for declaring pi packages in pi's own settings file."""
+"""Tests for writing this repo's declarations into each harness's settings file."""
 
 # Test names document each case; the module under test exposes these helpers
 # privately and the tests are their only caller.
@@ -10,14 +10,16 @@ import pathlib
 import pytest
 from ruamel.yaml import YAML
 
-import tasks
-from manage.agents import plugins
+from manage.agents import plugins, settings
 
 
 @pytest.fixture(name="pi_home")
 def fixture_pi_home(tmp_path, monkeypatch):
-    """A fake $HOME, with the manifest stubbed to two pi packages."""
-    monkeypatch.setattr(pathlib.Path, "home", classmethod(lambda cls: tmp_path))
+    """A fake $HOME, with the manifest stubbed to two pi packages.
+
+    The home is passed explicitly rather than patched, so these exercise the
+    same call shape tasks.py uses.
+    """
     manifest = plugins.Manifest({
         "a": {"pi_package": "git:github.com/a/b"},
         "c": {"pi_package": "npm:c"},
@@ -31,7 +33,7 @@ def _settings(home):
 
 
 def test_creates_the_file_when_absent(pi_home):
-    tasks._setup_pi_settings()
+    settings.setup_pi(pi_home)
     assert _settings(pi_home)["packages"] == ["git:github.com/a/b", "npm:c"]
 
 
@@ -40,11 +42,11 @@ def test_preserves_keys_pi_wrote_itself(pi_home):
     path.parent.mkdir(parents=True)
     path.write_text(json.dumps({"theme": "dark", "defaultModel": "some-model"}))
 
-    tasks._setup_pi_settings()
+    settings.setup_pi(pi_home)
 
-    settings = _settings(pi_home)
-    assert settings["theme"] == "dark"
-    assert settings["defaultModel"] == "some-model"
+    written = _settings(pi_home)
+    assert written["theme"] == "dark"
+    assert written["defaultModel"] == "some-model"
 
 
 def test_a_dropped_declaration_is_removed(pi_home, monkeypatch):
@@ -54,7 +56,7 @@ def test_a_dropped_declaration_is_removed(pi_home, monkeypatch):
 
     manifest = plugins.Manifest({"c": {"pi_package": "npm:c"}})
     monkeypatch.setattr(plugins, "load", lambda: manifest)
-    tasks._setup_pi_settings()
+    settings.setup_pi(pi_home)
 
     assert _settings(pi_home)["packages"] == ["npm:c"]
 
@@ -66,7 +68,7 @@ def test_replaces_a_stale_symlink_instead_of_writing_through_it(pi_home):
     path.parent.mkdir(parents=True)
     path.symlink_to(repo_file)  # target does not exist, as after the file was removed
 
-    tasks._setup_pi_settings()
+    settings.setup_pi(pi_home)
 
     assert not path.is_symlink()
     assert not repo_file.exists()
@@ -91,3 +93,47 @@ def test_the_committed_manifest_declares_the_expected_packages():
         "npm:pi-subagents",
         "npm:pi-mcp-adapter",
     ]
+
+
+# --- the file Claude Code owns -----------------------------------------------
+
+
+def _claude_settings(home):
+    return home / ".claude" / "settings.json"
+
+
+def test_an_absent_claude_settings_file_is_left_absent(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    assert not _claude_settings(tmp_path).exists()
+
+
+def test_the_output_style_is_set(tmp_path):
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    _claude_settings(tmp_path).write_text(json.dumps({}))
+
+    settings.setup_claude(tmp_path)
+
+    assert json.loads(_claude_settings(tmp_path).read_text())["outputStyle"] == "Concise"
+
+
+def test_keys_claude_wrote_itself_are_preserved(tmp_path):
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    _claude_settings(tmp_path).write_text(json.dumps({"theme": "dark"}))
+
+    settings.setup_claude(tmp_path)
+
+    assert json.loads(_claude_settings(tmp_path).read_text())["theme"] == "dark"
+
+
+def test_an_existing_permissions_block_keeps_its_other_keys(tmp_path):
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    _claude_settings(tmp_path).write_text(
+        json.dumps({"permissions": {"allow": ["Bash(ls:*)"]}})
+    )
+
+    settings.setup_claude(tmp_path)
+
+    permissions = json.loads(_claude_settings(tmp_path).read_text())["permissions"]
+    assert permissions["allow"] == ["Bash(ls:*)"]
+    assert permissions["defaultMode"] == "bypassPermissions"

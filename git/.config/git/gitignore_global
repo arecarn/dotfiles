@@ -24,5 +24,9 @@ compile_commands.json
 # Local git worktrees (superpowers / manual)
 .worktrees/
 
+# Claude Code agent worktrees. Scoped to the subdirectory rather than all of
+# .claude/, which projects legitimately commit (settings.json, skills, agents).
+.claude/worktrees/
+
 # Local-only superpowers specs & plans (not part of any MR)
 docs/superpowers/

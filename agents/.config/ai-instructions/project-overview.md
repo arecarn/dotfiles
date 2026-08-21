@@ -45,10 +45,12 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   the generated files; `inv lint` fails on drift. Fragments carry no
   harness-specific syntax (no `@` imports, no glob arrays) because pi expands
   none, so every harness gets the same flat content.
-- **Pi config:** `pi/.pi/agent/` holds pi's `settings.json` and its generated
-  `AGENTS.md`. Skills arrive via the shared hub fan-out, not the package. Pi
-  ships no MCP or subagent support by design; both come from third-party
-  packages declared in the plugin manifest.
+- **Pi config:** `pi/.pi/agent/` holds only pi's generated `AGENTS.md`. Skills
+  arrive via the shared hub fan-out, not the package, and packages are declared
+  with a `pi_package:` key in `plugins.yaml` and written into pi's own
+  `~/.pi/agent/settings.json` by `inv pi-setup`, so the preferences pi writes
+  there stay out of this repo. Pi ships no MCP or subagent support by design;
+  both come from third-party packages.
 - **MCP servers are declared once,** in `plugins.yaml` (plus a `dotfiles_local`
   repo's `plugins_local.yaml`), and `inv install-mcp` writes them into each
   harness's own config file: `~/.claude.json` is amended, `~/.agents/mcp.json` is

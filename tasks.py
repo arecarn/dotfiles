@@ -209,6 +209,53 @@ def _setup_mcp_servers():
         print(f"Wrote {len(servers)} MCP servers to {pi_config}")
 
 
+def _manifest_pi_packages():
+    """Source specs of every pi package declared in the merged plugin manifest."""
+    manifest = _load_plugins_manifest()
+    return [cfg["pi_package"] for cfg in manifest.values() if "pi_package" in cfg]
+
+
+def _setup_pi_settings():
+    """Write the manifest's pi packages into pi's own settings file.
+
+    Mixed ownership, which is why neither MCP helper fits: `packages` belongs to
+    the manifest, so dropping a declaration there drops the package here, while
+    every other key is pi's own -- theme, provider and model defaults, changelog
+    state -- and survives untouched. Declaring in the manifest rather than in a
+    stowed settings.json is what lets plugins_local.yaml add a private package,
+    and keeps machine-local preferences out of this public repo.
+
+    Unlike _amend_mcp_servers an absent file is created rather than left alone:
+    this file is what `pi update --extensions` reconciles against, so skipping it
+    on a machine that has never run pi would mean no package is ever installed.
+    """
+    packages = _manifest_pi_packages()
+    if not packages:
+        return
+
+    settings_path = pathlib.Path.home() / ".pi" / "agent" / "settings.json"
+    # A machine that stowed the settings.json this repo used to commit still has
+    # a symlink to a path the repo no longer has. Writing through it would
+    # recreate the file inside the working tree, which is what moving the
+    # declaration here removes. inv clean-stow prunes the dead link eventually;
+    # this must not depend on that having run first.
+    if settings_path.is_symlink():
+        settings_path.unlink()
+
+    settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
+    settings["packages"] = packages
+    settings["enableSkillCommands"] = True
+    settings["quietStartup"] = True
+
+    content = json.dumps(settings, indent=2) + "\n"
+    if settings_path.exists() and settings_path.read_text() == content:
+        return
+
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+    settings_path.write_text(content)
+    print(f"Declared {len(packages)} pi packages in {settings_path}")
+
+
 def _provision_windows(ctx, is_ci: bool) -> None:
     if not IS_ADMIN:
         raise SystemExit("You need to be admin to install things with Chocolatey")
@@ -306,8 +353,14 @@ def opencode_install_plugins(ctx):
 
 
 @task
+def pi_setup(ctx):
+    """Declare the manifest's pi packages in ~/.pi/agent/settings.json"""
+    _setup_pi_settings()
+
+
+@task
 def pi_install_plugins(ctx):
-    """Reconcile pi packages declared in settings.json"""
+    """Reconcile pi packages declared in the manifest"""
     if IS_CI:
         return
     _run_cmd(ctx, "pi update --extensions")
@@ -319,6 +372,7 @@ def pi_install_plugins(ctx):
     install_mcp,
     claude_install_plugins,
     opencode_install_plugins,
+    pi_setup,
     pi_install_plugins,
 )
 def setup_ai(ctx):
@@ -644,7 +698,12 @@ def _default_install_cmds(plugin_cfg, tool):
 
 
 def _default_update_cmds(plugin_cfg, tool):
-    """Derive default update commands from repo + plugin fields."""
+    """Derive default update commands from a plugin's declared fields."""
+    if tool == "pi":
+        source = plugin_cfg.get("pi_package")
+        return f"pi update {shlex.quote(source)}" if source else None
+    if "repo" not in plugin_cfg or "plugin" not in plugin_cfg:
+        return None
     repo = plugin_cfg["repo"]
     plugin = plugin_cfg["plugin"]
     # marketplace name is the part after @ in plugin spec (e.g. "foo@bar" -> "bar")
@@ -656,9 +715,6 @@ def _default_update_cmds(plugin_cfg, tool):
         ]
     if tool == "opencode":
         return "npx --yes skills update --global"
-    if tool == "pi":
-        source = f"git:github.com/{repo}"
-        return f"pi update {shlex.quote(source)}"
     return None
 
 
@@ -682,7 +738,7 @@ def _update_plugins(ctx, tool):
     for _name, cfg in manifest.items():
         if "update" in cfg and tool in cfg["update"]:
             _run_cmds(ctx, cfg["update"][tool])
-        elif "repo" in cfg and "plugin" in cfg:
+        elif ("repo" in cfg and "plugin" in cfg) or "pi_package" in cfg:
             cmds = _default_update_cmds(cfg, tool)
             if cmds:
                 _run_cmds(ctx, cmds)

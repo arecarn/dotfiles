@@ -1,9 +1,0 @@
-{
-  "packages": [
-    "git:github.com/obra/superpowers",
-    "npm:pi-subagents",
-    "npm:pi-mcp-adapter"
-  ],
-  "enableSkillCommands": true,
-  "quietStartup": true
-}

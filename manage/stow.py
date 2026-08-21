@@ -5,11 +5,39 @@ shared skills hub, which owns its own stow-out. `StowPlan` holds what to stow an
 where, and delegates the mirroring itself to the dploy library.
 """
 
+import contextlib
 import os
 import pathlib
 
 from manage import repo
 from manage.agents import skills_hub
+
+
+@contextlib.contextmanager
+def tolerating_windows_symlink_failure(what):
+    """Skip a stow-shaped operation that failed for want of Windows privilege.
+
+    Creating a symlink on Windows is privilege-gated, so any stow-shaped
+    operation aborts on an unelevated shell without Developer Mode -- see
+    docs/gotchas/windows-symlink-creation-needs-elevation.md. That is a property
+    of the machine rather than of the checkout, so on Windows the failure is
+    reported and swallowed; everywhere else it is a real bug and re-raised.
+
+    This is the one place the tolerate-on-Windows decision is made. Every
+    stow-shaped task wraps its body in it rather than repeating the catch, so a
+    task added later inherits the policy. `what` names the operation for the
+    skip message.
+    """
+    # File-level import for the same reason StowPlan imports dploy late: this
+    # module must be importable before provisioning has installed dploy.
+    from dploy.error import DployError  # pylint: disable=import-outside-toplevel
+
+    try:
+        yield
+    except (OSError, DployError) as error:
+        if not repo.IS_WINDOWS:
+            raise
+        print(f"Skipping {what} on Windows: {error}")
 
 # Directories that must already exist as real directories when stowing starts.
 # dploy folds a fully-owned directory into a single symlink, and folding high

@@ -13,7 +13,7 @@ from invoke import task
 
 from manage import agents
 from manage.repo import EXCLUDE_DIRS, IS_WINDOWS
-from manage.stow import StowPlan
+from manage.stow import StowPlan, tolerating_windows_symlink_failure
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
@@ -201,6 +201,11 @@ def claude_setup(ctx):
 @task
 def stow_skills(ctx):
     """Stow shared skills into each tool's skills discovery path"""
+    # Unguarded on purpose. The fan-out is the whole point of this task, so a
+    # Windows privilege failure is its result, not an incidental step to skip
+    # past; silently succeeding would report skills stowed that are not. The
+    # `stow` task tolerates the same failure because there it is one step of
+    # many.
     agents.skills_hub.stow_out()
 
 
@@ -279,19 +284,16 @@ def stow(ctx):
     """
     Run dploy stow to link all files into their respective repositories
     """
-    # pylint: disable=unused-argument,import-outside-toplevel
-    from dploy.error import DployError
-
-    try:
+    # pylint: disable=unused-argument
+    # The shared-skills fan-out is inside the guard deliberately. This is the
+    # whole-machine entry point -- `inv all` and CI run it -- so a Windows
+    # privilege failure anywhere in it should skip, not abort the run. `inv
+    # stow-skills` asks for that fan-out alone and leaves it unguarded.
+    with tolerating_windows_symlink_failure("stow"):
         d = StowPlan()
         d.clean()
         d.stow()
         agents.skills_hub.stow_out(d.home)
-    except (OSError, DployError) as e:
-        if IS_WINDOWS:
-            print(f"Skipping stow: {e}")
-        else:
-            raise
 
 
 @task
@@ -299,16 +301,9 @@ def unstow(ctx):
     """
     Run dploy unstow to unlink all files from their respective repositories
     """
-    # pylint: disable=unused-argument,import-outside-toplevel
-    from dploy.error import DployError
-
-    try:
+    # pylint: disable=unused-argument
+    with tolerating_windows_symlink_failure("unstow"):
         StowPlan().unstow()
-    except (OSError, DployError) as e:
-        if IS_WINDOWS:
-            print(f"Skipping unstow on Windows: {e}")
-        else:
-            raise
 
 
 @task
@@ -316,16 +311,9 @@ def clean_stow(ctx):
     """
     Remove dead symlinks left over from stowing
     """
-    # pylint: disable=unused-argument,import-outside-toplevel
-    from dploy.error import DployError
-
-    try:
+    # pylint: disable=unused-argument
+    with tolerating_windows_symlink_failure("clean-stow"):
         StowPlan().clean()
-    except (OSError, DployError) as e:
-        if IS_WINDOWS:
-            print(f"Skipping clean on Windows: {e}")
-        else:
-            raise
 
 
 _USE_PTY = not IS_WINDOWS

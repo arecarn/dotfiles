@@ -259,3 +259,72 @@ def test_without_the_barrier_the_claude_directory_folds(tmp_path):
     dploy.stow([package], home, is_silent=True)
 
     assert (home / ".claude").is_symlink()
+
+
+# --- the tolerate-on-Windows policy ------------------------------------------
+
+
+def _raise_in_guard(error, on_windows, monkeypatch):
+    """Run `error` inside the guard with IS_WINDOWS forced to `on_windows`."""
+    monkeypatch.setattr(stow.repo, "IS_WINDOWS", on_windows)
+    with stow.tolerating_windows_symlink_failure("stow"):
+        raise error
+
+
+def test_a_symlink_failure_is_skipped_on_windows(monkeypatch, capsys):
+    _raise_in_guard(OSError("WinError 1314"), True, monkeypatch)
+    assert "Skipping stow on Windows" in capsys.readouterr().out
+
+
+def test_a_dploy_failure_is_skipped_on_windows(monkeypatch):
+    from dploy.error import DployError  # pylint: disable=import-outside-toplevel
+
+    _raise_in_guard(DployError("nope"), True, monkeypatch)
+
+
+def test_the_same_failure_is_fatal_elsewhere(monkeypatch):
+    with pytest.raises(OSError):
+        _raise_in_guard(OSError("WinError 1314"), False, monkeypatch)
+
+
+def test_an_unrelated_error_is_fatal_even_on_windows(monkeypatch):
+    with pytest.raises(ValueError):
+        _raise_in_guard(ValueError("not a symlink problem"), True, monkeypatch)
+
+
+def test_success_passes_through(monkeypatch):
+    monkeypatch.setattr(stow.repo, "IS_WINDOWS", True)
+    with stow.tolerating_windows_symlink_failure("stow"):
+        result = "ran"
+    assert result == "ran"
+
+
+# --- which tasks the policy covers -------------------------------------------
+#
+# The split is a decision, not an accident (see the comments on both tasks), so
+# it is pinned: `stow` tolerates the shared-skills fan-out, `stow-skills` does
+# not.
+
+
+def _task_source(name):
+    import inspect  # pylint: disable=import-outside-toplevel
+
+    import tasks  # pylint: disable=import-outside-toplevel
+
+    return inspect.getsource(getattr(tasks, name).body)
+
+
+def test_the_stow_task_covers_the_shared_skills_fan_out():
+    source = _task_source("stow")
+    assert "tolerating_windows_symlink_failure" in source
+    guard = source.index("tolerating_windows_symlink_failure")
+    assert source.index("skills_hub.stow_out") > guard
+
+
+def test_the_stow_skills_task_is_deliberately_unguarded():
+    assert "tolerating_windows_symlink_failure" not in _task_source("stow_skills")
+
+
+def test_unstow_and_clean_stow_are_covered():
+    for name in ("unstow", "clean_stow"):
+        assert "tolerating_windows_symlink_failure" in _task_source(name)

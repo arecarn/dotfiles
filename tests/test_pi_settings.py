@@ -10,6 +10,7 @@ import pathlib
 import pytest
 from ruamel.yaml import YAML
 
+import plugins
 import tasks
 
 
@@ -17,9 +18,11 @@ import tasks
 def fixture_pi_home(tmp_path, monkeypatch):
     """A fake $HOME, with the manifest stubbed to two pi packages."""
     monkeypatch.setattr(pathlib.Path, "home", classmethod(lambda cls: tmp_path))
-    monkeypatch.setattr(
-        tasks, "_manifest_pi_packages", lambda: ["git:github.com/a/b", "npm:c"]
-    )
+    manifest = plugins.Manifest({
+        "a": {"pi_package": "git:github.com/a/b"},
+        "c": {"pi_package": "npm:c"},
+    })
+    monkeypatch.setattr(plugins, "load", lambda: manifest)
     return tmp_path
 
 
@@ -49,7 +52,8 @@ def test_a_dropped_declaration_is_removed(pi_home, monkeypatch):
     path.parent.mkdir(parents=True)
     path.write_text(json.dumps({"packages": ["npm:gone", "npm:c"]}))
 
-    monkeypatch.setattr(tasks, "_manifest_pi_packages", lambda: ["npm:c"])
+    manifest = plugins.Manifest({"c": {"pi_package": "npm:c"}})
+    monkeypatch.setattr(plugins, "load", lambda: manifest)
     tasks._setup_pi_settings()
 
     assert _settings(pi_home)["packages"] == ["npm:c"]

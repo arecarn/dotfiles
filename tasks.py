@@ -11,9 +11,9 @@ import shutil
 import subprocess
 
 from invoke import task
-from ruamel.yaml import YAML
 
 import instructions
+import plugins
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
@@ -145,12 +145,6 @@ def _setup_claude_settings():
     print(f"Updated {claude_settings}")
 
 
-def _manifest_mcp_servers():
-    """MCP server definitions from the merged plugin manifest, keyed by server name."""
-    manifest = _load_plugins_manifest()
-    return {name: cfg["mcp"] for name, cfg in manifest.items() if "mcp" in cfg}
-
-
 def _amend_mcp_servers(config_path, servers):
     """Add manifest servers missing from a harness-owned MCP config; return names added.
 
@@ -201,7 +195,7 @@ def _setup_mcp_servers():
     the only one it never writes to itself (its /mcp panel writes
     ~/.pi/agent/mcp.json, which is left free for exactly that).
     """
-    servers = _manifest_mcp_servers()
+    servers = plugins.load().mcp_servers()
     if not servers:
         return
 
@@ -215,12 +209,6 @@ def _setup_mcp_servers():
     pi_config = home / ".agents" / "mcp.json"
     if _write_mcp_config(pi_config, servers):
         print(f"Wrote {len(servers)} MCP servers to {pi_config}")
-
-
-def _manifest_pi_packages():
-    """Source specs of every pi package declared in the merged plugin manifest."""
-    manifest = _load_plugins_manifest()
-    return [cfg["pi_package"] for cfg in manifest.values() if "pi_package" in cfg]
 
 
 def _setup_pi_settings():
@@ -237,7 +225,7 @@ def _setup_pi_settings():
     this file is what `pi update --extensions` reconciles against, so skipping it
     on a machine that has never run pi would mean no package is ever installed.
     """
-    packages = _manifest_pi_packages()
+    packages = plugins.load().pi_packages()
     if not packages:
         return
 
@@ -353,7 +341,7 @@ def claude_install_plugins(ctx):
     """Install Claude Code plugins from manifest (requires a TTY)"""
     if IS_CI:
         return
-    _install_plugins(ctx, "claude")
+    _run_plugin_cmds(ctx, "claude", "install")
 
 
 @task
@@ -361,7 +349,7 @@ def opencode_install_plugins(ctx):
     """Install OpenCode plugins from manifest"""
     if IS_CI:
         return
-    _install_plugins(ctx, "opencode")
+    _run_plugin_cmds(ctx, "opencode", "install")
 
 
 @task
@@ -614,7 +602,6 @@ def clean_stow(ctx):
 
 
 _USE_PTY = not IS_WINDOWS
-_YAML = YAML()
 _SHARED_SKILLS_DIR = pathlib.Path.home() / ".config" / "ai-skills" / "skills"
 
 
@@ -664,111 +651,22 @@ def _run_cmd(ctx, cmd):
     ctx.run(cmd, echo=True, warn=True, pty=_USE_PTY)
 
 
-def _run_cmds(ctx, cmds):
-    """Run one or more commands (string or list of strings)."""
-    if isinstance(cmds, str):
-        _run_cmd(ctx, cmds)
-    else:
-        for cmd in cmds:
-            _run_cmd(ctx, cmd)
-
-
-def _load_plugins_manifest():
-    """Load and merge base and local plugin manifests.
-
-    Reads ~/.config/ai-skills/plugins.yaml (base) and ~/.config/ai-skills/plugins_local.yaml
-    (local overrides), merging them together.
-    """
-    agents_dir = pathlib.Path.home() / ".config" / "ai-skills"
-    base_path = agents_dir / "plugins.yaml"
-    local_path = agents_dir / "plugins_local.yaml"
-
-    base = {}
-    if base_path.exists():
-        base = _YAML.load(base_path) or {}
-
-    local = {}
-    if local_path.exists():
-        local = _YAML.load(local_path) or {}
-
-    # Merge local plugins into base (local additions win on conflict)
-    return {**base, **local}
-
-
-def _default_install_cmds(plugin_cfg, tool):
-    """Derive default install commands from repo + plugin fields."""
-    repo = plugin_cfg["repo"]
-    plugin = plugin_cfg["plugin"]
-    if tool == "claude":
-        return [
-            f"claude plugin marketplace add {shlex.quote(repo)}",
-            f"claude plugin install {shlex.quote(plugin)}",
-        ]
-    if tool == "opencode":
-        return f"npx --yes skills add {shlex.quote(repo)} --agent opencode --global --yes"
-    return None
-
-
-def _default_update_cmds(plugin_cfg, tool):
-    """Derive default update commands from a plugin's declared fields."""
-    if tool == "pi":
-        source = plugin_cfg.get("pi_package")
-        return f"pi update {shlex.quote(source)}" if source else None
-    if "repo" not in plugin_cfg or "plugin" not in plugin_cfg:
-        return None
-    repo = plugin_cfg["repo"]
-    plugin = plugin_cfg["plugin"]
-    # marketplace name is the part after @ in plugin spec (e.g. "foo@bar" -> "bar")
-    marketplace = plugin.split("@")[-1] if "@" in plugin else repo.split("/")[-1]
-    if tool == "claude":
-        return [
-            f"claude plugin marketplace update {shlex.quote(marketplace)}",
-            f"claude plugin update {shlex.quote(plugin)}",
-        ]
-    if tool == "opencode":
-        return "npx --yes skills update --global"
-    return None
-
-
-def _install_plugins(ctx, tool):
-    """Install plugins for a given tool ('claude' or 'opencode')."""
-    manifest = _load_plugins_manifest()
-
-    for _name, cfg in manifest.items():
-        if "install" in cfg and tool in cfg["install"]:
-            _run_cmds(ctx, cfg["install"][tool])
-        elif "repo" in cfg and "plugin" in cfg:
-            cmds = _default_install_cmds(cfg, tool)
-            if cmds:
-                _run_cmds(ctx, cmds)
-
-
-def _update_plugins(ctx, tool):
-    """Update plugins for a given tool ('claude' or 'opencode')."""
-    manifest = _load_plugins_manifest()
-
-    for _name, cfg in manifest.items():
-        if "update" in cfg and tool in cfg["update"]:
-            _run_cmds(ctx, cfg["update"][tool])
-        elif ("repo" in cfg and "plugin" in cfg) or "pi_package" in cfg:
-            cmds = _default_update_cmds(cfg, tool)
-            if cmds:
-                _run_cmds(ctx, cmds)
-        elif "install" in cfg and tool in cfg["install"]:
-            # Fallback: re-run install commands
-            _run_cmds(ctx, cfg["install"][tool])
+def _run_plugin_cmds(ctx, tool, action):
+    """Run every manifest command for a tool and an action ("install"/"update")."""
+    for cmd in plugins.load().commands(tool, action):
+        _run_cmd(ctx, cmd)
 
 
 @task
 def claude_update_plugins(ctx):
     """Update installed Claude Code plugins to latest versions (requires a TTY)"""
-    _update_plugins(ctx, "claude")
+    _run_plugin_cmds(ctx, "claude", "update")
 
 
 @task
 def opencode_update_plugins(ctx):
     """Update OpenCode plugins to latest versions"""
-    _update_plugins(ctx, "opencode")
+    _run_plugin_cmds(ctx, "opencode", "update")
 
 
 @task
@@ -776,7 +674,7 @@ def pi_update_plugins(ctx):
     """Update pi packages from manifest"""
     if IS_CI:
         return
-    _update_plugins(ctx, "pi")
+    _run_plugin_cmds(ctx, "pi", "update")
 
 
 @task(provision, stow, name="all")

@@ -14,6 +14,7 @@ from invoke import task
 
 import instructions
 import plugins
+import skills_hub
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
@@ -327,7 +328,7 @@ def claude_setup(ctx):
 @task
 def stow_skills(ctx):
     """Stow shared skills into each tool's skills discovery path"""
-    _stow_shared_skills()
+    skills_hub.stow_out()
 
 
 @task
@@ -466,12 +467,9 @@ class Dploy:
         """
         # pylint: disable=invalid-name
         print(self.stow_packages)
+        # The hub's own pre-create, and the rationale for it, live with the hub.
+        skills_hub.pre_create(self.home)
         # Pre-create real dirs so dploy can only fold at the leaf, not higher up.
-        # ai-skills: the shared skills hub exists in both this repo and
-        # dotfiles_local, so two independent dploy runs write into
-        # ~/.config/ai-skills. Left alone, folding happens at ~/.config and the
-        # second repo to stow writes dangling links into the first repo's working
-        # tree. See docs/adr/0001-pre-create-the-shared-skills-hub.md
         # pi: pi writes runtime state (npm package payloads, per-project
         # trust.json decisions with real local paths and project names, session
         # history) into ~/.pi/agent/ during normal use. Left alone, ~/.pi did not
@@ -482,8 +480,6 @@ class Dploy:
         # these fragments, and the generated instruction files tell every agent to
         # read it. Folding would make that private file land in this public repo.
         for d in (
-            self.home / ".config/ai-skills",
-            self.home / ".config/ai-skills/skills",
             self.home / ".pi",
             self.home / ".pi/agent",
             self.home / ".config/ai-instructions",
@@ -559,7 +555,7 @@ def stow(ctx):
         d = Dploy()
         d.clean()
         d.stow()
-        _stow_shared_skills()
+        skills_hub.stow_out(d.home)
     except (OSError, DployError) as e:
         if IS_WINDOWS:
             print(f"Skipping stow: {e}")
@@ -602,50 +598,6 @@ def clean_stow(ctx):
 
 
 _USE_PTY = not IS_WINDOWS
-_SHARED_SKILLS_DIR = pathlib.Path.home() / ".config" / "ai-skills" / "skills"
-
-
-def _stow_shared_skills():
-    """Stow shared skills from ~/.config/ai-skills/ into each tool's discovery path."""
-    import dploy  # pylint: disable=C
-
-    if not _SHARED_SKILLS_DIR.exists():
-        return
-
-    targets = [
-        pathlib.Path.home() / ".claude",
-        pathlib.Path.home() / ".config" / "opencode",
-        pathlib.Path.home() / ".pi" / "agent",
-    ]
-
-    src = _SHARED_SKILLS_DIR.parent  # ~/.config/ai-skills/
-    for target_dir in targets:
-        target_dir.mkdir(parents=True, exist_ok=True)
-        _prune_dead_symlinks(target_dir / "skills")
-        dploy.stow([src], target_dir, is_silent=False, ignore_patterns=["*.yaml"])
-
-
-def _prune_dead_symlinks(path):
-    """Remove broken symlinks at path or directly inside it (e.g. links left
-    behind after the shared skills hub moved).
-
-    Deliberately separate from Dploy.clean, despite the surface similarity.
-    This is a precondition for the stow call that follows it: dploy cannot stow
-    into a destination that is itself a dangling symlink, so the prune has to
-    run immediately before that specific call, and it also runs from the
-    stow_skills task where no Dploy sweep happens. Dploy.clean is a periodic
-    sweep of $HOME limited to links pointing into the dotfiles repo, so it
-    would not touch these links regardless.
-    """
-    if path.is_symlink() and not path.exists():
-        path.unlink()
-        return
-    if path.is_dir():
-        for entry in path.iterdir():
-            if entry.is_symlink() and not entry.exists():
-                entry.unlink()
-
-
 def _run_cmd(ctx, cmd):
     """Run a shell command with standard echo/warn/pty settings."""
     ctx.run(cmd, echo=True, warn=True, pty=_USE_PTY)

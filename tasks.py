@@ -3,7 +3,6 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 """
 
 import ctypes
-import json
 import os
 import pathlib
 import shlex
@@ -127,130 +126,6 @@ def _setup_gitconfig_local():
         print(f"Created {gitconfig_local}")
 
 
-def _setup_claude_settings():
-    claude_settings = pathlib.Path.home() / ".claude" / "settings.json"
-    if not claude_settings.exists():
-        return
-    settings = json.loads(claude_settings.read_text())
-    settings["voiceEnabled"] = True
-    # Selects claude-code/.claude/output-styles/concise.md, generated from the
-    # prose-style fragment. Deleting the key here would leave Claude's own
-    # brevity instructions in force, which the fragment is meant to replace.
-    settings["outputStyle"] = "Concise"
-    settings.setdefault("permissions", {})
-    settings["permissions"]["defaultMode"] = "bypassPermissions"
-    settings["skipDangerousModePermissionPrompt"] = True
-    claude_settings.write_text(json.dumps(settings, indent=2) + "\n")
-    print(f"Updated {claude_settings}")
-
-
-def _amend_mcp_servers(config_path, servers):
-    """Add manifest servers missing from a harness-owned MCP config; return names added.
-
-    For a file the harness itself creates and writes far more than MCP config into.
-    Existing entries are left untouched, so a server whose definition changed here
-    has to be edited (or deleted and regenerated) in that file by hand. An absent
-    file stays absent: a stub written before the harness's first run would be a
-    config file it never asked for.
-    """
-    if not config_path.exists():
-        return []
-
-    config = json.loads(config_path.read_text())
-    config.setdefault("mcpServers", {})
-    added = [name for name in servers if name not in config["mcpServers"]]
-    if not added:
-        return []
-
-    for name in added:
-        config["mcpServers"][name] = servers[name]
-    config_path.write_text(json.dumps(config, indent=2) + "\n")
-    return added
-
-
-def _write_mcp_config(config_path, servers):
-    """Generate a whole MCP config file from the manifest; return True if it changed.
-
-    Unlike _amend_mcp_servers this owns the file outright, so an edited or removed
-    manifest entry propagates. Only use it for a path no harness writes to itself,
-    or the harness's own writes get discarded on the next provisioning run.
-    """
-    content = json.dumps({"mcpServers": servers}, indent=2) + "\n"
-    if config_path.exists() and config_path.read_text() == content:
-        return False
-
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    config_path.write_text(content)
-    return True
-
-
-def _setup_mcp_servers():
-    """Register manifest MCP servers with every harness that reads an MCP config file.
-
-    One manifest entry per server feeds both harnesses, so neither drifts from the
-    declaration. The two are written differently because the files differ in
-    ownership: Claude Code creates ~/.claude.json and keeps its whole state there,
-    while ~/.agents/mcp.json is one of the global paths pi-mcp-adapter merges and
-    the only one it never writes to itself (its /mcp panel writes
-    ~/.pi/agent/mcp.json, which is left free for exactly that).
-    """
-    servers = agents.plugins.load().mcp_servers()
-    if not servers:
-        return
-
-    home = pathlib.Path.home()
-    claude_json = home / ".claude.json"
-    added = _amend_mcp_servers(claude_json, servers)
-    if added:
-        print(f"Added MCP servers to {claude_json}: {', '.join(added)}")
-        print("Run /mcp in Claude Code to authorize any of them that use OAuth.")
-
-    pi_config = home / ".agents" / "mcp.json"
-    if _write_mcp_config(pi_config, servers):
-        print(f"Wrote {len(servers)} MCP servers to {pi_config}")
-
-
-def _setup_pi_settings():
-    """Write the manifest's pi packages into pi's own settings file.
-
-    Mixed ownership, which is why neither MCP helper fits: `packages` belongs to
-    the manifest, so dropping a declaration there drops the package here, while
-    every other key is pi's own -- theme, provider and model defaults, changelog
-    state -- and survives untouched. Declaring in the manifest rather than in a
-    stowed settings.json is what lets plugins_local.yaml add a private package,
-    and keeps machine-local preferences out of this public repo.
-
-    Unlike _amend_mcp_servers an absent file is created rather than left alone:
-    this file is what `pi update --extensions` reconciles against, so skipping it
-    on a machine that has never run pi would mean no package is ever installed.
-    """
-    packages = agents.plugins.load().pi_packages()
-    if not packages:
-        return
-
-    settings_path = pathlib.Path.home() / ".pi" / "agent" / "settings.json"
-    # A machine that stowed the settings.json this repo used to commit still has
-    # a symlink to a path the repo no longer has. Writing through it would
-    # recreate the file inside the working tree, which is what moving the
-    # declaration here removes. inv clean-stow prunes the dead link eventually;
-    # this must not depend on that having run first.
-    if settings_path.is_symlink():
-        settings_path.unlink()
-
-    settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
-    settings["packages"] = packages
-    settings["enableSkillCommands"] = True
-    settings["quietStartup"] = True
-
-    content = json.dumps(settings, indent=2) + "\n"
-    if settings_path.exists() and settings_path.read_text() == content:
-        return
-
-    settings_path.parent.mkdir(parents=True, exist_ok=True)
-    settings_path.write_text(content)
-    print(f"Declared {len(packages)} pi packages in {settings_path}")
-
-
 def _provision_windows(ctx, is_ci: bool) -> None:
     if not IS_ADMIN:
         raise SystemExit("You need to be admin to install things with Chocolatey")
@@ -320,7 +195,7 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
 @task
 def claude_setup(ctx):
     """Merge this repo's Claude Code settings into ~/.claude/settings.json"""
-    _setup_claude_settings()
+    agents.settings.setup_claude()
 
 
 @task
@@ -332,7 +207,7 @@ def stow_skills(ctx):
 @task
 def install_mcp(ctx):
     """Register MCP servers from the manifest for Claude Code and pi"""
-    _setup_mcp_servers()
+    agents.mcp.register()
 
 
 @task
@@ -354,7 +229,7 @@ def opencode_install_plugins(ctx):
 @task
 def pi_setup(ctx):
     """Declare the manifest's pi packages in ~/.pi/agent/settings.json"""
-    _setup_pi_settings()
+    agents.settings.setup_pi()
 
 
 @task

@@ -1,8 +1,8 @@
 """Managing the agent tools: their instruction files, plugins, and shared skills.
 
-These three read and write the `agents` stow package and the directories it
-stows into, which is what makes them one namespace rather than three loose
-modules:
+They read and write the `agents` stow package, the directories it stows into,
+and the config files the harnesses themselves own -- which is what makes them
+one namespace rather than a handful of loose modules:
 
 - `instructions` -- assemble each harness's instruction file from the shared
   fragments in `agents/.config/ai-instructions/`.
@@ -11,8 +11,11 @@ modules:
   packages are declared.
 - `skills_hub` -- own where the shared skills hub lives and how it reaches each
   tool's skills discovery path.
+- `mcp` -- register the manifest's MCP servers with every harness.
+- `settings` -- write this repo's declarations into each harness's own settings
+  file, which the harness also writes its own state into.
 """
 
-from manage.agents import instructions, plugins, skills_hub
+from manage.agents import instructions, mcp, plugins, settings, skills_hub
 
-__all__ = ["instructions", "plugins", "skills_hub"]
+__all__ = ["instructions", "mcp", "plugins", "settings", "skills_hub"]

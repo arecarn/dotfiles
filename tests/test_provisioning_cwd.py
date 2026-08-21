@@ -63,7 +63,7 @@ def test_provision_all_leaves_the_working_directory_alone():
 def test_stow_packages_still_resolve_after_provisioning():
     """The failure this guards: relative package paths resolving from ansible/.
 
-    Dploy.clean caps its traversal depth by globbing every stow package by its
+    StowPlan.clean caps its traversal depth by globbing every stow package by its
     bare relative name. From anywhere but the repo root those match nothing, and
     the max() over an empty sequence raises before any sweeping happens.
     """

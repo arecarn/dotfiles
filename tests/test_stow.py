@@ -21,7 +21,7 @@ dploy = pytest.importorskip("dploy")
 
 @pytest.fixture(name="home")
 def fixture_home(tmp_path, monkeypatch):
-    """A fake $HOME, so constructing Dploy cannot touch the real one."""
+    """A fake $HOME, so constructing StowPlan cannot touch the real one."""
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setattr(pathlib.Path, "home", classmethod(lambda cls: home))
@@ -78,7 +78,7 @@ def test_runtime_state_beside_a_stowed_file_stays_out_of_the_source_tree(tmp_pat
 
 
 def test_pre_create_makes_every_barrier_a_real_directory(home):
-    stow.Dploy().pre_create()
+    stow.StowPlan().pre_create()
 
     for barrier in stow._FOLD_BARRIERS:
         assert (home / barrier).is_dir()
@@ -86,23 +86,23 @@ def test_pre_create_makes_every_barrier_a_real_directory(home):
 
 
 def test_pre_create_includes_the_shared_skills_hub(home):
-    stow.Dploy().pre_create()
+    stow.StowPlan().pre_create()
 
     assert (home / ".config" / "ai-skills" / "skills").is_dir()
 
 
 def test_pre_create_is_repeatable(home):
-    stow.Dploy().pre_create()
-    stow.Dploy().pre_create()
+    stow.StowPlan().pre_create()
+    stow.StowPlan().pre_create()
 
     assert (home / ".pi" / "agent").is_dir()
 
 
-# --- constructing Dploy ------------------------------------------------------
+# --- constructing StowPlan ------------------------------------------------------
 
 
 def test_the_files_tree_is_created_when_dropbox_is_absent(home):
-    stow.Dploy()
+    stow.StowPlan()
 
     for area in ("documents", "projects", "notes"):
         assert (home / "files" / area / "archive").is_dir()
@@ -111,18 +111,18 @@ def test_the_files_tree_is_created_when_dropbox_is_absent(home):
 def test_dropbox_is_linked_to_files_when_present(home):
     (home / "Dropbox").mkdir()
 
-    dploy_job = stow.Dploy()
+    plan = stow.StowPlan()
 
-    assert (home / "Dropbox", home / "files") in dploy_job.links
+    assert (home / "Dropbox", home / "files") in plan.links
     assert not (home / "files").exists()
 
 
 @pytest.mark.usefixtures("home")
 def test_the_stow_package_list_is_not_shared_between_instances():
-    first = stow.Dploy()
+    first = stow.StowPlan()
     first.stow_packages.append("scratch")
 
-    assert "scratch" not in stow.Dploy().stow_packages
+    assert "scratch" not in stow.StowPlan().stow_packages
 
 
 # --- the dead-link sweep -----------------------------------------------------
@@ -198,3 +198,29 @@ def test_excluded_directories_are_not_walked(tmp_path):
     _sweep(home, repo_dir)
 
     assert (home / ".git" / "gone").is_symlink()
+
+
+# --- Windows link targets ----------------------------------------------------
+#
+# Runnable on any platform because the normalisation is a string operation: the
+# bug it prevents only reproduces on Windows, where readlink() is what produces
+# these prefixes.
+
+
+def test_the_extended_length_prefix_is_stripped():
+    assert (
+        stow._strip_extended_prefix(r"\\?\C:\Users\x\repo\gone")
+        == r"C:\Users\x\repo\gone"
+    )
+
+
+def test_the_nt_object_path_prefix_is_stripped():
+    assert stow._strip_extended_prefix(r"\??\C:\Users\x\repo") == r"C:\Users\x\repo"
+
+
+def test_a_plain_windows_path_is_left_alone():
+    assert stow._strip_extended_prefix(r"C:\Users\x\repo") == r"C:\Users\x\repo"
+
+
+def test_a_posix_path_is_left_alone():
+    assert stow._strip_extended_prefix("/home/x/repo/gone") == "/home/x/repo/gone"

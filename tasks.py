@@ -14,7 +14,7 @@ from invoke import task
 
 from manage import agents
 from manage.repo import EXCLUDE_DIRS, IS_WINDOWS
-from manage.stow import Dploy
+from manage.stow import StowPlan
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
@@ -408,7 +408,7 @@ def stow(ctx):
     from dploy.error import DployError
 
     try:
-        d = Dploy()
+        d = StowPlan()
         d.clean()
         d.stow()
         agents.skills_hub.stow_out(d.home)
@@ -428,7 +428,7 @@ def unstow(ctx):
     from dploy.error import DployError
 
     try:
-        Dploy().unstow()
+        StowPlan().unstow()
     except (OSError, DployError) as e:
         if IS_WINDOWS:
             print(f"Skipping unstow on Windows: {e}")
@@ -445,7 +445,7 @@ def clean_stow(ctx):
     from dploy.error import DployError
 
     try:
-        Dploy().clean()
+        StowPlan().clean()
     except (OSError, DployError) as e:
         if IS_WINDOWS:
             print(f"Skipping clean on Windows: {e}")

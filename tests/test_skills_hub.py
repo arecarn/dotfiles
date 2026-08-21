@@ -47,7 +47,7 @@ def fixture_two_trees(tmp_path):
 
 
 def _stow(home, *packages):
-    """Stow each package into home the way Dploy.stow does, hub pre-create first."""
+    """Stow each package into home the way StowPlan.stow does, hub pre-create first."""
     for package in packages:
         skills_hub.pre_create(home)
         dploy.stow([package], home, is_silent=True)

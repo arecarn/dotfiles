@@ -1,7 +1,7 @@
 """The stow job: mirroring this repo's stow packages into the home directory.
 
 Stowing is one of the two jobs CONTEXT.md names, and this is all of it bar the
-shared skills hub, which owns its own stow-out. `Dploy` holds what to stow and
+shared skills hub, which owns its own stow-out. `StowPlan` holds what to stow and
 where, and delegates the mirroring itself to the dploy library.
 """
 
@@ -54,7 +54,7 @@ _STOW_PACKAGES = [
 _WINDOWS_ONLY_STOW_PACKAGES = ["powershell", "vcxsrv"]
 
 
-class Dploy:
+class StowPlan:
     """What to stow and where, plus the stow, unstow and clean operations.
 
     Constructing it has side effects: it decides which explicit links apply on
@@ -140,6 +140,29 @@ class Dploy:
         _clean_dead_links(self.home, repo.ROOT, max_depth)
 
 
+# Windows readlink() returns the reparse point's substitute name, which carries
+# an extended-length prefix: \\?\ , or \??\ for the NT object path form. A path
+# built from one never compares equal to a path built normally, so without
+# stripping it the sweep below silently matches nothing on Windows and no dead
+# link is ever removed there. See
+# docs/gotchas/windows-readlink-returns-an-extended-length-path.md
+_EXTENDED_PATH_PREFIXES = ("\\\\?\\", "\\??\\")
+
+
+def _strip_extended_prefix(target):
+    """Drop any Windows extended-length prefix from a raw readlink() result."""
+    for prefix in _EXTENDED_PATH_PREFIXES:
+        if target.startswith(prefix):
+            return target[len(prefix) :]
+    return target
+
+
+def _link_target(entry):
+    """The absolute path a symlink points at, comparable across platforms."""
+    raw = _strip_extended_prefix(os.fspath(entry.readlink()))
+    return (entry.parent / raw).resolve()
+
+
 def _clean_dead_links(directory, repo_dir, max_depth, current_depth=0):
     """Recursively remove dead symlinks pointing into this repo.
 
@@ -157,7 +180,7 @@ def _clean_dead_links(directory, repo_dir, max_depth, current_depth=0):
 
     for entry in entries:
         if entry.is_symlink():
-            target = (entry.parent / entry.readlink()).resolve()
+            target = _link_target(entry)
             if not target.exists() and repo_dir in target.parents:
                 print(f"removing dead link: {entry}")
                 entry.unlink()

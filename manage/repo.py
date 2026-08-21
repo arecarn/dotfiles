@@ -7,7 +7,7 @@ import os
 import pathlib
 
 # This file is `<repo>/manage/repo.py`, so the root is two levels up. Derived
-# rather than assumed from the working directory: `Dploy.clean` decides whether
+# rather than assumed from the working directory: `StowPlan.clean` decides whether
 # a symlink points into this repo by comparing against it, and a wrong answer
 # there means either skipping dead links or deleting live ones.
 ROOT = pathlib.Path(__file__).resolve().parent.parent

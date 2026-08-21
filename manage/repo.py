@@ -16,4 +16,7 @@ IS_WINDOWS = os.name == "nt"
 
 # Skipped when walking the checkout or the home directory: large, generated, or
 # not ours to touch.
-EXCLUDE_DIRS = {".venv", ".git", "__pycache__", ".cache", "node_modules"}
+# `.claude` holds agent worktrees -- whole checkouts of this repo at another
+# revision. Walking one lints a different commit's files as if they were this
+# one's, which fails on code that is correct in both.
+EXCLUDE_DIRS = {".venv", ".git", ".claude", "__pycache__", ".cache", "node_modules"}

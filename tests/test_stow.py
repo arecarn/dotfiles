@@ -302,29 +302,94 @@ def test_success_passes_through(monkeypatch):
 # --- which tasks the policy covers -------------------------------------------
 #
 # The split is a decision, not an accident (see the comments on both tasks), so
-# it is pinned: `stow` tolerates the shared-skills fan-out, `stow-skills` does
-# not.
+# it is pinned by running each task against a failure and asserting what escapes.
+# Behaviour rather than source text: a task that merely mentions the guard, or
+# wraps the wrong statements in it, fails these.
 
 
-def _task_source(name):
-    import inspect  # pylint: disable=import-outside-toplevel
+class _NoOpPlan:
+    """Stands in for StowPlan so the tasks reach the step under test."""
 
+    home = pathlib.Path("/nonexistent-home")
+
+    def clean(self):
+        pass
+
+    def stow(self):
+        pass
+
+    def unstow(self):
+        pass
+
+
+@pytest.fixture(name="task_env")
+def fixture_task_env(monkeypatch):
+    """`tasks` with StowPlan neutralised; returns a setter for the OS."""
     import tasks  # pylint: disable=import-outside-toplevel
 
-    return inspect.getsource(getattr(tasks, name).body)
+    monkeypatch.setattr(tasks, "StowPlan", _NoOpPlan)
+
+    def on_windows(value):
+        # The guard reads this through `repo` at raise time, so patch it there.
+        monkeypatch.setattr(stow.repo, "IS_WINDOWS", value)
+
+    return tasks, on_windows
 
 
-def test_the_stow_task_covers_the_shared_skills_fan_out():
-    source = _task_source("stow")
-    assert "tolerating_windows_symlink_failure" in source
-    guard = source.index("tolerating_windows_symlink_failure")
-    assert source.index("skills_hub.stow_out") > guard
+def _raise_privilege_error(*_args, **_kwargs):
+    raise OSError(1314, "A required privilege is not held by the client")
 
 
-def test_the_stow_skills_task_is_deliberately_unguarded():
-    assert "tolerating_windows_symlink_failure" not in _task_source("stow_skills")
+def test_the_stow_task_tolerates_a_failing_shared_skills_fan_out(task_env, monkeypatch):
+    """The fan-out must be inside the guard, not merely after it."""
+    tasks, on_windows = task_env
+    monkeypatch.setattr(tasks.agents.skills_hub, "stow_out", _raise_privilege_error)
+    on_windows(True)
+
+    tasks.stow.body(None)  # must not raise
 
 
-def test_unstow_and_clean_stow_are_covered():
-    for name in ("unstow", "clean_stow"):
-        assert "tolerating_windows_symlink_failure" in _task_source(name)
+def test_the_stow_task_still_raises_off_windows(task_env, monkeypatch):
+    tasks, on_windows = task_env
+    monkeypatch.setattr(tasks.agents.skills_hub, "stow_out", _raise_privilege_error)
+    on_windows(False)
+
+    with pytest.raises(OSError):
+        tasks.stow.body(None)
+
+
+def test_the_stow_skills_task_lets_the_failure_out_even_on_windows(monkeypatch):
+    """Unguarded on purpose: the fan-out is this task's whole result, so
+    swallowing the failure would report skills stowed that are not."""
+    import tasks  # pylint: disable=import-outside-toplevel
+
+    monkeypatch.setattr(tasks.agents.skills_hub, "stow_out", _raise_privilege_error)
+    monkeypatch.setattr(stow.repo, "IS_WINDOWS", True)
+
+    with pytest.raises(OSError):
+        tasks.stow_skills.body(None)
+
+
+def test_unstow_is_tolerated_on_windows(task_env, monkeypatch):
+    tasks, on_windows = task_env
+    monkeypatch.setattr(_NoOpPlan, "unstow", _raise_privilege_error)
+    on_windows(True)
+
+    tasks.unstow.body(None)  # must not raise
+
+
+def test_clean_stow_is_tolerated_on_windows(task_env, monkeypatch):
+    tasks, on_windows = task_env
+    monkeypatch.setattr(_NoOpPlan, "clean", _raise_privilege_error)
+    on_windows(True)
+
+    tasks.clean_stow.body(None)  # must not raise
+
+
+def test_unstow_still_raises_off_windows(task_env, monkeypatch):
+    tasks, on_windows = task_env
+    monkeypatch.setattr(_NoOpPlan, "unstow", _raise_privilege_error)
+    on_windows(False)
+
+    with pytest.raises(OSError):
+        tasks.unstow.body(None)

@@ -10,7 +10,7 @@ machine that happens to be stowed.
 # pylint: disable=missing-function-docstring,protected-access
 # pylint: disable=use-implicit-booleaness-not-comparison
 
-from manage import plugins
+from manage.agents import plugins
 
 
 def _manifest(tmp_path, base, local=None):

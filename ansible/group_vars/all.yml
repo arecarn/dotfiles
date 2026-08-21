@@ -45,8 +45,10 @@ os_family_system_packages:
     - neovim
     - openssh
 
-# GUI packages (skipped in headless/CI environments)
-gui_system_packages:
+# Desktop-only packages, skipped on a headless host. On Linux the skip is the
+# `desktop-only` tag on the play that installs these; the list itself is
+# unconditional here.
+desktop_only_system_packages:
   Debian:
     - wezterm
     - firefox
@@ -56,6 +58,47 @@ gui_system_packages:
     - firefox
     - vlc
   Android: []
+
+# Chocolatey packages for Windows. Read from this file by manage/provision.py
+# rather than by Ansible, which never runs on Windows here -- the file is the
+# single answer to "what gets installed on a machine" for all three platforms.
+windows_system_packages:
+  - llvm
+  - pandoc
+  - git
+  - ctags
+  - neovim
+  - nodejs
+  - plantuml
+  - fzf
+  - zoxide
+  - eza
+  - bat
+  - delta
+  - gsudo
+  - ripgrep
+  - oh-my-posh
+  - poshgit
+  - stylua
+  - selene
+  - claude-code
+  - opencode
+
+# Added to windows_system_packages except on a headless host.
+windows_desktop_only_system_packages:
+  - nerd-fonts-dejavusansmono
+  - vcxsrv
+  - anki
+  - wezterm
+
+# `pkg` packages Termux needs before Ansible and uv can run at all. The rest of
+# a Termux machine's packages come from the Android entries above, installed by
+# the playbook once this bootstrap has completed.
+termux_bootstrap_system_packages:
+  - python
+  - rust
+  - build-essential
+  - git
 
 # Nerd Fonts to install (downloaded from GitHub releases)
 nerd_fonts:

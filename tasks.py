@@ -12,6 +12,7 @@ import subprocess
 from invoke import task
 
 from manage import agents
+from manage import provision as provision_data
 from manage.repo import EXCLUDE_DIRS, IS_WINDOWS
 from manage.stow import StowPlan, tolerating_windows_symlink_failure
 
@@ -103,14 +104,9 @@ def provision_termux(ctx):
     """
     Bootstrap Termux environment for Ansible and Python dependencies
     """
-    bootstrap_system_packages = [
-        "python",
-        "rust",
-        "build-essential",
-        "git",
-    ]
+    bootstrap = provision_data.termux_bootstrap_system_packages()
     ctx.run("pkg update -y")
-    ctx.run(f"pkg install -y {' '.join(bootstrap_system_packages)}")
+    ctx.run(f"pkg install -y {' '.join(bootstrap)}")
 
     # Install selene for linting
     ctx.run("cargo install selene", warn=True)
@@ -130,39 +126,11 @@ def _provision_windows(ctx, is_ci: bool) -> None:
     if not IS_ADMIN:
         raise SystemExit("You need to be admin to install things with Chocolatey")
 
-    gui_system_packages = [
-        "nerd-fonts-dejavusansmono",
-        "vcxsrv",
-        "anki",
-        "wezterm",
-    ]
-    common_system_packages = [
-        "llvm",
-        "pandoc",
-        "git",
-        "ctags",
-        "neovim",
-        "nodejs",
-        "plantuml",
-        "fzf",
-        "zoxide",
-        "eza",
-        "bat",
-        "delta",
-        "gsudo",
-        "ripgrep",
-        "oh-my-posh",
-        "poshgit",
-        "stylua",
-        "selene",
-        "claude-code",
-        "opencode",
-    ]
-    system_packages_to_install = common_system_packages
-    if not is_ci:
-        system_packages_to_install.extend(gui_system_packages)
-
-    system_packages = " ".join(system_packages_to_install)
+    # A headless host (CI) has no desktop session, so the desktop-only
+    # packages are left out there.
+    system_packages = " ".join(
+        provision_data.windows_system_packages(desktop=not is_ci)
+    )
     ctx.run(f"choco install -y {system_packages}", pty=False)
     ctx.run("choco install -y openssh --pre", pty=False)
     ctx.run(f"choco upgrade -y {system_packages}", pty=False)

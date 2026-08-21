@@ -10,8 +10,8 @@ import pathlib
 import pytest
 from ruamel.yaml import YAML
 
-import plugins
 import tasks
+from manage import plugins
 
 
 @pytest.fixture(name="pi_home")

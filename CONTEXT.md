@@ -41,6 +41,13 @@ Software installed by a language ecosystem's package manager — Python, npm,
 Rust.
 _Avoid_: package, library, dependency
 
+**Task package**:
+This repo's own Python package, `manage/`, holding the logic behind the invoke
+tasks. A language package that is never installed or published -- `tasks.py`
+imports it from the checkout. Named as a verb because every stow package is
+named for a tool, and the two sit side by side at the repo root.
+_Avoid_: package, module, lib
+
 **Package repository**:
 A source the operating system's package manager installs from — EPEL, Debian
 contrib, a PPA. Always qualified; a bare "repo" is a git repository.

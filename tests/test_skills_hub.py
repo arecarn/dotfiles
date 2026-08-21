@@ -13,7 +13,7 @@ checkout do on a work machine.
 
 import pytest
 
-import skills_hub
+from manage import skills_hub
 
 dploy = pytest.importorskip("dploy")
 

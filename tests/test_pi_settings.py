@@ -8,6 +8,7 @@ import json
 import pathlib
 
 import pytest
+from ruamel.yaml import YAML
 
 import tasks
 
@@ -68,9 +69,20 @@ def test_replaces_a_stale_symlink_instead_of_writing_through_it(pi_home):
     assert _settings(pi_home)["packages"] == ["git:github.com/a/b", "npm:c"]
 
 
-def test_declared_packages_come_from_the_manifest():
-    """The real manifest declares the three packages this repo expects."""
-    assert tasks._manifest_pi_packages() == [
+def test_the_committed_manifest_declares_the_expected_packages():
+    """Guards the pi_package: keys in the manifest this repo ships.
+
+    Reads the repo's own copy rather than calling _manifest_pi_packages(), which
+    reads the stowed ~/.config/ai-skills/plugins.yaml and so would depend on
+    whether the machine running the tests has been stowed.
+    """
+    manifest = YAML().load(pathlib.Path("agents/.config/ai-skills/plugins.yaml"))
+    declared = [
+        cfg["pi_package"]
+        for cfg in manifest.values()
+        if isinstance(cfg, dict) and "pi_package" in cfg
+    ]
+    assert declared == [
         "git:github.com/obra/superpowers",
         "npm:pi-subagents",
         "npm:pi-mcp-adapter",

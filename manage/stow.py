@@ -15,6 +15,12 @@ from manage.agents import skills_hub
 # dploy folds a fully-owned directory into a single symlink, and folding high
 # swallows paths that must stay real:
 #
+# Claude Code writes far more into ~/.claude than the two files this repo stows
+# there: .credentials.json, session and project history, caches. The claude-code
+# stow package supplies only CLAUDE.md and output-styles/, so on a machine where
+# ~/.claude does not exist yet the whole directory folds into one symlink into
+# this repo and every one of those lands in a public working tree.
+#
 # pi writes runtime state into ~/.pi/agent/ during normal use -- npm package
 # payloads, per-project trust.json decisions carrying real local paths and
 # project names, session history. Without ~/.pi in place, stowing folds the
@@ -29,6 +35,7 @@ from manage.agents import skills_hub
 # The shared skills hub needs the same treatment for a different reason; its
 # barrier and the ADR behind it live in manage.agents.skills_hub.
 _FOLD_BARRIERS = (
+    pathlib.PurePath(".claude"),
     pathlib.PurePath(".pi"),
     pathlib.PurePath(".pi/agent"),
     pathlib.PurePath(".config/ai-instructions"),

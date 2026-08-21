@@ -102,10 +102,26 @@ def _claude_settings(home):
     return home / ".claude" / "settings.json"
 
 
-def test_an_absent_claude_settings_file_is_left_absent(tmp_path):
+def test_an_absent_claude_settings_file_is_created(tmp_path):
+    """A fresh machine is exactly when these settings are wanted, so an absent
+    file is created rather than skipped."""
     settings.setup_claude(tmp_path)
 
-    assert not _claude_settings(tmp_path).exists()
+    assert json.loads(_claude_settings(tmp_path).read_text())["outputStyle"] == "Concise"
+
+
+def test_the_claude_directory_is_created_when_absent(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    assert _claude_settings(tmp_path).parent.is_dir()
+
+
+def test_creating_then_rerunning_is_stable(tmp_path):
+    settings.setup_claude(tmp_path)
+    first = _claude_settings(tmp_path).read_text()
+    settings.setup_claude(tmp_path)
+
+    assert _claude_settings(tmp_path).read_text() == first
 
 
 def test_the_output_style_is_set(tmp_path):

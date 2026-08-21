@@ -17,6 +17,12 @@ Only *creating* a symlink needs the privilege. Symlinks that already exist keep
 resolving without it, so a machine that was stowed once keeps working and the
 failure only reappears when a new stow package is added.
 
+The task layer tolerates this rather than failing: every stow-shaped task runs
+inside `manage.stow.tolerating_windows_symlink_failure`, which prints a skip on
+Windows and re-raises everywhere else. `inv stow-skills` is the deliberate
+exception -- the fan-out is that task's whole result, so there the failure is
+fatal.
+
 CI works around this separately: the Windows job sets the
 `AllowDevelopmentWithoutDevLicense` registry key and `git config --global
 core.symlinks true` before stowing (see `.github/workflows/ci.yml`).

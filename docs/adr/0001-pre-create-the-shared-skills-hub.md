@@ -36,3 +36,7 @@ stow / unstow / re-stow cycle across both repos ends clean.
 Verified experimentally against dploy 0.1.3 rather than by reading its source;
 the folding behaviour is not documented and the wrong-depth unfold looks like a
 dploy bug, so an upgrade should be re-tested rather than assumed compatible.
+
+The pre-create is `skills_hub.pre_create`, and `tests/test_skills_hub.py` is the
+re-test: it stows two source trees that both contribute an `agents` stow package
+into a temporary home and asserts this invariant. Run it when bumping dploy.

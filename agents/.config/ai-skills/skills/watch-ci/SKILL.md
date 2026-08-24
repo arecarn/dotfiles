@@ -61,7 +61,7 @@ capability to whatever the running harness actually has.
 | Harness | Binding |
 |---|---|
 | Claude Code | The `Monitor` tool. Arm it on the loop; it streams the final line back. |
-| pi | An async subagent: one `subagent` call with `async: true` running the loop in `bash`. Pi wakes the session when it resolves, and `subagent_wait` with `nonBlocking: true` registers that wake without waiting on it. |
+| pi | The `monitor` tool. Arm it on the loop with `maxEvents: 1`; a one-shot monitor wakes the session by default, so `wake` need not be passed, and it disarms itself once the line arrives. |
 | anything else | Whatever runs a command detached and reports back later. |
 
 If the harness has no such mechanism, say the watch will block before starting it, rather

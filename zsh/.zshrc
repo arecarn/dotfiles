@@ -32,12 +32,12 @@ if [[ -t 0 ]]; then
     stty -ixon; stty stop undef
 fi
 
-# pnpm (global install shims land in $PNPM_HOME/bin, not $PNPM_HOME itself)
+# pnpm (global install shims land directly in $PNPM_HOME, not a bin/ subdir)
 export PNPM_HOME="${HOME}/.local/share/pnpm"
-if [[ -d "$PNPM_HOME/bin" ]]; then
+if [[ -d "$PNPM_HOME" ]]; then
   case ":$PATH:" in
-    *":$PNPM_HOME/bin:"*) ;;
-    *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
   esac
 fi
 # pnpm end

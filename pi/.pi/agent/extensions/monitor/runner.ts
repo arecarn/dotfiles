@@ -243,7 +243,13 @@ function formatStdoutLine(raw: string, dropped: number): string {
 	const total = dropped + raw.length;
 	const keptStart = dropped > 0 ? total - kept.length + 1 : 1;
 	const marker = `[truncated, kept chars ${keptStart}-${keptStart + kept.length - 1} of ${total}]`;
-	return text === "" ? marker : `${text} ${marker}`;
+	// A whitespace-only line is not an event, and a tail cut does not change that:
+	// the marker alone would say nothing a reader can act on. A carry drop is
+	// different, because characters really did go, so the loss still has to report.
+	if (text === "") {
+		return dropped > 0 ? marker : "";
+	}
+	return `${text} ${marker}`;
 }
 
 function describeTermination(

@@ -29,16 +29,24 @@ export default function (pi: ExtensionAPI) {
 			content: `[monitor ${monitor.id} ${monitor.label}] ${text}`,
 			display: true,
 		};
-		if (monitor.wake) {
-			// followUp waits for the current turn's tools to finish rather than
-			// interrupting them; triggerTurn is what makes an idle session respond.
-			pi.sendMessage(message, { deliverAs: "followUp", triggerTurn: true });
-			return;
+		// This runs in a stdout listener, so a throw here is an uncaughtException that
+		// takes the pi process down rather than a tool error somebody sees. There is no
+		// caller to rethrow to, and a lost monitor event must not cost the session.
+		try {
+			if (monitor.wake) {
+				// followUp waits for the current turn's tools to finish rather than
+				// interrupting them; triggerTurn is what makes an idle session respond.
+				pi.sendMessage(message, { deliverAs: "followUp", triggerTurn: true });
+				return;
+			}
+			if (ctx?.hasUI) {
+				ctx.ui.notify(message.content, "info");
+			}
+			pi.sendMessage(message, { deliverAs: "nextTurn" });
+		} catch {
+			// Deliberately silent: the only channels for saying so are the two that just
+			// failed.
 		}
-		if (ctx?.hasUI) {
-			ctx.ui.notify(message.content, "info");
-		}
-		pi.sendMessage(message, { deliverAs: "nextTurn" });
 	};
 
 	const registry = new MonitorRegistry(deliver);
@@ -115,7 +123,9 @@ export default function (pi: ExtensionAPI) {
 						label: params.label,
 						maxEvents: params.maxEvents,
 						wake: params.wake,
-						cwd: resolve(ctx.cwd, params.cwd ?? "."),
+						// Some models prefix a path with @; pi's built-in tools strip it, so a
+						// custom tool taking a path has to as well.
+						cwd: resolve(ctx.cwd, params.cwd?.replace(/^@/, "") ?? "."),
 					});
 					return {
 						content: [

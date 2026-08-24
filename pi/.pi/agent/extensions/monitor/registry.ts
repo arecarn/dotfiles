@@ -92,7 +92,9 @@ export class MonitorRegistry {
 		this.nextId += 1;
 		const monitor: Monitor = {
 			id,
-			label: request.label ?? defaultLabel(request.command),
+			// Normalized even when given: a label holding a newline would break both the
+			// one-line-per-monitor listing and the event prefix.
+			label: defaultLabel(request.label ?? request.command),
 			command: request.command,
 			cwd: request.cwd,
 			maxEvents: request.maxEvents,
@@ -194,8 +196,8 @@ export class MonitorRegistry {
 	}
 }
 
-/** Listing label for a monitor armed without one: its command, on one shortened line. */
-function defaultLabel(command: string): string {
-	const oneLine = command.replace(/\s+/g, " ").trim();
+/** A monitor's label on one shortened line: an explicit label, or its command. */
+function defaultLabel(label: string): string {
+	const oneLine = label.replace(/\s+/g, " ").trim();
 	return oneLine.length <= 40 ? oneLine : `${oneLine.slice(0, 40)}...`;
 }

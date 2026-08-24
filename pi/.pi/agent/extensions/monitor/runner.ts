@@ -9,7 +9,10 @@
 
 import { type ChildProcess, spawn } from "node:child_process";
 
-/** stdout lines longer than this are cut, and the cut is marked in the event. */
+/**
+ * Cap on the characters of one stdout line held in memory or put in an event.
+ * Every cut it causes is marked in the event.
+ */
 const MAX_LINE_CHARS = 2000;
 /** Events emitted per second before the excess is coalesced into one event. */
 const MAX_EVENTS_PER_WINDOW = 10;
@@ -79,7 +82,9 @@ export function startMonitorProcess(
 	let eventsInWindow = 0;
 	let suppressed = 0;
 	let suppressionTimer: NodeJS.Timeout | undefined;
-	let stdoutRest = "";
+	let stdoutCarry = "";
+	/** Characters the carry cap dropped from the front of the line being carried. */
+	let stdoutCarryDropped = 0;
 	let stderrTail = "";
 
 	const emit = (text: string): void => {
@@ -111,8 +116,8 @@ export function startMonitorProcess(
 
 	// A runaway command must cost a bounded amount of context: past the per-window
 	// allowance, lines are counted rather than emitted, and the count goes out as
-	// one event.
-	const emitLine = (line: string): void => {
+	// one event. Callers pass finished event text; formatStdoutLine does the cutting.
+	const emitLine = (text: string): void => {
 		const now = Date.now();
 		if (now - windowStart >= RATE_WINDOW_MS) {
 			flushSuppressed();
@@ -133,18 +138,31 @@ export function startMonitorProcess(
 			return;
 		}
 		eventsInWindow += 1;
-		emit(truncateLine(line));
+		emit(text);
 	};
 
 	child.stdout?.setEncoding("utf8");
 	child.stdout?.on("data", (chunk: string) => {
-		const lines = (stdoutRest + chunk).split("\n");
-		stdoutRest = lines.pop() ?? "";
+		const lines = (stdoutCarry + chunk).split("\n");
+		stdoutCarry = lines.pop() ?? "";
 		for (const line of lines) {
-			const text = line.trim();
-			if (text !== "") {
-				emitLine(text);
+			// Only the first completed line can carry dropped characters: they are the
+			// front of the line the newline just ended.
+			const dropped = stdoutCarryDropped;
+			stdoutCarryDropped = 0;
+			const event = formatStdoutLine(line, dropped);
+			if (event !== "") {
+				emitLine(event);
 			}
+		}
+		// Cap the carry, keeping the newest characters. Truncating finished lines does
+		// not cover this: a command that reports progress with \r and no newline (curl,
+		// docker pull, npm) never finishes a line at all, so the carry would grow for
+		// the life of the monitor. Progress output makes its newest end the useful one,
+		// and what goes is counted so the event can still say the line was cut.
+		if (stdoutCarry.length > MAX_LINE_CHARS) {
+			stdoutCarryDropped += stdoutCarry.length - MAX_LINE_CHARS;
+			stdoutCarry = stdoutCarry.slice(-MAX_LINE_CHARS);
 		}
 	});
 
@@ -158,8 +176,9 @@ export function startMonitorProcess(
 			return;
 		}
 		settled = true;
-		const trailing = stdoutRest.trim();
-		stdoutRest = "";
+		const trailing = formatStdoutLine(stdoutCarry, stdoutCarryDropped);
+		stdoutCarry = "";
+		stdoutCarryDropped = 0;
 		if (trailing !== "") {
 			emitLine(trailing);
 		}
@@ -196,11 +215,35 @@ export function startMonitorProcess(
 	};
 }
 
-function truncateLine(line: string): string {
-	if (line.length <= MAX_LINE_CHARS) {
-		return line;
+/**
+ * Event text for one logical stdout line, or "" for a line that is not an event.
+ *
+ * `raw` is what survived the carry cap and `dropped` is what that cap discarded
+ * from the front of the same line. Either loss, or both on one line, is reported
+ * as the span of the line that was kept, counted in characters as received: a
+ * shortened line must never read as a complete one, and the span's own ends say
+ * which end of the line survived. A blank line is no event, unless characters were
+ * dropped from it, in which case it was not blank.
+ */
+function formatStdoutLine(raw: string, dropped: number): string {
+	// A line the carry already cut is progress-style output, and its newest end is
+	// what a reader wants: a stream of \r updates ends with the status that matters.
+	// A line seen whole keeps its beginning instead, where a log line states what it
+	// is. Without the first rule, a capped carry plus a final `done` in the next
+	// chunk would cut that `done` off again.
+	let kept = raw;
+	if (raw.length > MAX_LINE_CHARS) {
+		kept =
+			dropped > 0 ? raw.slice(-MAX_LINE_CHARS) : raw.slice(0, MAX_LINE_CHARS);
 	}
-	return `${line.slice(0, MAX_LINE_CHARS)} [truncated, ${line.length} chars total]`;
+	const text = kept.trim();
+	if (dropped === 0 && kept.length === raw.length) {
+		return text;
+	}
+	const total = dropped + raw.length;
+	const keptStart = dropped > 0 ? total - kept.length + 1 : 1;
+	const marker = `[truncated, kept chars ${keptStart}-${keptStart + kept.length - 1} of ${total}]`;
+	return text === "" ? marker : `${text} ${marker}`;
 }
 
 function describeTermination(

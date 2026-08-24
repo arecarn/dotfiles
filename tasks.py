@@ -379,6 +379,21 @@ def lint_lua(ctx):
 
 
 @task
+def lint_typescript(ctx):
+    """
+    Run Biome and the TypeScript compiler on TypeScript files
+    """
+    if not _find_files("*.ts"):
+        return
+    # Both tools read their config from the repo root and discover their own file
+    # lists, so neither takes the file list as arguments. tsc in particular fails
+    # outright when tsconfig's include matches nothing, which is why the early
+    # return above is a guard and not an optimisation.
+    ctx.run("pnpm exec biome check .")
+    ctx.run("pnpm exec tsc --noEmit")
+
+
+@task
 def lint_ansible(ctx):
     """
     Run ansible-playbook syntax check on the ansible playbook
@@ -425,6 +440,7 @@ def test(ctx):
     lint_yaml,
     lint_python,
     lint_lua,
+    lint_typescript,
     lint_ansible,
     lint_instructions,
     default=True,

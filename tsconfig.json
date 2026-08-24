@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    // pi ships an ESM "exports" map; the "node"/"bundler" resolvers do not read
+    // it correctly, so its types resolve to nothing. Keep both keys on nodenext.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "lib": ["es2023"],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    // pi's shipped .d.ts do not survive a lib check under nodenext: pi-ai's
+    // declarations import JSON without an import attribute (TS1543), and
+    // @anthropic-ai/sdk and @google/genai add TS2307/TS2552. 49 errors, none in
+    // this repo's code. Declarations are still used to check our own files, so
+    // dropping this flag buys nothing and re-buries our errors under theirs.
+    "skipLibCheck": true
+  },
+  "include": ["pi/.pi/agent/extensions/**/*.ts"]
+}

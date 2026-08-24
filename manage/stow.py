@@ -60,12 +60,22 @@ def tolerating_windows_symlink_failure(what):
 # every agent to read it. Folding would put that private file in this public
 # repo.
 #
+# Three parties write into ~/.pi/agent/extensions/: this repo, a dotfiles_local
+# repo's per-file extension links, and pi's own package installers, which
+# git-clone a package straight into extensions/<package>/ and write config back
+# there. Every one of those writes lands in this public repo's working tree if
+# the directory folds into a symlink. subagent/ is named because pi-subagents is
+# currently the only package directory we own config inside; add a sibling here
+# when we own config in another.
+#
 # The shared skills hub needs the same treatment for a different reason; its
 # barrier and the ADR behind it live in manage.agents.skills_hub.
 _FOLD_BARRIERS = (
     pathlib.PurePath(".claude"),
     pathlib.PurePath(".pi"),
     pathlib.PurePath(".pi/agent"),
+    pathlib.PurePath(".pi/agent/extensions"),
+    pathlib.PurePath(".pi/agent/extensions/subagent"),
     pathlib.PurePath(".config/ai-instructions"),
 )
 

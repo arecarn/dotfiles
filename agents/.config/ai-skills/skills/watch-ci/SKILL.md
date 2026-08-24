@@ -75,8 +75,10 @@ run URL.
 
 ```bash
 sha=$(git rev-parse HEAD)
+# `// empty` matters: without it, no run yet yields the string "null", which passes
+# the -n test and watches a run id that does not exist.
 until id=$(gh run list --commit "$sha" --limit 1 \
-    --json databaseId --jq '.[0].databaseId') && [ -n "$id" ]; do
+    --json databaseId --jq '.[0].databaseId // empty') && [ -n "$id" ]; do
     sleep 5
 done
 # Re-enter the watch if it drops; a lost connection is not a finished run.
@@ -96,7 +98,8 @@ Failure logs: `gh run view <id> --log-failed`
 
 ```bash
 sha=$(git rev-parse HEAD)
-until id=$(glab api "projects/:id/pipelines?sha=$sha" --jq '.[0].id') && [ -n "$id" ]; do
+# `// empty` for the same reason as the GitHub recipe: no pipeline yet prints "null".
+until id=$(glab api "projects/:id/pipelines?sha=$sha" --jq '.[0].id // empty') && [ -n "$id" ]; do
     sleep 5
 done
 until status=$(glab api "projects/:id/pipelines/$id" --jq '.status') \

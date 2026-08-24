@@ -19,4 +19,14 @@ IS_WINDOWS = os.name == "nt"
 # `.claude` holds agent worktrees -- whole checkouts of this repo at another
 # revision. Walking one lints a different commit's files as if they were this
 # one's, which fails on code that is correct in both.
-EXCLUDE_DIRS = {".venv", ".git", ".claude", "__pycache__", ".cache", "node_modules"}
+# The TypeScript names here mirror the "exclude" list in tsconfig.json; change
+# both together, or lint_typescript's guard and tsc's input set diverge.
+EXCLUDE_DIRS = {
+    ".venv",
+    ".git",
+    ".claude",
+    "__pycache__",
+    ".cache",
+    "node_modules",
+    ".superpowers",
+}

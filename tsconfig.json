@@ -27,13 +27,21 @@
   // descend into directories whose name starts with ".", so "**/*.ts" alone
   // matches nothing under pi/.pi/agent/extensions/ -- every extension in this
   // repo would go unchecked while the lint still passed green. The second pattern
-  // is what reaches dot-directories, and it is also what makes "exclude" below do
-  // any work: without it, .venv and .cache were already being skipped as dotted.
+  // is what reaches dot-directories. It is also what brings .venv and .cache into
+  // scope, which is the only reason "exclude" needs entries for them; node_modules
+  // and __pycache__ are not dotted, so the first pattern reaches them and their
+  // excludes are load-bearing on their own.
   // Limit: a doubly nested dot-directory (a/.b/c/.d/x.ts) is still missed. No
   // path in this repo has two, and closing it costs one pattern per nesting level.
   "include": ["**/*.ts", "**/.*/**/*.ts"],
-  // Mirrors EXCLUDE_DIRS in tasks.py; change both together. .superpowers is
-  // deliberately absent, because EXCLUDE_DIRS does not list it either and the
-  // two sets have to agree.
-  "exclude": ["**/node_modules", "**/.git", "**/.venv", "**/.cache", "**/__pycache__"]
+  // Mirrors EXCLUDE_DIRS in tasks.py; change both together, or lint_typescript's
+  // guard and tsc's input set diverge.
+  "exclude": [
+    "**/node_modules",
+    "**/.git",
+    "**/.venv",
+    "**/.cache",
+    "**/__pycache__",
+    "**/.superpowers"
+  ]
 }

@@ -386,9 +386,12 @@ def lint_typescript(ctx):
     if not _find_files("*.ts"):
         return
     # Both tools read their config from the repo root and discover their own file
-    # lists, so neither takes the file list as arguments. tsc in particular fails
-    # outright when tsconfig's include matches nothing, which is why the early
-    # return above is a guard and not an optimisation.
+    # lists, so neither takes the file list as arguments. tsc fails outright with
+    # TS18003 when it resolves no inputs, which is why the early return above is a
+    # guard and not an optimisation. That guard is only sound while this find and
+    # tsconfig.json's include/exclude resolve the same set across the whole repo:
+    # widen one without the other and lint either dies on TS18003 or silently
+    # stops type-checking a file biome still lints.
     ctx.run("pnpm exec biome check .")
     ctx.run("pnpm exec tsc --noEmit")
 

@@ -51,10 +51,27 @@ picked rather than silently choosing.
 If the CLI for the detected provider is not installed, say so and ask how to proceed
 rather than falling back to scraping a web URL.
 
+## Run the watch without blocking the session
+
+CI takes minutes, so the loops below must not run in a foreground call that holds the
+session until they finish. What matters is the capability: run the loop in the background
+and deliver its result later. The tool that provides it differs per harness, so bind the
+capability to whatever the running harness actually has.
+
+| Harness | Binding |
+|---|---|
+| Claude Code | The `Monitor` tool. Arm it on the loop; it streams the final line back. |
+| pi | An async subagent: one `subagent` call with `async: true` running the loop in `bash`. Pi wakes the session when it resolves, and `subagent_wait` with `nonBlocking: true` registers that wake without waiting on it. |
+| anything else | Whatever runs a command detached and reports back later. |
+
+If the harness has no such mechanism, say the watch will block before starting it, rather
+than silently tying up the session. Never swap in a shorter foreground poll to skip the
+setup: that is the failure this section exists to prevent.
+
 ## GitHub Actions
 
-Run with the `Monitor` tool, never a blocking `Bash` call — CI takes minutes. Prints one
-line: the conclusion plus the run URL.
+Run it in the background per the binding above. Prints one line: the conclusion plus the
+run URL.
 
 ```bash
 sha=$(git rev-parse HEAD)
@@ -129,10 +146,11 @@ Skip it for a one-line lint error already visible in the output.
 
 ## Common mistakes
 
-- **Blocking on the watch command in a `Bash` call.** Ties up the session for minutes. Use `Monitor`.
+- **Running the watch as a foreground call.** Ties up the session for minutes. Use the
+  background binding for the harness.
 - **Selecting the run by branch.** Picks whichever run is newest, which may be another
   commit's or one you already superseded.
 - **Reporting a cancelled run as a failure.** It means "replaced", not "broken".
-- **Watching a SHA you then rewrote.** Amending or rebasing after arming the monitor
-  orphans it — the old run keeps going and its result is meaningless. Stop that monitor
+- **Watching a SHA you then rewrote.** Amending or rebasing after arming the watch
+  orphans it — the old run keeps going and its result is meaningless. Stop that watch
   and re-arm on the new SHA.

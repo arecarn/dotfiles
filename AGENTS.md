@@ -18,10 +18,11 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 | Task | Command | Description |
 | :--- | :--- | :--- |
 | **Setup Environment** | `uv sync` | Install Python dependencies. |
+| **Setup TypeScript** | `pnpm install` | Install the TypeScript toolchain (Biome, tsc). Required before `inv lint`. |
 | **Stow Configurations**| `uv run inv stow` | Symlink dotfiles into the home directory using `dploy`. |
 | **Unstow** | `uv run inv unstow` | Remove symlinks created by `stow`. |
 | **Provision System** | `uv run inv provision` | Install system packages (Ansible on Linux, Chocolatey on Windows, pkg on Termux). |
-| **Linting** | `uv run inv lint` | Run all linters (ShellCheck, yamllint, Pylint, Ruff, stylua, luacheck). |
+| **Linting** | `uv run inv lint` | Run all linters (ShellCheck, yamllint, Pylint, Ruff, stylua, luacheck, Biome, tsc). |
 | **Clean Repo** | `uv run inv clean` | Interactively clean untracked files using `git clean`. |
 
 ## Development Conventions
@@ -35,6 +36,13 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
     - **Shell:** `shellcheck`.
     - **YAML:** `yamllint`.
     - **Lua:** `stylua` and `luacheck`.
+    - **TypeScript:** `biome` (lint and format) and `tsc --noEmit` (types), both from
+      the project's own `pnpm` install rather than a global one.
+- **`inv lint` needs `pnpm install` first:** its TypeScript step runs `pnpm exec`, so a
+  fresh clone cannot lint until the install has completed — and because
+  `.githooks/pre-push` runs `inv lint`, it cannot push either. Termux has no Biome
+  binary at all (the lockfile carries darwin, linux-glibc, linux-musl and win32
+  targets only), so `inv lint` cannot run there.
 - **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
 - **Watch CI after every push:** a green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. Use the `watch-ci` skill, which selects the run by commit SHA and distinguishes a cancelled run from a failed one. CI here takes ~7 min.
 - **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).
@@ -48,7 +56,8 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   the generated files; `inv lint` fails on drift. Fragments carry no
   harness-specific syntax (no `@` imports, no glob arrays) because pi expands
   none, so every harness gets the same flat content.
-- **Pi config:** `pi/.pi/agent/` holds only pi's generated `AGENTS.md`. Skills
+- **Pi config:** `pi/.pi/agent/` holds pi's generated `AGENTS.md` and
+  `extensions/` (TypeScript, linted and type-checked by `inv lint`). Skills
   arrive via the shared hub fan-out, not the package, and packages are declared
   with a `pi_package:` key in `plugins.yaml` and written into pi's own
   `~/.pi/agent/settings.json` by `inv pi-setup`, so the preferences pi writes

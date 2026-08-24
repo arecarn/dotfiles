@@ -7,6 +7,7 @@ and [invoke](https://www.pyinvoke.org/).
 
 ```sh
 uv sync
+pnpm install          # TypeScript toolchain; `inv lint` needs it
 uv run inv stow       # symlink configs to $HOME
 uv run inv provision  # install packages via ansible (Linux) or chocolatey (Windows)
 ```
@@ -18,4 +19,4 @@ uv run inv provision  # install packages via ansible (Linux) or chocolatey (Wind
 | `stow` | Symlink dotfiles to home directory |
 | `unstow` | Remove symlinks |
 | `provision` | Install system packages |
-| `lint` | Run shellcheck, yamllint, pylint, ruff |
+| `lint` | Run shellcheck, yamllint, pylint, ruff, biome, tsc |

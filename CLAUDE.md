@@ -62,7 +62,10 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   with a `pi_package:` key in `plugins.yaml` and written into pi's own
   `~/.pi/agent/settings.json` by `inv pi-setup`, so the preferences pi writes
   there stay out of this repo. Pi ships no MCP or subagent support by design;
-  both come from third-party packages.
+  both come from third-party packages. A package that reads its own config file
+  gets it here too, as `extensions/<package>/config.json`; that directory is also
+  where the package installer clones and writes, so `stow` pre-creates it to keep
+  dploy from folding it into a symlink.
 - **MCP servers are declared once,** in `plugins.yaml` (plus a `dotfiles_local`
   repo's `plugins_local.yaml`), and `inv install-mcp` writes them into each
   harness's own config file: `~/.claude.json` is amended, `~/.agents/mcp.json` is

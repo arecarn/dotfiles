@@ -163,19 +163,49 @@ def _setup_gitconfig_local():
         print(f"Created {gitconfig_local}")
 
 
+def _choco_each(ctx, packages: list[str]) -> None:
+    """
+    Install and upgrade each Chocolatey package on its own, then report failures.
+
+    One `choco install` for the whole list aborts every remaining package when any
+    single one fails, and third-party packages fail for reasons outside this repo:
+    a dead upstream download URL, a hung install script, a registry blip. Per
+    package, that costs one tool instead of the entire Windows provision.
+
+    Failures are collected and printed together at the end, because Chocolatey's
+    own output is long enough to bury a single failure line. Provisioning still
+    succeeds -- a machine missing one optional tool is worth having. Nothing here
+    is load-bearing for `inv lint`; the pnpm chain the caller runs afterwards is,
+    and it stays a hard error.
+    """
+    failed: list[str] = []
+    for package in packages:
+        # `choco install` no-ops on an already-installed package rather than
+        # updating it, so the upgrade is what actually moves the version.
+        install = ctx.run(f"choco install -y {package}", warn=True, pty=False)
+        upgrade = ctx.run(f"choco upgrade -y {package}", warn=True, pty=False)
+        if not install.ok and not upgrade.ok:
+            failed.append(package)
+
+    if failed:
+        print(f"\nChocolatey packages that failed: {', '.join(failed)}")
+        print(
+            "Provisioning continued without them. A package that keeps failing "
+            "is usually broken upstream -- check its download URL before "
+            "assuming this machine is at fault."
+        )
+
+
 def _provision_windows(ctx, is_ci: bool) -> None:
     if not IS_ADMIN:
         raise SystemExit("You need to be admin to install things with Chocolatey")
 
     # A headless host (CI) has no desktop session, so the desktop-only
     # packages are left out there.
-    system_packages = " ".join(
-        provision_data.windows_system_packages(desktop=not is_ci)
-    )
-    ctx.run(f"choco install -y {system_packages}", pty=False)
-    ctx.run("choco install -y openssh --pre", pty=False)
-    ctx.run(f"choco upgrade -y {system_packages}", pty=False)
-    ctx.run("choco upgrade -y openssh --pre", pty=False)
+    packages = provision_data.windows_system_packages(desktop=not is_ci)
+    # openssh needs --pre (no stable Chocolatey release), so it carries its own
+    # flag rather than joining the plain list.
+    _choco_each(ctx, packages + ["openssh --pre"])
 
     # Corepack is not bundled with the nodejs Chocolatey package, so it has to be
     # installed before it can be enabled -- `corepack enable` alone fails with

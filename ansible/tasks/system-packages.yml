@@ -22,24 +22,65 @@
   when: >-
     (item != 'xclip' or not is_termux) and
     (item != 'openssh-server' or not is_termux)
+  # Tolerated per package, then reported by the last task in this file. One
+  # unavailable package should not abort the rest of provisioning, but an
+  # unreported failure scrolls past in a long play and is never seen.
+  register: common_pkg_result
   ignore_errors: true
 
+# Looped per package for the same reason as the common list above: passed as one
+# list, a single unavailable package fails the whole task and installs none of
+# the others.
 - name: Install OS-family-specific system packages
   ansible.builtin.package:
-    name: "{{ os_family_system_packages[ansible_facts['os_family']] }}"
+    name: "{{ item }}"
     state: present
+  # default([]) because loop is evaluated before when: on an os_family with no
+  # entry, indexing the dict raises rather than being skipped.
+  loop: "{{ os_family_system_packages[ansible_facts['os_family']] | default([]) }}"
   tags:
     - system-packages
     - os-specific
   when: ansible_facts['os_family'] in os_family_system_packages
+  register: os_family_pkg_result
+  ignore_errors: true
 
 - name: Install desktop-only system packages
   ansible.builtin.package:
-    name: "{{ desktop_only_system_packages[ansible_facts['os_family']] }}"
+    name: "{{ item }}"
     state: present
+  loop: "{{ desktop_only_system_packages[ansible_facts['os_family']] | default([]) }}"
   tags:
     - system-packages
     - desktop-only
   when: >-
     ansible_facts['os_family'] in desktop_only_system_packages and
     desktop_only_system_packages[ansible_facts['os_family']] | length > 0
+  register: desktop_pkg_result
+  ignore_errors: true
+
+# Provisioning is allowed to continue past an unavailable package, so this is the
+# only place a failure becomes visible. Keep it last: it reports the three tasks
+# above, and a task added after it goes unreported.
+- name: Report system packages that failed to install
+  ansible.builtin.debug:
+    msg: >-
+      Packages that failed to install:
+      {{ failed_packages | join(', ') }}.
+      Provisioning continued without them. A package that keeps failing is
+      usually renamed or dropped upstream rather than broken on this machine.
+  vars:
+    # The outer parentheses are load-bearing: "|" binds tighter than "+", so
+    # without them the filters apply to the last list alone and every package
+    # from the first two is reported as failed.
+    failed_packages: >-
+      {{ ((common_pkg_result.results | default([]))
+        + (os_family_pkg_result.results | default([]))
+        + (desktop_pkg_result.results | default([])))
+       | selectattr('failed', 'defined')
+       | selectattr('failed')
+       | map(attribute='item')
+       | list }}
+  when: failed_packages | length > 0
+  tags:
+    - system-packages

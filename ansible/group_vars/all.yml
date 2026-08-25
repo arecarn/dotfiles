@@ -66,7 +66,11 @@ windows_system_packages:
   - llvm
   - pandoc
   - git
-  - ctags
+  # universal-ctags, not ctags: the latter packages Exuberant Ctags 5.8 (2009)
+  # from a SourceForge URL that now times out, and ships no checksum, which
+  # Chocolatey refuses by default. Universal Ctags is its maintained successor
+  # and provides the same `ctags` binary.
+  - universal-ctags
   - neovim
   - nodejs
   - plantuml

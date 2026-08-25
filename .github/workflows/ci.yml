@@ -52,9 +52,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: uv run invoke provision --args="-v"
+      # Provisioning installs Corepack's pnpm shim into npm's global prefix, but a
+      # PATH set inside that step dies with its shell. Only $GITHUB_PATH carries a
+      # directory to later steps. The prefix is read from npm rather than hardcoded:
+      # it is C:\npm\prefix on this runner image, not the documented %APPDATA%\npm.
+      - name: Add npm global prefix to PATH (Windows)
+        if: runner.os == 'Windows'
+        run: npm config get prefix >> $env:GITHUB_PATH
       - name: Install JS dev dependencies
-        # Must stay after provisioning: that is what installs Node and enables
-        # Corepack, so pnpm is only on PATH from here on.
+        # Must stay after provisioning: that is what installs Node and Corepack,
+        # so pnpm is only on PATH from here on.
         run: pnpm install --frozen-lockfile
       - name: Add cargo to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH

@@ -176,7 +176,18 @@ def _provision_windows(ctx, is_ci: bool) -> None:
     ctx.run("choco install -y openssh --pre", pty=False)
     ctx.run(f"choco upgrade -y {system_packages}", pty=False)
     ctx.run("choco upgrade -y openssh --pre", pty=False)
-    ctx.run("corepack enable", warn=True, pty=False)
+
+    # Corepack is not bundled with the nodejs Chocolatey package, so it has to be
+    # installed before it can be enabled -- `corepack enable` alone fails with
+    # "'corepack' is not recognized". This mirrors the Linux chain in
+    # ansible/tasks/javascript-packages.yml; keep the two in step.
+    #
+    # Only `corepack enable` tolerates failure, and only because the npm fallback
+    # below covers it. The install is a hard error: without pnpm on PATH, `inv
+    # lint` cannot run its TypeScript step at all.
+    ctx.run("npm install -g --force corepack", pty=False)
+    if not ctx.run("corepack enable", warn=True, pty=False).ok:
+        ctx.run("npm install -g pnpm", pty=False)
 
 
 def _provision_linux(ctx, is_ci: bool, args: str) -> None:

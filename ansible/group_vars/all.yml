@@ -81,8 +81,14 @@ windows_system_packages:
   - delta
   - gsudo
   - ripgrep
+  # oh-my-posh carries git status in the prompt. posh-git is deliberately absent:
+  # Chocolatey's poshgit v0.7.3.1 hangs inside its own chocolateyInstall.ps1
+  # after extracting, burning Chocolatey's full 2700s timeout on every run that
+  # reaches it (measured: a 7m Windows CI job became 50m). profile.ps1 imports
+  # posh-git only if the module is present, so its absence is silent. Install it
+  # from the PowerShell Gallery (`Install-Module posh-git`) if it is wanted back;
+  # the Gallery is its canonical source and the Chocolatey wrapper is what hangs.
   - oh-my-posh
-  - poshgit
   - stylua
   - selene
   - claude-code

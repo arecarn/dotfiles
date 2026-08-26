@@ -102,6 +102,10 @@
 # `integration status` instead, which reports per-target "current" vs
 # "not installed" and also goes stale when a herdr upgrade bumps the
 # integration version.
+# Not gated on the earlier stat: the download task above has installed herdr by
+# now, so on a fresh machine the binary exists even though the stat said it did
+# not. Gating on that stale fact left herdr_integration_status unregistered and
+# the next task's `when` failed on its missing stdout_lines.
 - name: Check herdr pi integration status
   ansible.builtin.command:
     cmd: "{{ user_home }}/.local/bin/herdr integration status"
@@ -109,7 +113,7 @@
   changed_when: false
   become: false
   check_mode: false
-  when: not is_termux and herdr_exists.stat.exists
+  when: not is_termux
 
 - name: Install herdr's pi integration
   ansible.builtin.command:
@@ -119,6 +123,8 @@
   # read as a mapping inside a plain multi-line scalar.
   when:
     - not is_termux
+    # `default([])` because a --check run skips the status command above, which
+    # leaves the registered result a bare skip dict with no stdout_lines.
     - >-
-      herdr_integration_status.stdout_lines
+      herdr_integration_status.stdout_lines | default([])
       | select('match', '^pi: current') | list | length == 0

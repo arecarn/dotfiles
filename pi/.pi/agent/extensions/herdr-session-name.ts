@@ -30,15 +30,29 @@ const SOURCE = "pi-session-name";
 
 const AGENT_NAME_MAX = 32;
 
-/** herdr agent names: lowercase start, then lowercase/digit/-/_ up to 32 chars. */
+// A name this long is machine-generated rather than typed: pi's own subagent
+// names are `subagent-<role>-<uuid>-<n>` at 58 characters. Such a name cannot
+// produce a useful handle -- truncating to AGENT_NAME_MAX lands mid-uuid, and
+// two subagents from one run share that prefix, so their handles collide -- and
+// it overflows the sidebar it is meant to label.
+const DISPLAY_NAME_MAX = 40;
+
+/**
+ * herdr agent names: lowercase start, then lowercase/digit/-/_ up to 32 chars.
+ *
+ * Returns undefined when the name cannot produce a usable handle, either because
+ * nothing survives slugification or because truncation would cut an identifier
+ * mid-token. Callers treat that as "set the display field only".
+ */
 function slugify(name: string): string | undefined {
 	const slug = name
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "")
-		.replace(/^[^a-z]+/, "")
-		.slice(0, AGENT_NAME_MAX);
-	return slug.length > 0 ? slug : undefined;
+		.replace(/^[^a-z]+/, "");
+	if (slug.length === 0) return undefined;
+	if (slug.length > AGENT_NAME_MAX) return undefined;
+	return slug;
 }
 
 export default function herdrSessionName(pi: ExtensionAPI): void {
@@ -58,6 +72,13 @@ export default function herdrSessionName(pi: ExtensionAPI): void {
 	// two sequential execs and `/name` can be typed repeatedly.
 	let pending: AbortController | undefined;
 
+	// Only the pane's own root TUI session may label the pane. A subagent runs in
+	// the same pane and gets an auto-generated session name, so without this gate
+	// it overwrites the row with its own id and leaves the session the user named
+	// unlabelled. Set in session_start, which subagent sessions do not reach in
+	// tui mode; the bundled herdr integration gates its reports the same way.
+	let rootSession = false;
+
 	const sync = async (
 		name: string | undefined,
 		ctx: ExtensionContext,
@@ -66,6 +87,10 @@ export default function herdrSessionName(pi: ExtensionAPI): void {
 		const controller = new AbortController();
 		pending = controller;
 		const { signal } = controller;
+
+		// Length is checked on the display field too, not just the handle: a
+		// machine-generated name overflows the sidebar it is supposed to label.
+		if (name && name.length > DISPLAY_NAME_MAX) return;
 
 		const run = (args: string[]) =>
 			pi.exec(herdrBin, args, { signal, timeout: 5000 });
@@ -114,6 +139,7 @@ export default function herdrSessionName(pi: ExtensionAPI): void {
 	};
 
 	pi.on("session_info_changed", (event, ctx) => {
+		if (!rootSession) return;
 		void sync(event.name, ctx);
 	});
 
@@ -121,7 +147,10 @@ export default function herdrSessionName(pi: ExtensionAPI): void {
 	// session_info_changed, and a new pane starts with herdr's own detection, so
 	// reassert on startup rather than waiting for the next `/name`.
 	pi.on("session_start", (_event, ctx) => {
+		// TUI only: RPC, JSON and print modes are headless, so they own no pane
+		// row to label even though they run in one.
 		if (ctx.mode !== "tui") return;
+		rootSession = true;
 		const name = pi.getSessionName();
 		if (name) void sync(name, ctx);
 	});
@@ -129,5 +158,6 @@ export default function herdrSessionName(pi: ExtensionAPI): void {
 	pi.on("session_shutdown", () => {
 		pending?.abort();
 		pending = undefined;
+		rootSession = false;
 	});
 }

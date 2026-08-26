@@ -15,6 +15,10 @@ zsh_sources=(
     "$ZSH_CONFIG_DIR/options.zsh"
     "$ZSH_CONFIG_DIR/keybindings.zsh"
     "$ZSH_CONFIG_DIR/aliases.zsh"
+    # herdr before tmux: whichever runs first claims the terminal, and each
+    # declines when the other is already active. herdr is the default; tmux is
+    # reached with NO_HERDR=1.
+    "$ZSH_CONFIG_DIR/herdr.zsh"
     "$ZSH_CONFIG_DIR/tmux.zsh"
     "$ZSH_CONFIG_DIR/prompt.zsh"
     "$HOME/.zshrc_local"

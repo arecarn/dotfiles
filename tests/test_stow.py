@@ -398,6 +398,21 @@ def test_the_stow_task_tolerates_a_failing_shared_skills_fan_out(task_env, monke
     tasks.stow.body(None)  # must not raise
 
 
+def test_the_stow_task_skips_the_herdr_integration_without_a_runner(
+    task_env, monkeypatch
+):
+    """stow.body(None) is how the guard tests above invoke it, so a missing runner
+    must skip the herdr install rather than fail the whole stow."""
+    tasks, on_windows = task_env
+    on_windows(False)
+    monkeypatch.setattr(tasks.shutil, "which", lambda _name: "/usr/bin/herdr")
+    monkeypatch.setattr(
+        tasks, "_run_cmd", lambda _ctx, _cmd: pytest.fail("ran without a runner")
+    )
+
+    tasks.stow.body(None)  # must not raise
+
+
 def test_the_stow_task_still_raises_off_windows(task_env, monkeypatch):
     tasks, on_windows = task_env
     monkeypatch.setattr(tasks.agents.skills_hub, "stow_out", _raise_privilege_error)

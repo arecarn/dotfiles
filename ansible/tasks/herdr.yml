@@ -97,6 +97,13 @@
 # the sidebar. It is herdr-owned and overwritten on reinstall, which is why this
 # repo's own herdr extension is a separate file beside it.
 #
+# `integration install` needs ~/.pi/agent/extensions to exist already and fails
+# with "install pi first" otherwise. That directory is created by stowing's fold
+# barriers, which run after provisioning, so it is absent the first time a machine
+# provisions. The task is therefore not fatal here; `inv stow` installs the
+# integration once the directory exists, and the status gate below makes the
+# second attempt a no-op.
+#
 # `integration install` prints the same "installed ..." line whether or not the
 # file was already current, so its output cannot drive changed_when. Gate on
 # `integration status` instead, which reports per-target "current" vs
@@ -121,6 +128,10 @@
   become: false
   # Folded scalar because the regex contains ": ", which YAML would otherwise
   # read as a mapping inside a plain multi-line scalar.
+  register: herdr_integration_install
+  # Reported rather than fatal: see the note above on stow ordering.
+  failed_when: false
+  changed_when: herdr_integration_install.rc == 0
   when:
     - not is_termux
     # `default([])` because a --check run skips the status command above, which

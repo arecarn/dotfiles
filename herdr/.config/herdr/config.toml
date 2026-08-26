@@ -110,7 +110,13 @@ prompt_new_tab_name = false
 # tools and falls back to OSC 52, so drag-select copies like tmux's `y`.
 copy_on_select = true
 
-agent_panel_sort = "priority"
+# Sidebar agent ordering: group by space rather than by attention queue, so a
+# pane keeps its position instead of jumping when its state changes.
+agent_panel_sort = "spaces"
+
+# Distinct shapes per agent state rather than compact colored dots.
+status_indicators = "symbols"
+
 [advanced]
 # tmux: history-limit 50000. Herdr caps scrollback by bytes, not lines,
 # so this is ~50k lines of typical output rather than an exact translation.

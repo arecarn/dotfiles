@@ -15,6 +15,9 @@ from manage.agents import plugins
 
 _CLAUDE_SETTINGS = pathlib.PurePath(".claude/settings.json")
 _PI_SETTINGS = pathlib.PurePath(".pi/agent/settings.json")
+_PI_LOCAL_SETTINGS = pathlib.PurePath(
+    ".config/ai-skills/pi-settings.local.json"
+)
 
 
 def _home(home):
@@ -51,32 +54,38 @@ def setup_claude(home=None):
     print(f"{'Updated' if existed else 'Created'} {path}")
 
 
-def setup_pi(home=None):
-    """Declare the manifest's pi packages in pi's own settings file.
+def setup_pi(home=None, local_settings_path=None):
+    """Merge declared packages and optional private preferences into pi settings.
 
     `packages` belongs to the manifest, so dropping a declaration there drops
-    the package here. Every other key is pi's own -- theme, provider and model
-    defaults, changelog state -- and is preserved.
+    the package here. Keys in `pi-settings.local.json` are private declarations
+    layered over Pi's existing settings. Every other key is Pi's own and is
+    preserved.
 
-    Unlike the MCP config Claude Code owns, an absent file is created rather
-    than left alone: this file is what `pi update --extensions` reconciles
-    against, so skipping it on a machine that has never run pi would mean no
-    package is ever installed.
+    An absent file is created rather than skipped: this file is what
+    `pi update --extensions` reconciles against, so skipping it on a fresh
+    machine would mean no package is ever installed.
     """
     packages = plugins.load().pi_packages()
     if not packages:
         return
 
-    path = _home(home) / _PI_SETTINGS
-    # A machine that stowed the settings.json this repo used to commit still has
-    # a symlink to a path the repo no longer has. Writing through it would
-    # recreate the file inside the working tree, which is what moving the
-    # declaration here removes. inv clean-stow prunes the dead link eventually;
-    # this must not depend on that having run first.
+    home_path = _home(home)
+    path = home_path / _PI_SETTINGS
+    local_path = (
+        pathlib.Path(local_settings_path)
+        if local_settings_path is not None
+        else home_path / _PI_LOCAL_SETTINGS
+    )
+
+    # Migrate either the former public dead link or dotfiles_local's active
+    # shadow to a real runtime file. Read first so Pi-owned state survives.
+    settings = json.loads(path.read_text()) if path.exists() else {}
     if path.is_symlink():
         path.unlink()
 
-    settings = json.loads(path.read_text()) if path.exists() else {}
+    if local_path.exists():
+        settings.update(json.loads(local_path.read_text(encoding="utf-8")))
     settings["packages"] = packages
     settings["enableSkillCommands"] = True
     settings["quietStartup"] = True
@@ -87,4 +96,4 @@ def setup_pi(home=None):
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content)
-    print(f"Declared {len(packages)} pi packages in {path}")
+    print(f"Updated generated Pi settings at {path}")

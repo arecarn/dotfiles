@@ -92,6 +92,7 @@ def test_the_committed_manifest_declares_the_expected_packages():
         "git:github.com/obra/superpowers",
         "npm:pi-subagents",
         "npm:pi-mcp-adapter",
+        "npm:pi-background-tasks",
     ]
 
 

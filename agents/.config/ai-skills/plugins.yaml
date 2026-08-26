@@ -59,6 +59,11 @@ pi-subagents:
 pi-mcp-adapter:
   pi_package: npm:pi-mcp-adapter
 
+# Durable background shell jobs. This intentionally overlaps only the monitor
+# package's process-launch surface; it adds retained logs and result retrieval.
+pi-background-tasks:
+  pi_package: npm:pi-background-tasks
+
 ticktick:
   mcp:
     type: http

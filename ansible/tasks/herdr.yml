@@ -24,23 +24,9 @@
   become: false
   when: not is_termux and herdr_exists.stat.exists
 
-# check_mode: false because this only reads: without it a --check run skips the
-# fetch and every task below fails on an undefined herdr_manifest.json.
-- name: Get latest herdr release manifest
-  ansible.builtin.uri:
-    url: https://herdr.dev/latest.json
-    return_content: true
-  register: herdr_manifest
-  until: herdr_manifest is succeeded
-  retries: 3
-  delay: 5
-  become: false
-  check_mode: false
-  when: not is_termux
-
 # The manifest keys assets by "<os>-<arch>" using its own arch spelling, which
 # differs from ansible's on arm (aarch64 vs arm64 across distros).
-- name: Resolve herdr release target and staleness
+- name: Resolve herdr release target and installed version
   ansible.builtin.set_fact:
     herdr_target: >-
       linux-{{ 'aarch64'
@@ -52,22 +38,60 @@
   become: false
   when: not is_termux
 
+# Downloaded to a file and parsed with a filter rather than fetched with
+# `uri: return_content: true`. The manifest embeds release notes for every
+# version -- 155 KB, of which the three values below are under 1 KB -- and
+# registering that whole structure makes ansible re-template it on each later
+# reference. Doing so was enough to have the runner kill the play outright, with
+# no ansible error to show for it.
+#
+# check_mode: false on both tasks because they only read: without it a --check
+# run skips them and everything below fails on an undefined variable.
+- name: Download the herdr release manifest
+  ansible.builtin.get_url:
+    url: https://herdr.dev/latest.json
+    dest: /tmp/herdr-latest.json
+    mode: "0644"
+    force: true
+  register: herdr_manifest_download
+  until: herdr_manifest_download is succeeded
+  retries: 3
+  delay: 5
+  become: false
+  check_mode: false
+  when: not is_termux
+
+# Plain Jinja rather than json_query, which needs the jmespath library this repo
+# does not install. The intermediate is scoped to this task's vars, so only the
+# three extracted values enter the play's variables.
+- name: Read the herdr version and this platform's asset from the manifest
+  vars:
+    herdr_manifest_json: "{{ lookup('file', '/tmp/herdr-latest.json') | from_json }}"
+  ansible.builtin.set_fact:
+    herdr_latest:
+      version: "{{ herdr_manifest_json.version }}"
+      url: "{{ herdr_manifest_json.assets[herdr_target] | default('') }}"
+      sha256: "{{ herdr_manifest_json.sha256[herdr_target] | default('') }}"
+  become: false
+  check_mode: false
+  when: not is_termux
+
 - name: Fail when the manifest has no build for this platform
   ansible.builtin.fail:
     msg: "herdr publishes no binary for {{ herdr_target }}"
-  when: not is_termux and herdr_target not in herdr_manifest.json.assets
+  when: not is_termux and not herdr_latest.url
   become: false
 
 # get_url verifies the digest and skips the download when the destination
 # already matches it, so a re-run of an up-to-date install is a no-op.
 - name: Download herdr
   ansible.builtin.get_url:
-    url: "{{ herdr_manifest.json.assets[herdr_target] }}"
+    url: "{{ herdr_latest.url }}"
     dest: "{{ user_home }}/.local/bin/herdr"
-    checksum: "sha256:{{ herdr_manifest.json.sha256[herdr_target] }}"
+    checksum: "sha256:{{ herdr_latest.sha256 }}"
     mode: "0755"
   become: false
-  when: not is_termux and herdr_current != herdr_manifest.json.version
+  when: not is_termux and herdr_current != herdr_latest.version
 
 # herdr's pi integration is the extension that reports agent lifecycle state to
 # the sidebar. It is herdr-owned and overwritten on reinstall, which is why this

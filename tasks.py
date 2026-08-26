@@ -295,6 +295,26 @@ def pi_install_plugins(ctx):
     _run_cmd(ctx, "pi update --extensions")
 
 
+def _herdr_install_integration(ctx):
+    """Install herdr's agent-state integration into pi's extensions directory.
+
+    Called from `stow`, not from `setup_ai`, because `herdr integration install`
+    needs ~/.pi/agent/extensions to exist and that directory is created by
+    stowing's own fold barriers. setup_ai runs as a post hook of provision, which
+    is still before stow, so it is too early.
+
+    ansible/tasks/herdr.yml attempts the same install and tolerates failing, for
+    the machine whose very first provision predates any stow. Reinstalling an
+    up-to-date integration is a no-op, so doing it in both places is harmless.
+
+    `ctx` may be None: the stow task's tests call `stow.body(None)`, so this must
+    stay a no-op without a runner rather than fail the task that invoked it.
+    """
+    if ctx is None or IS_WINDOWS or not shutil.which("herdr"):
+        return
+    _run_cmd(ctx, "herdr integration install pi")
+
+
 @task(
     claude_setup,
     stow_skills,
@@ -344,6 +364,8 @@ def stow(ctx):
         d.clean()
         d.stow()
         agents.skills_hub.stow_out(d.home)
+    # After stowing, so ~/.pi/agent/extensions exists for herdr to install into.
+    _herdr_install_integration(ctx)
 
 
 @task

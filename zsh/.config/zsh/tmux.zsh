@@ -1,6 +1,14 @@
 # Auto-start tmux on interactive shells
-# Guards: not already in tmux, not in VS Code's integrated terminal, tmux installed
-if [[ -z "$TMUX" ]] && [[ -z "$VSCODE_RESOLVING_ENVIRONMENT" ]] && command -v tmux &>/dev/null; then
+# Guards: not already in tmux, not in VS Code's integrated terminal, not in a
+# herdr pane, tmux installed.
+#
+# herdr is itself a multiplexer that spawns a shell per pane, so attaching here
+# puts a shared tmux session inside every pane: each new pane joins the same
+# session and redraws it, and herdr's own pane management ends up driving tmux
+# windows instead of the shell it asked for. HERDR_ENV is exported into every
+# pane's environment, so it identifies those shells the same way
+# VSCODE_RESOLVING_ENVIRONMENT identifies VS Code's.
+if [[ -z "$TMUX" ]] && [[ -z "$VSCODE_RESOLVING_ENVIRONMENT" ]] && [[ "$HERDR_ENV" != "1" ]] && command -v tmux &>/dev/null; then
     tmux attach 2>/dev/null || tmux new-session -s main
 fi
 

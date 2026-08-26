@@ -139,3 +139,10 @@
     - >-
       herdr_integration_status.stdout_lines | default([])
       | select('match', '^pi: current') | list | length == 0
+
+- name: Clean up the herdr release manifest
+  ansible.builtin.file:
+    path: /tmp/herdr-latest.json
+    state: absent
+  become: false
+  when: not is_termux

@@ -35,6 +35,11 @@
     - ansible.builtin.import_tasks: tasks/npm-packages.yml
     - ansible.builtin.import_tasks: tasks/rust-packages.yml
     - ansible.builtin.import_tasks: tasks/direnv.yml
+    # After javascript-packages.yml, which installs pi: the integration task
+    # here writes into pi's extensions directory.
+    - ansible.builtin.import_tasks: tasks/herdr.yml
+      tags:
+        - herdr
     - ansible.builtin.import_tasks: tasks/nerd-fonts.yml
     - ansible.builtin.import_tasks: tasks/zsh.yml
     # A GNOME desktop entry for an application headless hosts never install.

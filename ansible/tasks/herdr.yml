@@ -1,0 +1,100 @@
+---
+# Not packaged anywhere, so install the upstream release binary directly, same
+# approach as lua-language-server.yml.
+#
+# herdr.dev/install.sh is deliberately not piped to sh: it resolves the same
+# manifest this task reads, but unconditionally re-downloads and cannot report
+# "changed" to ansible. Reading latest.json directly keeps the task idempotent
+# and lets `herdr update` (which uses the same manifest) stay the upgrade path.
+- name: Check if herdr is already installed
+  ansible.builtin.stat:
+    path: "{{ user_home }}/.local/bin/herdr"
+  register: herdr_exists
+  become: false
+  when: not is_termux
+
+# The binary reports "herdr X.Y.Z"; an empty string when absent keeps the
+# version comparison below total rather than conditional on two facts.
+- name: Get installed herdr version
+  ansible.builtin.command:
+    cmd: "{{ user_home }}/.local/bin/herdr --version"
+  register: herdr_installed_version
+  changed_when: false
+  failed_when: false
+  become: false
+  when: not is_termux and herdr_exists.stat.exists
+
+# check_mode: false because this only reads: without it a --check run skips the
+# fetch and every task below fails on an undefined herdr_manifest.json.
+- name: Get latest herdr release manifest
+  ansible.builtin.uri:
+    url: https://herdr.dev/latest.json
+    return_content: true
+  register: herdr_manifest
+  until: herdr_manifest is succeeded
+  retries: 3
+  delay: 5
+  become: false
+  check_mode: false
+  when: not is_termux
+
+# The manifest keys assets by "<os>-<arch>" using its own arch spelling, which
+# differs from ansible's on arm (aarch64 vs arm64 across distros).
+- name: Resolve herdr release target and staleness
+  ansible.builtin.set_fact:
+    herdr_target: >-
+      linux-{{ 'aarch64'
+               if ansible_facts['architecture'] in ['aarch64', 'arm64']
+               else 'x86_64' }}
+    herdr_current: >-
+      {{ (herdr_installed_version.stdout | default('') | regex_search('([0-9]+\.[0-9]+\.[0-9]+)', '\1') | first)
+         if (herdr_installed_version.stdout | default('')) else '' }}
+  become: false
+  when: not is_termux
+
+- name: Fail when the manifest has no build for this platform
+  ansible.builtin.fail:
+    msg: "herdr publishes no binary for {{ herdr_target }}"
+  when: not is_termux and herdr_target not in herdr_manifest.json.assets
+  become: false
+
+# get_url verifies the digest and skips the download when the destination
+# already matches it, so a re-run of an up-to-date install is a no-op.
+- name: Download herdr
+  ansible.builtin.get_url:
+    url: "{{ herdr_manifest.json.assets[herdr_target] }}"
+    dest: "{{ user_home }}/.local/bin/herdr"
+    checksum: "sha256:{{ herdr_manifest.json.sha256[herdr_target] }}"
+    mode: "0755"
+  become: false
+  when: not is_termux and herdr_current != herdr_manifest.json.version
+
+# herdr's pi integration is the extension that reports agent lifecycle state to
+# the sidebar. It is herdr-owned and overwritten on reinstall, which is why this
+# repo's own herdr extension is a separate file beside it.
+#
+# `integration install` prints the same "installed ..." line whether or not the
+# file was already current, so its output cannot drive changed_when. Gate on
+# `integration status` instead, which reports per-target "current" vs
+# "not installed" and also goes stale when a herdr upgrade bumps the
+# integration version.
+- name: Check herdr pi integration status
+  ansible.builtin.command:
+    cmd: "{{ user_home }}/.local/bin/herdr integration status"
+  register: herdr_integration_status
+  changed_when: false
+  become: false
+  check_mode: false
+  when: not is_termux and herdr_exists.stat.exists
+
+- name: Install herdr's pi integration
+  ansible.builtin.command:
+    cmd: "{{ user_home }}/.local/bin/herdr integration install pi"
+  become: false
+  # Folded scalar because the regex contains ": ", which YAML would otherwise
+  # read as a mapping inside a plain multi-line scalar.
+  when:
+    - not is_termux
+    - >-
+      herdr_integration_status.stdout_lines
+      | select('match', '^pi: current') | list | length == 0

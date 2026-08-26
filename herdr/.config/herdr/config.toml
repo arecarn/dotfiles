@@ -1,0 +1,117 @@
+onboarding = false
+# Herdr configuration, mapped from ~/.tmux.conf so the muscle memory carries over.
+#
+# Only bindings that differ from Herdr's defaults are listed. Anything absent
+# keeps its Herdr default; run `herdr config check` after edits, and `prefix+?`
+# in the app for the live keymap.
+#
+# Two tmux concepts have no Herdr equivalent and are deliberately not mapped:
+#   - tmux window == Herdr tab; tmux session == Herdr *workspace* for daily use.
+#     Herdr sessions are a heavier namespace (own socket/server), so the tmux
+#     session bindings below map to workspaces, not `herdr session`.
+#   - send-prefix (tmux `C-Space C-Space`): Herdr forwards a literal prefix on
+#     double-tap automatically, so `ctrl+q ctrl+q` already works.
+
+[keys]
+# tmux uses prefix2 = C-q. Safe here only because ~/.zshrc runs
+# `stty -ixon; stty stop undef` — without that, ctrl+q is XON and the terminal
+# eats it before Herdr sees it. Keep that stty line if you keep this prefix.
+prefix = "ctrl+q"
+
+# --- Panes: vim-style navigation (tmux h/j/k/l) -----------------------------
+# These are already Herdr defaults; ctrl+alt duplicates are added because that
+# modifier family is the one terminals/DEs almost universally leave free, so
+# pane movement works without the prefix round-trip.
+focus_pane_left = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+
+# tmux `|` = last-window. Herdr has no last-tab action, so the nearest useful
+# analogue is last-pane (unbound by default).
+last_pane = "prefix+|"
+
+# tmux: `-` splits vertical, `\` splits horizontal.
+# NOTE: Herdr's names are the opposite of tmux's. Herdr split_vertical means
+# "new pane to the right"; tmux split-window -v means "new pane below". The
+# bindings below reproduce tmux's *behavior*, not its naming.
+split_vertical = ["prefix+v", "prefix+\\"]   # right, tmux `\`
+split_horizontal = "prefix+minus"            # below, tmux `-`
+
+# tmux x = kill-pane, X = kill-window(tab)
+close_pane = "prefix+x"
+close_tab = "prefix+shift+x"
+
+# tmux Z cycles zoomed panes; Herdr zoom is a toggle on the focused pane.
+zoom = ["prefix+z", "prefix+shift+z"]
+
+# tmux resize-pane with arrows. Herdr keeps resize_mode on prefix+r as well.
+resize_pane_left = "prefix+left"
+resize_pane_down = "prefix+down"
+resize_pane_up = "prefix+up"
+resize_pane_right = "prefix+right"
+
+# --- Tabs (tmux windows) ---------------------------------------------------
+# tmux [ / ] = previous/next window. This reclaims `[` from copy mode, which
+# moves to Escape below to match `bind-key Escape copy-mode`.
+previous_tab = ["prefix+p", "prefix+["]
+next_tab = "prefix+]"
+
+# tmux `n` = rename-window. Herdr's default prefix+n is next-tab, so `n` comes
+# off next_tab above (which keeps `]`) and lands on rename here.
+rename_tab = ["prefix+n", "prefix+shift+t", "prefix+comma"]
+
+# tmux < / > = swap-window left/right
+move_tab_previous = "prefix+shift+comma"
+move_tab_next = "prefix+shift+period"
+
+# tmux c = new-window, inheriting cwd (Herdr panes inherit cwd already)
+new_tab = "prefix+c"
+
+# --- Workspaces (closest thing to tmux sessions) ---------------------------
+# tmux w = choose-session, W = choose-tree
+workspace_picker = "prefix+w"
+goto = ["prefix+g", "prefix+shift+w"]
+
+# tmux ( / ) = switch-client prev/next session
+previous_workspace = "prefix+("
+next_workspace = "prefix+)"
+
+# tmux N = rename-session, C = new session
+rename_workspace = "prefix+shift+n"
+new_workspace = ["prefix+shift+c", "prefix+shift+g"]
+
+# --- Session / client ------------------------------------------------------
+# tmux D = detach-client, d = choose-client. Herdr's default prefix+q would
+# collide with tmux's q = kill-session, so detach lives on tmux's D and
+# prefix+q is left free rather than mapped to a destructive action.
+detach = ["prefix+shift+d", "prefix+d"]
+
+# tmux s = source-file (reload config), S = refresh-client
+reload_config = ["prefix+shift+r", "prefix+s"]
+
+# tmux Escape = copy-mode, with vi motions. Herdr's copy mode already uses
+# h/j/k/l, w/b/e, v to select, y to copy, q/Esc to leave, so the vi bindings
+# from version_dependent_settings.sh need no translation.
+#
+# Herdr's own default for copy mode is prefix+[, but your tmux gives `[` to
+# previous-window, so `[` is spent above and Escape is the only copy-mode key.
+copy_mode = "prefix+escape"
+
+[ui]
+# tmux `set -g mouse on`
+mouse_capture = true
+
+# tmux has no equivalent; skip the name prompt so prefix+c behaves like
+# tmux's new-window, which creates immediately.
+prompt_new_tab_name = false
+
+# tmux set-clipboard on / OSC 52 forwarding. Herdr prefers native clipboard
+# tools and falls back to OSC 52, so drag-select copies like tmux's `y`.
+copy_on_select = true
+
+agent_panel_sort = "priority"
+[advanced]
+# tmux: history-limit 50000. Herdr caps scrollback by bytes, not lines,
+# so this is ~50k lines of typical output rather than an exact translation.
+scrollback_limit_bytes = 10000000

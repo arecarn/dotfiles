@@ -1,0 +1,20 @@
+# herdr keeps its running server's state beside its config: herdr.sock,
+# herdr-client.sock, herdr-server.log, herdr-client.log, session.json,
+# .plugins.lock. Whitelist config.toml rather than listing those, so state herdr
+# adds in a later release is ignored without an edit here.
+#
+# This is not what keeps that state out of the working tree -- an ignored file
+# still lands on disk. ~/.config/herdr is a fold barrier in manage/stow.py, and
+# that is what stops the whole directory becoming one symlink into this repo.
+#
+# config.toml is a two-way file: herdr writes it too (`channel set`, the
+# sidebar's sort toggle, `onboarding = false`), so expect diffs here that nobody
+# typed. Confirmed 2026-08-25 on herdr 0.8.2: those writes append or edit in
+# place and leave the surrounding comments intact.
+
+# Ignore all files
+*
+
+# Except these files...
+!.gitignore
+!config.toml

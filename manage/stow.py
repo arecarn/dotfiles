@@ -68,6 +68,11 @@ def tolerating_windows_symlink_failure(what):
 # currently the only package directory we own config inside; add a sibling here
 # when we own config in another.
 #
+# herdr keeps its running server's state next to its config in ~/.config/herdr:
+# two unix sockets, two logs, and a session.json naming every open workspace,
+# tab, and cwd. This repo stows only config.toml there, so folding would put a
+# live server's sockets and session layout in this public repo's working tree.
+#
 # The shared skills hub needs the same treatment for a different reason; its
 # barrier and the ADR behind it live in manage.agents.skills_hub.
 _FOLD_BARRIERS = (
@@ -77,6 +82,7 @@ _FOLD_BARRIERS = (
     pathlib.PurePath(".pi/agent/extensions"),
     pathlib.PurePath(".pi/agent/extensions/subagent"),
     pathlib.PurePath(".config/ai-instructions"),
+    pathlib.PurePath(".config/herdr"),
 )
 
 _STOW_PACKAGES = [
@@ -84,6 +90,7 @@ _STOW_PACKAGES = [
     "claude-code",
     "ctags",
     "git",
+    "herdr",
     "neovide",
     "pi",
     "readline",

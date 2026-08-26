@@ -77,6 +77,55 @@ def test_runtime_state_beside_a_stowed_file_stays_out_of_the_source_tree(tmp_pat
     assert not (source / ".pi" / "agent" / "trust.json").exists()
 
 
+def _herdr_source(base):
+    """A stow package contributing ~/.config/herdr/config.toml, as `herdr` does."""
+    package = base / "herdr"
+    config = package / ".config" / "herdr"
+    config.mkdir(parents=True)
+    (config / "config.toml").write_text("onboarding = false\n")
+    return package
+
+
+def test_without_the_barrier_dploy_folds_the_whole_config_directory(tmp_path):
+    """Establishes the failure the barrier prevents. dploy folds at the highest
+    wholly-owned level, so on a home directory with no ~/.config yet it is
+    ~/.config itself that becomes the symlink, not just ~/.config/herdr.
+
+    A .gitignore whitelist in the package does not substitute: dploy folds on
+    directory ownership and never reads it, so an ignored runtime file still
+    lands in the working tree."""
+    home = tmp_path / "home"
+    home.mkdir()
+    source = _herdr_source(tmp_path / "src")
+    (source / ".config" / "herdr" / ".gitignore").write_text("*\n!config.toml\n")
+
+    dploy.stow([source], home, is_silent=True)
+
+    assert (home / ".config").is_symlink()
+
+
+def test_the_barrier_keeps_a_live_herdr_socket_out_of_the_source_tree(tmp_path):
+    """The reason ~/.config/herdr is a barrier: herdr puts its server's sockets,
+    logs and session.json beside the config this repo stows there."""
+    home = tmp_path / "home"
+    home.mkdir()
+    source = _herdr_source(tmp_path / "src")
+    for barrier in stow._FOLD_BARRIERS:
+        (home / barrier).mkdir(parents=True, exist_ok=True)
+
+    dploy.stow([source], home, is_silent=True)
+
+    live = home / ".config" / "herdr"
+    assert live.is_dir() and not live.is_symlink()
+    assert (live / "config.toml").is_symlink()
+
+    (live / "session.json").write_text("{}\n")
+    (live / "herdr-server.log").write_text("log\n")
+
+    assert not (source / ".config" / "herdr" / "session.json").exists()
+    assert not (source / ".config" / "herdr" / "herdr-server.log").exists()
+
+
 def test_pre_create_makes_every_barrier_a_real_directory(home):
     stow.StowPlan().pre_create()
 

@@ -39,6 +39,7 @@
 # Ships in the built-in official marketplace, so there is no marketplace to add
 # and no opencode equivalent to install.
 mattpocock-skills:
+  pi_package: git:github.com/mattpocock/skills
   install:
     claude: claude plugin install mattpocock-skills@claude-plugins-official
   update:

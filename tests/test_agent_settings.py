@@ -49,6 +49,21 @@ def test_preserves_keys_pi_wrote_itself(pi_home):
     assert written["defaultModel"] == "some-model"
 
 
+def test_applies_private_settings_overrides(pi_home):
+    local = pi_home / ".config" / "ai-skills" / "pi-settings.local.json"
+    local.parent.mkdir(parents=True)
+    local.write_text(
+        json.dumps({"defaultProvider": "litellm", "defaultModel": "gpt-5.6-sol"})
+    )
+
+    settings.setup_pi(pi_home)
+
+    written = _settings(pi_home)
+    assert written["defaultProvider"] == "litellm"
+    assert written["defaultModel"] == "gpt-5.6-sol"
+    assert written["packages"] == ["git:github.com/a/b", "npm:c"]
+
+
 def test_a_dropped_declaration_is_removed(pi_home, monkeypatch):
     path = pi_home / ".pi" / "agent" / "settings.json"
     path.parent.mkdir(parents=True)
@@ -59,6 +74,22 @@ def test_a_dropped_declaration_is_removed(pi_home, monkeypatch):
     settings.setup_pi(pi_home)
 
     assert _settings(pi_home)["packages"] == ["npm:c"]
+
+
+def test_migrates_an_active_settings_symlink_to_a_real_file(pi_home):
+    repo_file = pi_home / "repo" / "settings.json"
+    repo_file.parent.mkdir(parents=True)
+    repo_file.write_text(json.dumps({"theme": "dark", "lastChangelogVersion": "1.2.3"}))
+    path = pi_home / ".pi" / "agent" / "settings.json"
+    path.parent.mkdir(parents=True)
+    path.symlink_to(repo_file)
+
+    settings.setup_pi(pi_home)
+
+    assert not path.is_symlink()
+    assert _settings(pi_home)["theme"] == "dark"
+    assert _settings(pi_home)["lastChangelogVersion"] == "1.2.3"
+    assert json.loads(repo_file.read_text())["theme"] == "dark"
 
 
 def test_replaces_a_stale_symlink_instead_of_writing_through_it(pi_home):
@@ -89,6 +120,7 @@ def test_the_committed_manifest_declares_the_expected_packages():
         if isinstance(cfg, dict) and "pi_package" in cfg
     ]
     assert declared == [
+        "git:github.com/mattpocock/skills",
         "git:github.com/obra/superpowers",
         "npm:pi-subagents",
         "npm:pi-mcp-adapter",

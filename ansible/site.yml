@@ -8,9 +8,14 @@
     user_home: "{{ lookup('env', 'HOME') }}"
     is_termux: "{{ 'com.termux' in lookup('env', 'PREFIX') }}"
   pre_tasks:
+    # `always` so a tag-limited run still gathers facts. Without it, selecting
+    # any single tag skips this task and every ansible_facts lookup downstream
+    # fails undefined.
     - name: Gather facts
       ansible.builtin.setup:
       become: false
+      tags:
+        - always
 
 
   tasks:

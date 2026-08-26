@@ -15,6 +15,7 @@ outputs:
       - merge-requests
       - output-formatting
       - python
+      - review-before-posting
       - teams
       - local-pointer
   # Claude Code gets prose-style as an output style instead, so selecting it
@@ -39,6 +40,7 @@ outputs:
       - output-formatting
       - prose-style
       - python
+      - review-before-posting
       - teams
       - local-pointer
   # This repo's own project instructions, read in place.

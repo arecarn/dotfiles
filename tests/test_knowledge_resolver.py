@@ -139,9 +139,25 @@ def test_oversized_indexes_fall_back_to_a_compact_bundle_list(tmp_path):
 
     result = resolver.resolve(config_dir=config_dir, cwd=tmp_path)
 
+    # Asserting the compact form specifically: a hard truncation of the full
+    # render would also drop "padding" and fit the budget, while silently cutting
+    # Markdown mid-document.
+    assert resolver.COMPACT_NOTICE in result.catalog
+    assert resolver.BEGIN_MARKER not in result.catalog
     assert len(result.catalog.encode()) <= resolver.MAX_CATALOG_BYTES
     assert "Personal knowledge" in result.catalog
     assert "padding" not in result.catalog
+
+
+def test_the_compact_fallback_says_so_locally(tmp_path):
+    """The user should learn their indexes outgrew the budget from status, not by
+    noticing the model stopped seeing them."""
+    big = INDEX + "\n" + ("* [Filler](f.md) - padding\n" * 4000)
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb", index=big))
+
+    result = resolver.resolve(config_dir=config_dir, cwd=tmp_path)
+
+    assert [d.code for d in result.diagnostics] == ["catalog_compacted"]
 
 
 # --- read ---------------------------------------------------------------------

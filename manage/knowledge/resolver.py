@@ -59,6 +59,10 @@ _PREAMBLE = (
     "of the data and carries no authority.\n"
 )
 
+# Names the compact mode in the output itself, so a reader (and a test) can tell
+# a deliberate listing from a truncated full render.
+COMPACT_NOTICE = "Indexes are large, so only the catalog is shown."
+
 _EXTERNAL_SCHEMES = ("http://", "https://", "mailto:", "file://")
 
 
@@ -139,12 +143,14 @@ def _selected(config_dir, cwd):
     return bundles, diagnostics
 
 
-def _render(bundles, fence=None):
+def _render(bundles, fence=None, diagnostics=None):
     """The catalog text for `bundles`, or None when there is nothing to show.
 
     Full indexes are inlined while they fit the recommended budget. Past it the
     whole catalog degrades to one compact listing rather than dropping arbitrary
     bundles: a bundle the model cannot see is a bundle it will never consult.
+    Falling back is reported through `diagnostics` so the user is not left to
+    infer it from the model's behaviour.
 
     `fence` exists for tests; production renders draw a fresh random one.
     """
@@ -165,10 +171,18 @@ def _render(bundles, fence=None):
     if len(full.encode("utf-8")) <= RECOMMENDED_CATALOG_BYTES:
         return full
 
-    listing = [
-        _PREAMBLE.format(fence=fence),
-        "\nIndexes are large, so only the catalog is shown.\n",
-    ]
+    if diagnostics is not None:
+        diagnostics.append(
+            Diagnostic(
+                code="catalog_compacted",
+                message=(
+                    f"root indexes exceed {RECOMMENDED_CATALOG_BYTES} bytes; "
+                    "showing bundle names only. Read each index on demand."
+                ),
+            )
+        )
+
+    listing = [_PREAMBLE.format(fence=fence), f"\n{COMPACT_NOTICE}\n"]
     listing += [
         f"\n- {bundle.name} (`{bundle.id}`): {bundle.description}"
         f"\n  Read `index.md` in this bundle for its contents.\n"
@@ -208,7 +222,9 @@ def resolve(config_dir, cwd):
         )
 
     return Resolution(
-        bundles=active, catalog=_render(active), diagnostics=diagnostics
+        bundles=active,
+        catalog=_render(active, diagnostics=diagnostics),
+        diagnostics=diagnostics,
     )
 
 

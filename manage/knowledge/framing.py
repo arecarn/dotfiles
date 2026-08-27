@@ -39,7 +39,12 @@ def render():
         'import { randomBytes } from "node:crypto";\n\n'
         f"export const BEGIN_MARKER = {json.dumps(resolver.BEGIN_MARKER)};\n"
         f"export const END_MARKER = {json.dumps(resolver.END_MARKER)};\n\n"
-        f"export const PREAMBLE = {json.dumps(resolver.PREAMBLE)};\n\n"
+        # Wrapped the way biome formats a long assignment: inv lint checks every
+        # .ts file including this one, and it cannot fix a generated file.
+        # Wrapped the way biome formats a long assignment: inv lint checks every
+        # .ts file including this one, and it cannot fix a generated file.
+        "export const PREAMBLE =\n"
+        f"\t{json.dumps(resolver.PREAMBLE)};\n\n"
         "/** A fresh fence, so bundle content cannot predict how it is quoted. */\n"
         "export function newFence(): string {\n"
         f'\treturn randomBytes({resolver.FENCE_BYTES}).toString("hex");\n'

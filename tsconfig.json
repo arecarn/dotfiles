@@ -42,6 +42,7 @@
     "**/.venv",
     "**/.cache",
     "**/__pycache__",
-    "**/.superpowers"
+    "**/.superpowers",
+    "**/.worktrees"
   ]
 }

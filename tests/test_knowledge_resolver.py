@@ -314,3 +314,14 @@ def test_status_reports_active_and_inactive_bundles_with_paths(tmp_path):
         {"id": "work", "active": False, "reason": "no matching root",
          "path": str(inactive)},
     ]
+
+
+def test_the_catalog_names_both_ways_to_read_a_document(tmp_path):
+    """Pi and OpenCode expose a knowledge_read tool; Claude Code has no tool of
+    ours, so the catalog also names the CLI it can reach through Bash."""
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
+
+    catalog = resolver.resolve(config_dir=config_dir, cwd=tmp_path).catalog
+
+    assert "knowledge_read" in catalog
+    assert "agent-knowledge read" in catalog

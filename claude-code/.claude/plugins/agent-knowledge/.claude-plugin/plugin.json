@@ -1,0 +1,7 @@
+{
+  "name": "agent-knowledge",
+  "description": "Tell the session which OKF knowledge bundles apply here, and read one on demand",
+  "author": {
+    "name": "Ryan Carney"
+  }
+}

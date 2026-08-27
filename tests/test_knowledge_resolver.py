@@ -4,6 +4,11 @@
 # pylint: disable=missing-function-docstring
 # Asserting == [] documents "no bundles" better than a falsiness check.
 # pylint: disable=use-implicit-booleaness-not-comparison
+# One test reaches the containment helper directly: it is the defense that
+# must hold for any caller, not just the public read path.
+# pylint: disable=protected-access
+
+import pathlib
 
 from manage.knowledge import resolver
 
@@ -325,3 +330,44 @@ def test_the_catalog_names_both_ways_to_read_a_document(tmp_path):
 
     assert "knowledge_read" in catalog
     assert "agent-knowledge read" in catalog
+
+
+# --- the source argument is attacker-controlled too ----------------------------
+
+
+def test_an_absolute_source_cannot_reach_outside_the_bundle(tmp_path):
+    """`source` is model-supplied, so it gets the same containment as `target`.
+    An absolute source made pathlib discard the bundle root, turning the reader
+    into an arbitrary-Markdown read primitive."""
+    root = _bundle(tmp_path / "kb")
+    (tmp_path / "secret.md").write_text("secret\n", encoding="utf-8")
+    config_dir = _config(tmp_path, root)
+
+    read = resolver.read(config_dir=config_dir, cwd=tmp_path, bundle_id="personal",
+                         target="secret.md", source=str(tmp_path / "index.md"))
+
+    assert read.content is None
+    assert read.error in {"path_escape", "invalid_path"}
+
+
+def test_a_source_climbing_above_the_bundle_is_refused(tmp_path):
+    root = _bundle(tmp_path / "kb")
+    (tmp_path / "secret.md").write_text("secret\n", encoding="utf-8")
+    config_dir = _config(tmp_path, root)
+
+    read = resolver.read(config_dir=config_dir, cwd=tmp_path, bundle_id="personal",
+                         target="secret.md", source="../../index.md")
+
+    assert read.content is None
+    assert read.error in {"path_escape", "invalid_path"}
+
+
+def test_a_read_stays_inside_the_bundle_whatever_the_caller_passes(tmp_path):
+    """Containment is enforced where the file is opened, not only where the link
+    is parsed, so a future caller cannot reintroduce the escape."""
+    root = pathlib.Path(_bundle(tmp_path / "kb")).resolve()
+    (tmp_path / "secret.md").write_text("secret\n", encoding="utf-8")
+
+    content, error = resolver._read_contained(root, "../secret.md")
+
+    assert (content, error) == (None, "path_escape")

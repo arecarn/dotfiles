@@ -25,8 +25,9 @@ import { promisify } from "node:util";
 
 const run = promisify(execFile);
 
-// Stow links the launcher here; an unstowed machine simply has no knowledge.
-const CLI = join(homedir(), ".local", "bin", "agent-knowledge");
+// Where the `scripts` stow package puts it. An unstowed machine simply has
+// no knowledge, which every caller here treats as "nothing configured".
+const CLI = join(homedir(), "bin", "agent-knowledge");
 const TIMEOUT_MS = 10_000;
 
 interface ResolvePayload {

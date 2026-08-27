@@ -28,7 +28,7 @@ from manage.knowledge import resolver
 CONFIG_DIR_ENV = "AGENT_KNOWLEDGE_CONFIG_DIR"
 
 
-def config_dir(explicit):
+def resolve_config_dir(explicit):
     """The config directory: the flag, then the env var, then the XDG default."""
     if explicit:
         return pathlib.Path(explicit)
@@ -110,7 +110,7 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    directory = config_dir(args.config_dir)
+    directory = resolve_config_dir(args.config_dir)
     cwd = pathlib.Path(args.cwd) if args.cwd else pathlib.Path.cwd()
 
     if args.operation == "read":

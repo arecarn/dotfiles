@@ -8,6 +8,7 @@ contract all three share.
 # Test names document each case, and the helpers are private to the module.
 # pylint: disable=missing-function-docstring
 
+import ast
 import json
 import os
 import subprocess
@@ -174,3 +175,19 @@ def test_an_unknown_operation_fails_without_printing_json(tmp_path):
 
     assert done.returncode == 2
     assert done.stdout == ""
+
+
+def test_the_stowed_launcher_only_delegates():
+    """`scripts/bin/agent-knowledge` is extensionless, so it matches neither the
+    *.py nor the *.sh lint glob. Keep it trivial: behaviour belongs in
+    manage/knowledge/cli.py, which is linted and tested."""
+    launcher = (_repo_root() / CLI).read_text(encoding="utf-8")
+    body = ast.parse(launcher).body
+    statements = [node for node in body if not isinstance(node, ast.Expr)]
+
+    assert "from manage.knowledge.cli import main" in launcher
+    assert len(statements) <= 6, "launcher grew logic that lint would not see"
+
+
+def test_the_launcher_is_executable():
+    assert os.access(_repo_root() / CLI, os.X_OK)

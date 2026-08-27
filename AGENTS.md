@@ -74,6 +74,14 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   generated whole for pi. Add or change a server in the manifest, never in those
   files. Credentials belong in the manifest only as `${ENV_VAR}` references. See
   [docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md](docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md).
+- **Agent knowledge is reference material, not instructions.** Bundles of OKF
+  v0.2 Markdown are declared in `~/.config/ai-knowledge/bundles.yaml` (plus a
+  `dotfiles_local` `bundles_local.yaml`), and a project opts in by committing
+  `agents-knowledge/index.md` at its worktree root. `manage/knowledge/` decides
+  which apply; pi, Claude Code, and OpenCode adapters all call the same
+  `agent-knowledge` CLI, so no harness has its own selection rules. Only root
+  indexes are shown to a model — concepts are read on request, which is the whole
+  point. Run `agent-knowledge status` to see what applies where.
 
 ## Agent skills
 

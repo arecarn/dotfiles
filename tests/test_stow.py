@@ -11,7 +11,9 @@ A dploy upgrade should be re-tested against both.
 # pylint: disable=missing-function-docstring,protected-access
 
 import pathlib
+import shutil
 
+import dploy
 import pytest
 
 from manage import stow
@@ -479,3 +481,48 @@ def test_pre_create_keeps_the_opencode_plugin_directory_real(home):
 
     path = home / ".config" / "opencode" / "plugins"
     assert path.is_dir() and not path.is_symlink()
+
+
+def test_the_knowledge_config_survives_stowing_in_either_order(tmp_path):
+    """The public repo ships bundles.yaml and a dotfiles_local repo adds
+    bundles_local.yaml beside it. Whichever stows first, neither may end up
+    owning the directory -- that would put the private file in the public repo."""
+    home = tmp_path / "home"
+    public = tmp_path / "public" / "agents" / ".config" / "ai-knowledge"
+    private = tmp_path / "private" / "agents" / ".config" / "ai-knowledge"
+    public.mkdir(parents=True)
+    private.mkdir(parents=True)
+    (public / "bundles.yaml").write_text("version: 1\n")
+    (private / "bundles_local.yaml").write_text("version: 1\n")
+
+    for first, second in ((public, private), (private, public)):
+        shutil.rmtree(home, ignore_errors=True)
+        # The barrier StowPlan.pre_create() would have made. Without it the first
+        # package to stow folds the whole directory into one symlink and the
+        # second writes into that repo's working tree, which is the failure this
+        # guards; asserted directly below.
+        (home / ".config" / "ai-knowledge").mkdir(parents=True)
+        for source in (first, second):
+            dploy.stow([str(source.parent.parent)], home, is_silent=True)
+
+        target = home / ".config" / "ai-knowledge"
+        assert target.is_dir() and not target.is_symlink()
+        assert (target / "bundles.yaml").is_symlink()
+        assert (target / "bundles_local.yaml").is_symlink()
+
+
+def test_without_the_barrier_the_knowledge_config_folds(tmp_path):
+    """Why the barrier in _FOLD_BARRIERS is load-bearing, not decorative."""
+    home = tmp_path / "home"
+    home.mkdir()
+    public = tmp_path / "public" / "agents" / ".config" / "ai-knowledge"
+    public.mkdir(parents=True)
+    (public / "bundles.yaml").write_text("version: 1\n")
+
+    # Only ~/.config exists as a real directory, mirroring a machine where
+    # something else created it but no knowledge barrier ran.
+    (home / ".config").mkdir()
+
+    dploy.stow([str(tmp_path / "public" / "agents")], home, is_silent=True)
+
+    assert (home / ".config" / "ai-knowledge").is_symlink()

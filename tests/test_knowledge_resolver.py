@@ -10,7 +10,7 @@
 
 import pathlib
 
-from manage.knowledge import resolver
+from manage.knowledge import okf, resolver
 
 INDEX = """\
 ---
@@ -430,3 +430,105 @@ def test_the_project_bundle_can_be_excluded(tmp_path):
     result = resolver.resolve(config_dir=config_dir, cwd=project, with_project=False)
 
     assert [b.id for b in result.bundles] == ["personal"]
+
+
+# --- unusable bundles ----------------------------------------------------------
+
+
+def test_an_unsupported_okf_version_is_not_treated_as_a_bundle(tmp_path):
+    """v0.1 bundles exist in the wild; this integration reads v0.2 only."""
+    old = INDEX.replace('okf_version: "0.2"', 'okf_version: "0.1"')
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb", index=old))
+
+    result = resolver.resolve(config_dir=config_dir, cwd=tmp_path)
+
+    assert result.bundles == []
+    assert [d.code for d in result.diagnostics] == ["bundle_unusable"]
+
+
+def test_an_unquoted_okf_version_is_not_treated_as_a_bundle(tmp_path):
+    """YAML would read 0.2 as a float, so the marker must be the quoted string."""
+    unquoted = INDEX.replace('okf_version: "0.2"', "okf_version: 0.2")
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb", index=unquoted))
+
+    assert resolver.resolve(config_dir=config_dir, cwd=tmp_path).bundles == []
+
+
+def test_an_oversized_index_is_not_treated_as_a_bundle(tmp_path):
+    root = tmp_path / "kb"
+    root.mkdir()
+    (root / "index.md").write_text(
+        INDEX + "x" * (okf.MAX_INDEX_BYTES + 1), encoding="utf-8"
+    )
+    config_dir = _config(tmp_path, root)
+
+    assert resolver.resolve(config_dir=config_dir, cwd=tmp_path).bundles == []
+
+
+def test_an_undecodable_index_is_not_treated_as_a_bundle(tmp_path):
+    root = tmp_path / "kb"
+    root.mkdir()
+    (root / "index.md").write_bytes(b'---\nokf_version: "0.2"\n---\n\xff\xfe not utf-8\n')
+    config_dir = _config(tmp_path, root)
+
+    assert resolver.resolve(config_dir=config_dir, cwd=tmp_path).bundles == []
+
+
+def test_a_directory_named_index_md_is_not_a_bundle(tmp_path):
+    root = tmp_path / "kb"
+    (root / "index.md").mkdir(parents=True)
+    config_dir = _config(tmp_path, root)
+
+    assert resolver.resolve(config_dir=config_dir, cwd=tmp_path).bundles == []
+
+
+# --- reads that are not ordinary files -----------------------------------------
+
+
+def test_a_document_that_is_a_directory_is_refused(tmp_path):
+    root = _bundle(tmp_path / "kb")
+    (root / "ops.md").mkdir()
+    config_dir = _config(tmp_path, root)
+
+    error = resolver.read(config_dir=config_dir, cwd=tmp_path, bundle_id="personal",
+                          target="ops.md").error
+
+    assert error == "not_regular"
+
+
+def test_an_undecodable_document_is_refused(tmp_path):
+    root = _bundle(tmp_path / "kb")
+    (root / "bin.md").write_bytes(b"\xff\xfe\x00 not utf-8\n")
+    config_dir = _config(tmp_path, root)
+
+    error = resolver.read(config_dir=config_dir, cwd=tmp_path, bundle_id="personal",
+                          target="bin.md").error
+
+    assert error == "invalid_utf8"
+
+
+# --- inactive bundles stay closed ----------------------------------------------
+
+
+def test_an_inactive_bundle_is_never_opened(tmp_path, monkeypatch):
+    """Not just absent from the catalog: its index must not even be read, so a
+    work bundle's contents cannot reach a personal session by any route."""
+    inactive = _bundle(tmp_path / "work-kb")
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
+    (config_dir / "bundles_local.yaml").write_text(
+        "version: 1\nbundles:\n"
+        "  - id: work\n    name: Work\n"
+        f"    path: {inactive}\n"
+        "    activate:\n      roots:\n"
+        f"        - {tmp_path / 'work'}\n",
+        encoding="utf-8",
+    )
+    opened = []
+    real_read_index = okf.read_index
+    monkeypatch.setattr(
+        okf, "read_index", lambda root: opened.append(str(root)) or real_read_index(root)
+    )
+
+    resolver.resolve(config_dir=config_dir, cwd=tmp_path)
+
+    assert str(inactive) not in opened

@@ -189,31 +189,51 @@ def _bundle(entry, config_dir, where):
     )
 
 
-def _merge(data, path, config_dir, accumulator):
+@dataclasses.dataclass
+class _Accumulator:
+    """Composition state across the two files.
+
+    A named holder rather than a tuple: adding a tracked value here should not
+    require editing an unpack line at every call site to match.
+    """
+
+    bundles: list = dataclasses.field(default_factory=list)
+    roots: list = dataclasses.field(default_factory=list)
+    seen_ids: set = dataclasses.field(default_factory=set)
+    seen_roots: set = dataclasses.field(default_factory=set)
+
+
+def _merge(data, path, config_dir, acc):
     """Fold one parsed file into the accumulating configuration."""
-    bundles, roots, seen_ids, seen_roots = accumulator
     unknown = set(data) - _TOP_LEVEL_KEYS
     if unknown:
         raise ConfigError(f"{path}: unknown key {sorted(unknown)[0]!r}")
     if data and data.get("version") != SCHEMA_VERSION:
         raise ConfigError(f"{path}: version must be {SCHEMA_VERSION}")
 
-    for root in data.get("project_roots") or []:
+    raw_project_roots = data.get("project_roots") or []
+    # Type-checked because iterating a bare string yields its characters, and
+    # "~" expands to $HOME: `project_roots: ~/projects` without the list dash
+    # would silently allowlist the whole home directory and /.
+    if not isinstance(raw_project_roots, list):
+        raise ConfigError(f"{path}: project_roots must be a list")
+
+    for root in raw_project_roots:
         expanded = _expand(root, config_dir, f"{path}: project_roots")
         # Equivalent roots collapse to the first declaration, so a local file
         # repeating a public root does not change matching or ordering.
         key = os.path.normcase(str(expanded))
-        if key not in seen_roots:
-            seen_roots.add(key)
-            roots.append(expanded)
+        if key not in acc.seen_roots:
+            acc.seen_roots.add(key)
+            acc.roots.append(expanded)
 
     for entry in data.get("bundles") or []:
         bundle = _bundle(entry, config_dir, str(path))
-        if bundle.id in seen_ids:
+        if bundle.id in acc.seen_ids:
             raise ConfigError(f"{path}: duplicate bundle id {bundle.id!r}")
-        seen_ids.add(bundle.id)
-        bundles.append(bundle)
-        if len(bundles) > MAX_BUNDLES:
+        acc.seen_ids.add(bundle.id)
+        acc.bundles.append(bundle)
+        if len(acc.bundles) > MAX_BUNDLES:
             raise ConfigError(f"{path}: more than {MAX_BUNDLES} bundles declared")
 
 
@@ -224,11 +244,10 @@ def load(config_dir):
     configured at all, is the normal case and yields an empty configuration.
     """
     config_dir = pathlib.Path(config_dir)
-    accumulator = ([], [], set(), set())
+    acc = _Accumulator()
     for name in (BASE_NAME, LOCAL_NAME):
         path = config_dir / name
         data = _read(path)
         if data is not None:
-            _merge(data, path, config_dir, accumulator)
-    bundles, roots, _, _ = accumulator
-    return Configuration(bundles=bundles, project_roots=roots)
+            _merge(data, path, config_dir, acc)
+    return Configuration(bundles=acc.bundles, project_roots=acc.roots)

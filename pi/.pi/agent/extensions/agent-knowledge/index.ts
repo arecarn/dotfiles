@@ -14,7 +14,7 @@
  *     a resumed session does not get a second copy while a compacted one that
  *     lost the first does.
  *
- * Bundle selection lives in the CLI (see resolver.ts), shared with the Claude
+ * Bundle activation lives in the CLI (see resolver.ts), shared with the Claude
  * Code and OpenCode adapters.
  */
 

@@ -1,13 +1,13 @@
 /**
  * Talking to the `agent-knowledge` CLI.
  *
- * Bundle selection, OKF validation, and read safety all live in the CLI so that
+ * Bundle activation, OKF validation, and read safety all live in the CLI so that
  * pi, Claude Code, and OpenCode cannot drift apart on which knowledge applies
  * here. This module is only transport: spawn, parse, and translate a failure
  * into something the caller can render.
  *
- * The CLI is invoked by absolute path from ~/.local/bin, where stow puts it, so
- * a session started anywhere finds it without a PATH that includes it.
+ * The CLI is invoked by absolute path, because a session started anywhere -- or a
+ * harness hook with no shell -- cannot rely on PATH.
  */
 
 import { execFile } from "node:child_process";

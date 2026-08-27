@@ -1,9 +1,9 @@
 # Agent knowledge bundles: reference material agents read on demand.
 #
-# Detailed references live in OKF v0.2 bundles rather than in the generated
-# instruction files, so an agent is shown a catalog of root indexes and opens a
-# document only when a task needs it. See the OKF spec:
-# https://github.com/GoogleCloudPlatform/open-knowledge-format
+# Detailed references live in bundles rather than in the generated instruction
+# files, so an agent is shown a catalog of root indexes and opens a document only
+# when a task needs it. Bundles aim at Open Knowledge Format v0.2 (conformance is
+# not verified here): https://github.com/GoogleCloudPlatform/open-knowledge-format
 #
 # This file is public. Work-specific bundles -- their names, paths, and where
 # they apply -- go in `bundles_local.yaml`, which a dotfiles_local repo stows

@@ -91,8 +91,9 @@ _Avoid_: skills directory, tool config
 ### Agent knowledge
 
 **Knowledge bundle**:
-A directory of Markdown reference material in Open Knowledge Format v0.2, marked
-by an `index.md` declaring `okf_version`. Read on demand, never authoritative:
+A directory of Markdown reference material aiming at Open Knowledge Format v0.2,
+marked by an `index.md` declaring `okf_version`. Conformance is unverified -- no
+OKF validator has been run against one. Read on demand, never authoritative:
 instructions live in the generated instruction files, facts live here.
 _Avoid_: bundle, knowledge base, docs, notes
 

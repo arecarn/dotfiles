@@ -1,6 +1,6 @@
 """The resolver: what knowledge is available here, and reading one document.
 
-Every harness adapter calls these three entry points, so selection, framing, and
+Every harness adapter calls these three entry points, so activation, framing, and
 read safety are decided once:
 
 - `resolve` -- active bundles plus the catalog to put in front of the model.
@@ -70,14 +70,13 @@ _EXTERNAL_SCHEMES = ("http://", "https://", "mailto:", "file://")
 class Diagnostic:
     """One problem worth telling the user about.
 
-    `model_safe` marks text that may be shown to the model. Anything naming a
-    configured path or an inactive bundle is local-only.
+    Local-only by contract: a message may name a bundle path, so adapters show
+    diagnostics to the user and never place them in model context.
     """
 
     code: str
     message: str
     bundle_id: str | None = None
-    model_safe: bool = False
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -133,7 +132,7 @@ def _load(config_dir):
         ]
 
 
-def _selected(config_dir, cwd):
+def _activated(config_dir, cwd):
     """Bundles that apply in `cwd`, broad to specific, plus any diagnostics."""
     loaded, diagnostics = _load(config_dir)
     bundles = activation.active_bundles(loaded.bundles, cwd)
@@ -194,10 +193,10 @@ def _render(bundles, fence=None, diagnostics=None):
 
 def resolve(config_dir, cwd):
     """Which bundles apply in `cwd`, and the catalog to disclose for them."""
-    selected, diagnostics = _selected(config_dir, cwd)
+    activated, diagnostics = _activated(config_dir, cwd)
 
     active = []
-    for bundle in selected:
+    for bundle in activated:
         index_text = okf.read_index(bundle.path)
         if index_text is None:
             diagnostics.append(
@@ -266,7 +265,7 @@ def _relative(target, source):
     normalised = posixpath.normpath(joined)
     if normalised in (".", ""):
         return None
-    if target.endswith("/") or normalised.endswith("/"):
+    if target.endswith("/"):
         normalised = posixpath.join(normalised, okf.INDEX_NAME)
     return normalised
 

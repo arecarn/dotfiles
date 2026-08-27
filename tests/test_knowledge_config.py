@@ -258,3 +258,14 @@ def test_a_missing_yaml_library_is_a_config_error_not_a_crash(tmp_path, monkeypa
 
     with pytest.raises(config.ConfigError):
         config.load(tmp_path)
+
+
+def test_project_roots_must_be_a_list(tmp_path):
+    """`project_roots: ~/projects` without a dash is a string, and iterating it
+    yields "~", which expands to $HOME -- widening the allowlist that exists to
+    keep an unrelated checkout's knowledge out."""
+    _write(tmp_path, "bundles.yaml", PERSONAL.replace(
+        "project_roots:\n  - ~/projects\n", "project_roots: ~/projects\n"))
+
+    with pytest.raises(config.ConfigError, match="project_roots must be a list"):
+        config.load(tmp_path)

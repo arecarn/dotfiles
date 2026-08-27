@@ -76,9 +76,10 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   `dotfiles_local` `bundles_local.yaml`), and a project opts in by committing
   `agents-knowledge/index.md` at its worktree root. `manage/knowledge/` decides
   which apply; pi, Claude Code, and OpenCode adapters all call the same
-  `agent-knowledge` CLI, so no harness has its own selection rules. Only root
+  `agent-knowledge` CLI, so no harness has its own activation rules. Only root
   indexes are shown to a model — concepts are read on request, which is the whole
-  point. Run `agent-knowledge status` to see what applies where.
+  point. Run `agent-knowledge status` to see what applies where. See
+  [docs/adr/0005-resolve-agent-knowledge-once-in-a-shared-cli.md](docs/adr/0005-resolve-agent-knowledge-once-in-a-shared-cli.md).
 
 ## Agent skills
 

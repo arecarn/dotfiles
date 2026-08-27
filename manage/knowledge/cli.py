@@ -1,7 +1,7 @@
 """Argument parsing and JSON output for the `agent-knowledge` command.
 
-The command itself is a launcher in `scripts/bin/`, stowed to ~/.local/bin so a
-harness hook can invoke it by absolute path. Everything with behaviour lives
+The command itself is a launcher in the `scripts` stow package, so a harness
+hook can invoke it by absolute path. Everything with behaviour lives
 here instead, where `inv lint` and the test suite reach it.
 
 Exit codes are for the caller's control flow, not shell convention:
@@ -45,7 +45,6 @@ def _diagnostics(diagnostics):
             "code": d.code,
             "bundle_id": d.bundle_id,
             "message": d.message,
-            "model_safe": d.model_safe,
         }
         for d in diagnostics
     ]

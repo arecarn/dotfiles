@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Launcher for the agent-knowledge resolver CLI.
 
-Stowed to ~/.local/bin so a Pi extension, a Claude Code hook, or an OpenCode
-plugin can invoke it by absolute path with no knowledge of this checkout. It is
+Stowed with the rest of the `scripts` package so a Pi extension, a Claude Code
+hook, or an OpenCode plugin can invoke it by absolute path with no knowledge of
+this checkout. The adapters hardcode that destination; tests/test_knowledge_launcher.py
+is what keeps them and manage.stow._STOW_PACKAGES agreeing. It is
 deliberately only a path fix plus a call: the logic lives in
 manage/knowledge/cli.py, which `inv lint` and the tests cover (an extensionless
 script matches neither the *.py nor the *.sh glob).

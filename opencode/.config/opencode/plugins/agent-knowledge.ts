@@ -10,7 +10,7 @@
  * restore what the model had rather than re-read disk. Only an explicit reload
  * (`agent-knowledge resolve` from the CLI, or a new session) picks up edits.
  *
- * Bundle selection lives in the CLI, shared with the pi and Claude Code
+ * Bundle activation lives in the CLI, shared with the pi and Claude Code
  * adapters, so all three agree on which knowledge applies here.
  *
  * TypeScript rather than JavaScript because this repo's lint only reaches *.ts;

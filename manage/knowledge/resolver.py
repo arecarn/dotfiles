@@ -19,6 +19,7 @@ take down the rest.
 """
 
 import dataclasses
+import os
 import pathlib
 import posixpath
 
@@ -196,15 +197,36 @@ def resolve(config_dir, cwd):
     )
 
 
+def _suspect(value):
+    """Whether a path-ish argument is unusable before it is joined.
+
+    Applied to `target` and `source` alike: both arrive from the model, so
+    neither may be trusted to stay inside the bundle. An absolute `source` is
+    rejected here because joining one would make `pathlib` discard the bundle
+    root entirely.
+    """
+    return (
+        not value
+        or value.startswith("/")
+        or "\x00" in value
+        or "?" in value
+        or "\\" in value
+        or posixpath.normpath(value).startswith("..")
+    )
+
+
 def _relative(target, source):
     """The bundle-relative path a link points at, or None if it is not one.
 
     Links are resolved the way a reader would: relative to the document they
-    appear in, with a leading `/` meaning the bundle root. A trailing slash is a
-    directory, which OKF discloses through its own `index.md`.
+    appear in, with a leading `/` on the *target* meaning the bundle root. A
+    trailing slash is a directory, which OKF discloses through its own
+    `index.md`.
     """
     target = target.split("#", 1)[0]
     if not target or "\x00" in target or "?" in target or "\\" in target:
+        return None
+    if _suspect(source):
         return None
     if target.startswith("/"):
         joined = target.lstrip("/")
@@ -237,25 +259,42 @@ def _resolve_target(target, source):
     return relative, None
 
 
-def _has_symlink(root, document):
-    """Whether any entry from `document` up to (not including) `root` is a link.
+def _contained(root, relative):
+    """Locate `relative` under `root`: `(document, None)` or `(None, code)`.
 
-    A committed symlink inside a bundle would otherwise be a way out of it,
-    which matters most for the repo-controlled project bundle.
+    Two separate defenses, in this order:
+
+    - `..` is collapsed **lexically** (os.path.normpath, not Path.resolve) before
+      the containment test. Resolving first would let a symlinked directory
+      inside the bundle report an outside target as contained.
+    - Any symlink between the document and the bundle root is then refused, so a
+      committed link cannot be a way out of a repo-controlled project bundle.
+
+    The two failures keep separate codes because they mean different things to
+    whoever is debugging: a link inside your own bundle is a mistake to fix,
+    while an escaping path is a request that should never have been made.
     """
+    document = pathlib.Path(os.path.normpath(root / relative))
+    if not document.is_relative_to(root):
+        return None, "path_escape"
     for part in [document, *document.parents]:
         if part == root:
-            return False
+            return document, None
         if part.is_symlink():
-            return True
-    return False
+            return None, "symlink_rejected"
+    return None, "path_escape"
 
 
 def _read_contained(root, relative):
-    """Read `relative` under `root`, or return an error code."""
-    document = root / relative
-    if _has_symlink(root, document):
-        return None, "symlink_rejected"
+    """Read `relative` under `root`, or return an error code.
+
+    Containment is re-established here rather than trusted from the caller: this
+    is where the file is opened, so it is the check that has to hold no matter
+    which path parsing runs before it.
+    """
+    document, error = _contained(root, relative)
+    if error is not None:
+        return None, error
     try:
         if not document.is_file():
             return None, "not_found" if not document.exists() else "not_regular"

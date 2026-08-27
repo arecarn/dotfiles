@@ -1,5 +1,10 @@
 """Tests for deciding which bundles apply in a given working directory."""
 
+# Test names document each case, and the helpers are private to the module.
+# pylint: disable=missing-function-docstring
+# Asserting == [] documents "no bundles" better than a falsiness check.
+# pylint: disable=use-implicit-booleaness-not-comparison
+
 import subprocess
 
 from manage.knowledge import activation, config

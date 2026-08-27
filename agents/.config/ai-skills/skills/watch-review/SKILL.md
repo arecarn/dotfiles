@@ -26,7 +26,7 @@ python3 ~/.config/ai-skills/skills/watch-review/watch_review.py <review-url> [--
 
 | Harness | Binding |
 |---|---|
-| pi | The `monitor` tool, armed with no `maxEvents` and `wake: false`. Unlimited because feedback arrives more than once; `wake: false` so an arriving batch does not start a turn by itself. |
+| pi | The `monitor` tool, armed with no `maxEvents` and `wake: true`. Unlimited because feedback arrives more than once; `wake: true` starts a turn as soon as a feedback batch arrives so it can be surfaced immediately. |
 | Claude Code | Its `Monitor` background capability on the same command. |
 | anything else | Whatever runs a command detached and reports its output later. |
 

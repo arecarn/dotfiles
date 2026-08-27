@@ -11,6 +11,8 @@ repo's own layout instead of being rediscovered per adapter.
 
 import pathlib
 import re
+import subprocess
+import sys
 
 LAUNCHER = "scripts/bin/agent-knowledge"
 
@@ -43,3 +45,26 @@ def test_every_adapter_points_at_the_installed_path():
             f"{adapter} looks for the CLI at ~/{'/'.join(segments)}, "
             f"but stow installs it at {INSTALLED}"
         )
+
+
+def test_the_launcher_runs_without_this_repo_dev_dependencies():
+    """A harness hook runs the launcher under whatever `python3` it finds, not
+    this repo's venv. Importing `manage` would drag in ruamel.yaml through
+    manage.agents, so the CLI must reach manage.knowledge without it."""
+    root = _repo_root()
+    probe = (
+        "import sys, pathlib;"
+        "sys.modules['ruamel'] = None;"
+        f"sys.path.insert(0, {str(root)!r});"
+        "import manage.knowledge.cli"
+    )
+
+    done = subprocess.run(
+        [sys.executable, "-c", probe],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=str(root),
+    )
+
+    assert done.returncode == 0, done.stderr

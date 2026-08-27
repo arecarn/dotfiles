@@ -17,8 +17,35 @@ import os
 import pathlib
 import re
 
-from ruamel.yaml import YAML
-from ruamel.yaml.error import YAMLError
+# A harness hook runs under whatever `python3` it finds, not this repo's venv, so
+# either YAML library is accepted and neither is required. Without one there is
+# no knowledge rather than a broken session -- `_read` raises ConfigError, which
+# the resolver already reports as a diagnostic.
+try:  # pragma: no cover - exercised by whichever library is installed
+    from ruamel.yaml import YAML as _YamlLoader
+    from ruamel.yaml.error import YAMLError as _YamlError
+
+    def _parse(text):
+        return _YamlLoader(typ="safe").load(text)
+
+except ImportError:  # pragma: no cover - same
+    try:
+        import yaml as _pyyaml
+
+        _YamlError = _pyyaml.YAMLError
+
+        def _parse(text):
+            return _pyyaml.safe_load(text)
+
+    except ImportError:
+
+        class _YamlError(Exception):
+            """Stands in for a parser error when no YAML library is installed."""
+
+        def _parse(_text):
+            raise _YamlError(
+                "no YAML library available (install ruamel.yaml or PyYAML)"
+            )
 
 BASE_NAME = "bundles.yaml"
 LOCAL_NAME = "bundles_local.yaml"
@@ -37,8 +64,6 @@ _ENV_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
 
 _TOP_LEVEL_KEYS = frozenset({"version", "project_roots", "bundles"})
 _BUNDLE_KEYS = frozenset({"id", "name", "description", "path", "activate"})
-
-_YAML = YAML(typ="safe")
 
 
 class ConfigError(Exception):
@@ -85,8 +110,8 @@ def _read(path):
     if path.stat().st_size > MAX_CONFIG_BYTES:
         raise ConfigError(f"{path}: too large (limit {MAX_CONFIG_BYTES} bytes)")
     try:
-        data = _YAML.load(path.read_text(encoding="utf-8"))
-    except (YAMLError, UnicodeDecodeError) as error:
+        data = _parse(path.read_text(encoding="utf-8"))
+    except (_YamlError, UnicodeDecodeError) as error:
         raise ConfigError(f"{path}: {error}") from error
     if data is None:
         return {}

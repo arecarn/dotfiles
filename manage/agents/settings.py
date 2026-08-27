@@ -14,6 +14,18 @@ import pathlib
 from manage.agents import plugins
 
 _CLAUDE_SETTINGS = pathlib.PurePath(".claude/settings.json")
+
+# The agent-knowledge SessionStart hook, registered here rather than shipped as a
+# plugin directory: Claude Code loads plugins its plugin manager installed (from
+# a marketplace, into ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>),
+# so a directory stowed into ~/.claude/plugins is never scanned. settings.json is
+# a path it does read, and one this module already owns keys in.
+#
+# The command is absolute because a hook runs without a shell of ours, so nothing
+# guarantees ~/bin is on PATH. `startup|resume|clear|compact` is the set of
+# moments Claude rebuilds what the model can see.
+_KNOWLEDGE_HOOK_COMMAND = "bin/agent-knowledge-session-start"
+_KNOWLEDGE_HOOK_MATCHER = "startup|resume|clear|compact"
 _PI_SETTINGS = pathlib.PurePath(".pi/agent/settings.json")
 _PI_LOCAL_SETTINGS = pathlib.PurePath(
     ".config/ai-skills/pi-settings.local.json"
@@ -22,6 +34,29 @@ _PI_LOCAL_SETTINGS = pathlib.PurePath(
 
 def _home(home):
     return pathlib.Path.home() if home is None else pathlib.Path(home)
+
+
+def _register_knowledge_hook(settings, home):
+    """Add our SessionStart hook, leaving every other registration in place.
+
+    Idempotent by command match rather than by rewriting the event: Claude Code
+    and other tools register their own SessionStart hooks in this same list.
+    """
+    command = str(home / _KNOWLEDGE_HOOK_COMMAND)
+    hooks = settings.setdefault("hooks", {})
+    starts = hooks.setdefault("SessionStart", [])
+
+    for entry in starts:
+        for hook in entry.get("hooks", []):
+            if hook.get("command") == command:
+                return
+
+    starts.append(
+        {
+            "matcher": _KNOWLEDGE_HOOK_MATCHER,
+            "hooks": [{"type": "command", "command": command, "timeout": 15}],
+        }
+    )
 
 
 def setup_claude(home=None):
@@ -47,6 +82,7 @@ def setup_claude(home=None):
     settings.setdefault("permissions", {})
     settings["permissions"]["defaultMode"] = "bypassPermissions"
     settings["skipDangerousModePermissionPrompt"] = True
+    _register_knowledge_hook(settings, _home(home))
 
     existed = path.exists()
     path.parent.mkdir(parents=True, exist_ok=True)

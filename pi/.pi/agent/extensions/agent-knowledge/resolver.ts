@@ -77,9 +77,20 @@ async function invoke<T>(args: string[], cwd: string): Promise<T | undefined> {
 	}
 }
 
-/** Which bundles apply in `cwd`, and the catalog to disclose for them. */
-export function resolve(cwd: string): Promise<ResolveResult | undefined> {
-	return invoke<ResolveResult>(["resolve"], cwd);
+/**
+ * Which bundles apply in `cwd`, and the catalog to disclose for them.
+ *
+ * `withProject: false` keeps the configured bundles but withholds the discovered
+ * project one, for a caller whose own trust decision says the repository's
+ * content should not be read yet.
+ */
+export function resolve(
+	cwd: string,
+	options: { withProject?: boolean } = {},
+): Promise<ResolveResult | undefined> {
+	const args = ["resolve"];
+	if (options.withProject === false) args.push("--no-project");
+	return invoke<ResolveResult>(args, cwd);
 }
 
 /** One document from an active bundle, or a result carrying `error`. */

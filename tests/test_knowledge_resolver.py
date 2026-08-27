@@ -418,3 +418,15 @@ def test_each_render_uses_a_fresh_fence(tmp_path):
         return catalog.split(f"{resolver.BEGIN_MARKER} personal ", 1)[1].split("\n", 1)[0]
 
     assert fence_of(first) != fence_of(second)
+
+
+def test_the_project_bundle_can_be_excluded(tmp_path):
+    """A harness with its own trust decision -- pi's -- needs to keep configured
+    bundles while withholding repository-controlled project knowledge."""
+    project = tmp_path / "projects" / "repo"
+    _bundle(project / "agents-knowledge")
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
+
+    result = resolver.resolve(config_dir=config_dir, cwd=project, with_project=False)
+
+    assert [b.id for b in result.bundles] == ["personal"]

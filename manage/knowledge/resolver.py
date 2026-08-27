@@ -132,11 +132,11 @@ def _load(config_dir):
         ]
 
 
-def _activated(config_dir, cwd):
+def _activated(config_dir, cwd, with_project=True):
     """Bundles that apply in `cwd`, broad to specific, plus any diagnostics."""
     loaded, diagnostics = _load(config_dir)
     bundles = activation.active_bundles(loaded.bundles, cwd)
-    project = activation.project_bundle(cwd, loaded.project_roots)
+    project = activation.project_bundle(cwd, loaded.project_roots) if with_project else None
     if project is not None:
         bundles.append(project)
     return bundles, diagnostics
@@ -191,9 +191,14 @@ def _render(bundles, fence=None, diagnostics=None):
     return compact.encode("utf-8")[:MAX_CATALOG_BYTES].decode("utf-8", "ignore")
 
 
-def resolve(config_dir, cwd):
-    """Which bundles apply in `cwd`, and the catalog to disclose for them."""
-    activated, diagnostics = _activated(config_dir, cwd)
+def resolve(config_dir, cwd, with_project=True):
+    """Which bundles apply in `cwd`, and the catalog to disclose for them.
+
+    `with_project=False` withholds the discovered project bundle while keeping
+    the configured ones. It exists for a harness that has its own trust decision
+    to make about repository-controlled content, which pi does.
+    """
+    activated, diagnostics = _activated(config_dir, cwd, with_project=with_project)
 
     active = []
     for bundle in activated:

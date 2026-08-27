@@ -217,3 +217,27 @@ def test_a_hostile_source_cannot_read_outside_the_bundle(tmp_path):
     assert done.returncode == 1
     assert payload["content"] is None
     assert payload["error"] in {"path_escape", "invalid_path"}
+
+
+def test_no_project_withholds_the_discovered_bundle(tmp_path):
+    """pi passes this through when its own trust decision says the repository's
+    content should not be read yet."""
+    project = tmp_path / "projects" / "repo"
+    _bundle(project / "agents-knowledge")
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
+    (config_dir / "bundles.yaml").write_text(
+        (config_dir / "bundles.yaml").read_text(encoding="utf-8").replace(
+            "bundles:", f"project_roots:\n  - {tmp_path / 'projects'}\nbundles:"),
+        encoding="utf-8",
+    )
+
+    with_project = _run(_repo_root(), "resolve", cwd=project, config_dir=config_dir)
+    without = _run(
+        _repo_root(), "resolve", "--no-project", cwd=project, config_dir=config_dir
+    )
+
+    assert [b["id"] for b in json.loads(with_project.stdout)["bundles"]] == [
+        "personal",
+        "project",
+    ]
+    assert [b["id"] for b in json.loads(without.stdout)["bundles"]] == ["personal"]

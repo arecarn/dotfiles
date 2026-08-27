@@ -186,3 +186,49 @@ def test_an_existing_permissions_block_keeps_its_other_keys(tmp_path):
     permissions = json.loads(_claude_settings(tmp_path).read_text())["permissions"]
     assert permissions["allow"] == ["Bash(ls:*)"]
     assert permissions["defaultMode"] == "bypassPermissions"
+
+
+# --- the agent-knowledge SessionStart hook --------------------------------------
+
+
+def _claude_hooks(home):
+    return json.loads(_claude_settings(home).read_text()).get("hooks", {})
+
+
+def test_the_knowledge_hook_is_registered_for_claude(tmp_path):
+    """Claude Code loads plugins from marketplace installs, not from a directory
+    dropped into ~/.claude/plugins, so the hook is registered in settings."""
+    settings.setup_claude(tmp_path)
+
+    starts = _claude_hooks(tmp_path)["SessionStart"]
+    commands = [h["command"] for entry in starts for h in entry["hooks"]]
+    assert any("agent-knowledge" in command for command in commands)
+
+
+def test_the_registered_hook_command_is_the_stowed_path(tmp_path):
+    """An absolute path, because a hook has no shell and no PATH of ours."""
+    settings.setup_claude(tmp_path)
+
+    starts = _claude_hooks(tmp_path)["SessionStart"]
+    commands = [h["command"] for entry in starts for h in entry["hooks"]]
+    assert any(command.startswith(str(tmp_path)) for command in commands)
+
+
+def test_hooks_other_tools_registered_are_left_alone(tmp_path):
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    _claude_settings(tmp_path).write_text(
+        json.dumps({"hooks": {"Stop": [{"matcher": "*", "hooks": []}]}})
+    )
+
+    settings.setup_claude(tmp_path)
+
+    assert "Stop" in _claude_hooks(tmp_path)
+
+
+def test_registering_the_hook_twice_does_not_duplicate_it(tmp_path):
+    settings.setup_claude(tmp_path)
+    settings.setup_claude(tmp_path)
+
+    starts = _claude_hooks(tmp_path)["SessionStart"]
+    commands = [h["command"] for entry in starts for h in entry["hooks"]]
+    assert len([c for c in commands if "agent-knowledge" in c]) == 1

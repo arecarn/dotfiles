@@ -78,15 +78,13 @@ def tolerating_windows_symlink_failure(what):
 # adds bundles_local.yaml beside it. Folding would land that private file -- work
 # bundle names, paths, and activation roots -- in this public repo.
 #
-# ~/.claude/plugins and ~/.config/opencode/plugins each hold one plugin of ours
-# beside whatever else is installed: Claude Code clones marketplace plugins into
-# the former, and a dotfiles_local repo owns opencode.jsonc next to the latter.
+# ~/.config/opencode/plugins holds one plugin of ours beside whatever else is
+# installed there, and a dotfiles_local repo owns opencode.jsonc next to it.
 #
 # The shared skills hub needs the same treatment for a different reason; its
 # barrier and the ADR behind it live in manage.agents.skills_hub.
 _FOLD_BARRIERS = (
     pathlib.PurePath(".claude"),
-    pathlib.PurePath(".claude/plugins"),
     pathlib.PurePath(".pi"),
     pathlib.PurePath(".pi/agent"),
     pathlib.PurePath(".pi/agent/extensions"),

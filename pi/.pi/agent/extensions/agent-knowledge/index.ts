@@ -52,16 +52,25 @@ export default function agentKnowledge(pi: ExtensionAPI): void {
 	pi.on("before_agent_start", async (_event, ctx) => {
 		if (catalogInContext(ctx)) return;
 
-		const result = await resolve(ctx.cwd);
-		if (!result?.catalog) return;
+		// pi's own trust decision gates the project bundle, which is
+		// repository-controlled content, on top of the resolver's project_roots
+		// allowlist. Configured personal and work bundles are unaffected: the user
+		// declared those themselves.
+		const trusted = ctx.isProjectTrusted();
+		const result = await resolve(ctx.cwd, { withProject: trusted });
+		if (!result) return;
 
-		// Local-only diagnostics: an unusable bundle names its path, which is
-		// exactly what must not reach the model or the transcript.
+		// Reported before the catalog check, not after: a malformed bundles.yaml
+		// yields diagnostics and *no* catalog, and that is the failure most worth
+		// telling the user about. Local-only, because an unusable bundle names its
+		// path -- exactly what must not reach the model or the transcript.
 		if (ctx.hasUI) {
 			for (const diagnostic of result.diagnostics) {
 				ctx.ui.notify(`agent-knowledge: ${diagnostic.message}`, "warning");
 			}
 		}
+
+		if (!result.catalog) return;
 
 		return {
 			message: {

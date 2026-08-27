@@ -479,11 +479,3 @@ def test_pre_create_keeps_the_opencode_plugin_directory_real(home):
 
     path = home / ".config" / "opencode" / "plugins"
     assert path.is_dir() and not path.is_symlink()
-
-
-def test_pre_create_keeps_the_claude_plugin_directory_real(home):
-    """Claude Code installs marketplace plugins into ~/.claude/plugins itself."""
-    stow.StowPlan().pre_create()
-
-    path = home / ".claude" / "plugins"
-    assert path.is_dir() and not path.is_symlink()

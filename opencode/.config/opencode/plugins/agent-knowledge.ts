@@ -7,8 +7,9 @@
  * appending from the cache keeps exactly one copy in front of the model.
  *
  * The cache deliberately survives compaction: a new instruction epoch should
- * restore what the model had rather than re-read disk. Only an explicit reload
- * (`agent-knowledge resolve` from the CLI, or a new session) picks up edits.
+ * restore what the model had rather than re-read disk. It is per-process and
+ * per-session, so a new session is what picks up edited bundles -- running the
+ * CLI in a terminal cannot reach it.
  *
  * Bundle activation lives in the CLI, shared with the pi and Claude Code
  * adapters, so all three agree on which knowledge applies here.

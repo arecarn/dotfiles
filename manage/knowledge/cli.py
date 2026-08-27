@@ -4,6 +4,9 @@ The command itself is a launcher in the `scripts` stow package, so a harness
 hook can invoke it by absolute path. Everything with behaviour lives
 here instead, where `inv lint` and the test suite reach it.
 
+There is no separate `reload`: the resolver holds no state, so `resolve` *is* the
+recompute. An adapter that caches a catalog reloads by calling `resolve` again.
+
 Exit codes are for the caller's control flow, not shell convention:
 
 - 0  a usable answer, including "no bundles apply" and "configuration is broken"
@@ -50,8 +53,8 @@ def _diagnostics(diagnostics):
     ]
 
 
-def _resolve(config_dir, cwd):
-    result = resolver.resolve(config_dir=config_dir, cwd=cwd)
+def _resolve(config_dir, cwd, with_project=True):
+    result = resolver.resolve(config_dir=config_dir, cwd=cwd, with_project=with_project)
     return 0, {
         "operation": "resolve",
         "catalog": result.catalog,
@@ -99,6 +102,11 @@ def main(argv=None):
         help="resolve the catalog, read one document, or report local status",
     )
     parser.add_argument("--config-dir", help="override the config directory")
+    parser.add_argument(
+        "--no-project",
+        action="store_true",
+        help="withhold the discovered project bundle (resolve)",
+    )
     parser.add_argument("--cwd", help="directory to resolve for (default: current)")
     parser.add_argument("--bundle", help="bundle id (read)")
     parser.add_argument("--target", help="link target to read (read)")
@@ -119,7 +127,7 @@ def main(argv=None):
     elif args.operation == "status":
         code, payload = _status(directory, cwd)
     else:
-        code, payload = _resolve(directory, cwd)
+        code, payload = _resolve(directory, cwd, not args.no_project)
 
     payload["protocol_version"] = 1
     json.dump(payload, sys.stdout, indent=2, sort_keys=True)

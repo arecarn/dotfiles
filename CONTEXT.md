@@ -88,6 +88,38 @@ The directory a given agent tool reads its skills from. Each tool has its own,
 and the hub is stowed into all of them.
 _Avoid_: skills directory, tool config
 
+### Agent knowledge
+
+**Knowledge bundle**:
+A directory of Markdown reference material in Open Knowledge Format v0.2, marked
+by an `index.md` declaring `okf_version`. Read on demand, never authoritative:
+instructions live in the generated instruction files, facts live here.
+_Avoid_: bundle, knowledge base, docs, notes
+
+**Root index**:
+A bundle's top-level `index.md`, listing what the bundle holds. The only part
+disclosed automatically -- disclosing the concepts it links to is what the design
+exists to avoid.
+_Avoid_: index, table of contents, manifest
+
+**Project bundle**:
+The `agents-knowledge/` bundle committed at a worktree root, discovered rather
+than declared. Branch-local by construction, so a feature worktree does not read
+the primary checkout's knowledge.
+_Avoid_: repo knowledge, local bundle
+
+**Activation**:
+Deciding which configured bundles apply in a directory, from the `always` and
+`roots` rules in `bundles.yaml`. Nothing is searched for; a bundle applies only
+where its declaration says so.
+_Avoid_: selection, matching, enabling
+
+**Catalog**:
+The rendered block naming the active bundles and quoting their root indexes,
+injected once per session. Framed as untrusted reference data, and never names a
+bundle's filesystem path.
+_Avoid_: context, prompt, injection, summary
+
 ### Environments
 
 **Baseline**:

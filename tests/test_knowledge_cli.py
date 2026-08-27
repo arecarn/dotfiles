@@ -191,3 +191,29 @@ def test_the_stowed_launcher_only_delegates():
 
 def test_the_launcher_is_executable():
     assert os.access(_repo_root() / CLI, os.X_OK)
+
+
+def test_a_hostile_source_cannot_read_outside_the_bundle(tmp_path):
+    """The CLI is the Claude Code read path, reached through Bash, so the
+    containment check has to hold at this boundary too."""
+    root = _bundle(tmp_path / "kb")
+    (tmp_path / "secret.md").write_text("secret\n", encoding="utf-8")
+    config_dir = _config(tmp_path, root)
+
+    done = _run(
+        _repo_root(),
+        "read",
+        "--bundle",
+        "personal",
+        "--target",
+        "secret.md",
+        "--source",
+        str(tmp_path / "index.md"),
+        cwd=tmp_path,
+        config_dir=config_dir,
+    )
+
+    payload = json.loads(done.stdout)
+    assert done.returncode == 1
+    assert payload["content"] is None
+    assert payload["error"] in {"path_escape", "invalid_path"}

@@ -22,6 +22,28 @@ looks exactly like a bundle that was never configured.
 A process boundary is the only contract all three can share. None of them can
 import Python, so JSON on stdout is what is left.
 
+## The CLI is structure, not a precondition
+
+A project bundle is Markdown committed in the repo, so an agent with a read tool
+can already use one; it only has to know the directory is there. That makes the
+`AGENTS.md` pointer the whole integration for anyone with no tooling, which is
+what `set-up-agent-knowledge` writes, and it is why pi's extension reads
+`agents-knowledge/index.md` itself when the CLI does not answer.
+
+The CLI adds what a single file cannot: bundles configured outside the workspace,
+an allowlist deciding which projects count, ordering across several bundles, and
+constrained concept reads. Useful, and none of it required to get value.
+
+The catalog framing therefore exists in Python and TypeScript both, so it is
+generated from the resolver's constants by `inv gen-framing` and drift-checked by
+`inv lint`. Two hand-maintained copies of the one control over untrusted text
+would drift silently, staying plausible while no longer matching.
+
+OpenCode's plugin has no fallback: it stows as a single file, so it has no second
+module to reach, and inlining the framing would put a third copy of it in the
+repo. Without the CLI, OpenCode gets the bundle through the `AGENTS.md` pointer it
+reads natively.
+
 ## Consequences
 
 **The CLI must run under a bare `python3`.** A harness hook does not inherit this

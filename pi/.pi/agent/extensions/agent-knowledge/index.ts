@@ -57,7 +57,7 @@ export default function agentKnowledge(pi: ExtensionAPI): void {
 		// allowlist. Configured personal and work bundles are unaffected: the user
 		// declared those themselves.
 		const trusted = ctx.isProjectTrusted();
-		const result = await resolve(ctx.cwd, { withProject: trusted });
+		const result = await resolve(ctx.cwd, { withProject: trusted, trusted });
 		if (!result) return;
 
 		// Reported before the catalog check, not after: a malformed bundles.yaml

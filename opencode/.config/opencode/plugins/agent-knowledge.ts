@@ -12,7 +12,12 @@
  * CLI in a terminal cannot reach it.
  *
  * Bundle activation lives in the CLI, shared with the pi and Claude Code
- * adapters, so all three agree on which knowledge applies here.
+ * adapters, so all three agree on which knowledge applies here. With no CLI this
+ * plugin contributes nothing, unlike pi's extension: OpenCode stows one file, so
+ * it has no second module to fall back to, and duplicating the fallback inline
+ * would put a copy of the untrusted-text framing in a third place. Anyone without
+ * the CLI gets the same knowledge through the `AGENTS.md` pointer that
+ * `set-up-agent-knowledge` writes, which OpenCode reads natively.
  *
  * TypeScript rather than JavaScript because this repo's lint only reaches *.ts;
  * the types below are local for the same reason -- @opencode-ai/plugin is not a

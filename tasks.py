@@ -8,6 +8,7 @@ import pathlib
 import shlex
 import shutil
 import subprocess
+import sys
 
 from invoke import task
 
@@ -486,6 +487,26 @@ def gen_instructions(ctx, check=False):
 
 
 @task
+def gen_framing(ctx, check=False):
+    """
+    Generate the adapters' catalog framing from the resolver's constants
+    """
+    # pylint: disable=unused-argument
+    from manage.knowledge import framing  # pylint: disable=import-outside-toplevel
+
+    if framing.generate(check=check):
+        sys.exit("Generated framing is stale -- run `uv run inv gen-framing`")
+
+
+@task
+def lint_framing(ctx):
+    """
+    Fail when the generated framing has drifted from the resolver
+    """
+    gen_framing(ctx, check=True)
+
+
+@task
 def lint_instructions(ctx):
     """
     Check generated instruction files match their fragments
@@ -528,6 +549,7 @@ def test_typescript(ctx):
     lint_typescript,
     lint_ansible,
     lint_instructions,
+    lint_framing,
     default=True,
 )
 def lint(ctx):

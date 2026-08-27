@@ -40,12 +40,12 @@ END_MARKER = ">>>END UNTRUSTED KNOWLEDGE INDEX"
 # index -- and a project bundle's index is repository-controlled -- can contain
 # the closing marker verbatim and have everything after it read as trusted prose
 # rather than as quoted data. Random per render, so there is nothing to copy.
-_FENCE_BYTES = 8
+FENCE_BYTES = 8
 
 # Names both read paths because the harnesses differ: pi and OpenCode register a
 # knowledge_read tool, while Claude Code has no tool of ours and reaches the same
 # CLI through Bash. One preamble covers all three rather than three near-copies.
-_PREAMBLE = (
+PREAMBLE = (
     "## Available agent knowledge\n\n"
     "Each entry below is a knowledge bundle you may consult. Read a linked\n"
     "document only when it applies to the current task; do not load unrelated\n"
@@ -156,8 +156,8 @@ def _render(bundles, fence=None, diagnostics=None):
     if not bundles:
         return None
 
-    fence = fence or secrets.token_hex(_FENCE_BYTES)
-    sections = [_PREAMBLE.format(fence=fence)]
+    fence = fence or secrets.token_hex(FENCE_BYTES)
+    sections = [PREAMBLE.format(fence=fence)]
     for bundle in bundles:
         sections.append(
             f"\n### {bundle.name} (`{bundle.id}`)\n"
@@ -181,7 +181,7 @@ def _render(bundles, fence=None, diagnostics=None):
             )
         )
 
-    listing = [_PREAMBLE.format(fence=fence), f"\n{COMPACT_NOTICE}\n"]
+    listing = [PREAMBLE.format(fence=fence), f"\n{COMPACT_NOTICE}\n"]
     listing += [
         f"\n- {bundle.name} (`{bundle.id}`): {bundle.description}"
         f"\n  Read `index.md` in this bundle for its contents.\n"

@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+"""Generate the adapters' framing constants from the resolver's own.
+
+The catalog's delimiters and preamble are the only structural control over
+untrusted index text. The pi extension can render a project catalog without the
+CLI, so that text exists in Python and TypeScript both -- generated from one
+source rather than copied, because two copies of a security boundary drift.
+
+Run via `inv gen-framing`; `inv lint` fails on drift.
+"""
+
+import pathlib
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent.parent))
+
+from manage.knowledge.framing import generate  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(generate(check="--check" in sys.argv))

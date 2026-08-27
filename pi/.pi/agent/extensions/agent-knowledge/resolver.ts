@@ -1,10 +1,17 @@
 /**
- * Talking to the `agent-knowledge` CLI.
+ * Getting the knowledge catalog, from the CLI when it is there.
  *
- * Bundle activation, OKF validation, and read safety all live in the CLI so that
- * pi, Claude Code, and OpenCode cannot drift apart on which knowledge applies
- * here. This module is only transport: spawn, parse, and translate a failure
- * into something the caller can render.
+ * Bundle activation, OKF validation, and read safety live in the CLI so that pi,
+ * Claude Code, and OpenCode cannot drift apart on which knowledge applies here.
+ * Mostly this module is transport: spawn, parse, translate a failure into
+ * something the caller can render.
+ *
+ * When the CLI is absent it falls back to reading the project's own
+ * `agents-knowledge/index.md` directly (see fallback.ts). A project bundle is
+ * Markdown committed in the repo, so the extension should work on a machine that
+ * has installed nothing -- the CLI adds structure on top: bundles configured
+ * outside the workspace, an allowlist over which projects count, ordering across
+ * several bundles, and constrained concept reads.
  *
  * The CLI is invoked by absolute path, because a session started anywhere -- or a
  * harness hook with no shell -- cannot rely on PATH.
@@ -14,6 +21,7 @@ import { execFile } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
+import { readProjectIndex, renderProjectCatalog } from "./fallback.ts";
 
 const run = promisify(execFile);
 
@@ -82,15 +90,35 @@ async function invoke<T>(args: string[], cwd: string): Promise<T | undefined> {
  *
  * `withProject: false` keeps the configured bundles but withholds the discovered
  * project one, for a caller whose own trust decision says the repository's
- * content should not be read yet.
+ * content should not be read yet. `trusted` reports that same decision to the
+ * no-CLI path, which has no allowlist of its own to consult: without the CLI the
+ * harness's trust is the only gate on reading repository-authored content, so it
+ * is required rather than defaulted.
  */
-export function resolve(
+export async function resolve(
 	cwd: string,
-	options: { withProject?: boolean } = {},
+	options: { withProject?: boolean; trusted?: boolean } = {},
 ): Promise<ResolveResult | undefined> {
 	const args = ["resolve"];
 	if (options.withProject === false) args.push("--no-project");
-	return invoke<ResolveResult>(args, cwd);
+	const fromCli = await invoke<ResolveResult>(args, cwd);
+	if (fromCli) return fromCli;
+
+	if (options.withProject === false || options.trusted !== true)
+		return undefined;
+	const index = await readProjectIndex(cwd);
+	if (!index) return undefined;
+	return {
+		catalog: renderProjectCatalog(index),
+		bundles: [
+			{
+				id: "project",
+				name: "Project knowledge",
+				description: "References for the current project",
+			},
+		],
+		diagnostics: [],
+	};
 }
 
 /** One document from an active bundle, or a result carrying `error`. */

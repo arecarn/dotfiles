@@ -15,7 +15,12 @@
     // @anthropic-ai/sdk and @google/genai add TS2307/TS2552. 49 errors, none in
     // this repo's code. Declarations are still used to check our own files, so
     // dropping this flag buys nothing and re-buries our errors under theirs.
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // The extensions import each other with explicit ".ts" specifiers, which is
+    // what node's --experimental-strip-types resolves at runtime: a ".js"
+    // specifier would point at a file that never exists, since nothing here is
+    // compiled. tsc rejects the extension without this flag.
+    "allowImportingTsExtensions": true
   },
   // One set of TypeScript files, kept identical to what lint_typescript's guard
   // in tasks.py finds. The guard is only sound while that holds: a file the guard

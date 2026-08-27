@@ -284,3 +284,90 @@ test("a symlinked project bundle is refused through the adapters too", async () 
 		"a repo-controlled symlink must not reach outside the worktree",
 	);
 });
+
+test("without the CLI, pi still injects the project index", async () => {
+	const { config, project } = fixture();
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const pi = await adapter(PI, empty, config);
+
+	const result = await pi.resolve(project, { trusted: true });
+
+	assert.deepEqual(
+		result?.bundles.map((b: { id: string }) => b.id),
+		["project"],
+		"a project bundle is Markdown in the repo; it needs no executable",
+	);
+	assert.match(result.catalog ?? "", /shipping/);
+});
+
+test("the fallback withholds the project bundle when the harness distrusts it", async () => {
+	const { config, project } = fixture();
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const pi = await adapter(PI, empty, config);
+
+	assert.equal(await pi.resolve(project, { trusted: false }), undefined);
+});
+
+test("the fallback frames index text exactly as the CLI does", async () => {
+	const { config, project } = fixture();
+	const home = stubHome();
+
+	const withCli = await (await adapter(PI, home, config)).resolve(project);
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const without = await (await adapter(PI, empty, config)).resolve(project, {
+		trusted: true,
+	});
+
+	// The framing is the one structural control on untrusted text, and it lives in
+	// two languages. Compare every line, normalising the per-render nonce and
+	// dropping only the bundle the no-CLI path cannot reach.
+	// Keep every line except the configured bundle's section, which the no-CLI
+	// path cannot reach: from its "### Personal" heading to the next heading.
+	const shape = (text: string) => {
+		const kept: string[] = [];
+		let skipping = false;
+		for (const line of text.replace(/[0-9a-f]{16}/g, "<fence>").split("\n")) {
+			if (line.startsWith("### ")) skipping = line.startsWith("### Personal");
+			if (!skipping) kept.push(line);
+		}
+		return kept;
+	};
+
+	assert.deepEqual(
+		shape(without?.catalog ?? ""),
+		shape(withCli?.catalog ?? ""),
+	);
+});
+
+test("the fallback refuses a symlinked project bundle", async () => {
+	const { config, root } = fixture();
+	const elsewhere = join(root, "outside");
+	mkdirSync(elsewhere, { recursive: true });
+	writeFileSync(join(elsewhere, "index.md"), PROJECT_INDEX);
+
+	const linked = join(root, "projects", "sneaky");
+	mkdirSync(linked, { recursive: true });
+	symlinkSync(elsewhere, join(linked, "agents-knowledge"));
+
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const pi = await adapter(PI, empty, config);
+
+	assert.equal(await pi.resolve(linked, { trusted: true }), undefined);
+});
+
+test("the fallback ignores a directory without the version marker", async () => {
+	const { config, root } = fixture();
+	const plain = join(root, "projects", "plain");
+	mkdirSync(join(plain, "agents-knowledge"), { recursive: true });
+	writeFileSync(join(plain, "agents-knowledge", "index.md"), "# just docs\n");
+
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const pi = await adapter(PI, empty, config);
+
+	assert.equal(await pi.resolve(plain, { trusted: true }), undefined);
+});

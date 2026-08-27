@@ -28,7 +28,7 @@ from manage.knowledge import resolver
 CONFIG_DIR_ENV = "AGENT_KNOWLEDGE_CONFIG_DIR"
 
 
-def _config_dir(explicit):
+def config_dir(explicit):
     """The config directory: the flag, then the env var, then the XDG default."""
     if explicit:
         return pathlib.Path(explicit)
@@ -110,17 +110,17 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    config_dir = _config_dir(args.config_dir)
+    directory = config_dir(args.config_dir)
     cwd = pathlib.Path(args.cwd) if args.cwd else pathlib.Path.cwd()
 
     if args.operation == "read":
         if not args.bundle or not args.target:
             parser.error("read requires --bundle and --target")
-        code, payload = _read(config_dir, cwd, args)
+        code, payload = _read(directory, cwd, args)
     elif args.operation == "status":
-        code, payload = _status(config_dir, cwd)
+        code, payload = _status(directory, cwd)
     else:
-        code, payload = _resolve(config_dir, cwd)
+        code, payload = _resolve(directory, cwd)
 
     payload["protocol_version"] = 1
     json.dump(payload, sys.stdout, indent=2, sort_keys=True)

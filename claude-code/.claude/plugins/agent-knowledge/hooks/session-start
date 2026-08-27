@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+"""SessionStart launcher: emit the knowledge catalog as Claude's extra context.
+
+Extensionless on purpose. Claude Code's Windows handling prepends `bash` to any
+command containing `.sh`, and this is Python.
+
+Deliberately only a path fix plus a call, for the same reason as
+scripts/bin/agent-knowledge: the behaviour belongs in manage/knowledge/hooks.py,
+which `inv lint` and the tests cover.
+
+The repo root is searched for rather than counted to, because this file is
+reached through a stow symlink from ~/.claude/plugins/ and its depth below the
+root differs between the two locations.
+"""
+
+import pathlib
+import sys
+
+for candidate in pathlib.Path(__file__).resolve().parents:
+    if (candidate / "manage" / "knowledge" / "hooks.py").is_file():
+        sys.path.insert(0, str(candidate))
+        break
+
+from manage.knowledge.hooks import session_start  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(session_start())

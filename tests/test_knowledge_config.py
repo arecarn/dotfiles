@@ -4,6 +4,11 @@ The public file and the optional `_local` sibling are the same shape and are
 merged add-only, exactly as plugins.yaml and plugins_local.yaml are.
 """
 
+# The two files are the same shape, so the helpers stay module-private.
+# pylint: disable=missing-function-docstring
+# Asserting == [] documents "no bundles" better than a falsiness check.
+# pylint: disable=use-implicit-booleaness-not-comparison
+
 import pytest
 
 from manage.knowledge import config

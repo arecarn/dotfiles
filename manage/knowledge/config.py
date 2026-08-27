@@ -12,6 +12,7 @@ too, because a partially-loaded configuration could activate the wrong private
 knowledge.
 """
 
+import dataclasses
 import os
 import pathlib
 import re
@@ -44,6 +45,7 @@ class ConfigError(Exception):
     """A configuration file is unusable, so no configured bundle is trusted."""
 
 
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Bundle:
     """One configured bundle: its identity, its root, and when it applies.
 
@@ -51,18 +53,15 @@ class Bundle:
     canonicalises them at match time, when the filesystem is consulted.
     """
 
-    def __init__(self, id, name, description, path, always, roots):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.path = path
-        self.always = always
-        self.roots = roots
-
-    def __repr__(self):
-        return f"Bundle(id={self.id!r}, path={str(self.path)!r})"
+    id: str
+    name: str
+    description: str
+    path: pathlib.Path
+    always: bool
+    roots: list
 
 
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Configuration:
     """The composed configuration: bundles in source order, plus project roots.
 
@@ -71,9 +70,8 @@ class Configuration:
     `agents-knowledge/` it happens to contain.
     """
 
-    def __init__(self, bundles, project_roots):
-        self.bundles = bundles
-        self.project_roots = project_roots
+    bundles: list
+    project_roots: list
 
 
 def _read(path):
@@ -166,8 +164,9 @@ def _bundle(entry, config_dir, where):
     )
 
 
-def _merge(data, path, config_dir, bundles, roots, seen_ids, seen_roots):
+def _merge(data, path, config_dir, accumulator):
     """Fold one parsed file into the accumulating configuration."""
+    bundles, roots, seen_ids, seen_roots = accumulator
     unknown = set(data) - _TOP_LEVEL_KEYS
     if unknown:
         raise ConfigError(f"{path}: unknown key {sorted(unknown)[0]!r}")
@@ -200,11 +199,11 @@ def load(config_dir):
     configured at all, is the normal case and yields an empty configuration.
     """
     config_dir = pathlib.Path(config_dir)
-    bundles, roots = [], []
-    seen_ids, seen_roots = set(), set()
+    accumulator = ([], [], set(), set())
     for name in (BASE_NAME, LOCAL_NAME):
         path = config_dir / name
         data = _read(path)
         if data is not None:
-            _merge(data, path, config_dir, bundles, roots, seen_ids, seen_roots)
-    return Configuration(bundles, roots)
+            _merge(data, path, config_dir, accumulator)
+    bundles, roots, _, _ = accumulator
+    return Configuration(bundles=bundles, project_roots=roots)

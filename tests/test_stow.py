@@ -13,7 +13,6 @@ A dploy upgrade should be re-tested against both.
 import pathlib
 import shutil
 
-import dploy
 import pytest
 
 from manage import stow

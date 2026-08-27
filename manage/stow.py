@@ -73,16 +73,29 @@ def tolerating_windows_symlink_failure(what):
 # tab, and cwd. This repo stows only config.toml there, so folding would put a
 # live server's sockets and session layout in this public repo's working tree.
 #
+# ~/.config/ai-knowledge is the agent-knowledge equivalent of ai-instructions:
+# this repo stows bundles.yaml there, and on a work machine a dotfiles_local repo
+# adds bundles_local.yaml beside it. Folding would land that private file -- work
+# bundle names, paths, and activation roots -- in this public repo.
+#
+# ~/.claude/plugins and ~/.config/opencode/plugins each hold one plugin of ours
+# beside whatever else is installed: Claude Code clones marketplace plugins into
+# the former, and a dotfiles_local repo owns opencode.jsonc next to the latter.
+#
 # The shared skills hub needs the same treatment for a different reason; its
 # barrier and the ADR behind it live in manage.agents.skills_hub.
 _FOLD_BARRIERS = (
     pathlib.PurePath(".claude"),
+    pathlib.PurePath(".claude/plugins"),
     pathlib.PurePath(".pi"),
     pathlib.PurePath(".pi/agent"),
     pathlib.PurePath(".pi/agent/extensions"),
     pathlib.PurePath(".pi/agent/extensions/subagent"),
     pathlib.PurePath(".config/ai-instructions"),
+    pathlib.PurePath(".config/ai-knowledge"),
     pathlib.PurePath(".config/herdr"),
+    pathlib.PurePath(".config/opencode"),
+    pathlib.PurePath(".config/opencode/plugins"),
 )
 
 _STOW_PACKAGES = [
@@ -92,6 +105,7 @@ _STOW_PACKAGES = [
     "git",
     "herdr",
     "neovide",
+    "opencode",
     "pi",
     "readline",
     "scripts",

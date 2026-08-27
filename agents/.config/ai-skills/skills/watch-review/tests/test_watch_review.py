@@ -165,13 +165,13 @@ def _requested_page(command: list[str]) -> int:
 
 
 def _gitlab_note(note_id: int, author: str) -> dict[str, object]:
+    # No web_url: the real discussions endpoint does not return one on MR notes.
     return {
         "id": note_id,
         "author": {"username": author},
         "body": "A note",
         "system": False,
         "created_at": f"2026-08-27T00:00:{note_id:02d}Z",
-        "web_url": f"https://git.example/n/{note_id}",
     }
 
 
@@ -253,7 +253,6 @@ def test_gitlab_normalizes_paginated_discussions_and_reply_relationships() -> No
                             "body": "My question",
                             "system": False,
                             "created_at": "2026-08-27T00:00:00Z",
-                            "web_url": "https://git.example/n/10",
                         },
                         {
                             "id": 11,
@@ -261,7 +260,6 @@ def test_gitlab_normalizes_paginated_discussions_and_reply_relationships() -> No
                             "body": "The answer",
                             "system": False,
                             "created_at": "2026-08-27T00:00:01Z",
-                            "web_url": "https://git.example/n/11",
                         },
                     ],
                 }
@@ -277,6 +275,27 @@ def test_gitlab_normalizes_paginated_discussions_and_reply_relationships() -> No
     assert events[1].reply_to_user
     assert len(calls) == 2
     assert all(command[:2] == ["glab", "api"] for command in calls)
+    assert events[1].url == (
+        "https://git.example/group/project/-/merge_requests/9#note_11"
+    )
+
+
+def test_batch_omits_the_url_line_when_an_event_has_none() -> None:
+    # A harness that delivers each line as an event and drops blank ones would
+    # otherwise swallow a bare "  " line, so no line beats an empty one.
+    rendered = watch_review.format_batch(
+        [
+            watch_review.Event(
+                id="note-1",
+                author="alice",
+                body="Please change this",
+                url="",
+                created_at="2026-08-27T00:00:01Z",
+            )
+        ]
+    )
+
+    assert rendered == "Review feedback (1)\n- alice: Please change this\n"
 
 
 def test_github_normalizes_all_feedback_types_and_review_comment_replies() -> None:

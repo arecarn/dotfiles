@@ -10,8 +10,10 @@ conclusion, and the conclusion decides what happens next.
 
 Two things generalize across providers, and everything below is a consequence of them:
 
-1. **Identify the run by commit SHA, not by branch.** Several runs can be in flight on
-   one branch, so the newest branch run is often an earlier commit's.
+1. **Identify the run by commit SHA *and* workflow, not by branch.** Several runs can be
+   in flight on one branch, so the newest branch run is often an earlier commit's — and
+   one commit usually has several runs, so the newest run on the right SHA is often the
+   wrong workflow.
 2. **Branch on the reported status, not on the CLI's exit code.** Both providers exit
    non-zero for "cancelled" exactly as they do for "failed", and those demand opposite
    responses.
@@ -73,11 +75,17 @@ setup: that is the failure this section exists to prevent.
 Run it in the background per the binding above. Prints one line: the conclusion plus the
 run URL.
 
+Set `wf` to the workflow file you care about — `ls .github/workflows/` names the
+candidates. Pass the **file**, not the display `name:` inside it: the file is what fails
+loudly on a typo (`HTTP 404: workflow nope.yml not found`), where a wrong display name
+silently matches nothing and the loop waits forever.
+
 ```bash
 sha=$(git rev-parse HEAD)
+wf=ci.yml
 # `// empty` matters: without it, no run yet yields the string "null", which passes
 # the -n test and watches a run id that does not exist.
-until id=$(gh run list --commit "$sha" --limit 1 \
+until id=$(gh run list --commit "$sha" --workflow "$wf" --limit 1 \
     --json databaseId --jq '.[0].databaseId // empty') && [ -n "$id" ]; do
     sleep 5
 done
@@ -89,8 +97,22 @@ done
 gh run view "$id" --json conclusion,url --jq '"\(.conclusion) \(.url)"'
 ```
 
-Add `--workflow <name>` to both `gh run list` and `gh run view` when a repo runs several
-workflows per push and only one matters.
+**`--workflow` is not optional.** GitHub attaches its own runs to your commit —
+Dependency Graph, CodeQL, Dependabot — and they are not in `.github/workflows/`, so
+nothing in the repo hints they exist. Without the flag, `--limit 1` returns whichever run
+finished last, and a green "Graph Update" reads exactly like a green build. Confirm the
+run you watched is the one you meant:
+
+```bash
+gh run view "$id" --json workflowName,headSha --jq '"\(.workflowName) \(.headSha)"'
+```
+
+On a matrix build, cite the legs rather than asserting them — a claim about one platform
+is only evidence if you read that leg:
+
+```bash
+gh run view "$id" --json jobs --jq '.jobs[] | "\(.name): \(.conclusion)"'
+```
 
 Failure logs: `gh run view <id> --log-failed`
 
@@ -107,6 +129,14 @@ until status=$(glab api "projects/:id/pipelines/$id" --jq '.status') \
     sleep 30
 done
 glab api "projects/:id/pipelines/$id" --jq '"\(.status) \(.web_url)"'
+```
+
+One SHA can carry several pipelines here too — a push pipeline plus a merge-request one,
+or a scheduled or triggered run — so `.[0]` is "newest", not "mine". Print what you
+selected before trusting it, and filter by `source` when the SHA carries more than one:
+
+```bash
+glab api "projects/:id/pipelines?sha=$sha" --jq '.[] | "\(.id) \(.source) \(.status)"'
 ```
 
 `glab ci status` watches the current branch's latest pipeline, which is the branch-based
@@ -153,6 +183,12 @@ Skip it for a one-line lint error already visible in the output.
   background binding for the harness.
 - **Selecting the run by branch.** Picks whichever run is newest, which may be another
   commit's or one you already superseded.
+- **Selecting by SHA alone, without `--workflow`.** The right commit's newest run is
+  routinely a GitHub-injected workflow (Dependency Graph, CodeQL) that passes in seconds
+  while the real build is still going. Reporting its `success` reports nothing about the
+  diff.
+- **Describing jobs you did not read.** "Both matrix legs passed" is a claim about the
+  jobs list; if the run had no matrix, it is invented. Print the legs.
 - **Reporting a cancelled run as a failure.** It means "replaced", not "broken".
 - **Watching a SHA you then rewrote.** Amending or rebasing after arming the watch
   orphans it — the old run keeps going and its result is meaningless. Stop that watch

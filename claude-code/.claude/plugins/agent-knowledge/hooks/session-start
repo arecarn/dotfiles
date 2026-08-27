@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """SessionStart launcher: emit the knowledge catalog as Claude's extra context.
 
-Extensionless on purpose. Claude Code's Windows handling prepends `bash` to any
-command containing `.sh`, and this is Python.
+Extensionless on purpose: Claude Code prepends `bash` to any hook command
+containing `.sh`, and this is Python. See
+docs/gotchas/claude-code-prepends-bash-to-any-hook-command-containing-sh.md.
 
 Deliberately only a path fix plus a call, for the same reason as
 scripts/bin/agent-knowledge: the behaviour belongs in manage/knowledge/hooks.py,

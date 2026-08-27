@@ -36,7 +36,8 @@ const CUSTOM_TYPE = "agent-knowledge";
  * Deliberately `buildContextEntries()` and not `getEntries()`/`getBranch()`:
  * compaction leaves the original entry in branch history while rebuilding model
  * context without it, so branch history would report a catalog the model can no
- * longer read.
+ * longer read. See
+ * docs/gotchas/pi-branch-history-still-shows-context-compaction-dropped.md.
  */
 function catalogInContext(ctx: ExtensionContext): boolean {
 	for (const entry of ctx.sessionManager.buildContextEntries()) {

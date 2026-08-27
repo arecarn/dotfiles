@@ -130,6 +130,20 @@ class GitLabProvider:
         self.page_size = page_size
         project = urllib.parse.quote(target.project, safe="")
         self.base = f"projects/{project}/merge_requests/{target.number}"
+        self.web_base = (
+            f"https://{target.host}/{target.project}"
+            f"/-/merge_requests/{target.number}"
+        )
+
+    def note_url(self, note_id: object) -> str:
+        """The browser link to one note.
+
+        Built rather than read: the discussions endpoint returns no `web_url` on
+        MR notes, so trusting the field yields a linkless batch, which is half of
+        what makes feedback actionable. GitHub's `html_url` is real, hence the
+        asymmetry between the two providers here.
+        """
+        return f"{self.web_base}#note_{note_id}"
 
     def _get(self, endpoint: str) -> Json:
         return self.runner(["glab", "api", "--hostname", self.target.host, endpoint])
@@ -178,7 +192,7 @@ class GitLabProvider:
                         id=f"gitlab-note:{note.get('id')}",
                         author=author,
                         body=body,
-                        url=str(note.get("web_url", "")),
+                        url=self.note_url(note.get("id")),
                         created_at=str(note.get("created_at", "")),
                         reply_to_user=own_note_seen and author != current_user,
                         human=not system and not bot,
@@ -306,7 +320,11 @@ def format_batch(events: list[Event]) -> str:
     lines = [f"Review feedback ({len(events)})"]
     for item in sorted(events, key=lambda event: (event.created_at, event.id)):
         body = " ".join(item.body.split())
-        lines.extend((f"- {item.author}: {body}", f"  {item.url}"))
+        lines.append(f"- {item.author}: {body}")
+        # A harness may deliver each line as its own event and drop blank ones,
+        # so an absent url must not become a whitespace-only line that vanishes.
+        if item.url:
+            lines.append(f"  {item.url}")
     return "\n".join(lines) + "\n"
 
 

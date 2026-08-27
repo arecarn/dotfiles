@@ -8,6 +8,8 @@ merged add-only, exactly as plugins.yaml and plugins_local.yaml are.
 # pylint: disable=missing-function-docstring
 # Asserting == [] documents "no bundles" better than a falsiness check.
 # pylint: disable=use-implicit-booleaness-not-comparison
+# The parser seam is module-private on purpose; a test may reach it.
+# pylint: disable=protected-access
 
 import pytest
 
@@ -244,3 +246,15 @@ def test_the_committed_public_config_loads_and_declares_nothing():
     loaded = config.load("agents/.config/ai-knowledge")
 
     assert (loaded.bundles, loaded.project_roots) == ([], [])
+
+
+def test_a_missing_yaml_library_is_a_config_error_not_a_crash(tmp_path, monkeypatch):
+    """A hook running under a bare python3 must degrade to "no knowledge", not
+    take the session down."""
+    _write(tmp_path, "bundles.yaml", PERSONAL)
+    monkeypatch.setattr(
+        config, "_parse", lambda _text: (_ for _ in ()).throw(config._YamlError("none"))
+    )
+
+    with pytest.raises(config.ConfigError):
+        config.load(tmp_path)

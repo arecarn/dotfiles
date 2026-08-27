@@ -8,6 +8,7 @@ running a task.
 - `repo` -- facts about this checkout and the machine, defined once.
 - `stow` -- mirroring this repo's stow packages into the home directory.
 - `agents` -- the agent tools: instruction files, plugins, shared skills.
+- `knowledge` -- which OKF knowledge bundles apply, and reading them.
 
 `agents` is a namespace because its generic names do not survive contact with
 this repo -- "plugins" is equally what lazy manages in nvim, and "instructions"
@@ -17,8 +18,9 @@ stays unambiguous:
     from manage import agents
 
     agents.plugins.load()
+
+Deliberately no imports here. `manage.knowledge` is reached from a harness hook
+running under whatever `python3` it finds, so importing `agents` eagerly would
+make every hook depend on this repo's own dependencies -- and fail the session
+when they are missing. Import the namespace you need at the call site.
 """
-
-from manage import agents
-
-__all__ = ["agents"]

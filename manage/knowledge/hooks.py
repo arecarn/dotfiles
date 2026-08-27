@@ -55,7 +55,7 @@ def session_start(stdin=None, stdout=None, config_dir=None):
         event = {}
 
     cwd = pathlib.Path(event.get("cwd") or pathlib.Path.cwd())
-    config_dir = config_dir or cli.config_dir(None)
+    config_dir = config_dir or cli.resolve_config_dir(None)
 
     try:
         result = resolver.resolve(config_dir=config_dir, cwd=cwd)

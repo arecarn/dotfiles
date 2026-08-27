@@ -1,0 +1,47 @@
+# Agent knowledge bundles: reference material agents read on demand.
+#
+# Detailed references live in OKF v0.2 bundles rather than in the generated
+# instruction files, so an agent is shown a catalog of root indexes and opens a
+# document only when a task needs it. See the OKF spec:
+# https://github.com/GoogleCloudPlatform/open-knowledge-format
+#
+# This file is public. Work-specific bundles -- their names, paths, and where
+# they apply -- go in `bundles_local.yaml`, which a dotfiles_local repo stows
+# beside this one. The two are merged add-only: a local entry cannot redefine a
+# public one, and a duplicate `id` is an error rather than an override.
+#
+#   version: 1                  # must be 1
+#   project_roots:              # where a project's own agents-knowledge/ counts
+#     - ~/projects              # empty (or absent) disables project discovery
+#   bundles:
+#     - id: personal            # stable [a-z][a-z0-9-]*; `project` is reserved
+#       name: Personal knowledge
+#       description: One line, shown in the catalog to help pick a bundle
+#       path: ~/knowledge/personal      # bundle root, holding index.md
+#       activate:
+#         always: true          # applies everywhere
+#     - id: work
+#       name: Work knowledge
+#       description: References for work repositories
+#       path: ~/knowledge/work
+#       activate:
+#         roots:                # applies only at or below these directories
+#           - ~/work
+#
+# `always: true` and `roots:` are exclusive -- a bundle declares exactly one.
+# Paths take ~ and ${VAR}; no shell expansion. A relative path resolves against
+# this directory.
+#
+# A project opts in by committing `agents-knowledge/index.md` at its worktree
+# root, with `okf_version: "0.2"` in that index's frontmatter. Discovery uses the
+# current worktree, so a feature worktree reads its own branch's knowledge.
+#
+# Inspect what applies here with `agent-knowledge status`, or pi's /knowledge.
+
+---
+
+version: 1
+
+project_roots: []
+
+bundles: []

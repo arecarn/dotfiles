@@ -232,3 +232,15 @@ def test_a_relative_path_resolves_against_the_visible_config_directory(tmp_path)
     (visible / "bundles.yaml").symlink_to(real)
 
     assert config.load(visible).bundles[0].path == visible / "kb"
+
+
+# --- the file this repo ships -------------------------------------------------
+
+
+def test_the_committed_public_config_loads_and_declares_nothing():
+    """The stowed bundles.yaml is a documented empty starting point: a public
+    repo cannot name anyone's bundles, and an example entry would activate on a
+    path that does not exist."""
+    loaded = config.load("agents/.config/ai-knowledge")
+
+    assert (loaded.bundles, loaded.project_roots) == ([], [])

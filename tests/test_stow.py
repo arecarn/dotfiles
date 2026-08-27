@@ -457,3 +457,33 @@ def test_unstow_still_raises_off_windows(task_env, monkeypatch):
 
     with pytest.raises(OSError):
         tasks.unstow.body(None)
+
+
+# --- agent-knowledge barriers ---------------------------------------------------
+
+
+def test_pre_create_keeps_the_knowledge_config_directory_real(home):
+    """~/.config/ai-knowledge holds bundles.yaml from this repo and, on a work
+    machine, bundles_local.yaml from dotfiles_local. Folding would put that
+    private file -- work bundle names and paths -- in this public repo."""
+    stow.StowPlan().pre_create()
+
+    path = home / ".config" / "ai-knowledge"
+    assert path.is_dir() and not path.is_symlink()
+
+
+def test_pre_create_keeps_the_opencode_plugin_directory_real(home):
+    """OpenCode's plugin directory is shared with whatever else is installed
+    there, and dotfiles_local owns opencode.jsonc beside it."""
+    stow.StowPlan().pre_create()
+
+    path = home / ".config" / "opencode" / "plugins"
+    assert path.is_dir() and not path.is_symlink()
+
+
+def test_pre_create_keeps_the_claude_plugin_directory_real(home):
+    """Claude Code installs marketplace plugins into ~/.claude/plugins itself."""
+    stow.StowPlan().pre_create()
+
+    path = home / ".claude" / "plugins"
+    assert path.is_dir() and not path.is_symlink()

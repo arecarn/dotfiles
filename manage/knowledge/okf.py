@@ -1,10 +1,11 @@
 """Reading just enough of an OKF bundle to discover and disclose it.
 
-Deliberately shallow. This module answers two questions -- "is this an OKF
-bundle we support?" and "what does its root index say?" -- and leaves full
-conformance checking to OKF's own tooling. The bundle-root `index.md` is the
-one file OKF v0.2 permits to carry `okf_version`, which makes it the discovery
-marker: without it, an `agents-knowledge/` directory is just a directory.
+Deliberately shallow. This module answers two questions -- "does this look like a
+bundle we support?" and "what does its root index say?" -- and leaves conformance
+to OKF's own tooling, which nothing here has been checked against. The
+bundle-root `index.md` is where the spec puts `okf_version`, which makes it the
+discovery marker: without it, an `agents-knowledge/` directory is just a
+directory.
 
 Bundle contents are untrusted input. Index text is returned verbatim for the
 renderer to frame, never parsed for instructions and never executed.

@@ -74,8 +74,8 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   generated whole for pi. Add or change a server in the manifest, never in those
   files. Credentials belong in the manifest only as `${ENV_VAR}` references. See
   [docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md](docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md).
-- **Agent knowledge is reference material, not instructions.** Bundles of OKF
-  v0.2 Markdown are declared in `~/.config/ai-knowledge/bundles.yaml` (plus a
+- **Agent knowledge is reference material, not instructions.** Bundles of Markdown aiming at OKF
+  v0.2 are declared in `~/.config/ai-knowledge/bundles.yaml` (plus a
   `dotfiles_local` `bundles_local.yaml`), and a project opts in by committing
   `agents-knowledge/index.md` at its worktree root. `manage/knowledge/` decides
   which apply; pi, Claude Code, and OpenCode adapters all call the same
@@ -83,6 +83,11 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   indexes are shown to a model — concepts are read on request, which is the whole
   point. Run `agent-knowledge status` to see what applies where. See
   [docs/adr/0005-resolve-agent-knowledge-once-in-a-shared-cli.md](docs/adr/0005-resolve-agent-knowledge-once-in-a-shared-cli.md).
+  A **project bundle needs none of this tooling** — it is Markdown in the repo, so
+  an `AGENTS.md` pointer is enough for any agent that can read a file. The
+  `set-up-agent-knowledge` skill is what creates one, by adopting existing docs
+  into an index. The CLI only adds bundles from outside the workspace and
+  automatic disclosure at session start.
 
 ## Agent skills
 

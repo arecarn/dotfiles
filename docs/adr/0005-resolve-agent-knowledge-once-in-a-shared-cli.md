@@ -47,6 +47,12 @@ and folding would put that private file in this public repo),
 `~/.claude/plugins`, and `~/.config/opencode/plugins` (each holds one plugin of
 ours beside whatever else is installed). Same reasoning as ADR-0001.
 
+**Conformance is claimed, not verified.** Bundles aim at OKF v0.2 and have not
+been checked against OKF's own validator; `manage/knowledge/okf.py` reads the root
+index and its version marker and nothing else. The format was chosen for
+portability, so that gap is worth closing if OKF tooling becomes easy to run --
+and worth stating plainly until then.
+
 **Only root indexes reach a model.** The catalog quotes each active bundle's
 `index.md` and nothing else; concepts are read on request through the same CLI.
 That is the whole point -- a large corpus should cost a catalog, not a context

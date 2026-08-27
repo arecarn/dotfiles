@@ -496,9 +496,28 @@ def lint_instructions(ctx):
 @task
 def test(ctx):
     """
-    Run the Python test suite
+    Run the test suites
     """
     ctx.run("pytest -q")
+    test_typescript(ctx)
+
+
+@task
+def test_typescript(ctx):
+    """
+    Run the TypeScript adapter contract tests
+    """
+    # node's own runner and type stripping, so this needs nothing beyond the
+    # toolchain lint_typescript already requires. Node 22+ for --experimental-
+    # strip-types; the flag is still required in 22, silent in 24.
+    files = _find_files("*.test.ts")
+    if not files:
+        return
+    _run_linter(
+        ctx,
+        "node",
+        f"node --experimental-strip-types --test {' '.join(files)}",
+    )
 
 
 @task(

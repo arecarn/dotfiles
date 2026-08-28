@@ -156,6 +156,10 @@ class GitLabProvider:
         """The username that opened the merge request."""
         return _nested_text(_dict(self._get(self.base)), "author", "username")
 
+    def head_sha(self) -> str:
+        """The commit the merge request currently points at."""
+        return str(_dict(self._get(self.base)).get("sha", ""))
+
     def events(self, current_user: str) -> list[Event]:
         """Every merge-request note, flagged for whether it replies to the user.
 
@@ -224,6 +228,11 @@ class GitHubProvider:
         """The login that opened the pull request."""
         pull = _dict(self._get(f"{self.base}/pulls/{self.target.number}"))
         return _nested_text(pull, "user", "login")
+
+    def head_sha(self) -> str:
+        """The commit the pull request currently points at."""
+        pull = _dict(self._get(f"{self.base}/pulls/{self.target.number}"))
+        return str(_nested(pull, "head").get("sha", ""))
 
     def _pages(self, endpoint: str) -> list[dict[str, object]]:
         result: list[dict[str, object]] = []
@@ -300,11 +309,19 @@ class GitHubProvider:
         )
 
 
-def is_relevant(event: Event, *, current_user: str, review_author: str) -> bool:
-    """Return whether feedback is actionable context for the current user."""
+def is_relevant(
+    event: Event, *, current_user: str, review_author: str, as_reviewer: bool = False
+) -> bool:
+    """Return whether feedback is actionable context for the current user.
+
+    ``as_reviewer`` widens relevance to every other person's feedback, the same
+    breadth the author gets. A principal reviewer owns threads they never posted
+    in, because the review checklist makes them responsible for resolving them,
+    so the default mention-or-reply filter hides exactly the work they must do.
+    """
     if not event.human or event.author.casefold() == current_user.casefold():
         return False
-    if review_author.casefold() == current_user.casefold():
+    if as_reviewer or review_author.casefold() == current_user.casefold():
         return True
     # Both platforms read @name as a mention only at a word boundary, so the
     # guards on each side are what keep an email address whose domain or local
@@ -313,6 +330,22 @@ def is_relevant(event: Event, *, current_user: str, review_author: str) -> bool:
         rf"(?<![A-Za-z0-9])@{re.escape(current_user)}(?![A-Za-z0-9-])", re.IGNORECASE
     )
     return event.reply_to_user or bool(mention.search(event.body))
+
+
+def head_event(sha: str) -> Event:
+    """The current head commit as an Event, so a push reports like feedback.
+
+    The author is not a person, so ``human`` stays true to keep it reportable
+    while the id carries the sha: a new commit is a new id, and an unchanged
+    head repeats an id already seen.
+    """
+    return Event(
+        id=f"head:{sha}",
+        author="(new commit)",
+        body=f"head is now {sha[:12]}",
+        url="",
+        created_at="",
+    )
 
 
 def format_batch(events: list[Event]) -> str:
@@ -340,6 +373,7 @@ def watch_snapshots(  # pylint: disable=too-many-arguments
     output: TextIO = sys.stdout,
     sleep: Callable[[float], None] = time.sleep,
     max_polls: int | None = None,
+    as_reviewer: bool = False,
 ) -> None:
     """Baseline the first snapshot, then print batches of newly relevant events."""
     seen = {item.id for item in fetch()}
@@ -353,7 +387,10 @@ def watch_snapshots(  # pylint: disable=too-many-arguments
             item
             for item in new_events
             if is_relevant(
-                item, current_user=current_user, review_author=review_author
+                item,
+                current_user=current_user,
+                review_author=review_author,
+                as_reviewer=as_reviewer,
             )
         ]
         if relevant:
@@ -374,6 +411,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("review_url")
     parser.add_argument("--interval", type=float, default=120)
+    parser.add_argument(
+        "--as-reviewer",
+        action="store_true",
+        help=(
+            "report every other person's feedback and each new head commit, for "
+            "a principal reviewer who owns threads they did not post in"
+        ),
+    )
     args = parser.parse_args(argv)
     if args.interval <= 0:
         parser.error("--interval must be greater than zero")
@@ -391,11 +436,23 @@ def main(argv: list[str] | None = None) -> int:
         return current_user, review_author
 
     current_user, review_author = retrying(identity, interval=args.interval)()
+
+    def fetch() -> list[Event]:
+        events = provider.events(current_user)
+        if not args.as_reviewer:
+            return events
+        # A push is review-relevant in its own right: the checklist requires
+        # re-evaluating every checked box after a change, and forbids rewriting
+        # history once review starts. Carried as an Event so one `seen` set
+        # reports each commit once instead of on every poll.
+        return events + [head_event(provider.head_sha())]
+
     watch_snapshots(
-        retrying(lambda: provider.events(current_user), interval=args.interval),
+        retrying(fetch, interval=args.interval),
         current_user=current_user,
         review_author=review_author,
         interval=args.interval,
+        as_reviewer=args.as_reviewer,
     )
     return 0
 

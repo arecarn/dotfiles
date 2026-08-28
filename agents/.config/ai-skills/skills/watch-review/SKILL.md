@@ -15,13 +15,19 @@ model. If the authenticated user authored the review, all other people's
 feedback counts; otherwise only exact mentions of them and replies to their own
 comments do.
 
+`--as-reviewer` widens that to every other person's feedback, and adds a line
+whenever the head commit moves. Use it when the authenticated user is the
+review's principal reviewer rather than a commenter: they own threads they never
+posted in, and a push obliges them to re-check what they already signed off, so
+the default filter hides the work instead of surfacing it.
+
 ## Run it in the background
 
 Take the review URL from the argument, or infer it from the current branch's MR
 or PR. `--interval` is seconds, default 120.
 
 ```bash
-python3 ~/.config/ai-skills/skills/watch-review/watch_review.py <review-url> [--interval 120]
+python3 ~/.config/ai-skills/skills/watch-review/watch_review.py <review-url> [--interval 120] [--as-reviewer]
 ```
 
 | Harness | Binding |

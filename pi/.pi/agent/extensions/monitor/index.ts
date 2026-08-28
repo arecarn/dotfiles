@@ -49,7 +49,16 @@ export default function (pi: ExtensionAPI) {
 		}
 	};
 
-	const registry = new MonitorRegistry(deliver);
+	const registry = new MonitorRegistry(deliver, (monitors, ctx) => {
+		if (!ctx?.hasUI) return;
+		const running = monitors.filter(
+			(monitor) => monitor.status === "running",
+		).length;
+		ctx.ui.setStatus(
+			"monitor",
+			running === 0 ? undefined : `monitors: ${running}`,
+		);
+	});
 
 	pi.registerTool({
 		name: "monitor",
@@ -69,6 +78,8 @@ export default function (pi: ExtensionAPI) {
 		promptSnippet:
 			"Arm, list, or disarm background commands whose output is delivered as session events",
 		promptGuidelines: [
+			"Use monitor when stdout lines are the awaited events, especially for polling loops that should wake Pi when a condition is met.",
+			"Use bg_run instead of monitor when the process itself is the job and needs durable logs, terminal-state tracking, stopping, or later inspection.",
 			"Use monitor instead of a foreground bash call for a command that waits, such as a CI poll loop, so the wait does not block the session.",
 			"Arm monitor with maxEvents 1 when a single line answers the question; that also makes the monitor wake the session as soon as the line arrives.",
 			"Disarm a monitor through monitor once its answer has arrived, and do not expect a monitor armed in an earlier session to still exist.",
@@ -255,8 +266,9 @@ export default function (pi: ExtensionAPI) {
 	// not come back afterwards: their events belong to the session that armed them.
 	// watch-ci states the same expectation for a rewritten SHA, whose old watch is
 	// worthless anyway.
-	pi.on("session_shutdown", () => {
+	pi.on("session_shutdown", (_event, ctx) => {
 		registry.shutdown();
+		if (ctx.hasUI) ctx.ui.setStatus("monitor", undefined);
 	});
 }
 

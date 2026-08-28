@@ -130,6 +130,52 @@ def test_poll_suppresses_baseline_and_is_silent_when_unchanged() -> None:
     assert output.getvalue() == ""
 
 
+@pytest.mark.parametrize(
+    ("state", "message"),
+    [
+        ("merged", "Review merged"),
+        ("closed", "Review closed without merge"),
+    ],
+)
+def test_poll_reports_terminal_review_state_and_stops(
+    state: str, message: str
+) -> None:
+    states = iter(["open", state])
+    output = io.StringIO()
+
+    watch_review.watch_snapshots(
+        lambda: [],
+        current_user="author",
+        review_author="author",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        max_polls=5,
+        fetch_state=lambda: next(states),
+        review_url="https://example.test/review/1",
+    )
+
+    assert output.getvalue() == f"{message}\nhttps://example.test/review/1\n"
+    assert next(states, "stopped") == "stopped"
+
+
+def test_poll_reports_review_that_is_already_terminal() -> None:
+    output = io.StringIO()
+
+    watch_review.watch_snapshots(
+        lambda: pytest.fail("feedback should not be fetched for a merged review"),
+        current_user="author",
+        review_author="author",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        fetch_state=lambda: "merged",
+        review_url="https://example.test/review/1",
+    )
+
+    assert output.getvalue() == "Review merged\nhttps://example.test/review/1\n"
+
+
 def test_poll_emits_one_batch_for_new_relevant_events() -> None:
     snapshots = iter(
         [
@@ -326,12 +372,40 @@ def test_head_event_reports_each_commit_once() -> None:
     assert "aaaaaaaaaaaa" not in rendered
 
 
+@pytest.mark.parametrize(
+    ("payload", "expected"),
+    [
+        ({"state": "opened"}, "open"),
+        ({"state": "merged"}, "merged"),
+        ({"state": "closed"}, "closed"),
+    ],
+)
+def test_gitlab_review_state(payload: dict[str, object], expected: str) -> None:
+    target = watch_review.ReviewTarget("gitlab", "git.example", "group/project", 9)
+    provider = watch_review.GitLabProvider(target, runner=lambda _command: payload)
+    assert provider.review_state() == expected
+
+
 def test_gitlab_head_sha_reads_the_merge_request_sha() -> None:
     target = watch_review.ReviewTarget("gitlab", "git.example", "group/project", 9)
     provider = watch_review.GitLabProvider(
         target, runner=lambda _command: {"sha": "cafebabe"}
     )
     assert provider.head_sha() == "cafebabe"
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected"),
+    [
+        ({"state": "open", "merged_at": None}, "open"),
+        ({"state": "closed", "merged_at": "2026-08-28T00:00:00Z"}, "merged"),
+        ({"state": "closed", "merged_at": None}, "closed"),
+    ],
+)
+def test_github_review_state(payload: dict[str, object], expected: str) -> None:
+    target = watch_review.ReviewTarget("github", "github.example", "owner/repo", 7)
+    provider = watch_review.GitHubProvider(target, runner=lambda _command: payload)
+    assert provider.review_state() == expected
 
 
 def test_github_head_sha_reads_the_nested_head_sha() -> None:

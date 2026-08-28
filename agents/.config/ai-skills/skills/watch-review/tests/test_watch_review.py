@@ -280,6 +280,68 @@ def test_gitlab_normalizes_paginated_discussions_and_reply_relationships() -> No
     )
 
 
+def test_as_reviewer_surfaces_feedback_that_neither_mentions_nor_replies() -> None:
+    # A principal reviewer owns threads they never posted in, so the default
+    # mention-or-reply filter would hide the work the checklist assigns them.
+    unrelated = event("note-1", author="alice", body="A thread rcarney never joined")
+    common = {"current_user": "rcarney", "review_author": "igaron"}
+
+    assert not watch_review.is_relevant(unrelated, **common)
+    assert watch_review.is_relevant(unrelated, **common, as_reviewer=True)
+
+
+def test_as_reviewer_still_excludes_the_users_own_notes_and_bots() -> None:
+    common = {"current_user": "rcarney", "review_author": "igaron", "as_reviewer": True}
+
+    own = event("note-1", author="rcarney")
+    bot = event("note-2", author="glsvc.bernie", human=False)
+    assert not watch_review.is_relevant(own, **common)
+    assert not watch_review.is_relevant(bot, **common)
+
+
+def test_head_event_reports_each_commit_once() -> None:
+    # The push matters to a reviewer because every checked box must be
+    # re-evaluated after a change, but only when the head actually moves.
+    heads = ["aaaaaaaaaaaa1111", "aaaaaaaaaaaa1111", "bbbbbbbbbbbb2222"]
+
+    def fetch() -> list[watch_review.Event]:
+        return [watch_review.head_event(heads.pop(0))]
+
+    output = io.StringIO()
+    watch_review.watch_snapshots(
+        fetch,
+        current_user="rcarney",
+        review_author="igaron",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        max_polls=2,
+        as_reviewer=True,
+    )
+
+    rendered = output.getvalue()
+    # The first poll repeats the baseline head, so only the second is news.
+    assert rendered.count("Review feedback") == 1
+    assert "head is now bbbbbbbbbbbb" in rendered
+    assert "aaaaaaaaaaaa" not in rendered
+
+
+def test_gitlab_head_sha_reads_the_merge_request_sha() -> None:
+    target = watch_review.ReviewTarget("gitlab", "git.example", "group/project", 9)
+    provider = watch_review.GitLabProvider(
+        target, runner=lambda _command: {"sha": "cafebabe"}
+    )
+    assert provider.head_sha() == "cafebabe"
+
+
+def test_github_head_sha_reads_the_nested_head_sha() -> None:
+    target = watch_review.ReviewTarget("github", "github.example", "owner/repo", 7)
+    provider = watch_review.GitHubProvider(
+        target, runner=lambda _command: {"head": {"sha": "deadbeef"}}
+    )
+    assert provider.head_sha() == "deadbeef"
+
+
 def test_batch_omits_the_url_line_when_an_event_has_none() -> None:
     # A harness that delivers each line as an event and drops blank ones would
     # otherwise swallow a bare "  " line, so no line beats an empty one.

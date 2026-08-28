@@ -38,8 +38,10 @@ def test_every_adapter_points_at_the_installed_path():
     "no knowledge configured" so it cannot break a session."""
     for adapter in ADAPTERS:
         text = (_repo_root() / adapter).read_text(encoding="utf-8")
-        joined = re.search(r'join\(homedir\(\),([^)]*)\)', text)
-        assert joined, f"{adapter} does not build the CLI path from homedir()"
+        joined = re.search(
+            r'join\(process\.env\.HOME \|\| homedir\(\),([^)]*)\)', text
+        )
+        assert joined, f"{adapter} does not build the CLI path from HOME/homedir()"
         segments = re.findall(r'"([^"]+)"', joined.group(1))
         assert segments == ["bin", "agent-knowledge"], (
             f"{adapter} looks for the CLI at ~/{'/'.join(segments)}, "

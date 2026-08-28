@@ -196,9 +196,23 @@ def test_an_oversized_config_file_is_rejected(tmp_path):
 # --- path expansion -----------------------------------------------------------
 
 
+def test_tilde_uses_the_platform_home_when_home_is_unset(tmp_path, monkeypatch):
+    monkeypatch.delenv("HOME", raising=False)
+    monkeypatch.setattr(config.pathlib.Path, "home", lambda: tmp_path / "platform-home")
+    _write(tmp_path, "bundles.yaml", PERSONAL)
+
+    loaded = config.load(tmp_path)
+
+    assert loaded.project_roots == [tmp_path / "platform-home" / "projects"]
+    assert loaded.bundles[0].path == tmp_path / "platform-home" / "knowledge" / "personal"
+
+
 def test_home_and_environment_variables_expand_in_paths(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     monkeypatch.setenv("KB_ROOT", str(tmp_path / "kb"))
+    # WindowsPath.home() follows USERPROFILE instead of HOME. Configuration uses
+    # HOME explicitly so stowed paths have the same meaning in every harness.
+    monkeypatch.setattr(config.pathlib.Path, "home", lambda: tmp_path / "account-home")
     _write(
         tmp_path,
         "bundles.yaml",

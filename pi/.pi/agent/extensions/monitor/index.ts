@@ -50,10 +50,11 @@ export default function (pi: ExtensionAPI) {
 	};
 
 	const registry = new MonitorRegistry(deliver, (monitors, ctx) => {
-		if (!ctx?.hasUI) return;
 		const running = monitors.filter(
 			(monitor) => monitor.status === "running",
 		).length;
+		pi.events.emit("dotfiles:monitor-count", { running });
+		if (!ctx?.hasUI) return;
 		ctx.ui.setStatus(
 			"monitor",
 			running === 0 ? undefined : `monitors: ${running}`,

@@ -117,6 +117,15 @@ agent_panel_sort = "spaces"
 # Distinct shapes per agent state rather than compact colored dots.
 status_indicators = "symbols"
 
+[ui.sidebar.agents]
+# Pi reports this token only while background work exists: M=monitor,
+# B=background job, A=subagent. Zero-count categories are omitted.
+rows = [
+    ["state_icon", "workspace", "tab"],
+    ["agent"],
+    [{ token = "$work_status", fg = "#89b4fa", bold = true }],
+]
+
 [advanced]
 # tmux: history-limit 50000. Herdr caps scrollback by bytes, not lines,
 # so this is ~50k lines of typical output rather than an exact translation.

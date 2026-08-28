@@ -7,8 +7,9 @@ disable-model-invocation: true
 # Watch Review
 
 `watch_review.py` polls a review and prints one compact batch per poll of new
-human feedback relevant to the authenticated user. **The polling is plain
-Python: it costs no model tokens and prints nothing while nothing changes.**
+human feedback relevant to the authenticated user. It prints a terminal event
+and exits when the review is merged or closed without merge. **The polling is
+plain Python: it costs no model tokens and prints nothing while nothing changes.**
 
 Relevance comes from API relationships and exact `@name` syntax, never from a
 model. If the authenticated user authored the review, all other people's
@@ -39,14 +40,28 @@ python3 ~/.config/ai-skills/skills/watch-review/watch_review.py <review-url> [--
 Authentication comes from `glab` and `gh`, so neither a token nor a host needs
 passing. Self-hosted GitLab and GitHub Enterprise work from the URL's hostname.
 
-## Report batches verbatim
+## Report output verbatim
 
-**Surface a batch exactly as printed and stop there.** No summarizing, no
-ranking, no drafting a reply: the author and link are what make it actionable,
-and rewording loses both. Say a batch arrived, show it, and wait. The watcher
-only reads; it never replies, resolves, approves, or merges.
+**Surface each batch or terminal event exactly as printed and stop there.** No
+summarizing, ranking, or drafting a reply: the author and link are what make
+feedback actionable, and rewording loses both. Say output arrived, show it, and
+wait. The watcher only reads; it never replies, resolves, approves, or merges.
 
-Stop it the ordinary way: pi's `monitor disarm <id>`, Claude Code's Monitor
-controls, or killing the process. There is no stop subcommand and no state on
-disk, so nothing needs cleaning up and a new watcher re-baselines against
-whatever is already on the review.
+A terminal event is one of:
+
+```text
+Review merged
+<review-url>
+```
+
+```text
+Review closed without merge
+<review-url>
+```
+
+The process exits after either event, which completes the harness monitor and
+removes it from the active monitor count. For an open review, stop it manually
+with pi's `monitor disarm <id>`, Claude Code's Monitor controls, or by killing
+the process. There is no stop subcommand and no state on disk, so nothing needs
+cleaning up and a new watcher re-baselines against whatever is already on the
+review.

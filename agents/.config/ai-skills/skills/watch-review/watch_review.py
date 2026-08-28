@@ -160,6 +160,15 @@ class GitLabProvider:
         """The commit the merge request currently points at."""
         return str(_dict(self._get(self.base)).get("sha", ""))
 
+    def review_state(self) -> str:
+        """Return the provider-neutral merge-request lifecycle state."""
+        state = str(_dict(self._get(self.base)).get("state", ""))
+        if state == "merged":
+            return "merged"
+        if state == "closed":
+            return "closed"
+        return "open"
+
     def events(self, current_user: str) -> list[Event]:
         """Every merge-request note, flagged for whether it replies to the user.
 
@@ -233,6 +242,15 @@ class GitHubProvider:
         """The commit the pull request currently points at."""
         pull = _dict(self._get(f"{self.base}/pulls/{self.target.number}"))
         return str(_nested(pull, "head").get("sha", ""))
+
+    def review_state(self) -> str:
+        """Return the provider-neutral pull-request lifecycle state."""
+        pull = _dict(self._get(f"{self.base}/pulls/{self.target.number}"))
+        if pull.get("merged_at") is not None:
+            return "merged"
+        if pull.get("state") == "closed":
+            return "closed"
+        return "open"
 
     def _pages(self, endpoint: str) -> list[dict[str, object]]:
         result: list[dict[str, object]] = []
@@ -364,7 +382,7 @@ def format_batch(events: list[Event]) -> str:
 # The injected output, sleep, and max_polls are what make one poll testable
 # without a clock or a real stream; bundling them into a config object would be
 # more machinery than the seam is worth.
-def watch_snapshots(  # pylint: disable=too-many-arguments
+def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
     fetch: Callable[[], list[Event]],
     *,
     current_user: str,
@@ -374,12 +392,31 @@ def watch_snapshots(  # pylint: disable=too-many-arguments
     sleep: Callable[[float], None] = time.sleep,
     max_polls: int | None = None,
     as_reviewer: bool = False,
+    fetch_state: Callable[[], str] | None = None,
+    review_url: str = "",
 ) -> None:
-    """Baseline the first snapshot, then print batches of newly relevant events."""
+    """Print new feedback until the review is merged or closed."""
+
+    def report_terminal(state: str) -> bool:
+        labels = {
+            "merged": "Review merged",
+            "closed": "Review closed without merge",
+        }
+        label = labels.get(state)
+        if label is None:
+            return False
+        output.write(f"{label}\n{review_url}\n")
+        output.flush()
+        return True
+
+    if fetch_state is not None and report_terminal(fetch_state()):
+        return
     seen = {item.id for item in fetch()}
     polls = 0
     while max_polls is None or polls < max_polls:
         sleep(interval)
+        if fetch_state is not None and report_terminal(fetch_state()):
+            return
         snapshot = fetch()
         new_events = [item for item in snapshot if item.id not in seen]
         seen.update(item.id for item in snapshot)
@@ -453,6 +490,8 @@ def main(argv: list[str] | None = None) -> int:
         review_author=review_author,
         interval=args.interval,
         as_reviewer=args.as_reviewer,
+        fetch_state=retrying(provider.review_state, interval=args.interval),
+        review_url=args.review_url,
     )
     return 0
 

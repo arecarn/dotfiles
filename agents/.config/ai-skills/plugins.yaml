@@ -57,6 +57,10 @@ superpowers:
 pi-subagents:
   pi_package: npm:pi-subagents
 
+# Cross-process messaging and presence for independently running Pi sessions.
+pi-intercom:
+  pi_package: npm:pi-intercom
+
 pi-mcp-adapter:
   pi_package: npm:pi-mcp-adapter
 

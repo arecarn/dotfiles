@@ -8,7 +8,7 @@ import {
 	type MonitorExit,
 	type MonitorProcess,
 	startMonitorProcess,
-} from "./runner.js";
+} from "./runner.ts";
 
 export type MonitorStatus = "running" | "done" | "failed" | "disarmed";
 
@@ -49,15 +49,26 @@ export type MonitorEventHandler = (
 	ctx: ExtensionContext | undefined,
 ) => void;
 
+/** Called after a transition that can change the set of running monitors. */
+export type MonitorChangeHandler = (
+	monitors: Monitor[],
+	ctx: ExtensionContext | undefined,
+) => void;
+
 export class MonitorRegistry {
 	private readonly monitors = new Map<string, Monitor>();
 	private readonly processes = new Map<string, MonitorProcess>();
 	private readonly deliverEvent: MonitorEventHandler;
+	private readonly reportChange: MonitorChangeHandler;
 	private nextId = 1;
 	private latestContext: ExtensionContext | undefined;
 
-	constructor(onEvent: MonitorEventHandler) {
+	constructor(
+		onEvent: MonitorEventHandler,
+		onChange: MonitorChangeHandler = () => {},
+	) {
 		this.deliverEvent = onEvent;
+		this.reportChange = onChange;
 	}
 
 	/**
@@ -117,6 +128,7 @@ export class MonitorRegistry {
 				},
 			),
 		);
+		this.notifyChange();
 		return monitor;
 	}
 
@@ -186,6 +198,7 @@ export class MonitorRegistry {
 		}
 		monitor.status =
 			exit.signal === null && exit.code === 0 ? "done" : "failed";
+		this.notifyChange();
 	}
 
 	private stop(monitor: Monitor, status: MonitorStatus): void {
@@ -193,6 +206,11 @@ export class MonitorRegistry {
 		const running = this.processes.get(monitor.id);
 		this.processes.delete(monitor.id);
 		running?.kill();
+		this.notifyChange();
+	}
+
+	private notifyChange(): void {
+		this.reportChange(this.list(), this.latestContext);
 	}
 }
 

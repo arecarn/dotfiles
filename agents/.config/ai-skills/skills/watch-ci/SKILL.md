@@ -94,7 +94,8 @@ until conclusion=$(gh run view "$id" --json conclusion --jq '.conclusion') \
     && [ -n "$conclusion" ]; do
     gh run watch "$id" > /dev/null 2>&1 || sleep 30
 done
-gh run view "$id" --json conclusion,url --jq '"\(.conclusion) \(.url)"'
+gh run view "$id" --json conclusion,url,workflowName,headSha,jobs --jq \
+    '"\(.conclusion) \(.url) workflow=\(.workflowName) sha=\(.headSha) jobs=" + ([.jobs[] | "\(.name):\(.conclusion)"] | join(","))'
 ```
 
 **`--workflow` is not optional.** GitHub attaches its own runs to your commit —
@@ -107,12 +108,9 @@ run you watched is the one you meant:
 gh run view "$id" --json workflowName,headSha --jq '"\(.workflowName) \(.headSha)"'
 ```
 
-On a matrix build, cite the legs rather than asserting them — a claim about one platform
-is only evidence if you read that leg:
-
-```bash
-gh run view "$id" --json jobs --jq '.jobs[] | "\(.name): \(.conclusion)"'
-```
+The terminal event already includes every job conclusion. On a matrix build, cite those
+legs rather than asserting them — a claim about one platform is only evidence if the
+reported jobs name that platform.
 
 Failure logs: `gh run view <id> --log-failed`
 

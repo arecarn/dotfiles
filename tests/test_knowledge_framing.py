@@ -13,7 +13,7 @@ import subprocess
 
 from manage.knowledge import framing, resolver
 
-BIOME = "node_modules/.bin/biome"
+BIOME = "node_modules/@biomejs/biome/bin/biome"
 
 
 def test_the_generated_module_carries_the_resolver_constants():
@@ -40,12 +40,15 @@ def test_the_generated_module_is_already_formatted(tmp_path):
         return  # toolchain not installed; lint_typescript reports that itself
 
     candidate = tmp_path / "framing.ts"
-    candidate.write_text(framing.render(), encoding="utf-8")
+    # write_text translates newlines on Windows, making a correct LF render look
+    # unformatted to Biome before it examines any TypeScript syntax.
+    candidate.write_bytes(framing.render().encode("utf-8"))
 
     done = subprocess.run(
-        [str(biome.resolve()), "format", str(candidate)],
+        ["node", str(biome.resolve()), "format", str(candidate)],
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
 

@@ -30,7 +30,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { after, test } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -97,7 +97,9 @@ function fixture() {
 async function adapter(path: string, home: string, config: string) {
 	process.env.HOME = home;
 	process.env.AGENT_KNOWLEDGE_CONFIG_DIR = config;
-	return import(`${join(REPO, path)}?v=${roots.length}-${Math.random()}`);
+	const moduleUrl = pathToFileURL(join(REPO, path));
+	moduleUrl.search = `v=${roots.length}-${Math.random()}`;
+	return import(moduleUrl.href);
 }
 
 const PI = "pi/.pi/agent/extensions/agent-knowledge/resolver.ts";

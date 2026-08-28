@@ -140,7 +140,12 @@ def _expand(value, config_dir, where):
     expanded = _ENV_PATTERN.sub(substitute, value)
     if "$" in expanded:
         raise ConfigError(f"{where}: only ${{VAR}} references are supported")
-    path = pathlib.Path(expanded).expanduser()
+    if expanded == "~" or expanded.startswith(("~/", "~\\")):
+        # HOME is the cross-harness override; Windows normally has only
+        # USERPROFILE, which Path.home() resolves when no override is present.
+        home = os.environ.get("HOME") or str(pathlib.Path.home())
+        expanded = home + expanded[1:]
+    path = pathlib.Path(expanded)
     return path if path.is_absolute() else config_dir / path
 
 

@@ -23,6 +23,7 @@ import os
 import pathlib
 import posixpath
 import secrets
+from pathlib import PureWindowsPath
 
 from manage.knowledge import activation, config, okf
 
@@ -256,9 +257,13 @@ def _relative(target, source):
     Links are resolved the way a reader would: relative to the document they
     appear in, with a leading `/` on the *target* meaning the bundle root. A
     trailing slash is a directory, which OKF discloses through its own
-    `index.md`.
+    `index.md`. A Windows drive prefix is stripped like a leading slash, so a
+    filesystem-looking target cannot escape and behaves consistently by host.
     """
     target = target.split("#", 1)[0]
+    windows = PureWindowsPath(target)
+    if windows.drive:
+        target = windows.as_posix()[len(windows.drive) :]
     if not target or "\x00" in target or "?" in target or "\\" in target:
         return None
     if _suspect(source):

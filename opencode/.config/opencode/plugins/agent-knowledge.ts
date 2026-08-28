@@ -33,7 +33,7 @@ const run = promisify(execFile);
 
 // Where the `scripts` stow package puts it. An unstowed machine simply has
 // no knowledge, which every caller here treats as "nothing configured".
-const CLI = join(homedir(), "bin", "agent-knowledge");
+const CLI = join(process.env.HOME || homedir(), "bin", "agent-knowledge");
 const TIMEOUT_MS = 10_000;
 
 interface ResolvePayload {
@@ -53,7 +53,11 @@ interface PluginInput {
 /** Run one CLI operation, or return undefined when it is unusable. */
 async function invoke<T>(args: string[], cwd: string): Promise<T | undefined> {
 	try {
-		const { stdout } = await run(CLI, args, { cwd, timeout: TIMEOUT_MS });
+		// Windows does not execute extensionless shebang scripts through CreateProcess.
+		// The launcher is Python, so invoke it through the interpreter there.
+		const command = process.platform === "win32" ? "python" : CLI;
+		const argv = process.platform === "win32" ? [CLI, ...args] : args;
+		const { stdout } = await run(command, argv, { cwd, timeout: TIMEOUT_MS });
 		return JSON.parse(stdout) as T;
 	} catch (error) {
 		// A refused read still prints a payload naming the reason, so parse stdout

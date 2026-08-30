@@ -7,6 +7,8 @@
 
 import subprocess
 
+import pytest
+
 from manage.knowledge import activation, config
 
 OKF_INDEX = """\
@@ -177,7 +179,7 @@ def test_a_project_bundle_is_discovered_at_the_worktree_root(tmp_path):
     repo = _repo(tmp_path / "repo")
     _okf_bundle(repo / "agents-knowledge")
 
-    found = activation.project_bundle(repo, [tmp_path])
+    found = activation.project_bundle(repo)
 
     assert found.path == repo / "agents-knowledge"
     assert found.id == config.PROJECT_ID
@@ -188,7 +190,7 @@ def test_a_project_bundle_is_found_from_a_subdirectory(tmp_path):
     _okf_bundle(repo / "agents-knowledge")
     (repo / "src" / "deep").mkdir(parents=True)
 
-    found = activation.project_bundle(repo / "src" / "deep", [tmp_path])
+    found = activation.project_bundle(repo / "src" / "deep")
 
     assert found.path == repo / "agents-knowledge"
 
@@ -204,7 +206,7 @@ def test_a_linked_worktree_uses_its_own_branch_local_bundle(tmp_path):
         OKF_INDEX.replace("a thing", "branch thing"), encoding="utf-8"
     )
 
-    found = activation.project_bundle(tree, [tmp_path])
+    found = activation.project_bundle(tree)
 
     assert found.path == tree / "agents-knowledge"
 
@@ -212,14 +214,14 @@ def test_a_linked_worktree_uses_its_own_branch_local_bundle(tmp_path):
 def test_a_worktree_without_the_directory_has_no_project_bundle(tmp_path):
     repo = _repo(tmp_path / "repo")
 
-    assert activation.project_bundle(repo, [tmp_path]) is None
+    assert activation.project_bundle(repo) is None
 
 
 def test_outside_git_the_exact_directory_is_the_project_root(tmp_path):
     plain = tmp_path / "plain"
     _okf_bundle(plain / "agents-knowledge")
 
-    assert activation.project_bundle(plain, [tmp_path]).path == plain / "agents-knowledge"
+    assert activation.project_bundle(plain).path == plain / "agents-knowledge"
 
 
 def test_outside_git_a_parent_directory_is_not_searched(tmp_path):
@@ -227,21 +229,7 @@ def test_outside_git_a_parent_directory_is_not_searched(tmp_path):
     _okf_bundle(plain / "agents-knowledge")
     (plain / "child").mkdir()
 
-    assert activation.project_bundle(plain / "child", [tmp_path]) is None
-
-
-def test_a_project_outside_the_allowlist_is_not_discovered(tmp_path):
-    repo = _repo(tmp_path / "elsewhere" / "repo")
-    _okf_bundle(repo / "agents-knowledge")
-
-    assert activation.project_bundle(repo, [tmp_path / "approved"]) is None
-
-
-def test_no_project_roots_disables_project_discovery(tmp_path):
-    repo = _repo(tmp_path / "repo")
-    _okf_bundle(repo / "agents-knowledge")
-
-    assert activation.project_bundle(repo, []) is None
+    assert activation.project_bundle(plain / "child") is None
 
 
 def test_a_symlinked_project_bundle_is_refused(tmp_path):
@@ -251,7 +239,7 @@ def test_a_symlinked_project_bundle_is_refused(tmp_path):
     outside = _okf_bundle(tmp_path / "outside")
     (repo / "agents-knowledge").symlink_to(outside)
 
-    assert activation.project_bundle(repo, [tmp_path]) is None
+    assert activation.project_bundle(repo) is None
 
 
 def test_a_symlinked_project_index_is_refused(tmp_path):
@@ -260,4 +248,84 @@ def test_a_symlinked_project_index_is_refused(tmp_path):
     (repo / "agents-knowledge").mkdir()
     (repo / "agents-knowledge" / "index.md").symlink_to(outside / "index.md")
 
-    assert activation.project_bundle(repo, [tmp_path]) is None
+    assert activation.project_bundle(repo) is None
+
+
+# --- discovered bundles ------------------------------------------------------
+
+
+def test_a_directory_beside_the_config_is_a_bundle(tmp_path):
+    """No declaration: putting the directory there is the whole setup."""
+    _okf_bundle(tmp_path / "personal")
+
+    found = activation.discovered_bundles(tmp_path, {})
+
+    assert [(b.id, b.path) for b in found] == [("personal", tmp_path / "personal")]
+
+
+def test_a_discovered_bundle_applies_everywhere_by_default(tmp_path):
+    _okf_bundle(tmp_path / "personal")
+
+    assert activation.discovered_bundles(tmp_path, {})[0].always is True
+
+
+def test_a_scope_rule_narrows_a_discovered_bundle(tmp_path):
+    """The rule says where, not what: discovery still found the bundle."""
+    _okf_bundle(tmp_path / "work")
+    scopes = {"work": config.Scope(always=False, roots=[tmp_path / "trees"])}
+
+    found = activation.discovered_bundles(tmp_path, scopes)[0]
+
+    assert (found.always, found.roots) == (False, [tmp_path / "trees"])
+
+
+def test_bundles_are_ordered_by_directory_name(tmp_path):
+    """Stable output for tests, caching and diffing."""
+    for name in ("work", "personal", "archive"):
+        _okf_bundle(tmp_path / name)
+
+    ids = [b.id for b in activation.discovered_bundles(tmp_path, {})]
+
+    assert ids == ["archive", "personal", "work"]
+
+
+def test_a_scope_naming_a_missing_bundle_is_an_error(tmp_path):
+    """Ignoring the typo would leave the bundle it meant to confine active
+    everywhere, which is the opposite of what the rule asked for."""
+    _okf_bundle(tmp_path / "work")
+    scopes = {"wrok": config.Scope(always=False, roots=[tmp_path])}
+
+    with pytest.raises(config.ConfigError, match="not a directory"):
+        activation.discovered_bundles(tmp_path, scopes)
+
+
+def test_an_empty_config_directory_has_no_bundles(tmp_path):
+    assert activation.discovered_bundles(tmp_path, {}) == []
+
+
+def test_an_absent_config_directory_is_not_an_error(tmp_path):
+    assert activation.discovered_bundles(tmp_path / "missing", {}) == []
+
+
+def test_a_directory_with_an_unusable_index_is_still_surfaced(tmp_path):
+    """It is an attempted bundle, and the caller reports why it is unusable.
+    Dropping it here would make a broken index look like no bundle at all."""
+    unmarked = tmp_path / "notes"
+    unmarked.mkdir()
+    (unmarked / "index.md").write_text("# notes\n", encoding="utf-8")
+
+    assert [b.id for b in activation.discovered_bundles(tmp_path, {})] == ["notes"]
+
+
+def test_a_directory_with_no_index_is_not_a_bundle_attempt(tmp_path):
+    """Some other directory beside the config is simply not knowledge."""
+    (tmp_path / "cache").mkdir()
+
+    assert activation.discovered_bundles(tmp_path, {}) == []
+
+
+def test_a_file_beside_the_config_is_ignored(tmp_path):
+    """config.yaml itself lives here, so non-directories must not be scanned."""
+    (tmp_path / "config.yaml").write_text("version: 1\n", encoding="utf-8")
+
+    assert activation.discovered_bundles(tmp_path, {}) == []

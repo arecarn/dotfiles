@@ -74,8 +74,8 @@ def tolerating_windows_symlink_failure(what):
 # live server's sockets and session layout in this public repo's working tree.
 #
 # ~/.config/ai-knowledge is the agent-knowledge equivalent of ai-instructions:
-# this repo stows bundles.yaml there, and on a work machine a dotfiles_local repo
-# adds bundles_local.yaml beside it. Folding would land that private file -- work
+# this repo stows config.yaml there, and on a work machine a dotfiles_local repo
+# adds config_local.yaml beside it. Folding would land that private file -- work
 # bundle names, paths, and activation roots -- in this public repo.
 #
 # ~/.config/opencode/plugins holds one plugin of ours beside whatever else is

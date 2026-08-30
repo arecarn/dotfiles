@@ -55,7 +55,6 @@ export interface ReadResult {
 
 export interface StatusResult {
 	config_dir: string;
-	project_roots: string[];
 	bundles: { id: string; active: boolean; reason: string; path: string }[];
 	diagnostics: { code: string; bundle_id: string | null; message: string }[];
 }

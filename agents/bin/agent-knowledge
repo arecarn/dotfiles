@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Launcher for the agent-knowledge resolver CLI.
 
-Stowed by the `agents` package -- alongside .config/ai-knowledge/bundles.yaml, so
+Stowed by the `agents` package -- alongside .config/ai-knowledge/config.yaml, so
 the config and the launchers that read it install as one unit -- and lands in
 ~/bin. A Pi extension, a Claude Code hook, or an OpenCode plugin can then invoke
 it by absolute path with no knowledge of this checkout. The adapters hardcode

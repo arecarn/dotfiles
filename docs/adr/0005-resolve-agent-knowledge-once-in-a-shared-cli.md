@@ -64,8 +64,9 @@ from no knowledge configured -- so `tests/test_knowledge_launcher.py` asserts th
 adapters and `manage.stow` still agree.
 
 **Three fold barriers were added** to `manage/stow.py`: `~/.config/ai-knowledge`
-(a `dotfiles_local` repo drops `bundles_local.yaml` beside our `bundles.yaml`,
-and folding would put that private file in this public repo),
+(a `dotfiles_local` repo drops `config_local.yaml` and its own bundle
+directories beside ours, and folding would put those private files in this
+public repo),
 `~/.claude/plugins`, and `~/.config/opencode/plugins` (each holds one plugin of
 ours beside whatever else is installed). Same reasoning as ADR-0001.
 

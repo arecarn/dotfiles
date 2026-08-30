@@ -10,39 +10,10 @@ additionalContext field, keep bundle paths out of it, and never fail the session
 import io
 import json
 
+from knowledge_fixtures import bundle as _bundle
+from knowledge_fixtures import config_dir as _config
+
 from manage.knowledge import hooks
-
-INDEX = """\
----
-okf_version: "0.2"
----
-# Index
-
-* [Ops](ops.md) - operations
-"""
-
-
-def _bundle(root):
-    root.mkdir(parents=True, exist_ok=True)
-    (root / "index.md").write_text(INDEX, encoding="utf-8")
-    return root
-
-
-def _config(tmp_path, bundle_root):
-    config_dir = tmp_path / "config"
-    config_dir.mkdir(exist_ok=True)
-    (config_dir / "bundles.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: personal\n"
-        "    name: Personal knowledge\n"
-        "    description: General references\n"
-        f"    path: {bundle_root}\n"
-        "    activate:\n"
-        "      always: true\n",
-        encoding="utf-8",
-    )
-    return config_dir
 
 
 def _run(config_dir, event):
@@ -74,10 +45,11 @@ def test_the_hook_resolves_the_directory_claude_reports(tmp_path):
     work = tmp_path / "work"
     work.mkdir()
     config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
-    (config_dir / "bundles.yaml").write_text(
-        (config_dir / "bundles.yaml")
-        .read_text(encoding="utf-8")
-        .replace("      always: true\n", f"      roots:\n        - {work}\n"),
+    (config_dir / "config.yaml").write_text(
+        "version: 1\nscopes:\n"
+        "  - id: personal\n"
+        "    activate:\n"
+        f"      roots:\n        - {work}\n",
         encoding="utf-8",
     )
 
@@ -100,7 +72,7 @@ def test_bundle_paths_are_not_disclosed_to_the_model(tmp_path):
 def test_a_broken_configuration_does_not_fail_the_session(tmp_path):
     config_dir = tmp_path / "config"
     config_dir.mkdir()
-    (config_dir / "bundles.yaml").write_text("version: 4\n", encoding="utf-8")
+    (config_dir / "config.yaml").write_text("version: 4\n", encoding="utf-8")
 
     code, payload = _run(config_dir, {"cwd": str(tmp_path)})
 

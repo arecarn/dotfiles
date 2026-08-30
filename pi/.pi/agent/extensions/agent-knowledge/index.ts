@@ -52,10 +52,9 @@ export default function agentKnowledge(pi: ExtensionAPI): void {
 	pi.on("before_agent_start", async (_event, ctx) => {
 		if (catalogInContext(ctx)) return;
 
-		// pi's own trust decision gates the project bundle, which is
-		// repository-controlled content, on top of the resolver's project_roots
-		// allowlist. Configured personal and work bundles are unaffected: the user
-		// declared those themselves.
+		// pi's own trust decision is what gates the project bundle, which is
+		// repository-controlled content. The user bundle and declared personal or
+		// work bundles are unaffected: the user owns those themselves.
 		const trusted = ctx.isProjectTrusted();
 		const result = await resolve(ctx.cwd, { withProject: trusted, trusted });
 		if (!result) return;

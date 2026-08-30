@@ -51,6 +51,23 @@ def read_index(bundle_root):
     return text
 
 
+_TITLE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
+
+
+def read_title(index_text):
+    """The index's first level-1 heading, or None when it has none.
+
+    A discovered bundle has no declaration to carry a display name, and its own
+    heading is the name its author already wrote. Untrusted like the rest of the
+    index: it is shown in the catalog, never acted on.
+    """
+    if not index_text:
+        return None
+    body = _FRONTMATTER.sub("", index_text, count=1)
+    match = _TITLE.search(body)
+    return match.group(1) if match else None
+
+
 def is_bundle(bundle_root):
     """Whether `bundle_root` holds a readable, supported OKF root index."""
     return read_index(bundle_root) is not None

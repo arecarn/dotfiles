@@ -56,7 +56,10 @@ function fixture() {
 	const root = mkdtempSync(join(tmpdir(), "agent-knowledge-"));
 	roots.push(root);
 
-	const bundle = join(root, "kb");
+	// The bundle lives inside the config directory: a directory beside the
+	// config file is a bundle, so nothing declares it.
+	const config = join(root, "config");
+	const bundle = join(config, "personal");
 	mkdirSync(bundle, { recursive: true });
 	writeFileSync(join(bundle, "index.md"), INDEX);
 	writeFileSync(join(bundle, "ops.md"), "# Ops\n\nRun the thing.\n");
@@ -65,25 +68,6 @@ function fixture() {
 	mkdirSync(join(project, "agents-knowledge"), { recursive: true });
 	writeFileSync(join(project, "agents-knowledge", "index.md"), PROJECT_INDEX);
 	execFileSync("git", ["init", "-q", "."], { cwd: project });
-
-	const config = join(root, "config");
-	mkdirSync(config, { recursive: true });
-	writeFileSync(
-		join(config, "bundles.yaml"),
-		[
-			"version: 1",
-			"project_roots:",
-			`  - ${join(root, "projects")}`,
-			"bundles:",
-			"  - id: personal",
-			"    name: Personal knowledge",
-			"    description: General references",
-			`    path: ${bundle}`,
-			"    activate:",
-			"      always: true",
-			"",
-		].join("\n"),
-	);
 
 	return { root, bundle, project, config };
 }
@@ -169,7 +153,7 @@ test("a broken configuration yields diagnostics and no catalog", async () => {
 	const { root } = fixture();
 	const broken = join(root, "broken");
 	mkdirSync(broken, { recursive: true });
-	writeFileSync(join(broken, "bundles.yaml"), "version: 99\n");
+	writeFileSync(join(broken, "config.yaml"), "version: 99\n");
 	const pi = await adapter(PI, stubHome(), broken);
 
 	const result = await pi.resolve(root);

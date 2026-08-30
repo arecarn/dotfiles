@@ -488,7 +488,15 @@ def lint_ansible(ctx):
     if IS_WINDOWS:
         print("ansible-playbook syntax check not supported on Windows, skipping...")
         return
-    ctx.run("ansible-playbook --syntax-check -i localhost, ansible/site.yml")
+    # ANSIBLE_VAULT_PASSWORD_FILE is read on every invocation, syntax checks
+    # included, and a script that unlocks a keyring then blocks on a prompt --
+    # so linting would hang or fail on a machine that exports one. Nothing under
+    # ansible/ is vaulted, so the check has no use for the password. `env -u`
+    # rather than an empty value: Ansible resolves "" to the cwd and errors.
+    ctx.run(
+        "env -u ANSIBLE_VAULT_PASSWORD_FILE "
+        "ansible-playbook --syntax-check -i localhost, ansible/site.yml"
+    )
 
 
 @task(help={"check": "Report drift instead of writing files"})

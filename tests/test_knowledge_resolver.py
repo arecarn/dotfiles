@@ -12,11 +12,13 @@ import pathlib
 
 from manage.knowledge import okf, resolver
 
+# The heading is the bundle's display name: a discovered bundle has no
+# declaration to carry one.
 INDEX = """\
 ---
 okf_version: "0.2"
 ---
-# Index
+# Personal knowledge
 
 * [Ops](ops/) - operational procedures
 """
@@ -30,33 +32,23 @@ okf_version: "0.2"
 * [Release](release.md) - how to release
 """
 
-CONFIG = """\
-version: 1
-project_roots:
-  - {roots}
-bundles:
-  - id: personal
-    name: Personal knowledge
-    description: General references
-    path: {personal}
-    activate:
-      always: true
-"""
-
-
 def _bundle(root, index=INDEX):
     root.mkdir(parents=True, exist_ok=True)
     (root / "index.md").write_text(index, encoding="utf-8")
     return root
 
 
-def _config(tmp_path, personal, roots=None):
+def _config(tmp_path, personal):
+    """A config directory holding `personal` as a discovered bundle.
+
+    Linked in rather than declared: no config file is written at all, because a
+    directory beside the config is a bundle and applies everywhere by default.
+    """
     config_dir = tmp_path / "config"
     config_dir.mkdir(exist_ok=True)
-    (config_dir / "bundles.yaml").write_text(
-        CONFIG.format(personal=personal, roots=roots or tmp_path / "projects"),
-        encoding="utf-8",
-    )
+    link = config_dir / "personal"
+    if not link.exists():
+        link.symlink_to(personal)
     return config_dir
 
 
@@ -115,7 +107,7 @@ def test_a_bundle_without_a_supported_index_is_omitted_with_a_diagnostic(tmp_pat
 def test_a_broken_configuration_is_reported_without_raising(tmp_path):
     config_dir = tmp_path / "config"
     config_dir.mkdir()
-    (config_dir / "bundles.yaml").write_text("version: 9\n", encoding="utf-8")
+    (config_dir / "config.yaml").write_text("version: 9\n", encoding="utf-8")
 
     result = resolver.resolve(config_dir=config_dir, cwd=tmp_path)
 
@@ -314,16 +306,14 @@ def test_an_oversized_document_is_refused(tmp_path):
 
 def test_status_reports_active_and_inactive_bundles_with_paths(tmp_path):
     """Status is local-only, so unlike the catalog it may name paths."""
-    inactive = _bundle(tmp_path / "work-kb")
     config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
-    (config_dir / "bundles_local.yaml").write_text(
-        "version: 1\nbundles:\n"
+    _bundle(config_dir / "work")
+    (config_dir / "config_local.yaml").write_text(
+        "version: 1\nscopes:\n"
         "  - id: work\n"
-        "    name: Work\n"
-        f"    path: {inactive}\n"
         "    activate:\n"
         "      roots:\n"
-        f"        - {tmp_path / 'work'}\n",
+        f"        - {tmp_path / 'elsewhere'}\n",
         encoding="utf-8",
     )
 
@@ -331,9 +321,9 @@ def test_status_reports_active_and_inactive_bundles_with_paths(tmp_path):
 
     assert report["bundles"] == [
         {"id": "personal", "active": True, "reason": "always",
-         "path": str(tmp_path / "kb")},
+         "path": str(config_dir / "personal")},
         {"id": "work", "active": False, "reason": "no matching root",
-         "path": str(inactive)},
+         "path": str(config_dir / "work")},
     ]
 
 
@@ -515,7 +505,7 @@ def test_an_inactive_bundle_is_never_opened(tmp_path, monkeypatch):
     work bundle's contents cannot reach a personal session by any route."""
     inactive = _bundle(tmp_path / "work-kb")
     config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
-    (config_dir / "bundles_local.yaml").write_text(
+    (config_dir / "config_local.yaml").write_text(
         "version: 1\nbundles:\n"
         "  - id: work\n    name: Work\n"
         f"    path: {inactive}\n"

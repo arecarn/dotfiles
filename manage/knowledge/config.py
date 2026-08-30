@@ -1,15 +1,19 @@
-"""Compose the agent-knowledge bundle configuration from its two files.
+"""Compose the agent-knowledge configuration from its two files.
 
-`bundles.yaml` is public and `bundles_local.yaml` is the optional private
-sibling a dotfiles_local repo supplies -- the same arrangement as plugins.yaml
-and plugins_local.yaml, for the same reason: work bundle names and paths must
-never land in the public repo.
+`config.yaml` is public and `config_local.yaml` is the optional private sibling
+a dotfiles_local repo supplies -- the same arrangement as plugins.yaml and
+plugins_local.yaml.
+
+Neither file declares a bundle: a directory beside them is one, so a work
+bundle's name and path never have to be written down anywhere. What is composed
+here is the sections that tune the defaults, currently just `scopes`. New
+sections go in the same way; the version is what a breaking change costs.
 
 Composition is **add-only**. A local entry cannot redefine a public one, so a
-duplicate id is a fatal error rather than a silent override; a private file must
-not be able to change what a public bundle means. Every other error is fatal
-too, because a partially-loaded configuration could activate the wrong private
-knowledge.
+duplicate is a fatal error rather than a silent override: a private file must
+not be able to widen a scope a public one narrowed. Every other error is fatal
+too, because a partially-loaded configuration could disclose private knowledge
+somewhere it was meant to be kept out of.
 """
 
 import dataclasses
@@ -47,8 +51,8 @@ except ImportError:  # pragma: no cover - same
                 "no YAML library available (install ruamel.yaml or PyYAML)"
             )
 
-BASE_NAME = "bundles.yaml"
-LOCAL_NAME = "bundles_local.yaml"
+BASE_NAME = "config.yaml"
+LOCAL_NAME = "config_local.yaml"
 
 SCHEMA_VERSION = 1
 
@@ -56,14 +60,17 @@ SCHEMA_VERSION = 1
 # ordering can name it without colliding with a configured id.
 PROJECT_ID = "project"
 
+# Reserved for the bundle discovered at USER_DIR_NAME beside these files.
+USER_ID = "user"
+
 MAX_CONFIG_BYTES = 256 * 1024
 MAX_BUNDLES = 256
 
 _ID_PATTERN = re.compile(r"^[a-z][a-z0-9-]{0,62}$")
 _ENV_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
 
-_TOP_LEVEL_KEYS = frozenset({"version", "project_roots", "bundles"})
-_BUNDLE_KEYS = frozenset({"id", "name", "description", "path", "activate"})
+_TOP_LEVEL_KEYS = frozenset({"version", "scopes"})
+_SCOPE_KEYS = frozenset({"id", "activate"})
 
 
 class ConfigError(Exception):
@@ -87,16 +94,29 @@ class Bundle:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Configuration:
-    """The composed configuration: bundles in source order, plus project roots.
+class Scope:
+    """Where one discovered bundle applies, when the default is not wanted.
 
-    `project_roots` gates project auto-discovery. An empty list disables it
-    entirely -- entering an unrelated checkout must not expose whatever
-    `agents-knowledge/` it happens to contain.
+    The default is everywhere. A rule exists to narrow that, which is why
+    `roots` empty and `always` true mean the same thing the default does.
     """
 
-    bundles: list
-    project_roots: list
+    always: bool
+    roots: list
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Configuration:
+    """Everything the config file says, by section.
+
+    Bundles are not declared here -- a directory beside this file is a bundle,
+    and a repository's `agents-knowledge/` is its own -- so a machine with no
+    config file at all still has working knowledge. `scopes` only narrows: it
+    says where an already-discovered bundle applies. Sections are added here as
+    the file grows; a version bump is what a breaking change costs.
+    """
+
+    scopes: dict
 
 
 def _read(path):
@@ -149,11 +169,11 @@ def _expand(value, config_dir, where):
     return path if path.is_absolute() else config_dir / path
 
 
-def _bundle(entry, config_dir, where):
-    """Validate one bundle mapping and expand its paths."""
+def _scope(entry, config_dir, where):
+    """Validate one scope rule, returning its bundle id and where it applies."""
     if not isinstance(entry, dict):
-        raise ConfigError(f"{where}: each bundle must be a mapping")
-    unknown = set(entry) - _BUNDLE_KEYS
+        raise ConfigError(f"{where}: each scope must be a mapping")
+    unknown = set(entry) - _SCOPE_KEYS
     if unknown:
         raise ConfigError(f"{where}: unknown key {sorted(unknown)[0]!r}")
 
@@ -161,7 +181,7 @@ def _bundle(entry, config_dir, where):
     if not isinstance(bundle_id, str) or not _ID_PATTERN.match(bundle_id):
         raise ConfigError(f"{where}: bundle id must match {_ID_PATTERN.pattern}")
     if bundle_id == PROJECT_ID:
-        raise ConfigError(f"{where}: bundle id {PROJECT_ID!r} is reserved")
+        raise ConfigError(f"{where}: bundle id {bundle_id!r} is reserved")
 
     activate = entry.get("activate")
     if not isinstance(activate, dict):
@@ -181,11 +201,7 @@ def _bundle(entry, config_dir, where):
     if bool(always) == bool(raw_roots):
         raise ConfigError(f"{where}: {bundle_id} needs exactly one of always, roots")
 
-    return Bundle(
-        id=bundle_id,
-        name=entry.get("name") or bundle_id,
-        description=entry.get("description") or "",
-        path=_expand(entry.get("path"), config_dir, f"{where}: {bundle_id} path"),
+    return bundle_id, Scope(
         always=bool(always),
         roots=[
             _expand(root, config_dir, f"{where}: {bundle_id} root")
@@ -202,44 +218,41 @@ class _Accumulator:
     require editing an unpack line at every call site to match.
     """
 
-    bundles: list = dataclasses.field(default_factory=list)
-    roots: list = dataclasses.field(default_factory=list)
-    seen_ids: set = dataclasses.field(default_factory=set)
-    seen_roots: set = dataclasses.field(default_factory=set)
+    scopes: dict = dataclasses.field(default_factory=dict)
 
 
 def _merge(data, path, config_dir, acc):
     """Fold one parsed file into the accumulating configuration."""
     unknown = set(data) - _TOP_LEVEL_KEYS
     if unknown:
-        raise ConfigError(f"{path}: unknown key {sorted(unknown)[0]!r}")
+        key = sorted(unknown)[0]
+        if key == "project_roots":
+            # Named rather than reported as merely unknown: a file carrying it
+            # was written against the allowlist that used to gate project
+            # discovery, and silence would look like the setting still applied.
+            raise ConfigError(
+                f"{path}: project_roots is no longer configured -- a project's "
+                "agents-knowledge/ is discovered wherever the repository "
+                "commits one, so remove the key"
+            )
+        raise ConfigError(f"{path}: unknown key {key!r}")
     if data and data.get("version") != SCHEMA_VERSION:
         raise ConfigError(f"{path}: version must be {SCHEMA_VERSION}")
 
-    raw_project_roots = data.get("project_roots") or []
-    # Type-checked because iterating a bare string yields its characters, and
-    # "~" expands to $HOME: `project_roots: ~/projects` without the list dash
-    # would silently allowlist the whole home directory and /.
-    if not isinstance(raw_project_roots, list):
-        raise ConfigError(f"{path}: project_roots must be a list")
+    raw_scopes = data.get("scopes") or []
+    if not isinstance(raw_scopes, list):
+        raise ConfigError(f"{path}: scopes must be a list")
 
-    for root in raw_project_roots:
-        expanded = _expand(root, config_dir, f"{path}: project_roots")
-        # Equivalent roots collapse to the first declaration, so a local file
-        # repeating a public root does not change matching or ordering.
-        key = os.path.normcase(str(expanded))
-        if key not in acc.seen_roots:
-            acc.seen_roots.add(key)
-            acc.roots.append(expanded)
-
-    for entry in data.get("bundles") or []:
-        bundle = _bundle(entry, config_dir, str(path))
-        if bundle.id in acc.seen_ids:
-            raise ConfigError(f"{path}: duplicate bundle id {bundle.id!r}")
-        acc.seen_ids.add(bundle.id)
-        acc.bundles.append(bundle)
-        if len(acc.bundles) > MAX_BUNDLES:
-            raise ConfigError(f"{path}: more than {MAX_BUNDLES} bundles declared")
+    for entry in raw_scopes:
+        bundle_id, scope = _scope(entry, config_dir, str(path))
+        # A duplicate is fatal rather than last-wins: two rules for one bundle
+        # leave its scope ambiguous, and a private file must not be able to
+        # widen what a public one narrowed.
+        if bundle_id in acc.scopes:
+            raise ConfigError(f"{path}: duplicate scope for bundle {bundle_id!r}")
+        acc.scopes[bundle_id] = scope
+        if len(acc.scopes) > MAX_BUNDLES:
+            raise ConfigError(f"{path}: more than {MAX_BUNDLES} scopes declared")
 
 
 def load(config_dir):
@@ -255,4 +268,4 @@ def load(config_dir):
         data = _read(path)
         if data is not None:
             _merge(data, path, config_dir, acc)
-    return Configuration(bundles=acc.bundles, project_roots=acc.roots)
+    return Configuration(scopes=acc.scopes)

@@ -54,7 +54,15 @@ def session_start(stdin=None, stdout=None, config_dir=None):
     except (json.JSONDecodeError, UnicodeDecodeError):
         event = {}
 
-    cwd = pathlib.Path(event.get("cwd") or pathlib.Path.cwd())
+    # No usable cwd means no catalog. Falling back to the process directory
+    # would resolve against whatever Claude happened to launch the hook from,
+    # which is the reason the input carries cwd in the first place.
+    if not isinstance(event, dict) or not event.get("cwd"):
+        json.dump(_payload(None), stdout)
+        stdout.write("\n")
+        return 0
+
+    cwd = pathlib.Path(event["cwd"])
     config_dir = config_dir or cli.resolve_config_dir(None)
 
     try:

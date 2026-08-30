@@ -464,8 +464,8 @@ def test_unstow_still_raises_off_windows(task_env, monkeypatch):
 
 
 def test_pre_create_keeps_the_knowledge_config_directory_real(home):
-    """~/.config/ai-knowledge holds bundles.yaml from this repo and, on a work
-    machine, bundles_local.yaml from dotfiles_local. Folding would put that
+    """~/.config/ai-knowledge holds config.yaml from this repo and, on a work
+    machine, config_local.yaml from dotfiles_local. Folding would put that
     private file -- work bundle names and paths -- in this public repo."""
     stow.StowPlan().pre_create()
 
@@ -483,16 +483,16 @@ def test_pre_create_keeps_the_opencode_plugin_directory_real(home):
 
 
 def test_the_knowledge_config_survives_stowing_in_either_order(tmp_path):
-    """The public repo ships bundles.yaml and a dotfiles_local repo adds
-    bundles_local.yaml beside it. Whichever stows first, neither may end up
+    """The public repo ships config.yaml and a dotfiles_local repo adds
+    config_local.yaml beside it. Whichever stows first, neither may end up
     owning the directory -- that would put the private file in the public repo."""
     home = tmp_path / "home"
     public = tmp_path / "public" / "agents" / ".config" / "ai-knowledge"
     private = tmp_path / "private" / "agents" / ".config" / "ai-knowledge"
     public.mkdir(parents=True)
     private.mkdir(parents=True)
-    (public / "bundles.yaml").write_text("version: 1\n")
-    (private / "bundles_local.yaml").write_text("version: 1\n")
+    (public / "config.yaml").write_text("version: 1\n")
+    (private / "config_local.yaml").write_text("version: 1\n")
 
     for first, second in ((public, private), (private, public)):
         shutil.rmtree(home, ignore_errors=True)
@@ -506,8 +506,8 @@ def test_the_knowledge_config_survives_stowing_in_either_order(tmp_path):
 
         target = home / ".config" / "ai-knowledge"
         assert target.is_dir() and not target.is_symlink()
-        assert (target / "bundles.yaml").is_symlink()
-        assert (target / "bundles_local.yaml").is_symlink()
+        assert (target / "config.yaml").is_symlink()
+        assert (target / "config_local.yaml").is_symlink()
 
 
 def test_without_the_barrier_the_knowledge_config_folds(tmp_path):
@@ -516,7 +516,7 @@ def test_without_the_barrier_the_knowledge_config_folds(tmp_path):
     home.mkdir()
     public = tmp_path / "public" / "agents" / ".config" / "ai-knowledge"
     public.mkdir(parents=True)
-    (public / "bundles.yaml").write_text("version: 1\n")
+    (public / "config.yaml").write_text("version: 1\n")
 
     # Only ~/.config exists as a real directory, mirroring a machine where
     # something else created it but no knowledge barrier ran.

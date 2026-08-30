@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal configuration for Linux, Windows, and Termux. It does two separable
+Personal configuration for Linux and Windows. It does two separable
 jobs: installing software onto a machine, and placing configuration files into
 the home directory.
 
@@ -10,7 +10,7 @@ the home directory.
 
 **Provision**:
 Installing software and applying system-level settings on a machine. Ansible on
-Linux, Chocolatey on Windows, `pkg` on Termux.
+Linux and Chocolatey on Windows.
 _Avoid_: install, bootstrap, setup
 
 **Stow**:
@@ -104,16 +104,23 @@ exists to avoid.
 _Avoid_: index, table of contents, manifest
 
 **Project bundle**:
-The `agents-knowledge/` bundle committed at a worktree root, discovered rather
-than declared. Branch-local by construction, so a feature worktree does not read
-the primary checkout's knowledge.
+The `agents-knowledge/` bundle committed at a worktree root. Branch-local by
+construction, so a feature worktree does not read the primary checkout's
+knowledge. A repository opts in by committing the index; nothing on the machine
+enables it.
 _Avoid_: repo knowledge, local bundle
 
 **Activation**:
-Deciding which configured bundles apply in a directory, from the `always` and
-`roots` rules in `bundles.yaml`. Nothing is searched for; a bundle applies only
-where its declaration says so.
+Deciding which discovered bundles apply in a directory. Everything found applies
+everywhere unless a `scopes` rule in `config.yaml` narrows it to named roots.
 _Avoid_: selection, matching, enabling
+
+**Discovery**:
+Finding bundles rather than being told about them: a directory beside
+`config.yaml` is one, and `agents-knowledge/` at a worktree root is that
+repository's. Nothing declares a bundle into existence, so a work bundle's name
+and path never have to be written down.
+_Avoid_: registration, declaration, scanning
 
 **Catalog**:
 The rendered block naming the active bundles and quoting their root indexes,

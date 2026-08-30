@@ -5,14 +5,20 @@ Two independent questions, both answered from the current working directory:
 - **Configured bundles** are declared by the user, so they activate on
   filesystem roots. Nothing is scanned for: a bundle applies only where its
   declaration says it does.
-- **The project bundle** is repository-controlled, so it is discovered rather
-  than declared -- and therefore gated by the user's `project_roots` allowlist.
-  Discovery uses the *current worktree* root, so a feature worktree reads its
-  own branch's knowledge instead of whatever the primary checkout holds.
+- **Configured bundles** are the directories sitting beside the configuration
+  file. Each is a bundle, its id is its directory name, and it applies
+  everywhere by default -- putting the directory there is the whole setup. A
+  `scopes` rule in the config file narrows one to named roots; nothing declares
+  a bundle into existence.
+- **The project bundle** is discovered at the *current worktree* root, so a
+  feature worktree reads its own branch's knowledge instead of whatever the
+  primary checkout holds. What gates it is the repository having opted in --
+  committing an index carrying the version marker -- not where the checkout
+  sits on disk.
 
-Ordering runs broad to specific (always-active, then by matching-root depth,
-then the project bundle), which is the order the rendered catalog states as
-precedence.
+Ordering runs broad to specific (the user bundle, then always-active declared
+bundles, then by matching-root depth, then the project bundle), which is the
+order the rendered catalog states as precedence.
 """
 
 import os
@@ -97,22 +103,62 @@ def project_root(cwd):
     return _canonical(cwd)
 
 
-def project_bundle(cwd, project_roots):
+def discovered_bundles(config_dir, scopes):
+    """Every bundle directory beside the config file, in directory-name order.
+
+    Discovery is the whole registration step: a machine that has stowed its
+    dotfiles has working knowledge with no config file at all, and a private
+    repo adds a work bundle by stowing a directory rather than by naming its
+    path in a file. These are the user's own directories, not
+    repository-controlled, so a symlink here is theirs to make and is followed.
+
+    A scope rule for an id that is not present is an error rather than a
+    no-op: the rule exists to keep a bundle out of unrelated sessions, so
+    ignoring a typo in it would leave that bundle active everywhere.
+
+    A directory holding an `index.md` that is not a usable bundle is returned
+    too, so the caller can say so. Dropping it silently would make a broken
+    index look exactly like no bundle at all, which is the failure this
+    integration keeps paying for.
+    """
+    config_dir = pathlib.Path(config_dir).expanduser()
+    found = {}
+    try:
+        entries = sorted(config_dir.iterdir())
+    except OSError:
+        entries = []
+
+    for entry in entries:
+        if not entry.is_dir() or not (entry / okf.INDEX_NAME).is_file():
+            continue
+        scope = scopes.get(entry.name)
+        found[entry.name] = config.Bundle(
+            id=entry.name,
+            name=okf.read_title(okf.read_index(entry)) or entry.name,
+            description="",
+            path=entry,
+            always=scope is None or scope.always,
+            roots=list(scope.roots) if scope is not None else [],
+        )
+
+    unknown = sorted(set(scopes) - set(found))
+    if unknown:
+        raise config.ConfigError(
+            f"scopes name bundle {unknown[0]!r}, which is not a directory in "
+            f"{config_dir}"
+        )
+    return list(found.values())
+
+
+def project_bundle(cwd):
     """The project bundle for `cwd`, or None when there is nothing to use.
 
-    Returns None -- silently, as the normal case -- when no root is allowlisted,
-    when the project is outside every allowlisted root, when the directory holds
-    no bundle, or when the bundle is not usable. A repo-controlled symlink is
+    Returns None -- silently, as the normal case -- when the worktree holds no
+    bundle, or when the bundle is not usable. A repo-controlled symlink is
     refused: `agents-knowledge` and its index must be real entries inside the
     worktree, or a repository could redirect discovery at any readable path.
     """
-    if not project_roots:
-        return None
-
     root = project_root(cwd)
-    if not any(_contains(allowed, root) for allowed in project_roots):
-        return None
-
     bundle_dir = root / PROJECT_DIR_NAME
     index = bundle_dir / okf.INDEX_NAME
     if bundle_dir.is_symlink() or index.is_symlink():

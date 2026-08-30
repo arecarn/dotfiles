@@ -14,39 +14,10 @@ import os
 import subprocess
 import sys
 
+from knowledge_fixtures import bundle as _bundle
+from knowledge_fixtures import config_dir as _config
+
 CLI = "agents/bin/agent-knowledge"
-
-INDEX = """\
----
-okf_version: "0.2"
----
-# Index
-
-* [Ops](ops.md) - operations
-"""
-
-
-def _bundle(root):
-    root.mkdir(parents=True, exist_ok=True)
-    (root / "index.md").write_text(INDEX, encoding="utf-8")
-    return root
-
-
-def _config(tmp_path, bundle_root):
-    config_dir = tmp_path / "config"
-    config_dir.mkdir(exist_ok=True)
-    (config_dir / "bundles.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: personal\n"
-        "    name: Personal knowledge\n"
-        "    description: General references\n"
-        f"    path: {bundle_root}\n"
-        "    activate:\n"
-        "      always: true\n",
-        encoding="utf-8",
-    )
-    return config_dir
 
 
 def _run(repo_root, *args, cwd=None, config_dir=None):
@@ -131,8 +102,7 @@ def test_a_refused_read_exits_nonzero_with_a_stable_error_code(tmp_path):
 
 
 def test_status_reports_declarations_and_paths(tmp_path):
-    root = _bundle(tmp_path / "kb")
-    config_dir = _config(tmp_path, root)
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
 
     done = _run(_repo_root(), "status", cwd=tmp_path, config_dir=config_dir)
 
@@ -142,7 +112,7 @@ def test_status_reports_declarations_and_paths(tmp_path):
         "id": "personal",
         "active": True,
         "reason": "always",
-        "path": str(root),
+        "path": str(config_dir / "personal"),
     }
 
 
@@ -150,7 +120,7 @@ def test_a_broken_configuration_still_exits_zero_with_diagnostics(tmp_path):
     """A hook must not fail the harness because a config file is malformed."""
     config_dir = tmp_path / "config"
     config_dir.mkdir()
-    (config_dir / "bundles.yaml").write_text("version: 7\n", encoding="utf-8")
+    (config_dir / "config.yaml").write_text("version: 7\n", encoding="utf-8")
 
     done = _run(_repo_root(), "resolve", cwd=tmp_path, config_dir=config_dir)
 
@@ -163,9 +133,7 @@ def test_a_broken_configuration_still_exits_zero_with_diagnostics(tmp_path):
 def test_the_config_directory_can_be_passed_as_a_flag(tmp_path):
     config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
 
-    done = _run(
-        _repo_root(), "resolve", "--config-dir", str(config_dir), cwd=tmp_path
-    )
+    done = _run(_repo_root(), "resolve", "--config-dir", str(config_dir), cwd=tmp_path)
 
     assert [b["id"] for b in json.loads(done.stdout)["bundles"]] == ["personal"]
 
@@ -225,11 +193,6 @@ def test_no_project_withholds_the_discovered_bundle(tmp_path):
     project = tmp_path / "projects" / "repo"
     _bundle(project / "agents-knowledge")
     config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
-    (config_dir / "bundles.yaml").write_text(
-        (config_dir / "bundles.yaml").read_text(encoding="utf-8").replace(
-            "bundles:", f"project_roots:\n  - {tmp_path / 'projects'}\nbundles:"),
-        encoding="utf-8",
-    )
 
     with_project = _run(_repo_root(), "resolve", cwd=project, config_dir=config_dir)
     without = _run(

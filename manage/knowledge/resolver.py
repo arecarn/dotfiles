@@ -128,7 +128,7 @@ def _load(config_dir):
     try:
         return config.load(config_dir), []
     except config.ConfigError as error:
-        return config.Configuration(bundles=[], project_roots=[]), [
+        return config.Configuration(scopes={}), [
             Diagnostic(code="config_error", message=str(error))
         ]
 
@@ -136,8 +136,16 @@ def _load(config_dir):
 def _activated(config_dir, cwd, with_project=True):
     """Bundles that apply in `cwd`, broad to specific, plus any diagnostics."""
     loaded, diagnostics = _load(config_dir)
-    bundles = activation.active_bundles(loaded.bundles, cwd)
-    project = activation.project_bundle(cwd, loaded.project_roots) if with_project else None
+    try:
+        discovered = activation.discovered_bundles(config_dir, loaded.scopes)
+    except config.ConfigError as error:
+        # Fail closed, as a broken config file does: a scope rule that cannot be
+        # applied is exactly the case where a bundle would otherwise be shown
+        # somewhere it was meant to be kept out of.
+        return [], diagnostics + [Diagnostic(code="config_error", message=str(error))]
+
+    bundles = activation.active_bundles(discovered, cwd)
+    project = activation.project_bundle(cwd) if with_project else None
     if project is not None:
         bundles.append(project)
     return bundles, diagnostics
@@ -381,10 +389,17 @@ def status(config_dir, cwd):
     private bundles, so adapters must keep it out of model context.
     """
     loaded, diagnostics = _load(config_dir)
-    active_ids = {b.id for b in activation.active_bundles(loaded.bundles, cwd)}
+    try:
+        discovered = activation.discovered_bundles(config_dir, loaded.scopes)
+    except config.ConfigError as error:
+        discovered = []
+        diagnostics = diagnostics + [
+            Diagnostic(code="config_error", message=str(error))
+        ]
+    active_ids = {b.id for b in activation.active_bundles(discovered, cwd)}
 
     bundles = []
-    for bundle in loaded.bundles:
+    for bundle in discovered:
         active = bundle.id in active_ids
         if bundle.always:
             reason = "always"
@@ -399,7 +414,7 @@ def status(config_dir, cwd):
             }
         )
 
-    project = activation.project_bundle(cwd, loaded.project_roots)
+    project = activation.project_bundle(cwd)
     if project is not None:
         bundles.append(
             {
@@ -412,7 +427,6 @@ def status(config_dir, cwd):
 
     return {
         "config_dir": str(config_dir),
-        "project_roots": [str(root) for root in loaded.project_roots],
         "bundles": bundles,
         "diagnostics": [
             {"code": d.code, "bundle_id": d.bundle_id, "message": d.message}

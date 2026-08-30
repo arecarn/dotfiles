@@ -5,7 +5,7 @@ instruction files, so an agent is told what knowledge exists and reads only the
 parts a task needs. This package is the one place that decides which bundles
 apply; every harness adapter calls it rather than re-implementing activation.
 
-- `config` -- compose `bundles.yaml` with a `dotfiles_local` `bundles_local.yaml`.
+- `config` -- compose `config.yaml` with a `dotfiles_local` `config_local.yaml`.
 - `activation` -- which configured bundles apply here, and the project bundle.
 - `okf` -- reading just enough of a bundle to discover and disclose it.
 - `resolver` -- the catalog to disclose, one document read, local status.

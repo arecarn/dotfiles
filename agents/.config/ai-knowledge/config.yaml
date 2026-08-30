@@ -1,0 +1,52 @@
+# Agent knowledge: reference material agents read on demand.
+#
+# Detailed references live in bundles rather than in the generated instruction
+# files, so an agent is shown a catalog of root indexes and opens a document
+# only when a task needs it. Bundles aim at Open Knowledge Format v0.2
+# (conformance is not verified here):
+# https://github.com/GoogleCloudPlatform/open-knowledge-format
+#
+# You do not declare a bundle. A directory beside this file that holds an
+# `index.md` with `okf_version: "0.2"` in its frontmatter *is* a bundle, its id
+# is the directory name, and it applies everywhere:
+#
+#   ~/.config/ai-knowledge/
+#     config.yaml        <- this file
+#     personal/index.md  <- bundle "personal"
+#     work/index.md      <- bundle "work", stowed by a dotfiles_local repo
+#
+# That is what keeps work knowledge out of a public repo: a dotfiles_local
+# stows the directory, and nothing here names it. A repository's own bundle
+# works the same way, as `agents-knowledge/` at its worktree root, so a project
+# opts in by committing an index and needs nothing on this machine.
+#
+# This file is only for the cases the defaults do not cover. It is public;
+# `config_local.yaml` beside it is the private sibling a dotfiles_local repo
+# supplies. The two are merged add-only, and a duplicate is an error rather
+# than an override, so a private file cannot widen what a public one narrowed.
+#
+# `scopes` narrows where a bundle applies. Everything not named here applies
+# everywhere, which is the default and needs no entry:
+#
+#   version: 1                  # must be 1
+#   scopes:
+#     - id: work                # must match a directory beside this file
+#       activate:
+#         roots:                # applies only at or below these directories
+#           - ~/work
+#     - id: personal
+#       activate:
+#         always: true          # the default, stated explicitly
+#
+# `always: true` and `roots:` are exclusive -- a rule declares exactly one.
+# Paths take ~ and ${VAR}; no shell expansion. A relative path resolves against
+# this directory. Naming a bundle that is not there is an error, not a no-op:
+# the rule exists to keep a bundle out of unrelated sessions.
+#
+# Inspect what applies here with `agent-knowledge status`, or pi's /knowledge.
+
+---
+
+version: 1
+
+scopes: []

@@ -4,7 +4,7 @@
 # Agent Context File
 
 ## Project Overview
-This repository manages personal configuration files (dotfiles) across multiple operating systems, including Linux, Windows, and Termux. It provides an automated way to provision system packages and symlink configurations to the user's home directory.
+This repository manages personal configuration files (dotfiles) across Linux and Windows. It provides an automated way to provision system packages and symlink configurations to the user's home directory.
 
 - **Main Technologies:** Python, `uv` (package management), `invoke` (task running), `dploy` (symlink management), and `Ansible` (Linux provisioning).
 - **Core Architecture:**
@@ -18,15 +18,14 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 | Task | Command | Description |
 | :--- | :--- | :--- |
 | **Setup Environment** | `uv sync` | Install Python dependencies. |
-| **Setup TypeScript** | `pnpm install` | Install the TypeScript toolchain (Biome, tsc). Required before `inv lint`. |
 | **Stow Configurations**| `uv run inv stow` | Symlink dotfiles into the home directory using `dploy`. |
 | **Unstow** | `uv run inv unstow` | Remove symlinks created by `stow`. |
-| **Provision System** | `uv run inv provision` | Install system packages (Ansible on Linux, Chocolatey on Windows, pkg on Termux). |
+| **Provision System** | `uv run inv provision` | Install system packages (Ansible on Linux, Chocolatey on Windows). |
 | **Linting** | `uv run inv lint` | Run all linters (ShellCheck, yamllint, Pylint, Ruff, stylua, luacheck, Biome, tsc). |
 | **Clean Repo** | `uv run inv clean` | Interactively clean untracked files using `git clean`. |
 
 ## Development Conventions
-- **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Termux, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
+- **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
 - **Modular Provisioning:** Add a new tool as a task file in `ansible/tasks/`, then add an `ansible.builtin.import_tasks` line for it to the `tasks:` list in `ansible/site.yml`. A task file that nothing imports is never run, and provisioning still succeeds — so the omission is silent. Tag anything desktop-only with `desktop-only`, as `os-baseline.yml` and `wezterm.yml` do.
 - **Symlink Strategy:** `dploy` is used to map stow package directories to the home directory. New stow packages must be added to the `StowPlan` class in `manage/stow.py`.
 - **This repo is public:** config that is private goes in a `dotfiles_local` repo instead — employer-internal hostnames, registries, proxies, project or team names, work email addresses, VPN or corporate tooling, and equally any personal config the user would not publish. A `dotfiles_local` exists per work or personal setup, and can span several machines. Keep what lands here public-safe and portable.
@@ -39,11 +38,11 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
     - **Lua:** `stylua` and `luacheck`.
     - **TypeScript:** `biome` (lint and format) and `tsc --noEmit` (types), both from
       the project's own `pnpm` install rather than a global one.
-- **`inv lint` needs `pnpm install` first:** its TypeScript step runs `pnpm exec`, so a
-  fresh clone cannot lint until the install has completed — and because
-  `.githooks/pre-push` runs `inv lint`, it cannot push either. Termux has no Biome
-  binary at all (the lockfile carries darwin, linux-glibc, linux-musl and win32
-  targets only), so `inv lint` cannot run there.
+- **The TypeScript toolchain installs itself:** `lint_typescript` has a
+  `pnpm_install` pre-task that runs `pnpm install --frozen-lockfile` when
+  `node_modules/` is absent, so a fresh clone can lint and push with no manual
+  setup. CI relies on this too and has no install step of its own — but pnpm
+  only reaches PATH via provisioning, so linting before provisioning finds none.
 - **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
 - **Watch CI after every push:** a green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. Use the `watch-ci` skill, which selects the run by commit SHA and distinguishes a cancelled run from a failed one. CI here takes ~7 min.
 - **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).

@@ -1,12 +1,32 @@
 #!/bin/sh
 
+# core.hooksPath (git/.gitconfig) points every repository at this directory.
+# That setting replaces a repository's own hooks rather than adding to them, so
+# a repo's .githooks/ never runs on its own -- this file is what dispatches to
+# it. Without that call a repo's push gate is silently absent, which is how
+# dotfiles' own lint gate went missing.
+
 exit_code=0
 
-pre_push_check_for_fixup_and_wip_commits.sh
+# Git feeds ref info on stdin, and a reader consumes it, so save it once and
+# give each consumer its own copy.
+stdin_file=$(mktemp)
+cat > "$stdin_file"
+
+pre_push_check_for_fixup_and_wip_commits.sh "$@" < "$stdin_file"
 exit_code=$((exit_code + $?))
 
-pre_push_check_for_valid_branch_name.sh
+pre_push_check_for_valid_branch_name.sh "$@" < "$stdin_file"
 exit_code=$((exit_code + $?))
+
+# Repo-specific gate, if the repo ships one.
+repo_hook="$(git rev-parse --show-toplevel 2>/dev/null)/.githooks/pre-push"
+if [ -x "${repo_hook}" ]; then
+    "${repo_hook}" "$@" < "$stdin_file"
+    exit_code=$((exit_code + $?))
+fi
+
+rm -f "$stdin_file"
 
 if [ "${exit_code}" != 0 ]; then
     echo 'pre-push: pass --no-verify to "git push" to bypass pre-push hooks'

@@ -11,6 +11,8 @@ merged add-only, exactly as plugins.yaml and plugins_local.yaml are.
 # The parser seam is module-private on purpose; a test may reach it.
 # pylint: disable=protected-access
 
+import pathlib
+
 import pytest
 
 from manage.knowledge import config
@@ -253,13 +255,23 @@ def test_a_relative_path_resolves_against_the_visible_config_directory(tmp_path)
 # --- the file this repo ships -------------------------------------------------
 
 
-def test_the_committed_public_config_loads_and_declares_nothing():
-    """The stowed bundles.yaml is a documented empty starting point: a public
-    repo cannot name anyone's bundles, and an example entry would activate on a
-    path that does not exist."""
+def test_the_committed_public_config_declares_no_bundles():
+    """The stowed bundles.yaml names no bundles: a public repo cannot name
+    anyone's, and an example entry would activate on a path that does not
+    exist. project_roots is different -- `~` is true on every machine and
+    discloses nothing, so it ships enabled."""
     loaded = config.load("agents/.config/ai-knowledge")
 
-    assert (loaded.bundles, loaded.project_roots) == ([], [])
+    assert loaded.bundles == []
+
+
+def test_the_committed_public_config_discovers_projects_under_home():
+    """A project bundle is repository-controlled, so activation gates it on
+    this allowlist. Home is the deliberate setting: every checkout lives under
+    it, and a repo opts in by committing agents-knowledge/index.md anyway."""
+    loaded = config.load("agents/.config/ai-knowledge")
+
+    assert loaded.project_roots == [pathlib.Path.home()]
 
 
 def test_a_missing_yaml_library_is_a_config_error_not_a_crash(tmp_path, monkeypatch):

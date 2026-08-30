@@ -29,8 +29,20 @@ def _repo_root():
     return pathlib.Path(__file__).resolve().parent.parent
 
 
-def test_the_launcher_is_in_the_scripts_package():
+def test_the_launcher_is_in_the_agents_package():
     assert (_repo_root() / LAUNCHER).is_file()
+
+
+def test_the_adapter_tests_symlink_the_launcher_from_its_real_location():
+    """adapters.test.ts builds the path from path segments, so a grep for the
+    slash-joined path does not find it. Moving the launcher without updating it
+    leaves a symlink to a file that does not exist, and every adapter test then
+    fails on "no knowledge" rather than on the missing path."""
+    text = (_repo_root() / "tests/adapters.test.ts").read_text(encoding="utf-8")
+    segments = ", ".join(f'"{part}"' for part in LAUNCHER.split("/"))
+    assert f"join(REPO, {segments})" in text, (
+        f"tests/adapters.test.ts does not build the launcher path from {LAUNCHER}"
+    )
 
 
 def test_every_adapter_points_at_the_installed_path():

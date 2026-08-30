@@ -45,7 +45,7 @@ function stubHome() {
 	roots.push(home);
 	mkdirSync(join(home, "bin"), { recursive: true });
 	symlinkSync(
-		join(REPO, "scripts", "bin", "agent-knowledge"),
+		join(REPO, "agents", "bin", "agent-knowledge"),
 		join(home, "bin", "agent-knowledge"),
 	);
 	return home;

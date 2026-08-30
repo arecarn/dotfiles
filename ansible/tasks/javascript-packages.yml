@@ -7,14 +7,14 @@
         cmd: npm install -g --force corepack
       register: corepack_install
       changed_when: "'added' in corepack_install.stdout"
-      become: "{{ not is_termux }}"
+      become: true
 
     - name: Enable Corepack
       ansible.builtin.command:
         cmd: corepack enable
       register: corepack_res
       ignore_errors: true
-      become: "{{ not is_termux }}"
+      become: true
 
     - name: Fallback to npm install pnpm if Corepack fails
       ansible.builtin.command:
@@ -22,7 +22,7 @@
       register: pnpm_install
       changed_when: "'added' in pnpm_install.stdout"
       when: corepack_res.failed
-      become: "{{ not is_termux }}"
+      become: true
 
 - name: Install global pnpm packages
   when: javascript_packages | length > 0

@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import sys
 
-from invoke import task
+from invoke import Exit, task
 
 from manage import agents
 from manage import provision as provision_data
@@ -95,8 +95,8 @@ def lint_shell(ctx):
     """
     Run ShellCheck on shell files
     """
-    # The shell scripts here target Linux and Termux; nothing runs them on
-    # Windows, and the Linux job already lints the same files.
+    # The shell scripts here target Linux; nothing runs them on Windows, and
+    # the Linux job already lints the same files.
     if IS_WINDOWS:
         print("shell scripts are not a Windows target, skipping...")
         return
@@ -139,22 +139,6 @@ def provision_all(ctx, args=""):
             "ansible-playbook site.yml --inventory localhost, "
             + shlex.join(shlex.split(args))
         )
-
-
-@task
-def provision_termux(ctx):
-    """
-    Bootstrap Termux environment for Ansible and Python dependencies
-    """
-    bootstrap = provision_data.termux_bootstrap_system_packages()
-    ctx.run("pkg update -y")
-    ctx.run(f"pkg install -y {' '.join(bootstrap)}")
-
-    # Install selene for linting
-    ctx.run("cargo install selene", warn=True)
-
-    # Sync dependencies via uv (excluding dev dependencies like ruff)
-    ctx.run("uv sync --no-dev")
 
 
 def _setup_gitconfig_local():
@@ -222,11 +206,7 @@ def _provision_windows(ctx, is_ci: bool) -> None:
 
 
 def _provision_linux(ctx, is_ci: bool, args: str) -> None:
-    is_termux = "com.termux" in os.environ.get("PREFIX", "")
-    if is_termux:
-        provision_termux(ctx)
-
-    become_arg = "" if is_termux or is_ci else "--ask-become-pass"
+    become_arg = "" if is_ci else "--ask-become-pass"
     ci_args = "--skip-tags desktop-only" if is_ci else ""
 
     # Paths are relative to ANSIBLE_DIR, which the command runs in; the check is
@@ -236,11 +216,34 @@ def _provision_linux(ctx, is_ci: bool, args: str) -> None:
         ansible_pb = "../.venv/bin/ansible-playbook"
 
     safe_args = shlex.join(shlex.split(args))
+    command = (
+        f"{ansible_pb} site.yml --inventory localhost, "
+        f"{become_arg} {ci_args} {safe_args}"
+    )
     with ctx.cd(ANSIBLE_DIR):
-        ctx.run(
-            f"{ansible_pb} site.yml --inventory localhost, "
-            f"{become_arg} {ci_args} {safe_args}"
-        )
+        if become_arg:
+            _run_inheriting_terminal(command)
+        else:
+            ctx.run(command)
+
+
+def _run_inheriting_terminal(command: str) -> None:
+    """Run `command` in ANSIBLE_DIR with this process's own stdio, and raise on failure.
+
+    Deliberately not ctx.run: --ask-become-pass reads a password, and neither of
+    invoke's modes can carry one safely. Its default gives the child pipes, so
+    Ansible's getpass cannot control echo, reads nothing usable, and sudo's
+    prompt times out. pty=True instead puts the real terminal in cbreak mode,
+    which leaves ECHO enabled while invoke relays keystrokes -- so the typed
+    password appears on screen and stays in scrollback.
+
+    Handing the child the terminal directly lets Ansible's own getpass disable
+    echo, which is the only arrangement where the password is both delivered and
+    hidden.
+    """
+    completed = subprocess.run(shlex.split(command), cwd=ANSIBLE_DIR, check=False)
+    if completed.returncode != 0:
+        raise Exit(f"provisioning failed (exit {completed.returncode})", code=completed.returncode)
 
 
 @task

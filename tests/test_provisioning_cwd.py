@@ -72,3 +72,20 @@ def test_stow_packages_still_resolve_after_provisioning():
     tasks._provision_linux(ctx, is_ci=True, args="")
 
     assert list(pathlib.Path("agents").rglob("*")), "agents/ no longer resolves"
+
+
+def test_the_password_prompt_never_goes_through_invoke(monkeypatch):
+    """The failure this guards: a typed sudo password echoing to the screen.
+
+    Neither invoke mode can carry a password safely -- pipes break getpass, and
+    pty=True leaves ECHO on in cbreak mode. The interactive run must therefore
+    inherit this process's terminal instead of ctx.run.
+    """
+    ctx = _FakeContext()
+    inherited = []
+    monkeypatch.setattr(tasks, "_run_inheriting_terminal", inherited.append)
+
+    tasks._provision_linux(ctx, is_ci=False, args="")
+
+    assert not ctx.commands, "the become prompt must not go through invoke"
+    assert "--ask-become-pass" in inherited[0]

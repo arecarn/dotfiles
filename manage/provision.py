@@ -1,9 +1,9 @@
 """System package lists, read from the one file that defines them.
 
-`ansible/group_vars/all.yml` answers "what gets installed on a machine" for all
-three platforms. Ansible reads it directly on Linux; Windows and Termux have no
-playbook run, so the lists they need are read from the same file here and handed
-to Chocolatey and `pkg` by the task layer.
+`ansible/group_vars/all.yml` answers "what gets installed on a machine" for both
+platforms. Ansible reads it directly on Linux; Windows has no playbook run, so
+the list it needs is read from the same file here and handed to Chocolatey by
+the task layer.
 
 Every accessor returns a fresh list, so a caller extending one cannot reach back
 into the loaded data or into another caller's result.
@@ -37,8 +37,3 @@ def windows_system_packages(*, desktop: bool) -> list[str]:
     if desktop:
         packages += data["windows_desktop_only_system_packages"]
     return packages
-
-
-def termux_bootstrap_system_packages() -> list[str]:
-    """`pkg` packages Termux needs before Ansible and uv can run."""
-    return list(_load()["termux_bootstrap_system_packages"])

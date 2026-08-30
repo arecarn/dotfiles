@@ -1,0 +1,20 @@
+---
+# Ubuntu 25.10+ ships sudo-rs and gives it the higher alternatives priority (50
+# vs 40), so plain `sudo` is the Rust reimplementation. Ansible's become cannot
+# drive it: sudo-rs nests Ansible's `-p` prompt inside its own
+# ("[sudo: [sudo via ansible, key=...] password:] Password:"), so Ansible never
+# recognises the prompt it is waiting for and every become task dies with
+# "Timed out waiting for become success or become password prompt".
+#
+# Chicken-and-egg: provisioning itself needs become, so on a fresh machine this
+# switch has to be made by hand once before `inv provision` can run at all:
+#   sudo update-alternatives --set sudo /usr/bin/sudo.ws
+# The task then pins it, so a later sudo-rs upgrade cannot silently flip it back.
+- name: Select the original sudo over sudo-rs
+  community.general.alternatives:
+    name: sudo
+    path: /usr/bin/sudo.ws
+  when: ansible_facts['os_family'] == 'Debian'
+  # Only Ubuntu 25.10+ has the alternatives group at all; on anything older
+  # /usr/bin/sudo.ws does not exist and there is nothing to switch.
+  failed_when: false

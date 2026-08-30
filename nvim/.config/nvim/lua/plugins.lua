@@ -740,12 +740,8 @@ local plugins = {
         "carlos-algms/agentic.nvim",
 
         opts = function()
-            local provider = "gemini-acp"
-            if vim.fn.executable("claude") == 1 then
-                provider = "claude-agent-acp"
-            end
             return {
-                provider = provider,
+                provider = "claude-agent-acp",
                 spinner_chars = {
                     thinking = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
                 },

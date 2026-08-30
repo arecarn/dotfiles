@@ -59,10 +59,6 @@ jobs:
       - name: Add npm global prefix to PATH (Windows)
         if: runner.os == 'Windows'
         run: npm config get prefix >> $env:GITHUB_PATH
-      - name: Install JS dev dependencies
-        # Must stay after provisioning: that is what installs Node and Corepack,
-        # so pnpm is only on PATH from here on.
-        run: pnpm install --frozen-lockfile
       - name: Add cargo to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - name: Lint

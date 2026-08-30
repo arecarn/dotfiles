@@ -443,6 +443,26 @@ def lint_lua(ctx):
 
 
 @task
+def pnpm_install(ctx):
+    """
+    Install the TypeScript toolchain when it is not already present
+    """
+    # A pre-task of lint_typescript so a fresh clone can lint -- and therefore
+    # push, since .githooks/pre-push runs lint -- without a manual install first.
+    # Not reducible to `pnpm dlx`: tsc type-checks against the pi packages' own
+    # .d.ts files, which have to exist on disk, so node_modules is required
+    # whether or not biome could be fetched on demand.
+    #
+    # This is the only place the install happens, CI included -- the workflow
+    # just calls `invoke lint`. That works there because provisioning is what
+    # puts Node and Corepack's pnpm shim on PATH, and it runs first; a CI job
+    # that linted before provisioning would find no pnpm.
+    if not _find_files("*.ts") or pathlib.Path("node_modules").is_dir():
+        return
+    ctx.run("pnpm install --frozen-lockfile")
+
+
+@task(pnpm_install)
 def lint_typescript(ctx):
     """
     Run Biome and the TypeScript compiler on TypeScript files

@@ -42,6 +42,9 @@
 
 version: 1
 
-project_roots: []
+project_roots:
+  # Quoted: a bare `~` is YAML null, which fails validation with a confusing
+  # "path must be a non-empty string".
+  - "~"
 
 bundles: []

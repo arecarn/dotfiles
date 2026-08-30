@@ -1,7 +1,7 @@
-"""Tests for the system package data shared by all three platforms.
+"""Tests for the system package data shared by both platforms.
 
 The lists live in `ansible/group_vars/all.yml`; Ansible reads them on Linux and
-`manage.provision` reads the same file for Windows and Termux.
+`manage.provision` reads the same file for Windows.
 """
 
 # Test names document each case, and these helpers are private to the module.
@@ -49,12 +49,6 @@ def test_each_call_returns_a_list_the_caller_may_own():
     first.append("not-a-real-package")
 
     assert "not-a-real-package" not in provision.windows_system_packages(desktop=False)
-
-
-def test_the_termux_bootstrap_packages_come_from_the_data_file():
-    assert provision.termux_bootstrap_system_packages() == list(
-        _data()["termux_bootstrap_system_packages"]
-    )
 
 
 def test_no_gui_naming_remains_in_the_package_data():

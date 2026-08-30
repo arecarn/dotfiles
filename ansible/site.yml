@@ -2,11 +2,10 @@
 - name: Configure workstation
   hosts: localhost
   connection: local
-  become: "{{ not is_termux }}"
+  become: true
   gather_facts: false
   vars:
     user_home: "{{ lookup('env', 'HOME') }}"
-    is_termux: "{{ 'com.termux' in lookup('env', 'PREFIX') }}"
   pre_tasks:
     # `always` so a tag-limited run still gathers facts. Without it, selecting
     # any single tag skips this task and every ansible_facts lookup downstream
@@ -19,6 +18,10 @@
 
 
   tasks:
+    # Before anything else that needs become -- see the file for why.
+    - ansible.builtin.import_tasks: tasks/sudo.yml
+      tags:
+        - sudo
     - ansible.builtin.import_tasks: tasks/package-repos.yml
     - ansible.builtin.import_tasks: tasks/system-packages.yml
     # Every task here masks a unit that only runs on a GNOME desktop.
@@ -34,6 +37,9 @@
     - ansible.builtin.import_tasks: tasks/javascript-packages.yml
     - ansible.builtin.import_tasks: tasks/npm-packages.yml
     - ansible.builtin.import_tasks: tasks/rust-packages.yml
+    - ansible.builtin.import_tasks: tasks/lua-linters.yml
+      tags:
+        - lua-linters
     - ansible.builtin.import_tasks: tasks/direnv.yml
     # After javascript-packages.yml, which installs pi: the integration task
     # here writes into pi's extensions directory.

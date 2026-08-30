@@ -1,0 +1,90 @@
+---
+# selene and stylua are Rust programs, but building them from source costs
+# 10-15 minutes per machine (full_moon, selene's Lua parser, dominates it), so
+# install the prebuilt linux-x86_64 binaries instead.
+#
+# Deliberately no source-build fallback: this repo provisions x86_64 Linux and
+# Windows only, and upstream publishes binaries for both.
+#
+# selene publishes one linux asset (x86_64) plus a "selene-light" variant built
+# without the Roblox standard library; the asset pattern below must not match
+# the light build.
+- name: Install prebuilt Lua linters
+  when: ansible_facts['architecture'] == 'x86_64'
+  become: false
+  vars:
+    lua_linters:
+      - name: selene
+        repo: Kampfkarren/selene
+        asset: '^selene-[0-9][^/]*-linux\.zip$'
+      - name: stylua
+        repo: JohnnyMorganz/StyLua
+        asset: '^stylua-linux-x86_64\.zip$'
+  block:
+    # Either location counts as installed. A machine provisioned before this
+    # task existed has cargo-built copies in ~/.cargo/bin, and downloading a
+    # second copy into ~/.local/bin would leave two binaries whose precedence
+    # depends on PATH order.
+    - name: Check which Lua linters are already installed
+      ansible.builtin.stat:
+        path: "{{ item.1 }}/{{ item.0.name }}"
+      register: lua_linter_stat
+      loop: >-
+        {{ lua_linters | product([user_home + '/.local/bin',
+                                  user_home + '/.cargo/bin']) | list }}
+      loop_control:
+        label: "{{ item.0.name }} in {{ item.1 }}"
+
+    # Rebuilt as a plain list so later loops can filter on it without reaching
+    # back into the register's per-item result structure.
+    - name: Select the Lua linters that still need installing
+      ansible.builtin.set_fact:
+        lua_linters_missing: >-
+          {{ lua_linters | rejectattr('name', 'in', lua_linters_found) | list }}
+      vars:
+        lua_linters_found: >-
+          {{ lua_linter_stat.results
+             | selectattr('stat.exists')
+             | map(attribute='item.0.name')
+             | list }}
+
+    # Unauthenticated calls get 60/hour keyed to the source IP, which hosted CI
+    # runners share. GITHUB_TOKEN is set by CI; locally it is usually absent,
+    # which just falls back to anonymous. Same reasoning as
+    # lua-language-server.yml.
+    - name: Get latest Lua linter release info
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/{{ item.repo }}/releases/latest"
+        return_content: true
+        headers: >-
+          {{ {'Authorization': 'Bearer ' + github_token} if github_token else {} }}
+      vars:
+        github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+      register: lua_linter_release
+      until: lua_linter_release is succeeded
+      retries: 3
+      delay: 5
+      loop: "{{ lua_linters_missing }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create ~/.local/bin
+      ansible.builtin.file:
+        path: "{{ user_home }}/.local/bin"
+        state: directory
+        mode: "0755"
+
+    # Extracted straight into ~/.local/bin: each archive holds exactly one
+    # binary, named for the tool.
+    - name: Install prebuilt Lua linter binaries
+      ansible.builtin.unarchive:
+        src: >-
+          {{ (item.json.assets
+              | selectattr('name', 'match', item.item.asset)
+              | first).browser_download_url }}
+        dest: "{{ user_home }}/.local/bin"
+        remote_src: true
+        mode: "0755"
+      loop: "{{ lua_linter_release.results | default([]) }}"
+      loop_control:
+        label: "{{ item.item.name }}"

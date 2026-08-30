@@ -6,7 +6,6 @@
     path: "{{ user_home }}/.local/bin/lua-language-server"
   register: lua_ls_exists
   become: false
-  when: not is_termux
 
 # Unauthenticated calls get 60/hour keyed to the source IP, which hosted CI
 # runners share -- a neighbouring repo can exhaust it and fail this task. A
@@ -25,7 +24,7 @@
   retries: 3
   delay: 5
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists
 
 - name: Download lua-language-server
   ansible.builtin.get_url:
@@ -36,7 +35,7 @@
     dest: /tmp/lua-language-server.tar.gz
     mode: "0644"
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists
 
 - name: Create lua-language-server install directory
   ansible.builtin.file:
@@ -44,7 +43,7 @@
     state: directory
     mode: "0755"
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists
 
 - name: Extract lua-language-server
   ansible.builtin.unarchive:
@@ -52,7 +51,7 @@
     dest: "{{ user_home }}/.local/share/lua-language-server"
     remote_src: true
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists
 
 - name: Create ~/.local/bin
   ansible.builtin.file:
@@ -60,7 +59,7 @@
     state: directory
     mode: "0755"
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists
 
 - name: Symlink lua-language-server into ~/.local/bin
   ansible.builtin.file:
@@ -68,11 +67,11 @@
     dest: "{{ user_home }}/.local/bin/lua-language-server"
     state: link
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists
 
 - name: Clean up lua-language-server archive
   ansible.builtin.file:
     path: /tmp/lua-language-server.tar.gz
     state: absent
   become: false
-  when: not is_termux and not lua_ls_exists.stat.exists
+  when: not lua_ls_exists.stat.exists

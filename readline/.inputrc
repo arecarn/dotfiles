@@ -12,7 +12,7 @@ set blink-matching-paren on
 # Modern terminal features
 set enable-bracketed-paste on
 
-# Unicode/8-bit support (for Emojis/Termux)
+# Unicode/8-bit support (for Emojis)
 set input-meta on
 set output-meta on
 set convert-meta off

@@ -11,7 +11,6 @@
     path: "{{ user_home }}/.local/bin/herdr"
   register: herdr_exists
   become: false
-  when: not is_termux
 
 # The binary reports "herdr X.Y.Z"; an empty string when absent keeps the
 # version comparison below total rather than conditional on two facts.
@@ -22,7 +21,7 @@
   changed_when: false
   failed_when: false
   become: false
-  when: not is_termux and herdr_exists.stat.exists
+  when: herdr_exists.stat.exists
 
 # The manifest keys assets by "<os>-<arch>" using its own arch spelling, which
 # differs from ansible's on arm (aarch64 vs arm64 across distros).
@@ -36,7 +35,6 @@
       {{ (herdr_installed_version.stdout | default('') | regex_search('([0-9]+\.[0-9]+\.[0-9]+)', '\1') | first)
          if (herdr_installed_version.stdout | default('')) else '' }}
   become: false
-  when: not is_termux
 
 # Downloaded to a file and parsed with a filter rather than fetched with
 # `uri: return_content: true`. The manifest embeds release notes for every
@@ -59,7 +57,6 @@
   delay: 5
   become: false
   check_mode: false
-  when: not is_termux
 
 # Plain Jinja rather than json_query, which needs the jmespath library this repo
 # does not install. The intermediate is scoped to this task's vars, so only the
@@ -74,12 +71,11 @@
       sha256: "{{ herdr_manifest_json.sha256[herdr_target] | default('') }}"
   become: false
   check_mode: false
-  when: not is_termux
 
 - name: Fail when the manifest has no build for this platform
   ansible.builtin.fail:
     msg: "herdr publishes no binary for {{ herdr_target }}"
-  when: not is_termux and not herdr_latest.url
+  when: not herdr_latest.url
   become: false
 
 # get_url verifies the digest and skips the download when the destination
@@ -91,7 +87,7 @@
     checksum: "sha256:{{ herdr_latest.sha256 }}"
     mode: "0755"
   become: false
-  when: not is_termux and herdr_current != herdr_latest.version
+  when: herdr_current != herdr_latest.version
 
 # herdr's pi integration is the extension that reports agent lifecycle state to
 # the sidebar. It is herdr-owned and overwritten on reinstall, which is why this
@@ -120,7 +116,6 @@
   changed_when: false
   become: false
   check_mode: false
-  when: not is_termux
 
 - name: Install herdr's pi integration
   ansible.builtin.command:
@@ -133,7 +128,6 @@
   failed_when: false
   changed_when: herdr_integration_install.rc == 0
   when:
-    - not is_termux
     # `default([])` because a --check run skips the status command above, which
     # leaves the registered result a bare skip dict with no stdout_lines.
     - >-
@@ -145,4 +139,3 @@
     path: /tmp/herdr-latest.json
     state: absent
   become: false
-  when: not is_termux

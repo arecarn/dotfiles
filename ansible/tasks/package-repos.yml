@@ -33,13 +33,13 @@
 
 # Debian: Add NodeSource repository for Node.js 22
 - name: Add NodeSource Node.js 22 repository (Debian)
-  when: ansible_facts['os_family'] == "Debian" and not is_termux
+  when: ansible_facts['os_family'] == "Debian"
   ansible.builtin.shell:
     cmd: curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
     creates: /etc/apt/sources.list.d/nodesource.list
 
 - name: Install Node.js 22 from NodeSource (Debian)
-  when: ansible_facts['os_family'] == "Debian" and not is_termux
+  when: ansible_facts['os_family'] == "Debian"
   ansible.builtin.apt:
     name: nodejs
     state: latest

@@ -20,6 +20,7 @@ common_system_packages:
   - shellcheck
   - tmux
   - tree
+  - unzip  # ansible.builtin.unarchive needs it for the .zip release assets
   - wget
   - xclip
   - zoxide
@@ -39,11 +40,6 @@ os_family_system_packages:
     - python3-pip
     - openssh-askpass
     - unrar
-  Android:
-    - build-essential
-    - luarocks
-    - neovim
-    - openssh
 
 # Desktop-only packages, skipped on a headless host. On Linux the skip is the
 # `desktop-only` tag on the play that installs these; the list itself is
@@ -57,7 +53,6 @@ desktop_only_system_packages:
     - wezterm
     - firefox
     - vlc
-  Android: []
 
 # Chocolatey packages for Windows. Read from this file by manage/provision.py
 # rather than by Ansible, which never runs on Windows here -- the file is the
@@ -101,15 +96,6 @@ windows_desktop_only_system_packages:
   - anki
   - wezterm
 
-# `pkg` packages Termux needs before Ansible and uv can run at all. The rest of
-# a Termux machine's packages come from the Android entries above, installed by
-# the playbook once this bootstrap has completed.
-termux_bootstrap_system_packages:
-  - python
-  - rust
-  - build-essential
-  - git
-
 # Nerd Fonts to install (downloaded from GitHub releases)
 nerd_fonts:
   - DejaVuSansMono
@@ -127,7 +113,6 @@ python_packages:
 # store even with enable-pre-post-scripts on — installed via plain npm instead.
 javascript_packages:
   - "@bitwarden/cli"
-  - "@google/gemini-cli"
   - opencode-ai
   - write-good
 

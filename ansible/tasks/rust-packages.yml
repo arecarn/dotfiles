@@ -7,7 +7,6 @@
       - cargo
       - rustc
     state: present
-  when: not is_termux
 
 - name: Set rustup default toolchain to stable
   become: false
@@ -16,39 +15,5 @@
   register: rustup_default
   changed_when: "'unchanged' not in rustup_default.stderr"
   failed_when: false
-  environment:
-    PATH: "{{ lookup('env', 'HOME') }}/.cargo/bin:{{ lookup('env', 'PATH') }}"
-
-- name: Check if selene is already installed
-  become: false
-  ansible.builtin.stat:
-    path: "{{ lookup('env', 'HOME') }}/.cargo/bin/selene"
-  register: selene_exists
-
-- name: Install selene via cargo
-  become: false
-  ansible.builtin.command:
-    cmd: "cargo install selene"
-  when: not selene_exists.stat.exists
-  register: cargo_install
-  changed_when: cargo_install.rc == 0
-  ignore_errors: true
-  environment:
-    PATH: "{{ lookup('env', 'HOME') }}/.cargo/bin:{{ lookup('env', 'PATH') }}"
-
-- name: Check if stylua is already installed
-  become: false
-  ansible.builtin.stat:
-    path: "{{ lookup('env', 'HOME') }}/.cargo/bin/stylua"
-  register: stylua_exists
-
-- name: Install stylua via cargo
-  become: false
-  ansible.builtin.command:
-    cmd: "cargo install stylua"
-  when: not stylua_exists.stat.exists
-  register: stylua_install
-  changed_when: stylua_install.rc == 0
-  ignore_errors: true
   environment:
     PATH: "{{ lookup('env', 'HOME') }}/.cargo/bin:{{ lookup('env', 'PATH') }}"

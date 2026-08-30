@@ -1,38 +1,23 @@
 #!/bin/sh
 
-# Repo-local pre-push hook for dotfiles.
-# Runs global hooks (on PATH via stow) then repo-specific lint.
+# Repo-local pre-push gate for dotfiles: lint only.
 #
-# Git feeds ref info on stdin to pre-push hooks. Scripts that read stdin
-# need it saved to a temp file so multiple scripts can consume it.
+# Invoked by ~/.config/git/hooks/pre-push, which core.hooksPath makes the only
+# hook git itself runs. The global checks (fixup/WIP, branch name) run there, so
+# this file must not repeat them -- it would run each twice.
+#
+# Lint only, not provision: provision is too slow to gate every push and is a
+# near no-op on an already-provisioned machine, so provision and stow breakage
+# only shows up in CI. Watch the run after pushing.
 
 exit_code=0
-stdin_file=$(mktemp)
-cat > "$stdin_file"
 
-# --- global hooks (same as ~/.config/git/hooks/pre-push) ---
-pre_push_check_for_fixup_and_wip_commits.sh < "$stdin_file"
-exit_code=$((exit_code + $?))
-
-pre_push_check_for_valid_branch_name.sh < "$stdin_file"
-exit_code=$((exit_code + $?))
-
-rm -f "$stdin_file"
-
-# --- repo-specific: lint ---
-# Lint only — provision is too slow to gate every push, and it is a near no-op
-# on an already-provisioned machine anyway, so provision/stow breakage only
-# shows up in CI. Watch the run after pushing.
 echo "pre-push: running linters..."
 if ! uv run invoke lint; then
     echo "pre-push: lint failed — fix issues before pushing"
-    exit_code=$((exit_code + 1))
+    exit_code=1
 else
     echo "pre-push: lint passed"
-fi
-
-if [ "${exit_code}" != 0 ]; then
-    echo 'pre-push: pass --no-verify to "git push" to bypass pre-push hooks'
 fi
 
 exit ${exit_code}

@@ -14,7 +14,7 @@ import os
 import subprocess
 import sys
 
-CLI = "scripts/bin/agent-knowledge"
+CLI = "agents/bin/agent-knowledge"
 
 INDEX = """\
 ---
@@ -178,7 +178,7 @@ def test_an_unknown_operation_fails_without_printing_json(tmp_path):
 
 
 def test_the_stowed_launcher_only_delegates():
-    """`scripts/bin/agent-knowledge` is extensionless, so it matches neither the
+    """`agents/bin/agent-knowledge` is extensionless, so it matches neither the
     *.py nor the *.sh lint glob. Keep it trivial: behaviour belongs in
     manage/knowledge/cli.py, which is linted and tested."""
     launcher = (_repo_root() / CLI).read_text(encoding="utf-8")

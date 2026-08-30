@@ -14,9 +14,9 @@ import re
 import subprocess
 import sys
 
-LAUNCHER = "scripts/bin/agent-knowledge"
+LAUNCHER = "agents/bin/agent-knowledge"
 
-# scripts/bin/<file> stows to ~/bin/<file>; see manage.stow._STOW_PACKAGES.
+# agents/bin/<file> stows to ~/bin/<file>; see manage.stow._STOW_PACKAGES.
 INSTALLED = "~/bin/agent-knowledge"
 
 ADAPTERS = (

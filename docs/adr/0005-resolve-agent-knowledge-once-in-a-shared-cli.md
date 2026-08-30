@@ -57,7 +57,7 @@ usable answer (including "no bundles" and "your config is broken"), 1 for a
 refused read, 2 for a bad invocation. A malformed config file must never fail the
 session that asked, so it exits 0 with a diagnostic.
 
-**Adapters hardcode the install path.** `scripts/bin/agent-knowledge` stows to
+**Adapters hardcode the install path.** `agents/bin/agent-knowledge` stows to
 `~/bin`, and each adapter invokes it there by absolute path because a hook has no
 shell. Getting that path wrong fails silently -- an absent CLI is indistinguishable
 from no knowledge configured -- so `tests/test_knowledge_launcher.py` asserts the

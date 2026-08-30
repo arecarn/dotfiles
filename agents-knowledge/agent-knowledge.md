@@ -8,9 +8,9 @@ description: Where the resolver, CLI, and three adapters live in this repo
 | Piece | Path |
 |-------|------|
 | Resolver | `manage/knowledge/` |
-| CLI | `scripts/bin/agent-knowledge` |
+| CLI | `agents/bin/agent-knowledge` |
 | pi | `pi/.pi/agent/extensions/agent-knowledge/` |
-| Claude Code | `scripts/bin/agent-knowledge-session-start`, registered in settings |
+| Claude Code | `agents/bin/agent-knowledge-session-start`, registered in settings |
 | OpenCode | `opencode/.config/opencode/plugins/agent-knowledge.ts` |
 
 # Rules that are easy to break

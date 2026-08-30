@@ -10,7 +10,7 @@ containing `.sh`, and this is Python. See
 docs/gotchas/claude-code-prepends-bash-to-any-hook-command-containing-sh.md.
 
 Deliberately only a path fix plus a call, for the same reason as
-scripts/bin/agent-knowledge: the behaviour belongs in manage/knowledge/hooks.py,
+agents/bin/agent-knowledge: the behaviour belongs in manage/knowledge/hooks.py,
 which `inv lint` and the tests cover.
 
 The repo root is searched for rather than counted to, because this file runs

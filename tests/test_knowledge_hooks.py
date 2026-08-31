@@ -1,7 +1,8 @@
-"""Tests for the Claude Code SessionStart hook.
+"""Tests for the Claude Code SessionStart and SubagentStart hook.
 
 The hook's contract is narrow but easy to get wrong: put the catalog in Claude's
-additionalContext field, keep bundle paths out of it, and never fail the session.
+additionalContext field, echo back the event that fired, keep bundle paths out
+of it, and never fail the session.
 """
 
 # Test names document each case, and the helpers are private to the module.
@@ -32,6 +33,37 @@ def test_the_catalog_is_returned_as_claude_additional_context(tmp_path):
     assert code == 0
     assert payload["hookSpecificOutput"]["hookEventName"] == "SessionStart"
     assert "operations" in payload["hookSpecificOutput"]["additionalContext"]
+
+
+def test_a_subagent_gets_the_catalog_under_its_own_event_name(tmp_path):
+    """A subagent gets a fresh context window and fires no SessionStart, so
+    without this it sees no catalog. Claude matches the reply against the event
+    it fired, so the name must be echoed back rather than hardcoded."""
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
+
+    code, payload = _run(
+        config_dir,
+        {
+            "cwd": str(tmp_path),
+            "hook_event_name": "SubagentStart",
+            "agent_type": "Explore",
+        },
+    )
+
+    assert code == 0
+    assert payload["hookSpecificOutput"]["hookEventName"] == "SubagentStart"
+    assert "operations" in payload["hookSpecificOutput"]["additionalContext"]
+
+
+def test_an_unrecognised_event_name_falls_back_to_session_start(tmp_path):
+    """The event name is echoed from input, so it is not trusted verbatim."""
+    config_dir = _config(tmp_path, _bundle(tmp_path / "kb"))
+
+    _, payload = _run(
+        config_dir, {"cwd": str(tmp_path), "hook_event_name": "Nonsense"}
+    )
+
+    assert payload["hookSpecificOutput"]["hookEventName"] == "SessionStart"
 
 
 def test_no_active_bundles_produces_no_context(tmp_path):

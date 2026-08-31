@@ -93,13 +93,43 @@ def _status(config_dir, cwd):
     return 0, payload
 
 
+def _check(config_dir, cwd, path):
+    """Structural problems in the bundles that apply here, or in one directory.
+
+    Local-only, like `status`: problems name bundle paths, so an adapter must
+    keep this out of model context. Exits non-zero when anything is wrong, so a
+    `dotfiles_local` checkout can run it from its own CI without parsing JSON.
+    """
+    from manage.knowledge import bundles  # pylint: disable=import-outside-toplevel
+
+    if path:
+        roots = [pathlib.Path(path)]
+    else:
+        payload = resolver.status(config_dir=config_dir, cwd=cwd)
+        roots = [
+            pathlib.Path(bundle["path"])
+            for bundle in payload["bundles"]
+            if bundle["active"]
+        ]
+
+    problems = bundles.check_roots(roots)
+    return (1 if problems else 0), {
+        "operation": "check",
+        "checked": [str(root) for root in roots],
+        "problems": problems,
+    }
+
+
 def main(argv=None):
     """Run one operation and print its JSON payload."""
     parser = argparse.ArgumentParser(prog="agent-knowledge", description=__doc__)
     parser.add_argument(
         "operation",
-        choices=("resolve", "read", "status"),
-        help="resolve the catalog, read one document, or report local status",
+        choices=("resolve", "read", "status", "check"),
+        help=(
+            "resolve the catalog, read one document, report local status, or "
+            "check bundle structure"
+        ),
     )
     parser.add_argument("--config-dir", help="override the config directory")
     parser.add_argument(
@@ -109,6 +139,9 @@ def main(argv=None):
     )
     parser.add_argument("--cwd", help="directory to resolve for (default: current)")
     parser.add_argument("--bundle", help="bundle id (read)")
+    parser.add_argument(
+        "--path", help="bundle directory to check instead of the active ones (check)"
+    )
     parser.add_argument("--target", help="link target to read (read)")
     parser.add_argument(
         "--source",
@@ -126,6 +159,8 @@ def main(argv=None):
         code, payload = _read(directory, cwd, args)
     elif args.operation == "status":
         code, payload = _status(directory, cwd)
+    elif args.operation == "check":
+        code, payload = _check(directory, cwd, args.path)
     else:
         code, payload = _resolve(directory, cwd, not args.no_project)
 

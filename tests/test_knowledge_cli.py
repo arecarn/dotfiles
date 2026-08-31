@@ -204,3 +204,48 @@ def test_no_project_withholds_the_discovered_bundle(tmp_path):
         "project",
     ]
     assert [b["id"] for b in json.loads(without.stdout)["bundles"]] == ["personal"]
+
+
+def _clean_bundle(root):
+    """The shared fixture's index links a concept it does not write, which is
+    enough to resolve but not to pass a structure check."""
+    _bundle(root)
+    (root / "ops.md").write_text(
+        "---\ntype: Reference\ntitle: Ops\ndescription: operations\n---\n# Ops\n",
+        encoding="utf-8",
+    )
+    return root
+
+
+def test_check_reports_no_problems_for_a_clean_bundle(tmp_path):
+    config_dir = _config(tmp_path, _clean_bundle(tmp_path / "kb"))
+
+    result = _run(_repo_root(), "check", config_dir=config_dir, cwd=tmp_path)
+
+    assert result.returncode == 0
+    assert json.loads(result.stdout)["problems"] == []
+
+
+def test_check_exits_non_zero_so_a_private_repo_can_gate_on_it(tmp_path):
+    """A dotfiles_local checkout has no CI of ours; the exit code is what lets
+    it run this without parsing JSON."""
+    root = tmp_path / "kb"
+    _bundle(root)
+    (root / "ops.md").write_text("no frontmatter, no heading\n", encoding="utf-8")
+
+    result = _run(
+        _repo_root(), "check", "--path", str(root), config_dir=tmp_path / "none"
+    )
+
+    assert result.returncode == 1
+    assert json.loads(result.stdout)["problems"]
+
+
+def test_check_without_a_path_checks_the_bundles_active_here(tmp_path):
+    """Reported as the bundle was discovered -- the config-dir entry, not the
+    directory it links to, so the id in `status` and the path here agree."""
+    config_dir = _config(tmp_path, _clean_bundle(tmp_path / "kb"))
+
+    result = _run(_repo_root(), "check", config_dir=config_dir, cwd=tmp_path)
+
+    assert json.loads(result.stdout)["checked"] == [str(config_dir / "personal")]

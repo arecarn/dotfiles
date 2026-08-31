@@ -1,0 +1,6 @@
+docker	/home/arecarn/dotfiles	personal/docker-makefile.md	Set up a new Python project whose make targets run inside Docker, with the container image kept in sync between local dev and CI. What is the house pattern for this? Describe it; do not create the project.
+provision	/home/arecarn/dotfiles	project/provisioning.md	I want to add the `ripgrep` system package so it gets installed on Linux. Where do I make that change, and what else must I not forget?
+mcp	/home/arecarn/dotfiles	project/mcp.md	I want to add a new MCP server so every AI harness picks it up. Where is it declared, and where must the API token NOT go?
+pi	/home/arecarn/dotfiles	project/pi.md	I want to add a new pi agent package that carries its own config. What do I need to declare, and what is the trap?
+akb	/home/arecarn/dotfiles	project/agent-knowledge.md	How does agent knowledge get resolved and delivered to the different harnesses in this repo, and what are the rules that are easy to break?
+control	/home/arecarn/dotfiles	NONE	What is the capital of Portugal?

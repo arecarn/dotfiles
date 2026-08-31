@@ -55,4 +55,17 @@ fi
 herdr agent prompt "kb-$slug" "$prompt" --wait --timeout 240000 >/dev/null
 herdr agent read "kb-$slug" --source recent-unwrapped --lines 200 \
 	>"$OUT_DIR/$slug.txt" 2>&1
+
+# An agent that starts, answers nothing, and leaves the pane sitting there is
+# indistinguishable from one that consulted no document -- both look like a
+# routing miss until someone opens the raw file. Both have happened: a usage
+# limit reached mid-probe, and a prompt pasted but never submitted. Say so
+# instead, because the probe is inconclusive rather than failed.
+if ! grep -qi "consulted" "$OUT_DIR/$slug.txt"; then
+	echo "INCONCLUSIVE: $slug produced no answer; the pane's last lines were:" >&2
+	grep -viE '^\s*$' "$OUT_DIR/$slug.txt" | tail -5 >&2
+	cat "$OUT_DIR/$slug.txt"
+	exit 3
+fi
+
 cat "$OUT_DIR/$slug.txt"

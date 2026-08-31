@@ -1,8 +1,15 @@
-### Docker + Makefile Pattern
+---
+type: Playbook
+title: Docker and Makefile pattern
+description: The compose/Makefile/CI templates for a project whose make targets run inside a container, including keeping one image pinned in two files and detecting that you are already in a container
+---
+# What this pattern gives you
 
-Projects should use Docker for reproducible environments with these conventions:
+`make format-check` runs inside the container locally, and runs directly inside
+CI's own container without nesting Docker. One image, pinned in two files, with
+a job that fails when they drift.
 
-**Docker image consistency between local dev and CI:**
+# Pinning one image in two files
 
 Hardcode the image in both `docker-compose.yaml` and `.gitlab-ci.yml`, with a CI job to verify they stay in sync:
 
@@ -38,7 +45,7 @@ image-sync-check:  ## Check docker-compose.yaml image matches .gitlab-ci.yml
 	echo "Images are in sync."
 ```
 
-**Container detection and conditional execution:**
+# Detecting that you are already in a container
 ```make
 export UID := $(shell id -u)
 export GID := $(shell id -g)
@@ -64,7 +71,7 @@ else
 endif
 ```
 
-**Wrap make targets with the macro:**
+# Wrapping the targets
 ```make
 format-check:
     $(call run_in_container,uv run ruff format --check .)
@@ -73,12 +80,8 @@ lint-check:
     $(call run_in_container,uv run ruff check .)
 ```
 
-**Provide a shell target for interactive use:**
+# A shell for interactive use
 ```make
 shell:
     $(RUN_DOCKER)
 ```
-
-This pattern allows:
-- `make format-check` locally runs in Docker
-- CI runs `make format-check` inside the CI container (skips nested Docker)

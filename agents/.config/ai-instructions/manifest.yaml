@@ -11,7 +11,6 @@ outputs:
     fragments:
       - build-ci
       - comments
-      - docker-makefile
       - merge-requests
       - output-formatting
       - python
@@ -35,7 +34,6 @@ outputs:
     fragments:
       - build-ci
       - comments
-      - docker-makefile
       - merge-requests
       - output-formatting
       - prose-style

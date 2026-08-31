@@ -2,6 +2,9 @@
 
 - Projects should have a `Makefile` and CI configuration files
 - CI pipelines should only call `make` targets (keeps CI simple and reproducible locally)
+- Projects should use Docker for reproducible environments, with make targets
+  wrapped so they run in the container locally and directly inside CI's own
+  container
 
 ### Standard Make Targets
 

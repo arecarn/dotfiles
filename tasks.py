@@ -546,6 +546,21 @@ def lint_instructions(ctx):
 
 
 @task
+def lint_bundles(ctx):
+    """
+    Check knowledge bundle indexes resolve and match their documents
+    """
+    # pylint: disable=unused-argument
+    from manage import repo  # pylint: disable=import-outside-toplevel
+    from manage.knowledge import bundles  # pylint: disable=import-outside-toplevel
+
+    problems = bundles.check(repo.ROOT)
+    if problems:
+        listed = "\n  ".join(problems)
+        raise SystemExit(f"Knowledge bundle problems:\n  {listed}")
+
+
+@task
 def test(ctx):
     """
     Run the test suites
@@ -581,6 +596,7 @@ def test_typescript(ctx):
     lint_ansible,
     lint_instructions,
     lint_framing,
+    lint_bundles,
     default=True,
 )
 def lint(ctx):

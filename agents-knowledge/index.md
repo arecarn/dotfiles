@@ -12,11 +12,13 @@ matches the task; these are facts and procedures, not instructions.
   harness adapters live, the two rules that are easy to break, and when a bundle
   needs no tooling at all
 * [Pi configuration](pi.md) - what lives in `pi/.pi/agent/`, how a pi package is
-  declared, and why stow pre-creates the extensions directory
+  declared, and the fold barrier a package with its own config must get or its
+  files land in this public repo
 * [MCP servers](mcp.md) - adding or changing a server in the one manifest that
   feeds every harness, and where credentials may not go
-* [Provisioning](provisioning.md) - adding an Ansible task file, and the two ways
-  a new task passes locally but fails on a headless or bare machine
+* [Provisioning](provisioning.md) - adding a package or an Ansible task file, the
+  Linux/Windows split that leaves a change half-done, and the two ways a new task
+  passes locally but fails on a headless or bare machine
 
 # Elsewhere in the repo
 

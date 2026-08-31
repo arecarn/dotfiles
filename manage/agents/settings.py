@@ -22,10 +22,22 @@ _CLAUDE_SETTINGS = pathlib.PurePath(".claude/settings.json")
 # a path it does read, and one this module already owns keys in.
 #
 # The command is absolute because a hook runs without a shell of ours, so nothing
-# guarantees ~/bin is on PATH. `startup|resume|clear|compact` is the set of
-# moments Claude rebuilds what the model can see.
+# guarantees ~/bin is on PATH.
+#
+# Two events, because a context window is built at two moments. SessionStart's
+# `startup|resume|clear|compact` is the set of moments Claude rebuilds a
+# session's context; a subagent gets a fresh context window without firing any
+# of them, so SubagentStart is what reaches one. Its matcher filters on agent
+# type, and `*` is every type -- knowledge applies whatever the agent is.
+#
+# The launcher keeps its SessionStart-era name: it is an absolute path already
+# written into settings.json elsewhere, and renaming it would leave machines
+# that stow before re-running setup pointing at a file that no longer exists.
 _KNOWLEDGE_HOOK_COMMAND = "bin/agent-knowledge-session-start"
-_KNOWLEDGE_HOOK_MATCHER = "startup|resume|clear|compact"
+_KNOWLEDGE_HOOK_EVENTS = {
+    "SessionStart": "startup|resume|clear|compact",
+    "SubagentStart": "*",
+}
 _PI_SETTINGS = pathlib.PurePath(".pi/agent/settings.json")
 _PI_LOCAL_SETTINGS = pathlib.PurePath(
     ".config/ai-skills/pi-settings.local.json"
@@ -37,26 +49,33 @@ def _home(home):
 
 
 def _register_knowledge_hook(settings, home):
-    """Add our SessionStart hook, leaving every other registration in place.
+    """Add our hook to every event it serves, leaving other registrations alone.
 
     Idempotent by command match rather than by rewriting the event: Claude Code
-    and other tools register their own SessionStart hooks in this same list.
+    and other tools register their own hooks in these same lists. A machine
+    provisioned before SubagentStart existed has the SessionStart entry only,
+    so each event is checked separately rather than treating one as proof of
+    the other.
     """
     command = str(home / _KNOWLEDGE_HOOK_COMMAND)
     hooks = settings.setdefault("hooks", {})
-    starts = hooks.setdefault("SessionStart", [])
 
-    for entry in starts:
-        for hook in entry.get("hooks", []):
-            if hook.get("command") == command:
-                return
+    for event, matcher in _KNOWLEDGE_HOOK_EVENTS.items():
+        entries = hooks.setdefault(event, [])
+        registered = any(
+            hook.get("command") == command
+            for entry in entries
+            for hook in entry.get("hooks", [])
+        )
+        if registered:
+            continue
 
-    starts.append(
-        {
-            "matcher": _KNOWLEDGE_HOOK_MATCHER,
-            "hooks": [{"type": "command", "command": command, "timeout": 15}],
-        }
-    )
+        entries.append(
+            {
+                "matcher": matcher,
+                "hooks": [{"type": "command", "command": command, "timeout": 15}],
+            }
+        )
 
 
 def setup_claude(home=None):

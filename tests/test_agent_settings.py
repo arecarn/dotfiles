@@ -189,11 +189,16 @@ def test_an_existing_permissions_block_keeps_its_other_keys(tmp_path):
     assert permissions["defaultMode"] == "bypassPermissions"
 
 
-# --- the agent-knowledge SessionStart hook --------------------------------------
+# --- the agent-knowledge hook -----------------------------------------------------
 
 
 def _claude_hooks(home):
     return json.loads(_claude_settings(home).read_text()).get("hooks", {})
+
+
+def _hook_commands(home, event):
+    entries = _claude_hooks(home).get(event, [])
+    return [h["command"] for entry in entries for h in entry["hooks"]]
 
 
 def test_the_knowledge_hook_is_registered_for_claude(tmp_path):
@@ -230,6 +235,55 @@ def test_registering_the_hook_twice_does_not_duplicate_it(tmp_path):
     settings.setup_claude(tmp_path)
     settings.setup_claude(tmp_path)
 
-    starts = _claude_hooks(tmp_path)["SessionStart"]
-    commands = [h["command"] for entry in starts for h in entry["hooks"]]
-    assert len([c for c in commands if "agent-knowledge" in c]) == 1
+    for event in ("SessionStart", "SubagentStart"):
+        commands = _hook_commands(tmp_path, event)
+        assert len([c for c in commands if "agent-knowledge" in c]) == 1
+
+
+def test_the_knowledge_hook_is_registered_for_subagents(tmp_path):
+    """A subagent gets its own context window and fires no SessionStart, so
+    registering only that event leaves every subagent without a catalog."""
+    settings.setup_claude(tmp_path)
+
+    commands = _hook_commands(tmp_path, "SubagentStart")
+    assert any("agent-knowledge" in command for command in commands)
+
+
+def test_the_subagent_hook_matches_every_agent_type(tmp_path):
+    """SubagentStart's matcher filters on agent type, and knowledge applies
+    whatever the agent is."""
+    settings.setup_claude(tmp_path)
+
+    entries = _claude_hooks(tmp_path)["SubagentStart"]
+    ours = [
+        entry
+        for entry in entries
+        if any("agent-knowledge" in h["command"] for h in entry["hooks"])
+    ]
+    assert [entry["matcher"] for entry in ours] == ["*"]
+
+
+def test_a_machine_registered_before_subagents_gains_the_new_event(tmp_path):
+    """The SessionStart entry is already present on such a machine; it is not
+    evidence that SubagentStart is."""
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    command = str(tmp_path / "bin/agent-knowledge-session-start")
+    _claude_settings(tmp_path).write_text(
+        json.dumps(
+            {
+                "hooks": {
+                    "SessionStart": [
+                        {
+                            "matcher": "startup|resume|clear|compact",
+                            "hooks": [{"type": "command", "command": command}],
+                        }
+                    ]
+                }
+            }
+        )
+    )
+
+    settings.setup_claude(tmp_path)
+
+    assert _hook_commands(tmp_path, "SubagentStart") == [command]
+    assert _hook_commands(tmp_path, "SessionStart") == [command]

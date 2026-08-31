@@ -17,8 +17,8 @@ matches the task; these are facts and procedures, not instructions.
 * [MCP servers](mcp.md) - adding or changing a server in the one manifest that
   feeds every harness, and where credentials may not go
 * [Provisioning](provisioning.md) - adding a package or an Ansible task file, the
-  Linux/Windows split that leaves a change half-done, and the two ways a new task
-  passes locally but fails on a headless or bare machine
+  Linux/Windows split that leaves a change half-done, the Debian binary that is
+  not named after its package, and why a failed install still reports success
 
 # Elsewhere in the repo
 

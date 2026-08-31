@@ -45,6 +45,10 @@ distinct failures:
 The `control` case expects `NONE`. Without it a bundle that routes everything
 correctly is indistinguishable from one whose agents just open everything.
 
+A third outcome is neither: `probe.sh` exits 3 with `INCONCLUSIVE` when the agent
+started but answered nothing — a usage limit reached mid-probe, or a prompt
+pasted and never submitted. That is not a routing miss; rerun it.
+
 ## cases.tsv
 
 Tab-separated: `slug`, `cwd`, `expected`, `task`. One row per index entry, plus

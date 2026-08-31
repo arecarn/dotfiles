@@ -154,14 +154,21 @@ type: Playbook
 title: Release process
 description: Cutting a release, and what to check before tagging
 ---
-# Steps
+## Steps
 
 ...
 ```
 
+Body headings start at `##`, not `#`. markdownlint counts the frontmatter
+`title:` as the document's h1, so a body `# Heading` is a second one and trips
+MD025 in any repo linting Markdown with default front-matter settings. The root
+index is unaffected — it carries `okf_version` and no `title`.
+
 `type` is the only field OKF requires. `Playbook`, `Reference`, `Concept`, and
 `Metric` are conventional; invent one when none fits, since consumers tolerate
-unknown types. The spec also defines optional provenance and freshness fields —
+unknown types. (A bundle *in this dotfiles repo* is narrower: `inv lint-bundles`
+pins it to the values already in use, so widen `KNOWN_TYPES` in
+`manage/knowledge/bundles.py` before introducing a new one here.) The spec also defines optional provenance and freshness fields —
 `generated`, `verified`, `status`, `stale_after`, `sources` — worth adding to a
 concept whose truth expires, and worth skipping otherwise.
 

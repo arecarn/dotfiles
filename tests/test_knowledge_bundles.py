@@ -185,3 +185,56 @@ def test_a_real_heading_after_a_code_fence_counts(tmp_path):
         "Prose first.\n\n```make\n# makefile\n```\n\n# Widgets\n\nBody.\n",
     )
     assert not bundles.check(_bundle(tmp_path, concept=structured))
+
+
+def test_an_unknown_type_is_reported(tmp_path):
+    """A house convention, not a spec rule: OKF registers no type vocabulary.
+    Nothing reads `type` yet, so a typo in it degrades silently."""
+    typo = CONCEPT.replace("type: Reference", "type: Referance")
+
+    problems = bundles.check(_bundle(tmp_path, concept=typo))
+
+    assert any("is not one of" in p for p in problems)
+
+
+def test_a_nested_index_carrying_frontmatter_is_reported(tmp_path):
+    """OKF puts frontmatter only on the bundle root, so a nested index's block
+    renders as a stray `---` to every reader."""
+    root = _bundle(tmp_path)
+    nested = root / "agents-knowledge" / "sub"
+    nested.mkdir()
+    (nested / "index.md").write_text(
+        '---\nokf_version: "0.2"\n---\n# Sub\n', encoding="utf-8"
+    )
+
+    problems = bundles.check(root)
+
+    assert any("must carry no frontmatter" in p for p in problems)
+
+
+def test_an_entry_pointing_at_a_nested_index_is_not_description_drift(tmp_path):
+    """A nested index has no description field to match, so comparing one
+    reports drift on every bundle that has sub-indexes."""
+    linked = INDEX + "* [Sub](sub/index.md) - more widgets\n"
+    root = _bundle(tmp_path, index=linked)
+    nested = root / "agents-knowledge" / "sub"
+    nested.mkdir()
+    (nested / "index.md").write_text("# Sub\n", encoding="utf-8")
+
+    problems = bundles.check(root)
+
+    assert not [p for p in problems if "description field" in p]
+
+
+def test_check_roots_reaches_a_bundle_outside_this_repo(tmp_path):
+    """A work bundle lives in a dotfiles_local checkout with no CI of its own,
+    which is where a dead link is most expensive."""
+    outside = tmp_path / "work"
+    outside.mkdir()
+    (outside / "index.md").write_text(
+        INDEX.replace("widgets.md", "missing.md"), encoding="utf-8"
+    )
+
+    problems = bundles.check_roots([outside])
+
+    assert any("does not resolve" in p for p in problems)

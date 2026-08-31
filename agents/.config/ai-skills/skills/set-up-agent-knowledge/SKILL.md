@@ -234,6 +234,42 @@ agent that has never seen the repo. Test it as one:
 
 Report what you created, what you moved, and what you deliberately left.
 
+## Updating a bundle that already exists
+
+Most work on a bundle is not creating one. The question is where a new fact
+belongs, and the answer is usually not "a new entry".
+
+| The fact is | It goes in |
+|-------------|------------|
+| A rule that always applies | the instruction file, never a bundle |
+| A trap confirmed the hard way | a gotcha, with its `**Confirmed:**` line |
+| A decision, with alternatives weighed | an ADR |
+| Reference detail a task needs occasionally | an existing entry, if one covers the area |
+| An area no entry covers yet | a new entry |
+
+Prefer growing an entry to adding one. Every entry costs a line in the index
+that every agent reads, so a bundle of many thin entries is worse than a few
+that earn their place -- the index is the part that is never skipped.
+
+When you do edit an entry, **change its `description` and the index line
+together**. They are checked against each other, and a description that drifts
+sends readers to the wrong document or past the right one.
+
+Delete an entry when what it describes is gone. A bundle is not an archive; a
+document nothing links to is unreachable anyway, and the check reports it.
+
+Run the structure check afterwards -- it catches dead links, unreachable
+documents, missing frontmatter, and description drift:
+
+```bash
+agent-knowledge check            # the bundles active here
+agent-knowledge check --path DIR # one bundle, wherever it lives
+```
+
+It checks structure, not truth. Whether a document still describes the system
+correctly needs someone who reads the source, which is why an entry is worth
+re-reading when the thing it documents changes.
+
 ## Optional: what tooling would add
 
 Everything above works with no tooling, because a pointer plus a read is the whole
@@ -245,6 +281,8 @@ mechanism. The `agent-knowledge` CLI and its harness adapters add:
   rather than relying on it to follow the pointer.
 - **Constrained reads** — a bundle outside the workspace stays readable even where
   a harness restricts file access to the project.
+- **A structure check** — `agent-knowledge check` on any bundle, including a
+  private one whose repo has no CI of its own.
 
 Worth mentioning if the user has several bundles that should not all be active at
 once. A single bundle of either scope is complete without any of it.

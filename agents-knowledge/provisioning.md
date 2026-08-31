@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Provisioning
-description: Adding a package or an Ansible task file, the Linux/Windows split that leaves a change half-done, the binary that is not named after its package, and why a failed install does not fail the run
+description: Adding a package or an Ansible task file, the Linux/Windows split that leaves a change half-done, the Debian binary that is not named after its package, and why a failed install still reports success
 ---
 # Adding a package
 

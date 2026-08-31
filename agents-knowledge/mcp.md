@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: MCP servers
-description: Adding or changing an MCP server -- the one manifest that feeds every harness, and where credentials may not go
+description: Adding or changing a server in the one manifest that feeds every harness, and where credentials may not go
 ---
 # One declaration, many harnesses
 

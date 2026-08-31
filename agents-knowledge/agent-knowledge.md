@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: The agent-knowledge integration
-description: Where the resolver, CLI, and three adapters live in this repo, and when a bundle needs none of them
+description: Where the resolver, CLI, and the three harness adapters live, the two rules that are easy to break, and when a bundle needs no tooling at all
 ---
 # Layout
 

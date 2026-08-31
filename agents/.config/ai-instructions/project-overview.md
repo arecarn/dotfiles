@@ -9,6 +9,15 @@ This repository manages personal configuration files (dotfiles) across Linux and
     - **Provisioning:** Ansible task files in `ansible/tasks/` for Linux systems, imported by `ansible/site.yml`.
     - **Task Automation:** `tasks.py` defines the CLI interface for management.
 
+## Agent knowledge
+
+**Read `agents-knowledge/index.md` before searching the repo.** It is an index
+plus topic documents covering pi configuration, MCP servers, provisioning, and
+this repo's own knowledge integration. Open only the entries whose descriptions
+match your task -- one of them usually names the file you were about to go
+looking for. These are facts and procedures; the rules in this file take
+precedence.
+
 ## Building and Running
 The project uses `uv` for environment management. Tasks are executed via `invoke`.
 
@@ -56,13 +65,6 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   worktree root. Reference detail belongs in a bundle; a rule that always applies
   belongs in these fragments. Run `agent-knowledge status` to see what applies
   where.
-
-## Agent knowledge
-
-Reference material for this repository is in `agents-knowledge/`, as an index
-plus topic documents. Read `agents-knowledge/index.md` first and open only the
-entries whose descriptions match your task. These are facts and procedures; the
-rules in this file take precedence.
 
 ## Agent skills
 

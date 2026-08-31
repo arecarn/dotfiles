@@ -1,4 +1,8 @@
-### Docker + Makefile Pattern
+---
+type: Playbook
+title: Docker and Makefile pattern
+description: Templates for a project whose make targets run inside a container -- image pinning across two files, container detection, and the wrapper macro
+---
 
 Projects should use Docker for reproducible environments with these conventions:
 

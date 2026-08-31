@@ -26,7 +26,6 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 
 ## Development Conventions
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
-- **Modular Provisioning:** Add a new tool as a task file in `ansible/tasks/`, then add an `ansible.builtin.import_tasks` line for it to the `tasks:` list in `ansible/site.yml`. A task file that nothing imports is never run, and provisioning still succeeds — so the omission is silent. Tag anything desktop-only with `desktop-only`, as `os-baseline.yml` and `wezterm.yml` do.
 - **Symlink Strategy:** `dploy` is used to map stow package directories to the home directory. New stow packages must be added to the `StowPlan` class in `manage/stow.py`.
 - **This repo is public:** config that is private goes in a `dotfiles_local` repo instead — employer-internal hostnames, registries, proxies, project or team names, work email addresses, VPN or corporate tooling, and equally any personal config the user would not publish. A `dotfiles_local` exists per work or personal setup, and can span several machines. Keep what lands here public-safe and portable.
 - **`uv run` rewrites `uv.lock`** to the machine's configured package index, so an unrelated `uv run inv lint` leaves ~250 changed lines pointing at an internal host. Revert it (`git checkout -- uv.lock`) before every commit and never `git add -A` here — see [docs/gotchas/uv-run-rewrites-uv-lock-to-an-internal-registry.md](docs/gotchas/uv-run-rewrites-uv-lock-to-an-internal-registry.md).
@@ -43,10 +42,7 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   `node_modules/` is absent, so a fresh clone can lint and push with no manual
   setup. CI relies on this too and has no install step of its own — but pnpm
   only reaches PATH via provisioning, so linting before provisioning finds none.
-- **Inventory Management:** Ansible inventory is managed in `ansible/hosts`. Local provisioning uses the `--inventory localhost` flag.
 - **Watch CI after every push, using the `watch-ci` skill.** A green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. The skill is the procedure: it selects the run by commit SHA *and* workflow, tells a cancelled run from a failed one, and survives a dropped connection. Do not improvise a poll loop or follow a recipe written here or anywhere else in this repo instead — a repo-local variant is how those distinctions get lost. CI here takes ~7 min.
-- **Ansible on headless hosts:** gate desktop-only tasks with `failed_when: false` rather than `os_family` — see [docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md](docs/gotchas/desktop-only-ansible-tasks-fail-on-ci.md).
-- **A new install task's first-run path only executes on a bare machine**, so simulate one locally (`HOME=/tmp/fakehome ansible-playbook ...`) rather than paying a CI round per missing prerequisite — see [docs/gotchas/first-run-install-paths-only-execute-on-a-bare-machine.md](docs/gotchas/first-run-install-paths-only-execute-on-a-bare-machine.md).
 - **Private instructions are read, not imported:** the generated instruction files
   point every agent at `~/.config/ai-instructions/local.md`, which a `dotfiles_local`
   repo places there and which never enters this repo. Claude's `@` imports are no
@@ -57,39 +53,19 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   the generated files; `inv lint` fails on drift. Fragments carry no
   harness-specific syntax (no `@` imports, no glob arrays) because pi expands
   none, so every harness gets the same flat content.
-- **Pi config:** `pi/.pi/agent/` holds pi's generated `AGENTS.md` and
-  `extensions/` (TypeScript, linted and type-checked by `inv lint`). Skills
-  arrive via the shared hub fan-out, not the package, and packages are declared
-  with a `pi_package:` key in `plugins.yaml` and written into pi's own
-  `~/.pi/agent/settings.json` by `inv pi-setup`, so the preferences pi writes
-  there stay out of this repo. Pi ships no MCP or subagent support by design;
-  both come from third-party packages. A package that reads its own config file
-  gets it here too, as `extensions/<package>/config.json`; that directory is also
-  where the package installer clones and writes, so `stow` pre-creates it to keep
-  dploy from folding it into a symlink.
-- **MCP servers are declared once,** in `plugins.yaml` (plus a `dotfiles_local`
-  repo's `plugins_local.yaml`), and `inv install-mcp` writes them into each
-  harness's own config file: `~/.claude.json` is amended, `~/.agents/mcp.json` is
-  generated whole for pi. Add or change a server in the manifest, never in those
-  files. Credentials belong in the manifest only as `${ENV_VAR}` references. See
-  [docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md](docs/adr/0004-declare-mcp-servers-once-in-the-plugin-manifest.md).
-- **Agent knowledge is reference material, not instructions.** Bundles of Markdown aiming at OKF
-  v0.2 are *discovered*, never declared: a directory under
-  `~/.config/ai-knowledge/` is a bundle (a `dotfiles_local` repo stows work ones
-  in, so nothing public names them), and a project opts in by committing
-  `agents-knowledge/index.md` at its worktree root. `config.yaml` beside them is
-  optional and only narrows — a `scopes` rule confines a bundle to named roots;
-  everything else applies everywhere. `manage/knowledge/` decides
-  which apply; pi, Claude Code, and OpenCode adapters all call the same
-  `agent-knowledge` CLI, so no harness has its own activation rules. Only root
-  indexes are shown to a model — concepts are read on request, which is the whole
-  point. Run `agent-knowledge status` to see what applies where. See
-  [docs/adr/0005-resolve-agent-knowledge-once-in-a-shared-cli.md](docs/adr/0005-resolve-agent-knowledge-once-in-a-shared-cli.md).
-  A **project bundle needs none of this tooling** — it is Markdown in the repo, so
-  an `AGENTS.md` pointer is enough for any agent that can read a file. The
-  `set-up-agent-knowledge` skill is what creates one, by adopting existing docs
-  into an index. The CLI only adds bundles from outside the workspace and
-  automatic disclosure at session start.
+- **Agent knowledge is reference material, not instructions.** Bundles are
+  *discovered*, never declared: a directory under `~/.config/ai-knowledge/` is a
+  bundle, and a project opts in by committing `agents-knowledge/index.md` at its
+  worktree root. Reference detail belongs in a bundle; a rule that always applies
+  belongs in these fragments. Run `agent-knowledge status` to see what applies
+  where.
+
+## Agent knowledge
+
+Reference material for this repository is in `agents-knowledge/`, as an index
+plus topic documents. Read `agents-knowledge/index.md` first and open only the
+entries whose descriptions match your task. These are facts and procedures; the
+rules in this file take precedence.
 
 ## Agent skills
 

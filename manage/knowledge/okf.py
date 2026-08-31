@@ -51,6 +51,33 @@ def read_index(bundle_root):
     return text
 
 
+def read_frontmatter(text):
+    """The raw frontmatter block of a bundle document, or None when it has none.
+
+    Returned as text, not parsed: callers here want one scalar field each, and a
+    YAML load would pull a dependency into a module that hooks import under a
+    bare `python3`.
+    """
+    match = _FRONTMATTER.match(text or "")
+    return match.group(1) if match else None
+
+
+def read_field(text, name):
+    """One scalar frontmatter field of a bundle document, or None.
+
+    Quotes are stripped when present. Multi-line YAML values are not supported
+    and read as None, which the bundle check reports as a missing field.
+    """
+    block = read_frontmatter(text)
+    if block is None:
+        return None
+    pattern = re.compile(rf"^{re.escape(name)}:\s*(.+?)\s*$", re.MULTILINE)
+    match = pattern.search(block)
+    if not match:
+        return None
+    return match.group(1).strip().strip("\"'")
+
+
 _TITLE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
 
 

@@ -166,3 +166,22 @@ def test_wrapped_multi_entry_index_parses_each_entry(tmp_path):
     problems = bundles.check(root)
     assert len(problems) == 1
     assert "gadgets.md" in problems[0]
+
+
+def test_headings_inside_code_fences_do_not_count(tmp_path):
+    """A make sample is full of `#` comments; none of them is a heading."""
+    unstructured = CONCEPT.replace(
+        "# Widgets\n\nBody.\n",
+        "Prose with no heading.\n\n```make\n# makefile\n# Detect the container\n```\n",
+    )
+    problems = bundles.check(_bundle(tmp_path, concept=unstructured))
+    assert any("no Markdown heading outside code fences" in p for p in problems)
+
+
+def test_a_real_heading_after_a_code_fence_counts(tmp_path):
+    """Fence tracking must resume, not swallow the rest of the file."""
+    structured = CONCEPT.replace(
+        "# Widgets\n\nBody.\n",
+        "Prose first.\n\n```make\n# makefile\n```\n\n# Widgets\n\nBody.\n",
+    )
+    assert not bundles.check(_bundle(tmp_path, concept=structured))

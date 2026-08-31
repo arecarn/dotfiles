@@ -31,6 +31,26 @@ _ENTRY = re.compile(
 REQUIRED_FIELDS = ("type", "title", "description")
 
 
+def has_heading(text):
+    """Whether a document has a Markdown heading outside its code fences.
+
+    Fence tracking is the whole point: a make or YAML sample is full of lines
+    starting with `#`, so counting them naively says a document is structured
+    when the reader sees an unbroken wall. That is exactly how one concept here
+    lost its headings unnoticed -- a heading line was stripped with the
+    frontmatter it sat beside.
+    """
+    fenced = False
+    for line in (text or "").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            fenced = not fenced
+            continue
+        if not fenced and re.match(r"#{1,6}\s+\S", line):
+            return True
+    return False
+
+
 def _normalize(text):
     """Compare descriptions on wording alone.
 
@@ -118,4 +138,7 @@ def check(repo_root):
             missing = [f for f in REQUIRED_FIELDS if not okf.read_field(content, f)]
             if missing:
                 problems.append(f"{concept}: frontmatter missing {', '.join(missing)}")
+            body = content[len(okf.read_frontmatter(content) or "") :]
+            if not has_heading(body):
+                problems.append(f"{concept}: no Markdown heading outside code fences")
     return problems

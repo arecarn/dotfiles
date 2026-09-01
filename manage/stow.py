@@ -103,6 +103,7 @@ _STOW_PACKAGES = [
     "git",
     "herdr",
     "neovide",
+    "npm",
     "opencode",
     "pi",
     "readline",

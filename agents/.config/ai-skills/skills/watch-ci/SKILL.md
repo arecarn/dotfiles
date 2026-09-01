@@ -80,6 +80,12 @@ candidates. Pass the **file**, not the display `name:` inside it: the file is wh
 loudly on a typo (`HTTP 404: workflow nope.yml not found`), where a wrong display name
 silently matches nothing and the loop waits forever.
 
+**Both recipes need the full 40-character SHA.** `git rev-parse HEAD` gives one; an
+abbreviated SHA copied from `git log` output does not. `gh run list --commit` and the
+GitLab `?sha=` filter both match on the full value only, so a short SHA matches nothing,
+the id loop spins until the watch times out, and a green run looks like a run that never
+started. Keep the `$(git rev-parse HEAD)` substitution rather than pasting a SHA in.
+
 ```bash
 sha=$(git rev-parse HEAD)
 wf=ci.yml
@@ -188,6 +194,9 @@ Skip it for a one-line lint error already visible in the output.
 - **Describing jobs you did not read.** "Both matrix legs passed" is a claim about the
   jobs list; if the run had no matrix, it is invented. Print the legs.
 - **Reporting a cancelled run as a failure.** It means "replaced", not "broken".
+- **Arming the watch on an abbreviated SHA.** The lookup matches on the full 40
+  characters, so a short SHA finds no run and the watch times out having reported
+  nothing — which is not the same as a failure.
 - **Watching a SHA you then rewrote.** Amending or rebasing after arming the watch
   orphans it — the old run keeps going and its result is meaningless. Stop that watch
   and re-arm on the new SHA.

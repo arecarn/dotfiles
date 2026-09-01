@@ -1,0 +1,26 @@
+---
+# The npm prefix is ensured as one key rather than stowed as a file because npm
+# has no include directive: ~/.npmrc is the only place a private registry or
+# auth token can live, so this repo owns one key of it and leaves the rest to
+# whoever else writes there -- a dotfiles_local repo, or a hand edit.
+- name: Ensure the npm prefix is set in ~/.npmrc
+  become: false  # override the play-wide become in site.yml
+  # ini_file rather than lineinfile: it parses the format, so `prefix` is a key
+  # that cannot be duplicated. lineinfile with a regexp rewrites only the last
+  # match, so a file that already had two prefix= lines would keep both, and npm
+  # takes the last one -- leaving the task green while npm read a value it did
+  # not set.
+  community.general.ini_file:
+    path: "{{ user_home }}/.npmrc"
+    # npm's format is ini-like but sectionless: keys sit at the top of the file
+    # with no [header], which is what a null section produces.
+    section: null
+    option: prefix
+    # ${HOME} rather than the expanded path -- npm expands it when reading the
+    # file, so the result stays correct on a machine with a different home.
+    value: "${HOME}/{{ npm_prefix_subpath }}"
+    no_extra_spaces: true  # `prefix=x`, not `prefix = x`
+    create: true
+    # An .npmrc is a conventional home for auth tokens, so a file created here
+    # starts private. Only applies on creation; an existing file keeps its mode.
+    mode: "0600"

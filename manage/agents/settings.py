@@ -11,6 +11,7 @@ private one without it landing in this public repo.
 import json
 import pathlib
 
+from manage import repo
 from manage.agents import plugins
 
 _CLAUDE_SETTINGS = pathlib.PurePath(".claude/settings.json")
@@ -38,6 +39,18 @@ _KNOWLEDGE_HOOK_EVENTS = {
     "SessionStart": "startup|resume|clear|compact",
     "SubagentStart": "*",
 }
+# The status line script, stowed from claude-code/.claude/. Configuring
+# `statusLine` replaces Claude Code's built-in line outright, so the script
+# reproduces the default segments as well as adding the context bar -- see its
+# module docstring.
+#
+# Absolute, and with an explicit interpreter, for the same reason as the hook:
+# Claude Code runs this without a shell of ours, so neither ~ nor a .py file
+# association can be relied on. Windows ships the launcher as `python`; every
+# other platform here has `python3`.
+_STATUS_LINE_SCRIPT = pathlib.PurePath(".claude/statusline.py")
+_STATUS_LINE_INTERPRETER = "python" if repo.IS_WINDOWS else "python3"
+
 _PI_SETTINGS = pathlib.PurePath(".pi/agent/settings.json")
 _PI_LOCAL_SETTINGS = pathlib.PurePath(
     ".config/ai-skills/pi-settings.local.json"
@@ -101,6 +114,12 @@ def setup_claude(home=None):
     settings.setdefault("permissions", {})
     settings["permissions"]["defaultMode"] = "bypassPermissions"
     settings["skipDangerousModePermissionPrompt"] = True
+    script = _home(home) / _STATUS_LINE_SCRIPT
+    settings["statusLine"] = {
+        "type": "command",
+        "command": f"{_STATUS_LINE_INTERPRETER} {script}",
+        "padding": 0,
+    }
     _register_knowledge_hook(settings, _home(home))
 
     existed = path.exists()

@@ -189,6 +189,22 @@ def test_an_existing_permissions_block_keeps_its_other_keys(tmp_path):
     assert permissions["defaultMode"] == "bypassPermissions"
 
 
+def test_the_status_line_points_at_the_stowed_script(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    status_line = json.loads(_claude_settings(tmp_path).read_text())["statusLine"]
+    assert status_line["type"] == "command"
+    assert status_line["command"].endswith(str(tmp_path / ".claude" / "statusline.py"))
+
+
+def test_the_status_line_command_is_absolute(tmp_path):
+    """A hook and a status line both run without a shell of ours to expand ~."""
+    settings.setup_claude(tmp_path)
+
+    command = json.loads(_claude_settings(tmp_path).read_text())["statusLine"]["command"]
+    assert "~" not in command
+
+
 # --- the agent-knowledge hook -----------------------------------------------------
 
 

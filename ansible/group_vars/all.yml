@@ -122,5 +122,12 @@ javascript_packages:
 javascript_packages_no_scripts:
   - "@earendil-works/pi-coding-agent"
 
+# Where global npm packages install, relative to the user's home. Held as a
+# subpath rather than a full path because its two readers need different bases:
+# npm-config.yml writes `${HOME}/...` into ~/.npmrc, which npm itself expands,
+# while npm-packages.yml sets NPM_CONFIG_PREFIX, an environment variable that
+# nothing expands and so needs the resolved path.
+npm_prefix_subpath: ".local"
+
 npm_global_packages:
   - "@anthropic-ai/claude-code"

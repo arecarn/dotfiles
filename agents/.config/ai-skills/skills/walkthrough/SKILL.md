@@ -8,7 +8,9 @@ model: haiku
 
 Walk through a list of items individually. For each item, give the user enough
 background to decide, then let them choose an option, write their own, or open a
-discussion. Record decisions and act on them — usually in a batch at the end.
+discussion. When a decision produces prose or a concrete action, refine its
+direction and full output through separate approval gates. Record approved
+decisions and act on them — usually in a batch at the end.
 
 This is the interactive, item-at-a-time pattern generalized to any list.
 
@@ -88,28 +90,51 @@ After the numbered suggestions include:
 Every item must offer the same three escapes: pick an option, provide custom input,
 or discuss further.
 
-## Step 4 — Handle the response
+## Step 4 — Develop and approve the response
 
-- **Picked an option / gave custom input** → record it as the decision for this
-  item. In apply-as-you-go mode, act now; in collect mode, store and advance.
 - **Discuss more** → go back and forth on *this item only*. Bring new context,
-  answer questions, refine options. When the user signals they've decided, record
-  the decision and advance. Don't move on until the item is resolved or explicitly
-  deferred.
-- **Skip / defer** → record as deferred and advance. Don't lose it — it shows up
-  in the summary.
+  answer questions, and refine options until the user chooses a direction.
+- **Skip / defer / no action** → record the disposition and advance. Don't lose a
+  deferred item — it shows up in the summary.
+- **Picked an option / gave custom input** → determine whether the decision
+  produces authored prose or a concrete action. If it does, complete both gates
+  below. Otherwise record the decision and advance.
 
-After recording, move to the next item. Show progress (`Item 4 of 8`).
+### Gate 1: Approve the direction
+
+Present a concise summary of the proposed outcome, scope, and important choices,
+not the full artifact. Offer **Approve direction**, **Revise direction**, and
+**Discuss more** (through `AskUserQuestion` when available, otherwise as a text
+list). Incorporate feedback and present a revised summary until the user
+explicitly approves the direction.
+
+### Gate 2: Approve the full output
+
+After direction approval, present the complete proposed output:
+
+- Show authored prose verbatim as it would appear.
+- For a concrete action, show the exact reviewable preview: affected fields and
+  values, file change, state transition, command effect, or equivalent result.
+
+Offer **Approve output**, **Revise output**, and **Discuss more**. Incorporate
+feedback and present the complete revised output until the user explicitly
+approves it. If feedback materially changes the approved outcome, scope, or
+important choices, return to Gate 1; after the revised direction is approved,
+produce a new full output for Gate 2.
+
+Only the fully approved output is the item's recorded decision. In
+apply-as-you-go mode, apply it now; in collect-then-apply mode, store it for the
+final batch. Then advance and show progress (`Item 4 of 8`).
 
 ## Step 5 — Apply and summarize
 
 At the end:
 
-- In **collect-then-apply** mode, replay the recorded decisions and apply them as
-  a batch now. Confirm the batch first if any action is destructive or
-  outward-facing. Use whatever tools the surrounding session allows to carry out
-  each decision (edits, commands, ticket updates, etc.) — this skill orchestrates
-  the walk-through; it doesn't restrict how decisions get executed.
+- In **collect-then-apply** mode, replay the recorded, fully approved outputs and
+  apply them as a batch now. Confirm the batch first if any action is destructive
+  or outward-facing. Use whatever tools the surrounding session allows to carry
+  out each decision (edits, commands, ticket updates, etc.) — this skill
+  orchestrates the walk-through; it doesn't restrict how decisions get executed.
 - Show a final summary table:
 
   | # | Item | Decision | Status |

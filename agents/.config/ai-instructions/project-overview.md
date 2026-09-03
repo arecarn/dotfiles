@@ -48,6 +48,13 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
   `node_modules/` is absent, so a fresh clone can lint and push with no manual
   setup. CI relies on this too and has no install step of its own — but pnpm
   only reaches PATH via provisioning, so linting before provisioning finds none.
+- **Branch, don't PR.** The user is the sole author and user of this repo, so
+  changes go straight to `main` once CI is green. After the work is approved,
+  carry the whole cycle without re-asking per step: branch, commit, push, watch
+  CI by SHA, and on green merge `--no-ff` into `main`, push, and delete the
+  branch. A red run is different — investigate and report, never merge or push a
+  speculative fix. Don't open a pull request or hand back a "create a PR" link as
+  the deliverable.
 - **Watch CI after every push, using the `watch-ci` skill.** A green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. The skill is the procedure: it selects the run by commit SHA *and* workflow, tells a cancelled run from a failed one, and survives a dropped connection. Do not improvise a poll loop or follow a recipe written here or anywhere else in this repo instead — a repo-local variant is how those distinctions get lost. CI here takes ~7 min.
 - **Private instructions are read, not imported:** the generated instruction files
   point every agent at `~/.config/ai-instructions/local.md`, which a `dotfiles_local`

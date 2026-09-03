@@ -1,5 +1,7 @@
 onboarding = false
 # Herdr configuration, mapped from ~/.tmux.conf so the muscle memory carries over.
+# Kept in sync with tmux/.tmux.conf and wezterm/.config/wezterm/wezterm.lua,
+# which mirror the same keymap.
 #
 # Only bindings that differ from Herdr's defaults are listed. Anything absent
 # keeps its Herdr default; run `herdr config check` after edits, and `prefix+?`
@@ -81,10 +83,12 @@ next_workspace = "prefix+)"
 rename_workspace = "prefix+shift+n"
 new_workspace = ["prefix+shift+c", "prefix+shift+g"]
 
+# tmux q = kill-session
+close_workspace = "prefix+q"
+
 # --- Session / client ------------------------------------------------------
-# tmux D = detach-client, d = choose-client. Herdr's default prefix+q would
-# collide with tmux's q = kill-session, so detach lives on tmux's D and
-# prefix+q is left free rather than mapped to a destructive action.
+# tmux D = detach-client, d = choose-client. Off Herdr's default prefix+q,
+# which close_workspace takes above.
 detach = ["prefix+shift+d", "prefix+d"]
 
 # tmux s = source-file (reload config), S = refresh-client
@@ -117,6 +121,7 @@ agent_panel_sort = "spaces"
 # Distinct shapes per agent state rather than compact colored dots.
 status_indicators = "symbols"
 
+show_agent_labels_on_pane_borders = true
 [ui.sidebar.agents]
 # Pi reports this token only while background work exists: M=monitor,
 # B=background job, A=subagent. Zero-count categories are omitted.
@@ -130,3 +135,6 @@ rows = [
 # tmux: history-limit 50000. Herdr caps scrollback by bytes, not lines,
 # so this is ~50k lines of typical output rather than an exact translation.
 scrollback_limit_bytes = 10000000
+
+[ui.toast]
+delivery = "herdr"

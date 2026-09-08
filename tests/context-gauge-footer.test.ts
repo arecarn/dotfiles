@@ -11,6 +11,7 @@
  */
 
 import assert from "node:assert/strict";
+import { sep } from "node:path";
 import { test } from "node:test";
 import {
 	contextColour,
@@ -73,9 +74,11 @@ test("token counts keep pi's own thresholds and precision", () => {
 });
 
 test("paths under home collapse to ~, others stay absolute", () => {
+	// Separator from node:path, as the formatter uses: pi joins with the platform's
+	// own, so hardcoding "/" here passes on Linux and fails the Windows CI leg.
 	assert.equal(
 		formatCwdForFooter("/home/u/dotfiles", "/home/u"),
-		`~${"/"}dotfiles`,
+		`~${sep}dotfiles`,
 	);
 	assert.equal(formatCwdForFooter("/home/u", "/home/u"), "~");
 	assert.equal(formatCwdForFooter("/etc", "/home/u"), "/etc");

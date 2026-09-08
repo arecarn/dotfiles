@@ -19,15 +19,12 @@ import pathlib
 import subprocess
 import sys
 
-# Percentages at which the bar changes colour. WARN and DANGER are the boundaries
-# the colours describe, and DANGER is also where the skull appears.
+# Percentages at which the gauge changes colour.
 WARN_PERCENT = 50
 DANGER_PERCENT = 75
 
-BAR_WIDTH = 10
-BAR_FULL = "▓"
-BAR_EMPTY = "░"
-SKULL = "💀"
+# Single-cell fill gauge: one glyph per eighth, leading space is empty.
+BAR_LEVELS = " ▁▂▃▄▅▆▇█"
 
 RESET = "\033[0m"
 DIM = "\033[2m"
@@ -121,12 +118,11 @@ def context_segment(percent: int) -> str:
     else:
         colour = GREEN
 
-    filled = min(BAR_WIDTH, round(percent / 100 * BAR_WIDTH))
-    bar = BAR_FULL * filled + BAR_EMPTY * (BAR_WIDTH - filled)
-    segment = f"{colour}{bar} {percent}%{RESET}"
-    if percent >= DANGER_PERCENT:
-        segment += f" {SKULL}"
-    return segment
+    level = round(percent / 100 * (len(BAR_LEVELS) - 1))
+    if percent > 0:
+        level = max(1, level)
+    gauge = BAR_LEVELS[level]
+    return f"{colour}{gauge}{percent}%{RESET}"
 
 
 def directory_segment(cwd: str) -> str:
@@ -141,7 +137,14 @@ def build_line(status: dict) -> str:
     workspace = status.get("workspace") or {}
     cwd = workspace.get("current_dir") or status.get("cwd") or os.getcwd()
 
-    segments = [f"{CYAN}{directory_segment(cwd)}{RESET}"]
+    # Context usage leads the line: it is the segment worth glancing at mid-task.
+    segments: list[str] = []
+
+    percent = context_percent(status)
+    if percent is not None:
+        segments.append(context_segment(percent))
+
+    segments.append(f"{CYAN}{directory_segment(cwd)}{RESET}")
 
     branch = git_segment(cwd)
     if branch:
@@ -154,10 +157,6 @@ def build_line(status: dict) -> str:
     style = (status.get("output_style") or {}).get("name")
     if style and style.lower() != "default":
         segments.append(f"{DIM}{style}{RESET}")
-
-    percent = context_percent(status)
-    if percent is not None:
-        segments.append(context_segment(percent))
 
     return SEPARATOR.join(segments)
 

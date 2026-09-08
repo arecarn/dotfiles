@@ -12,9 +12,10 @@
  * one segment: `setStatus` only appends a third line, leaving the number it is
  * meant to replace in place, so `setFooter` and a full reproduction is the only
  * route. Pi exports none of the formatting this needs (`formatTokens`,
- * `formatCwdForFooter`, its usage totals), hence the copies below -- see
- * docs/gotchas/pi-footer-formatting-is-copied-not-imported.md for what drifts
- * on a pi upgrade and how to re-check it.
+ * `formatCwdForFooter`, its usage totals), hence the copies below, and its
+ * `(auto)` and `(sub)` markers are recomputed from what an extension can reach
+ * -- see docs/gotchas/pi-footer-formatting-is-copied-not-imported.md for what
+ * drifts on a pi upgrade and how to re-check it.
  */
 
 import { isAbsolute, relative, resolve, sep } from "node:path";
@@ -34,6 +35,15 @@ const GAUGE_LEVELS = " ▁▂▃▄▅▆▇█";
 
 /** Minimum columns kept between the stats and the right-aligned model. */
 const MIN_PADDING = 2;
+
+/**
+ * How long a read of `compaction.enabled` is trusted before re-reading.
+ *
+ * `render` runs on every keystroke and `SettingsManager.create()` reads two
+ * files, so the value is cached; a toggle showing up within a second is as live
+ * as this needs to be.
+ */
+const AUTO_COMPACT_TTL_MS = 1000;
 
 /**
  * The gauge glyph for a percentage, clamped to 0-100.
@@ -141,15 +151,29 @@ export default function contextGaugeFooter(pi: ExtensionAPI): void {
 		if (ctx.mode !== "tui") return;
 
 		// Pi prints "(auto)" from session.autoCompactionEnabled, a getter on
-		// AgentSession that extensions never receive. The setting behind it is
-		// readable, so this agrees with pi except after a mid-session toggle in
-		// /settings, where it stays at the startup value until pi restarts.
-		let autoCompact = true;
-		try {
-			autoCompact = SettingsManager.create(ctx.cwd).getCompactionEnabled();
-		} catch {
-			// A footer that throws takes the whole TUI with it; assume pi's default.
-		}
+		// AgentSession, which extensions never receive. It reads
+		// SettingsManager.getCompactionEnabled(), and pi's own toggle saves to
+		// settings.json, so reading that setting tracks the toggle exactly.
+		//
+		// Re-created rather than held: a SettingsManager loads its files once at
+		// construction, so a retained instance would answer with the startup value
+		// forever.
+		let cachedAutoCompact = true;
+		let cachedAt = 0;
+		const autoCompactEnabled = (): boolean => {
+			const now = Date.now();
+			if (now - cachedAt < AUTO_COMPACT_TTL_MS) return cachedAutoCompact;
+			cachedAt = now;
+			try {
+				cachedAutoCompact = SettingsManager.create(
+					ctx.cwd,
+				).getCompactionEnabled();
+			} catch {
+				// A footer that throws takes the whole TUI with it. Keep the last known
+				// answer, defaulting to pi's own.
+			}
+			return cachedAutoCompact;
+		};
 
 		ctx.ui.setFooter((tui, theme, footerData) => {
 			const unsubscribe = footerData.onBranchChange(() => tui.requestRender());
@@ -249,7 +273,7 @@ export default function contextGaugeFooter(pi: ExtensionAPI): void {
 					const contextText = formatContextSegment(
 						percent,
 						contextWindow,
-						autoCompact,
+						autoCompactEnabled(),
 					);
 					const colour = contextColour(percent);
 					statsParts.push(colour ? theme.fg(colour, contextText) : contextText);

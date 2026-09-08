@@ -24,12 +24,17 @@ like pi's -- a new segment upstream never appears, a changed token threshold
 silently disagrees. `pi/.pi/agent/extensions/context-gauge-footer.ts` is this
 repo's copy; diff it against the two files above after a pi upgrade.
 
-Two details are not reachable at all rather than merely uncopied:
+Two markers are not reachable at all rather than merely uncopied, and each has an
+exact substitute:
 
 - **`(auto)`** comes from `session.autoCompactionEnabled`, a getter on
-  `AgentSession`, which is absent from `ExtensionContext`. The nearest substitute
-  is `SettingsManager.create(cwd).getCompactionEnabled()`, which is right at
-  startup and stale after a mid-session toggle in `/settings`.
+  `AgentSession`, which is absent from `ExtensionContext`. It reads
+  `SettingsManager.getCompactionEnabled()`, and pi's own toggle calls
+  `setCompactionEnabled()`, which saves, so reading that setting tracks the
+  toggle exactly. **Re-create the manager to see a change**: it loads its files
+  once at construction, so a retained instance answers with the startup value
+  forever. Cache the result -- the footer renders on every keystroke and each
+  `create()` reads two files.
 - **`(sub)`** comes from `ModelRuntime.isUsingSubscription()`, also unreachable.
   `ctx.modelRegistry` exposes `isUsingOAuth(model)` and `getProvider()`, so the
   same answer is `isUsingOAuth(model) && provider.auth.oauth.isSubscription`,

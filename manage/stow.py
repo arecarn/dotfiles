@@ -49,6 +49,11 @@ def tolerating_windows_symlink_failure(what):
 # ~/.claude does not exist yet the whole directory folds into one symlink into
 # this repo and every one of those lands in a public working tree.
 #
+# ~/.claude/hooks holds only hook scripts this repo stows there, so the
+# directory folds into a single symlink into this repo. Python then writes
+# __pycache__/ bytecode beside each hook script on every hook run, dropping
+# .pyc files straight into this public repo's working tree.
+#
 # pi writes runtime state into ~/.pi/agent/ during normal use -- npm package
 # payloads, per-project trust.json decisions carrying real local paths and
 # project names, session history. Without ~/.pi in place, stowing folds the
@@ -85,6 +90,7 @@ def tolerating_windows_symlink_failure(what):
 # barrier and the ADR behind it live in manage.agents.skills_hub.
 _FOLD_BARRIERS = (
     pathlib.PurePath(".claude"),
+    pathlib.PurePath(".claude/hooks"),
     pathlib.PurePath(".pi"),
     pathlib.PurePath(".pi/agent"),
     pathlib.PurePath(".pi/agent/extensions"),

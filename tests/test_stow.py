@@ -285,6 +285,8 @@ def test_the_barrier_keeps_the_claude_directory_real(tmp_path):
     package = tmp_path / "src" / "claude-code"
     (package / ".claude" / "output-styles").mkdir(parents=True)
     (package / ".claude" / "CLAUDE.md").write_text("x")
+    (package / ".claude" / "hooks").mkdir(parents=True)
+    (package / ".claude" / "hooks" / "herdr_work_status.py").write_text("x")
     for barrier in stow._FOLD_BARRIERS:
         (home / barrier).mkdir(parents=True, exist_ok=True)
 
@@ -292,6 +294,7 @@ def test_the_barrier_keeps_the_claude_directory_real(tmp_path):
 
     assert (home / ".claude").is_dir() and not (home / ".claude").is_symlink()
     assert (home / ".claude" / "CLAUDE.md").is_symlink()
+    assert (home / ".claude" / "hooks" / "herdr_work_status.py").is_symlink()
 
     # What Claude Code writes afterwards stays out of the source tree.
     (home / ".claude" / ".credentials.json").write_text("{}\n")

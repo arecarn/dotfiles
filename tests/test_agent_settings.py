@@ -301,5 +301,88 @@ def test_a_machine_registered_before_subagents_gains_the_new_event(tmp_path):
 
     settings.setup_claude(tmp_path)
 
-    assert _hook_commands(tmp_path, "SubagentStart") == [command]
-    assert _hook_commands(tmp_path, "SessionStart") == [command]
+    for event in ("SubagentStart", "SessionStart"):
+        ours = [c for c in _hook_commands(tmp_path, event) if "agent-knowledge" in c]
+        assert ours == [command], event
+
+
+# --- the herdr work-status hook -------------------------------------------------
+
+_WORK_STATUS_EVENTS = ("SessionStart", "SubagentStart", "SubagentStop", "SessionEnd")
+
+
+def _work_status_commands(home, event):
+    return [c for c in _hook_commands(home, event) if "herdr_work_status" in c]
+
+
+def test_the_work_status_hook_is_registered_for_every_relevant_event(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    for event in _WORK_STATUS_EVENTS:
+        assert _work_status_commands(tmp_path, event), event
+
+
+def test_the_work_status_hook_command_is_absolute_with_an_interpreter(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    command = _work_status_commands(tmp_path, "SubagentStart")[0]
+    assert "~" not in command
+    assert command.endswith(str(tmp_path / ".claude/hooks/herdr_work_status.py"))
+    assert command.split()[0] in ("python", "python3")
+
+
+def test_the_subagent_work_status_matchers_are_wildcard(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    for event in ("SubagentStart", "SubagentStop"):
+        entries = _claude_hooks(tmp_path)[event]
+        ours = [
+            entry for entry in entries
+            if any("herdr_work_status" in h["command"] for h in entry["hooks"])
+        ]
+        assert [entry["matcher"] for entry in ours] == ["*"], event
+
+
+def test_the_session_end_work_status_entry_has_no_matcher(tmp_path):
+    settings.setup_claude(tmp_path)
+
+    entries = _claude_hooks(tmp_path)["SessionEnd"]
+    ours = [
+        entry for entry in entries
+        if any("herdr_work_status" in h["command"] for h in entry["hooks"])
+    ]
+    assert ours and all("matcher" not in entry for entry in ours)
+
+
+def test_registering_the_work_status_hook_twice_does_not_duplicate_it(tmp_path):
+    settings.setup_claude(tmp_path)
+    settings.setup_claude(tmp_path)
+
+    for event in _WORK_STATUS_EVENTS:
+        assert len(_work_status_commands(tmp_path, event)) == 1, event
+
+
+def test_a_machine_missing_some_work_status_events_gains_them(tmp_path):
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    # Build the seeded command exactly as setup_claude does: the interpreter is
+    # `python` on Windows, `python3` elsewhere, and idempotency is by exact
+    # command match, so a hardcoded `python3` here would not dedupe on Windows.
+    command = (
+        f"{settings._STATUS_LINE_INTERPRETER} "
+        f"{tmp_path / settings._WORK_STATUS_HOOK}"
+    )
+    _claude_settings(tmp_path).write_text(
+        json.dumps({
+            "hooks": {
+                "SessionStart": [{
+                    "matcher": "startup|resume|clear|compact",
+                    "hooks": [{"type": "command", "command": command}],
+                }]
+            }
+        })
+    )
+
+    settings.setup_claude(tmp_path)
+
+    for event in _WORK_STATUS_EVENTS:
+        assert len(_work_status_commands(tmp_path, event)) == 1, event

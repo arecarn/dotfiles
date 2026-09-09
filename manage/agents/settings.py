@@ -51,6 +51,26 @@ _KNOWLEDGE_HOOK_EVENTS = {
 _STATUS_LINE_SCRIPT = pathlib.PurePath(".claude/statusline.py")
 _STATUS_LINE_INTERPRETER = "python" if repo.IS_WINDOWS else "python3"
 
+# The herdr work-status hook, stowed from claude-code/.claude/hooks/. It
+# publishes a running-subagent count to the pane's herdr sidebar row and is
+# inert off herdr. Four events, because the count changes at four moments:
+# a session (re)starting resets it, a subagent starting or stopping moves it,
+# and a session ending clears it. SubagentStart/Stop match every agent type;
+# SessionEnd takes no matcher. SessionStart's matcher deliberately excludes the
+# `fork` source (matching the knowledge hook's matcher): a forked session has its
+# own session_id and starts at count 0, so publishing nothing on a fork start is
+# correct.
+#
+# Interpreter-prefixed and absolute for the same reason as the status line:
+# a hook runs with no shell or PATH of ours, and this is a .py file.
+_WORK_STATUS_HOOK = pathlib.PurePath(".claude/hooks/herdr_work_status.py")
+_WORK_STATUS_HOOK_EVENTS = {
+    "SessionStart": "startup|resume|clear|compact",
+    "SubagentStart": "*",
+    "SubagentStop": "*",
+    "SessionEnd": None,  # SessionEnd entries carry no matcher
+}
+
 _PI_SETTINGS = pathlib.PurePath(".pi/agent/settings.json")
 _PI_LOCAL_SETTINGS = pathlib.PurePath(
     ".config/ai-skills/pi-settings.local.json"
@@ -61,19 +81,17 @@ def _home(home):
     return pathlib.Path.home() if home is None else pathlib.Path(home)
 
 
-def _register_knowledge_hook(settings, home):
-    """Add our hook to every event it serves, leaving other registrations alone.
+def _register_hooks(settings, command, events, *, timeout=15):
+    """Register `command` on each event in `events` ({event: matcher | None}).
 
     Idempotent by command match rather than by rewriting the event: Claude Code
-    and other tools register their own hooks in these same lists. A machine
-    provisioned before SubagentStart existed has the SessionStart entry only,
-    so each event is checked separately rather than treating one as proof of
-    the other.
+    and other tools register their own hooks in these same lists. A matcher of
+    None omits the `matcher` key (SessionEnd has no matcher). Each event is
+    checked separately -- a machine provisioned before an event existed has the
+    others but not it.
     """
-    command = str(home / _KNOWLEDGE_HOOK_COMMAND)
     hooks = settings.setdefault("hooks", {})
-
-    for event, matcher in _KNOWLEDGE_HOOK_EVENTS.items():
+    for event, matcher in events.items():
         entries = hooks.setdefault(event, [])
         registered = any(
             hook.get("command") == command
@@ -82,13 +100,22 @@ def _register_knowledge_hook(settings, home):
         )
         if registered:
             continue
+        entry = {"hooks": [{"type": "command", "command": command, "timeout": timeout}]}
+        if matcher is not None:
+            entry = {"matcher": matcher, **entry}
+        entries.append(entry)
 
-        entries.append(
-            {
-                "matcher": matcher,
-                "hooks": [{"type": "command", "command": command, "timeout": 15}],
-            }
-        )
+
+def _register_knowledge_hook(settings, home):
+    """Add our knowledge hook to every event it serves, leaving others alone."""
+    command = str(home / _KNOWLEDGE_HOOK_COMMAND)
+    _register_hooks(settings, command, _KNOWLEDGE_HOOK_EVENTS)
+
+
+def _register_work_status_hooks(settings, home):
+    """Register the herdr work-status hook on every event that moves the count."""
+    command = f"{_STATUS_LINE_INTERPRETER} {home / _WORK_STATUS_HOOK}"
+    _register_hooks(settings, command, _WORK_STATUS_HOOK_EVENTS)
 
 
 def setup_claude(home=None):
@@ -121,6 +148,7 @@ def setup_claude(home=None):
         "padding": 0,
     }
     _register_knowledge_hook(settings, _home(home))
+    _register_work_status_hooks(settings, _home(home))
 
     existed = path.exists()
     path.parent.mkdir(parents=True, exist_ok=True)

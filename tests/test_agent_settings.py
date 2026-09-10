@@ -126,6 +126,8 @@ def test_the_committed_manifest_declares_the_expected_packages():
         "npm:pi-intercom",
         "npm:pi-mcp-adapter",
         "npm:pi-background-tasks",
+        "npm:@tmustier/pi-session-recap",
+        "npm:pi-session-ask",
     ]
 
 

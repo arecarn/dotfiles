@@ -114,6 +114,14 @@ changelog of the review.
   (checklists, roles, inputs) below the changes block; only rewrite the
   human-authored summary.
 
+### Review Feedback Replies
+
+When replying that review feedback has been addressed, name the commit SHA that
+contains the change. Use the shortest unambiguous SHA shown by Git, for example:
+“Updated in `abc1234`: replaced ‘fault signal’ with ‘status signal’.” Include the
+SHA in every applicable thread reply, even when several replies point to the same
+commit.
+
 ### Output Formatting
 
 Rules for how responses are written, so they render correctly in the terminal.

@@ -69,6 +69,16 @@ pi-mcp-adapter:
 pi-background-tasks:
   pi_package: npm:pi-background-tasks
 
+# Temporary, model-generated orientation after returning to a Pi session. The
+# recap stays in the UI rather than entering the agent's context.
+pi-session-recap:
+  pi_package: npm:@tmustier/pi-session-recap
+
+# Query current, parent, or older Pi session history through an isolated child
+# instead of loading the full transcript into the active context.
+pi-session-ask:
+  pi_package: npm:pi-session-ask
+
 ticktick:
   mcp:
     type: http

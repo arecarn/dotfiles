@@ -122,14 +122,18 @@ Failure logs: `gh run view <id> --log-failed`
 
 ## GitLab CI
 
+This recipe is portable across bash and zsh; no `bash -c` wrapper is needed. Keep
+`pipeline_status` as the variable name: `status` is a read-only special variable in zsh.
+
 ```bash
 sha=$(git rev-parse HEAD)
 # `// empty` for the same reason as the GitHub recipe: no pipeline yet prints "null".
 until id=$(glab api "projects/:id/pipelines?sha=$sha" --jq '.[0].id // empty') && [ -n "$id" ]; do
     sleep 5
 done
-until status=$(glab api "projects/:id/pipelines/$id" --jq '.status') \
-    && ! echo "$status" | grep -qE '^(created|waiting_for_resource|preparing|pending|running)$'; do
+until pipeline_status=$(glab api "projects/:id/pipelines/$id" --jq '.status') \
+    && ! echo "$pipeline_status" | grep -qE \
+        '^(created|waiting_for_resource|preparing|waiting_for_callback|pending|running|scheduled|canceling)$'; do
     sleep 30
 done
 glab api "projects/:id/pipelines/$id" --jq '"\(.status) \(.web_url)"'
@@ -156,6 +160,7 @@ Failure logs: `glab ci trace <job-id>`, after `glab api "projects/:id/pipelines/
 |---|---|---|---|
 | `success` | `success` | green | Report in one line. Done. |
 | `cancelled` | `canceled` | superseded or cancelled by hand | Stop. Do not investigate. If a newer commit of yours replaced it, re-arm on the new SHA. |
+| — | `canceling` | cancellation is still in progress | Keep watching until GitLab reports `canceled`. |
 | `failure` | `failed` | real breakage | Investigate, then propose a fix. |
 | `timed_out`, `startup_failure` | `skipped`, `manual` | infrastructure or gating, not your diff | Report verbatim; say it is not a code failure. |
 
@@ -194,6 +199,10 @@ Skip it for a one-line lint error already visible in the output.
 - **Describing jobs you did not read.** "Both matrix legs passed" is a claim about the
   jobs list; if the run had no matrix, it is invented. Print the legs.
 - **Reporting a cancelled run as a failure.** It means "replaced", not "broken".
+- **Using `status` as a shell variable.** It is read-only in zsh, so assignment kills the
+  watch before it prints a result. Use `pipeline_status`.
+- **Treating GitLab `canceling` as terminal.** Cancellation is still in progress; keep
+  watching until the pipeline reports `canceled`.
 - **Arming the watch on an abbreviated SHA.** The lookup matches on the full 40
   characters, so a short SHA finds no run and the watch times out having reported
   nothing — which is not the same as a failure.

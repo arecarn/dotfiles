@@ -117,10 +117,10 @@ changelog of the review.
 ### Review Feedback Replies
 
 When replying that review feedback has been addressed, name the commit SHA that
-contains the change. Use the shortest unambiguous SHA shown by Git, for example:
-“Updated in `abc1234`: replaced ‘fault signal’ with ‘status signal’.” Include the
-SHA in every applicable thread reply, even when several replies point to the same
-commit.
+contains the change. Use the shortest unambiguous SHA shown by Git and write it
+as bare text so GitLab renders it as a commit link, for example: “Updated in
+abc1234: replaced ‘fault signal’ with ‘status signal’.” Include the SHA in every
+applicable thread reply, even when several replies point to the same commit.
 
 ### Output Formatting
 

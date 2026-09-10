@@ -36,6 +36,7 @@ reports = false
 [dependency-groups]
 dev = [
     "pylint>=3.3",
+    "pymarkdownlnt>=0.9.39",
     "pytest>=8.0",
     "ruff>=0.9",
     "yamllint>=1.35",

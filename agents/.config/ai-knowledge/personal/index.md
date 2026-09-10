@@ -9,7 +9,6 @@ instructions.
 
 # Project scaffolding
 
-* [Docker and Makefile pattern](docker-makefile.md) - the compose/Makefile/CI
-  templates for a project whose make targets run inside a container, including
-  keeping one image pinned in two files and detecting that you are already in a
-  container
+* [Docker and Makefile pattern](docker-makefile.md) - generic single-container
+  dispatch for all Make goals, direct execution in CI, linked-worktree mounts,
+  and keeping one build image pinned across Compose and CI

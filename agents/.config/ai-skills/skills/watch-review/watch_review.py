@@ -373,7 +373,8 @@ def format_timestamp(value: str, *, local_timezone: tzinfo | None = None) -> str
     parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     local = parsed.astimezone(local_timezone)
     zone = local.tzname() or local.strftime("%z")
-    return f"{local:%Y-%m-%d} at {local:%-I:%M %p} {zone}"
+    time = local.strftime("%I:%M %p").lstrip("0")
+    return f"{local:%Y-%m-%d} at {time} {zone}"
 
 
 def format_batch(events: list[Event], *, local_timezone: tzinfo | None = None) -> str:

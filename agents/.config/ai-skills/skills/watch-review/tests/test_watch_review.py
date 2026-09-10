@@ -10,6 +10,7 @@ network or a real `glab`/`gh`.
 
 from __future__ import annotations
 
+import inspect
 import io
 import json
 import subprocess
@@ -493,6 +494,12 @@ def test_github_head_sha_reads_the_nested_head_sha() -> None:
         target, runner=lambda _command: {"head": {"sha": "deadbeef"}}
     )
     assert provider.head_sha() == "deadbeef"
+
+
+def test_timestamp_format_uses_portable_strftime_directives() -> None:
+    source = inspect.getsource(watch_review.format_timestamp)
+
+    assert "%-I" not in source
 
 
 def test_batch_formats_timestamp_as_iso_date_and_human_readable_local_time() -> None:

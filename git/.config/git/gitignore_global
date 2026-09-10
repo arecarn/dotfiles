@@ -28,5 +28,9 @@ compile_commands.json
 # .claude/, which projects legitimately commit (settings.json, skills, agents).
 .claude/worktrees/
 
+# Pi background task and delegate runtime artifacts
+.pi/tasks/
+.pi/delegate/
+
 # Local-only superpowers specs & plans (not part of any MR)
 docs/superpowers/

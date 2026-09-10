@@ -206,3 +206,22 @@ def test_every_discovery_path_is_under_the_given_home(tmp_path):
     paths = skills_hub.discovery_paths(tmp_path)
     assert paths
     assert all(p.is_relative_to(tmp_path) for p in paths)
+
+
+def test_agents_replaces_the_pi_specific_discovery_path(tmp_path):
+    paths = skills_hub.discovery_paths(tmp_path)
+    assert tmp_path / ".agents" in paths
+    assert tmp_path / ".pi" / "agent" not in paths
+
+
+def test_stow_out_removes_the_legacy_pi_skills_link(two_trees):
+    home, first, second = two_trees
+    _stow(home, first, second)
+    legacy = home / ".pi" / "agent" / "skills"
+    legacy.parent.mkdir(parents=True)
+    legacy.symlink_to(skills_hub.skills_dir(home))
+
+    skills_hub.stow_out(home)
+
+    assert not legacy.is_symlink()
+    assert (home / ".agents" / "skills" / "a-skill" / "SKILL.md").exists()

@@ -11,9 +11,11 @@ network or a real `glab`/`gh`.
 from __future__ import annotations
 
 import io
+import json
 import subprocess
 import sys
 import urllib.parse
+from datetime import timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -45,7 +47,7 @@ def event(
         author=author,
         body=body,
         url=f"https://example.test/comments/{event_id}",
-        created_at=f"2026-08-27T00:00:{event_id[-1]}Z",
+        created_at=f"2026-08-27T00:00:{int(event_id[-1]):02d}Z",
         reply_to_user=reply_to_user,
         human=human,
     )
@@ -176,6 +178,75 @@ def test_poll_reports_review_that_is_already_terminal() -> None:
     assert output.getvalue() == "Review merged\nhttps://example.test/review/1\n"
 
 
+def test_jsonl_feedback_is_one_line_and_preserves_raw_event_fields() -> None:
+    snapshots = iter(
+        [
+            [],
+            [
+                watch_review.Event(
+                    id="note-1",
+                    author="alice",
+                    body="First line\nsecond line",
+                    url="https://example.test/comments/note-1",
+                    created_at="2026-08-27T00:00:01Z",
+                    reply_to_user=True,
+                )
+            ],
+        ]
+    )
+    output = io.StringIO()
+
+    watch_review.watch_snapshots(
+        lambda: next(snapshots),
+        current_user="author",
+        review_author="author",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        max_polls=1,
+        output_format="jsonl",
+    )
+
+    assert len(output.getvalue().splitlines()) == 1
+    assert json.loads(output.getvalue()) == {
+        "type": "feedback",
+        "count": 1,
+        "events": [
+            {
+                "id": "note-1",
+                "timestamp": "2026-08-27T00:00:01Z",
+                "author": "alice",
+                "body": "First line\nsecond line",
+                "url": "https://example.test/comments/note-1",
+            }
+        ],
+    }
+
+
+def test_jsonl_terminal_event_is_one_line_and_stops() -> None:
+    output = io.StringIO()
+
+    watch_review.watch_snapshots(
+        lambda: pytest.fail("feedback should not be fetched for a merged review"),
+        current_user="author",
+        review_author="author",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        fetch_state=lambda: "merged",
+        review_url="https://example.test/review/1",
+        output_format="jsonl",
+    )
+
+    assert len(output.getvalue().splitlines()) == 1
+    assert json.loads(output.getvalue()) == {
+        "type": "terminal",
+        "state": "merged",
+        "message": "Review merged",
+        "url": "https://example.test/review/1",
+    }
+
+
 def test_poll_emits_one_batch_for_new_relevant_events() -> None:
     snapshots = iter(
         [
@@ -197,8 +268,8 @@ def test_poll_emits_one_batch_for_new_relevant_events() -> None:
 
     rendered = output.getvalue()
     assert rendered.count("Review feedback (2)") == 1
-    assert "- bob: Please change this\n  https://example.test/comments/note-2" in rendered
-    assert "- alice: Please change this\n  https://example.test/comments/note-3" in rendered
+    assert "bob: Please change this\n  https://example.test/comments/note-2" in rendered
+    assert "alice: Please change this\n  https://example.test/comments/note-3" in rendered
 
 
 def _requested_page(command: list[str]) -> int:
@@ -278,7 +349,7 @@ def test_transient_provider_failure_retries_without_resetting_the_baseline() -> 
     rendered = output.getvalue()
     assert slept == [7]
     assert "Review feedback (1)" in rendered
-    assert "- alice:" in rendered
+    assert "alice: Please change this" in rendered
     # The baseline outlived the outage, so the pre-existing note stays silent.
     assert "note-1" not in rendered
 
@@ -343,6 +414,14 @@ def test_as_reviewer_still_excludes_the_users_own_notes_and_bots() -> None:
     bot = event("note-2", author="glsvc.bernie", human=False)
     assert not watch_review.is_relevant(own, **common)
     assert not watch_review.is_relevant(bot, **common)
+
+
+def test_head_event_has_a_timestamp() -> None:
+    pushed = watch_review.head_event(
+        "aaaaaaaaaaaa1111", created_at="2026-08-27T21:32:10Z"
+    )
+
+    assert pushed.created_at == "2026-08-27T21:32:10Z"
 
 
 def test_head_event_reports_each_commit_once() -> None:
@@ -416,6 +495,17 @@ def test_github_head_sha_reads_the_nested_head_sha() -> None:
     assert provider.head_sha() == "deadbeef"
 
 
+def test_batch_formats_timestamp_as_iso_date_and_human_readable_local_time() -> None:
+    rendered = watch_review.format_batch(
+        [event("note-1")],
+        local_timezone=timezone(timedelta(hours=-7), "PDT"),
+    )
+
+    assert rendered.startswith(
+        "Review feedback (1)\n- 2026-08-26 at 5:00 PM PDT reviewer:"
+    )
+
+
 def test_batch_omits_the_url_line_when_an_event_has_none() -> None:
     # A harness that delivers each line as an event and drops blank ones would
     # otherwise swallow a bare "  " line, so no line beats an empty one.
@@ -428,10 +518,13 @@ def test_batch_omits_the_url_line_when_an_event_has_none() -> None:
                 url="",
                 created_at="2026-08-27T00:00:01Z",
             )
-        ]
+        ],
+        local_timezone=timezone(timedelta(hours=-7), "PDT"),
     )
 
-    assert rendered == "Review feedback (1)\n- alice: Please change this\n"
+    assert rendered == (
+        "Review feedback (1)\n- 2026-08-26 at 5:00 PM PDT alice: Please change this\n"
+    )
 
 
 def test_github_normalizes_all_feedback_types_and_review_comment_replies() -> None:

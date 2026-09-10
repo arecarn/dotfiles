@@ -11,6 +11,7 @@ import sys
 import time
 import urllib.parse
 from dataclasses import dataclass
+from datetime import datetime, timezone, tzinfo
 from typing import Callable, TextIO, TypeVar
 
 Json = object
@@ -350,33 +351,63 @@ def is_relevant(
     return event.reply_to_user or bool(mention.search(event.body))
 
 
-def head_event(sha: str) -> Event:
+def head_event(sha: str, *, created_at: str | None = None) -> Event:
     """The current head commit as an Event, so a push reports like feedback.
 
     The author is not a person, so ``human`` stays true to keep it reportable
     while the id carries the sha: a new commit is a new id, and an unchanged
     head repeats an id already seen.
     """
+    timestamp = created_at or datetime.now(timezone.utc).isoformat()
     return Event(
         id=f"head:{sha}",
         author="(new commit)",
         body=f"head is now {sha[:12]}",
         url="",
-        created_at="",
+        created_at=timestamp,
     )
 
 
-def format_batch(events: list[Event]) -> str:
+def format_timestamp(value: str, *, local_timezone: tzinfo | None = None) -> str:
+    """Render a provider timestamp as an ISO date and readable local time."""
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    local = parsed.astimezone(local_timezone)
+    zone = local.tzname() or local.strftime("%z")
+    return f"{local:%Y-%m-%d} at {local:%-I:%M %p} {zone}"
+
+
+def format_batch(events: list[Event], *, local_timezone: tzinfo | None = None) -> str:
     """Render one compact notification for events discovered in one poll."""
     lines = [f"Review feedback ({len(events)})"]
     for item in sorted(events, key=lambda event: (event.created_at, event.id)):
         body = " ".join(item.body.split())
-        lines.append(f"- {item.author}: {body}")
+        timestamp = format_timestamp(item.created_at, local_timezone=local_timezone)
+        lines.append(f"- {timestamp} {item.author}: {body}")
         # A harness may deliver each line as its own event and drop blank ones,
         # so an absent url must not become a whitespace-only line that vanishes.
         if item.url:
             lines.append(f"  {item.url}")
     return "\n".join(lines) + "\n"
+
+
+def format_jsonl_batch(events: list[Event]) -> str:
+    """Encode one logical feedback batch as one physical stdout line."""
+    ordered = sorted(events, key=lambda event: (event.created_at, event.id))
+    payload = {
+        "type": "feedback",
+        "count": len(ordered),
+        "events": [
+            {
+                "id": item.id,
+                "timestamp": item.created_at,
+                "author": item.author,
+                "body": item.body,
+                "url": item.url,
+            }
+            for item in ordered
+        ],
+    }
+    return json.dumps(payload, separators=(",", ":")) + "\n"
 
 
 # The injected output, sleep, and max_polls are what make one poll testable
@@ -394,6 +425,7 @@ def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
     as_reviewer: bool = False,
     fetch_state: Callable[[], str] | None = None,
     review_url: str = "",
+    output_format: str = "text",
 ) -> None:
     """Print new feedback until the review is merged or closed."""
 
@@ -405,7 +437,16 @@ def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
         label = labels.get(state)
         if label is None:
             return False
-        output.write(f"{label}\n{review_url}\n")
+        if output_format == "jsonl":
+            payload = {
+                "type": "terminal",
+                "state": state,
+                "message": label,
+                "url": review_url,
+            }
+            output.write(json.dumps(payload, separators=(",", ":")) + "\n")
+        else:
+            output.write(f"{label}\n{review_url}\n")
         output.flush()
         return True
 
@@ -431,7 +472,8 @@ def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
             )
         ]
         if relevant:
-            output.write(format_batch(relevant))
+            formatter = format_jsonl_batch if output_format == "jsonl" else format_batch
+            output.write(formatter(relevant))
             output.flush()
         polls += 1
 
@@ -448,6 +490,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("review_url")
     parser.add_argument("--interval", type=float, default=120)
+    parser.add_argument(
+        "--output-format",
+        choices=("text", "jsonl"),
+        default="text",
+        help="use jsonl for one physical stdout line per logical notification",
+    )
     parser.add_argument(
         "--as-reviewer",
         action="store_true",
@@ -492,6 +540,7 @@ def main(argv: list[str] | None = None) -> int:
         as_reviewer=args.as_reviewer,
         fetch_state=retrying(provider.review_state, interval=args.interval),
         review_url=args.review_url,
+        output_format=args.output_format,
     )
     return 0
 

@@ -17,17 +17,18 @@ import pathlib
 _ROOT = pathlib.PurePath(".config/ai-skills")
 _SKILLS = "skills"
 
-# Every agent tool reads its skills from its own directory. Adding a third tool
-# means adding one entry here.
+# Pi discovers ~/.agents/skills directly, as do shared skill installers. Use
+# that one location rather than mirroring the same hub into ~/.pi/agent/skills.
 _DISCOVERY_PATHS = (
+    pathlib.PurePath(".agents"),
     pathlib.PurePath(".claude"),
     pathlib.PurePath(".config/opencode"),
-    pathlib.PurePath(".pi/agent"),
 )
 
 # plugins.yaml sits beside the skills in the same stow package but is not a
 # skill, so it is not mirrored out to the tools.
 _NOT_SKILLS = ["*.yaml"]
+_LEGACY_PI_DISCOVERY_PATH = pathlib.PurePath(".pi/agent/skills")
 
 
 def _home(home):
@@ -95,6 +96,12 @@ def stow_out(home=None):
 
     if not skills_dir(home).exists():
         return
+
+    # Pi also discovers ~/.agents/skills. Remove the old second link before
+    # fan-out so a skills-CLI install has one Pi-visible location, not two.
+    legacy_pi_path = _home(home) / _LEGACY_PI_DISCOVERY_PATH
+    if legacy_pi_path.is_symlink():
+        legacy_pi_path.unlink()
 
     source = root(home)
     for target in discovery_paths(home):

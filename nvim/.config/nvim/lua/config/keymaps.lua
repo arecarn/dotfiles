@@ -410,9 +410,9 @@ map("n", "!z=", ":<C-u>spellrepall<CR>")
 -- SEARCH & SUBSTITUTE                                                        {{{
 --------------------------------------------------------------------------------
 -- Substitute shortcuts with hlsearch enabled
-map("n", "sal", ":set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>")
+map("n", "sl", ":set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>")
 map("n", "sG", ":set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>")
-map("n", "sae", ":set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>")
+map("n", "se", ":set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>")
 
 --- Add word or selection to search pattern (OR)
 ---@param mode string 'n' for normal, 'x' for visual

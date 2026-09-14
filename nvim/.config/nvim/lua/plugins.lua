@@ -24,7 +24,7 @@ vim.opt.rtp:prepend(lazypath)
 local plugins = {
 
     ---------------------------------------------------------------------------}}}
-    -- MINI.NVIM (Modern Text Objects & Operators)                           {{{
+    -- MINI.NVIM                                                             {{{
     ---------------------------------------------------------------------------
     {
         "echasnovski/mini.nvim",
@@ -215,6 +215,9 @@ local plugins = {
             })
         end,
     },
+    ---------------------------------------------------------------------------}}}
+    -- CORE EDITING                                                            {{{
+    ---------------------------------------------------------------------------
     {
         "gregorias/toggle.nvim",
         keys = { { "yo", desc = "Toggle Options" } },
@@ -229,7 +232,7 @@ local plugins = {
                 { "c", "cursorline", "Cursor Line" },
                 { "b", "scrollbind", "Scroll Bind" },
                 { "C", "cursorbind", "Cursor Bind" },
-                { "m", "modifable", "Modifiable" },
+                { "m", "modifiable", "Modifiable" },
                 { "R", "readonly", "Read Only" },
             },
         },
@@ -506,7 +509,7 @@ local plugins = {
             end
 
             vim.api.nvim_create_user_command("Make", function(params)
-                local cmd, num_subs = vim.o.makeprg:gsub("%%$%%*", params.args)
+                local cmd, num_subs = vim.o.makeprg:gsub("%$%*", params.args)
                 if num_subs == 0 then
                     cmd = cmd .. " " .. params.args
                 end
@@ -663,7 +666,6 @@ local plugins = {
     ---------------------------------------------------------------------------}}}
     -- COLORS                                                                 {{{
     ---------------------------------------------------------------------------
-    { "rktjmp/lush.nvim", lazy = false },
     {
         "adisen99/apprentice.nvim",
         lazy = false,
@@ -1233,13 +1235,6 @@ local plugins = {
     ---------------------------------------------------------------------------}}}
     -- TEXT MANIPULATION                                                      {{{
     ---------------------------------------------------------------------------
-    -- {
-    --     'godlygeek/tabular',
-    --     cmd = 'Tabularize',
-    --     keys = {
-    --         { '<leader>t', ':Tabularize/', mode = { 'n', 'x' }, desc = 'Tabularize' },
-    --     },
-    -- },
     { "arecarn/vim-split-join", cmd = { "Split", "Join" } },
     { "vim-scripts/ingo-library", lazy = true },
     {
@@ -1253,7 +1248,6 @@ local plugins = {
     ---------------------------------------------------------------------------
     { "kana/vim-niceblock", event = "VeryLazy" },
     { "tpope/vim-speeddating", keys = { "<C-a>", "<C-x>" } },
-    -- { 'tpope/vim-unimpaired', event = 'VeryLazy' },
     { "vim-scripts/UnconditionalPaste", event = "VeryLazy" },
     { "arecarn/vim-auto-autoread", event = "VeryLazy" },
     {
@@ -1294,11 +1288,6 @@ local plugins = {
             { "gmx", "<Plug>(quickhl-manual-reset)", mode = { "n", "x" } },
         },
     },
-    -- {
-    --     'dominikduda/vim_current_word',
-    --     event = 'VeryLazy',
-    --     init = function() vim.g['vim_current_word#highlight_current_word'] = 0 end,
-    -- },
 
     ---------------------------------------------------------------------------}}}
     -- SEARCH                                                                 {{{

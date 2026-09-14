@@ -1,15 +1,15 @@
 -------------------------------------------------------------------------------}}}
 -- STATUSLINE                                                                 {{{
 --------------------------------------------------------------------------------
--- Lightline component functions migrated from vimrc
--- These are exposed globally for lightline's component_function
+-- Component functions consumed by lualine (see config/plugins.lua)
 
 local M = {}
 
 -------------------------------------------------------------------------------}}}
 -- HELPER PATTERNS                                                            {{{
 --------------------------------------------------------------------------------
-local special_ft_pattern = "help|dirvish|fern|qf"
+-- Filetypes where modified/readonly/git indicators are hidden
+local special_ft = { help = true, fern = true, qf = true }
 
 -------------------------------------------------------------------------------}}}
 -- COMPONENT FUNCTIONS                                                        {{{
@@ -19,7 +19,7 @@ local special_ft_pattern = "help|dirvish|fern|qf"
 ---@return string
 function M.modified()
     local ft = vim.bo.filetype
-    if ft:match(special_ft_pattern) then
+    if special_ft[ft] then
         return ""
     end
     if vim.bo.modified then
@@ -35,7 +35,7 @@ end
 ---@return string
 function M.readonly()
     local ft = vim.bo.filetype
-    if ft:match(special_ft_pattern) then
+    if special_ft[ft] then
         return ""
     end
     return vim.bo.readonly and "RO" or ""
@@ -73,7 +73,7 @@ end
 ---@return string
 function M.fugitive()
     local ft = vim.bo.filetype
-    if ft:match(special_ft_pattern) then
+    if special_ft[ft] then
         return ""
     end
     if vim.fn.winwidth(0) <= 80 then
@@ -125,20 +125,6 @@ end
 function M.bufnr()
     return "b:" .. vim.fn.bufnr("%")
 end
-
--------------------------------------------------------------------------------}}}
--- EXPOSE GLOBALLY FOR LIGHTLINE                                              {{{
---------------------------------------------------------------------------------
--- Lightline calls functions by name, so we expose them globally
-_G.Lightline_modified = M.modified
-_G.Lightline_readonly = M.readonly
-_G.Lightline_filename = M.filename
-_G.Lightline_fugitive = M.fugitive
-_G.Lightline_fileformat = M.fileformat
-_G.Lightline_filetype = M.filetype
-_G.Lightline_fileencoding = M.fileencoding
-_G.Lightline_winnr = M.winnr
-_G.Lightline_bufnr = M.bufnr
 
 -------------------------------------------------------------------------------}}}
 -- vim: foldmethod=marker

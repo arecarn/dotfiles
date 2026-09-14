@@ -5,7 +5,6 @@
   "Preserve.vim": { "branch": "master", "commit": "f8c24b6910018ad0b35dd97be6efb81c09d8a554" },
   "UnconditionalPaste": { "branch": "master", "commit": "1ace5e3aae521499679f254950d4a06d176d7ba2" },
   "agentic.nvim": { "branch": "main", "commit": "cfa49d9dc3d9712ed10a963706caa55cc0eb62aa" },
-  "alpha-nvim": { "branch": "main", "commit": "6c6a89d5b068b5251c8bdf0dd57bb921bcfeeb09" },
   "apprentice.nvim": { "branch": "main", "commit": "807256b5e16c255359fe09f04d954e8ea19e03fa" },
   "blink.cmp": { "branch": "main", "commit": "451168851e8e2466bc97ee3e026c3dcb9141ce07" },
   "cmdalias.vim": { "branch": "master", "commit": "fd3aea59d57f5fed1b835a0e545540c9781c4bb3" },

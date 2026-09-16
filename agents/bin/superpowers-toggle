@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+"""Launcher for the superpowers-toggle CLI.
+
+Stowed by the `agents` package into ~/bin, so a pi command, a Claude Code hook,
+or a shell tool call can flip the shared superpowers-bootstrap flag by absolute
+path with no knowledge of this checkout. Deliberately only a path fix plus a
+call: the logic lives in manage/superpowers_toggle_cli.py, which `inv lint` and
+the tests cover (an extensionless script matches neither the *.py nor the *.sh
+glob).
+"""
+
+import pathlib
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent.parent))
+
+from manage.superpowers_toggle_cli import main  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(main())

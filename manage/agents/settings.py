@@ -39,6 +39,18 @@ _KNOWLEDGE_HOOK_EVENTS = {
     "SessionStart": "startup|resume|clear|compact",
     "SubagentStart": "*",
 }
+
+# The superpowers-toggle SessionStart hook, registered here for the same reason
+# as the knowledge hook. It cannot suppress superpowers' own bootstrap block --
+# Claude Code merges hook entries rather than letting one replace another -- so
+# it only appends a disregard note when the shared flag is off. SubagentStart is
+# omitted: superpowers' own hook fires only on SessionStart, so a subagent gets
+# no bootstrap of its own to disregard. See manage/superpowers_toggle_hooks.py.
+_SUPERPOWERS_TOGGLE_HOOK_COMMAND = "bin/superpowers-toggle-session-start"
+_SUPERPOWERS_TOGGLE_HOOK_EVENTS = {
+    "SessionStart": "startup|resume|clear|compact",
+}
+
 # The status line script, stowed from claude-code/.claude/. Configuring
 # `statusLine` replaces Claude Code's built-in line outright, so the script
 # reproduces the default segments as well as adding the context bar -- see its
@@ -118,6 +130,12 @@ def _register_work_status_hooks(settings, home):
     _register_hooks(settings, command, _WORK_STATUS_HOOK_EVENTS)
 
 
+def _register_superpowers_toggle_hook(settings, home):
+    """Add the superpowers-toggle disregard-note hook, leaving other hooks alone."""
+    command = str(home / _SUPERPOWERS_TOGGLE_HOOK_COMMAND)
+    _register_hooks(settings, command, _SUPERPOWERS_TOGGLE_HOOK_EVENTS)
+
+
 def setup_claude(home=None):
     """Merge this repo's Claude Code preferences into ~/.claude/settings.json.
 
@@ -149,6 +167,7 @@ def setup_claude(home=None):
     }
     _register_knowledge_hook(settings, _home(home))
     _register_work_status_hooks(settings, _home(home))
+    _register_superpowers_toggle_hook(settings, _home(home))
 
     existed = path.exists()
     path.parent.mkdir(parents=True, exist_ok=True)

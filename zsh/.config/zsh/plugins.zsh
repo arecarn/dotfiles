@@ -29,11 +29,6 @@ zinit wait lucid for \
 zinit wait lucid for \
     zdharma-continuum/fast-syntax-highlighting
 
-# zoxide
-if (( $+commands[zoxide] )); then
-    eval "$(zoxide init zsh --cmd z)"
-fi
-
 # history-substring-search keybindings
 _setup_history_substring_search_bindings() {
     bindkey '^[[A' history-substring-search-up
@@ -44,11 +39,32 @@ _setup_history_substring_search_bindings() {
 _setup_history_substring_search_bindings
 
 # fzf keybindings (set after plugins load)
+_fzf_tab_completion() {
+    local -a tokens
+    tokens=(${(z)LBUFFER})
+
+    if [[ "$LBUFFER" == 'kill '* ]]; then
+        local cmd_word=kill
+        local prefix=''
+        local lbuf="$LBUFFER"
+        if [[ "$LBUFFER" != *' ' ]]; then
+            prefix="${tokens[-1]}"
+            lbuf="${LBUFFER:0:-${#prefix}}"
+        fi
+        _fzf_complete_kill "$lbuf"
+        zle reset-prompt
+    else
+        zle fzf-completion
+    fi
+}
+zle -N _fzf_tab_completion
+
 _setup_fzf_bindings() {
     if (( $+commands[fzf] )); then
         bindkey -M viins '^T' fzf-file-widget
         bindkey -M viins '^Y' fzf-cd-widget
         bindkey -M viins '^R' fzf-history-widget
+        bindkey -M viins '^I' _fzf_tab_completion
         FZF_COMPLETION_TRIGGER=**
     fi
 }

@@ -28,6 +28,28 @@ zsh_sources=(
 for _zsh_src in "${zsh_sources[@]}"; do source_if_exists "$_zsh_src"; done
 unset _zsh_src
 
+# Initialize after compinit so zoxide can register completion for z.
+if (( $+commands[zoxide] )); then
+    eval "$(zoxide init zsh --cmd z)"
+
+    # Upstream sends the first `z <Tab>` to _cd. Use zoxide's interactive
+    # database query instead; nonblank arguments retain upstream completion.
+    __zoxide_z_history_complete() {
+        [[ "${#words[@]}" -eq "$CURRENT" ]] || return 0
+        if [[ "${words[-1]}" == '' ]]; then
+            __zoxide_result="$(command zoxide query \
+                --exclude "$(__zoxide_pwd || builtin true)" \
+                --interactive -- ${words[2,-1]})" || __zoxide_result=''
+            compadd -Q ""
+            bindkey '\e[0n' '__zoxide_z_complete_helper'
+            printf '\e[5n'
+            return 0
+        fi
+        __zoxide_z_complete
+    }
+    compdef __zoxide_z_history_complete z
+fi
+
 # bob neovim version manager
 export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 

@@ -8,3 +8,5 @@ Rules for how responses are written, so they render correctly in the terminal.
   `0 */12 * * *` in a cell is enough to break the table. Escape as `\|` / `\*`, or move
   the value to a bullet beneath the table. A single bad cell is not a reason to stop
   using tables.
+- **Use ASCII markers in prose.** Herdr mishandles emoji presentation sequences; see
+  [dotfiles#35](https://github.com/arecarn/dotfiles/issues/35).

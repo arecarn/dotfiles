@@ -6,8 +6,12 @@ first. Show the full text in chat and wait for an explicit yes before posting.
 - **Covers authored prose in any external system:** Jira summaries,
   descriptions, comments, and free-text fields; merge request titles,
   descriptions, and review comments; wiki pages; email; task text. Editing prose
-  that already exists counts too, so show the replacement text (and for a
-  targeted edit, what it replaces).
+  that already exists counts too.
+- **Show an edit to existing text as a diff.** Put a unified diff of the current
+  text against the proposed text in a `diff` code block, so the change is visible
+  at a glance rather than found by comparing two copies. Keep enough surrounding
+  lines to place it. When most of the text changes, show the full new text as
+  well. New text with nothing before it is shown in full, not as a diff.
 - **Does not cover mechanical field changes:** labels, state transitions,
   assignees, components, versions, issue links, worklog hours. These carry no
   wording to review, so apply them directly. Anything destructive or irreversible

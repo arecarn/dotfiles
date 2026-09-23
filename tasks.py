@@ -470,16 +470,27 @@ def lint_typescript(ctx):
     """
     Run Biome and the TypeScript compiler on TypeScript files
     """
-    if not _find_files("*.ts"):
+    files = _find_files("*.ts")
+    if not files:
         return
-    # Both tools read their config from the repo root and discover their own file
-    # lists, so neither takes the file list as arguments. tsc fails outright with
-    # TS18003 when it resolves no inputs, which is why the early return above is a
-    # guard and not an optimisation. That guard is only sound while this find and
-    # tsconfig.json's include/exclude resolve the same set across the whole repo:
-    # widen one without the other and lint either dies on TS18003 or silently
-    # stops type-checking a file biome still lints.
-    ctx.run("pnpm exec biome check .")
+    # tsc reads tsconfig.json and discovers its own file list, so it takes no file
+    # list as an argument. It fails outright with TS18003 when it resolves no
+    # inputs, which is why the early return above is a guard and not an
+    # optimisation. That guard is only sound while this find and tsconfig.json's
+    # include/exclude resolve the same set across the whole repo: widen one
+    # without the other and lint either dies on TS18003 or silently stops
+    # type-checking a file biome still lints.
+    #
+    # Biome gets this same file list explicitly rather than scanning ".": from a
+    # checkout under .worktrees/, "biome check ." resolves "." to an absolute path
+    # that has ".worktrees" as an ancestor, and Biome's crawler prunes that whole
+    # subtree the same way it would prune a nested .worktrees copy found while
+    # scanning from the main checkout -- even though the exclude was never meant
+    # to match the checkout doing the scanning. Passing files explicitly skips
+    # that directory crawl entirely, so it works the same from either checkout.
+    # See docs/gotchas/biome-check-dot-fails-from-inside-a-worktrees-checkout.md.
+    files_string = " ".join(files)
+    ctx.run(f"pnpm exec biome check {files_string}")
     ctx.run("pnpm exec tsc --noEmit")
 
 

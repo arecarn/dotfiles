@@ -93,15 +93,16 @@ local plugins = {
             })
 
             -- Surround (replaces vim-sandwich)
+            -- Capital-S prefix: bare 's' is substitute.nvim's operator (see CORE EDITING)
             require("mini.surround").setup({
                 mappings = {
-                    add = "sa",
-                    delete = "sd",
-                    find = "sf",
-                    find_left = "sF",
-                    highlight = "sh",
-                    replace = "sr",
-                    update_n_lines = "sn",
+                    add = "Sa",
+                    delete = "Sd",
+                    find = "Sf",
+                    find_left = "SF",
+                    highlight = "Sh",
+                    replace = "Sr",
+                    update_n_lines = "Sn",
                 },
             })
 
@@ -239,6 +240,22 @@ local plugins = {
     },
     { "tpope/vim-repeat", event = "VeryLazy" },
     { "vim-scripts/visualrepeat", event = "VeryLazy" },
+    {
+        "gbprod/substitute.nvim",
+        keys = { "s", { "s", mode = "x" }, "ss" },
+        opts = {
+            range = { confirm = true }, -- prompt per match, like :substitute//gc
+        },
+        config = function(_, opts)
+            local substitute = require("substitute")
+            substitute.setup(opts)
+            -- s{motion}: substitute over the range (e.g. sG = cursor to end of file,
+            -- the direct successor to the old sG mapping)
+            vim.keymap.set("n", "s", require("substitute.range").operator, { desc = "Substitute range" })
+            vim.keymap.set("x", "s", require("substitute.range").visual, { desc = "Substitute range" })
+            vim.keymap.set("n", "ss", require("substitute.range").word, { desc = "Substitute word in range" })
+        end,
+    },
 
     ---------------------------------------------------------------------------}}}
     -- FUZZY FINDING                                                          {{{

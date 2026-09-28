@@ -409,10 +409,9 @@ map("n", "!z=", ":<C-u>spellrepall<CR>")
 -------------------------------------------------------------------------------}}}
 -- SEARCH & SUBSTITUTE                                                        {{{
 --------------------------------------------------------------------------------
--- Substitute shortcuts with hlsearch enabled
-map("n", "sl", ":set hlsearch<CR>:redraw<CR>:substitute///gc<Left><Left><Left>")
-map("n", "sG", ":set hlsearch<CR>:redraw<CR>:.,$substitute///gc<Left><Left><Left>")
-map("n", "se", ":set hlsearch<CR>:redraw<CR>:%substitute///gc<Left><Left><Left>")
+-- Substitute is an operator (see gbprod/substitute.nvim in plugins.lua): press
+-- 's' then a motion to substitute over that range, e.g. 'sG' substitutes from
+-- the cursor to end of file, 's_' substitutes the current line.
 
 --- Add word or selection to search pattern (OR)
 ---@param mode string 'n' for normal, 'x' for visual

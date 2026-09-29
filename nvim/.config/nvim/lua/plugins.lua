@@ -21,6 +21,8 @@ vim.opt.rtp:prepend(lazypath)
 -------------------------------------------------------------------------------}}}
 -- PLUGIN SPECS                                                               {{{
 --------------------------------------------------------------------------------
+local disabled_ai_tool = { cmd = { "sidekick-disabled-tool" } }
+
 local plugins = {
 
     ---------------------------------------------------------------------------}}}
@@ -582,9 +584,9 @@ local plugins = {
     {
         "MeanderingProgrammer/render-markdown.nvim",
         dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
-        ft = { "markdown", "agentic", "AgenticChat" },
+        ft = { "markdown" },
         opts = {
-            file_types = { "markdown", "agentic", "AgenticChat" },
+            file_types = { "markdown" },
         },
     },
     { "aklt/plantuml-syntax", ft = "plantuml" },
@@ -717,68 +719,92 @@ local plugins = {
     -- AI
     ---------------------------------------------------------------------------
     {
-        "carlos-algms/agentic.nvim",
-
-        opts = function()
-            return {
-                provider = "claude-agent-acp",
-                spinner_chars = {
-                    thinking = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+        "folke/sidekick.nvim",
+        opts = {
+            nes = { enabled = false },
+            cli = {
+                mux = {
+                    backend = "herdr",
+                    enabled = vim.env.HERDR_ENV == "1",
                 },
-            }
-        end,
-        -- these are just suggested keymaps; customize as desired
+                tools = {
+                    aider = disabled_ai_tool,
+                    amazon_q = disabled_ai_tool,
+                    claude = {},
+                    codex = disabled_ai_tool,
+                    copilot = disabled_ai_tool,
+                    crush = disabled_ai_tool,
+                    cursor = disabled_ai_tool,
+                    gemini = disabled_ai_tool,
+                    grok = disabled_ai_tool,
+                    opencode = disabled_ai_tool,
+                    pi = {},
+                    qwen = disabled_ai_tool,
+                },
+            },
+        },
         keys = {
             {
-                "<leader>at",
+                "<C-.>",
                 function()
-                    require("agentic").toggle()
+                    require("sidekick.cli").focus()
                 end,
-                mode = { "n" },
-                desc = "Toggle Agentic Chat",
+                mode = { "n", "t", "i", "x" },
+                desc = "Sidekick focus",
+            },
+            {
+                "<leader>aa",
+                function()
+                    require("sidekick.cli").toggle({ filter = { installed = true } })
+                end,
+                desc = "Sidekick toggle CLI",
+            },
+            {
+                "<leader>as",
+                function()
+                    require("sidekick.cli").select({ filter = { installed = true } })
+                end,
+                desc = "Sidekick select CLI",
+            },
+            {
+                "<leader>ap",
+                function()
+                    require("sidekick.cli").prompt()
+                end,
+                mode = { "n", "x" },
+                desc = "Sidekick select prompt",
+            },
+            {
+                "<leader>af",
+                function()
+                    require("sidekick.cli").send({ msg = "{file}" })
+                end,
+                desc = "Sidekick send file",
             },
             {
                 "<leader>av",
                 function()
-                    require("agentic").add_selection_or_file_to_context()
+                    require("sidekick.cli").send({ msg = "{selection}" })
                 end,
-                mode = { "n", "v" },
-                desc = "Add file or selection to Agentic to Context",
+                mode = "x",
+                desc = "Sidekick send selection",
             },
             {
-                "<leader>an",
+                "<leader>ad",
                 function()
-                    require("agentic").new_session()
+                    require("sidekick.cli").close()
                 end,
-                mode = { "n" },
-                desc = "New Agentic Session",
-            },
-            {
-                "<leader>ar", -- ai Restore
-                function()
-                    require("agentic").restore_session()
-                end,
-                desc = "Agentic Restore session",
-                silent = true,
-                mode = { "n" },
-            },
-            {
-                "<leader>ad", -- ai Diagnostics
-                function()
-                    require("agentic").add_current_line_diagnostics()
-                end,
-                desc = "Add current line diagnostic to Agentic",
-                mode = { "n" },
-            },
-            {
-                "<leader>aD", -- ai all Diagnostics
-                function()
-                    require("agentic").add_buffer_diagnostics()
-                end,
-                desc = "Add all buffer diagnostics to Agentic",
-                mode = { "n" },
+                desc = "Sidekick detach CLI",
             },
         },
+    },
+    {
+        "UN-9BOT/sidekick_herdr",
+        dependencies = { "folke/sidekick.nvim" },
+        cond = vim.env.HERDR_ENV == "1",
+        config = function()
+            require("sidekick_herdr").setup()
+        end,
     },
 
     ---------------------------------------------------------------------------}}}

@@ -21,6 +21,9 @@ zsh_sources=(
     "$ZSH_CONFIG_DIR/herdr.zsh"
     "$ZSH_CONFIG_DIR/tmux.zsh"
     "$ZSH_CONFIG_DIR/prompt.zsh"
+    # Machine-local exports in POSIX sh, shared with non-zsh consumers such as
+    # systemd services. Before .zshrc_local, which may build on them.
+    "$HOME/.env"
     "$HOME/.zshrc_local"
 )
 # Use a namespaced loop variable: a plain `f` would clobber the `f` shortcut

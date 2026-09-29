@@ -39,6 +39,9 @@
       tags:
         - npm-config
     - ansible.builtin.import_tasks: tasks/npm-packages.yml
+    - ansible.builtin.import_tasks: tasks/paseo.yml
+      tags:
+        - paseo
     - ansible.builtin.import_tasks: tasks/rust-packages.yml
     - ansible.builtin.import_tasks: tasks/lua-linters.yml
       tags:

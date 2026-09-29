@@ -79,6 +79,10 @@ pi-session-recap:
 pi-session-ask:
   pi_package: npm:pi-session-ask
 
+# Session-scoped goals with guarded automatic continuation; review before bumping.
+pi-goal:
+  pi_package: npm:@narumitw/pi-goal@0.54.8
+
 ticktick:
   mcp:
     type: http

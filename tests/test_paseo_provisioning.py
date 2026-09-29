@@ -13,6 +13,7 @@ def _tasks():
 
 
 def test_paseo_is_installed_before_its_daemon_is_configured():
+    """A fresh install must supply the CLI before configuring its daemon."""
     packages = YAML_SAFE.load((ROOT / "ansible/group_vars/all.yml").read_text())
     site = (ROOT / "ansible/site.yml").read_text()
     assert "@getpaseo/cli" in packages["npm_global_packages"]
@@ -20,6 +21,7 @@ def test_paseo_is_installed_before_its_daemon_is_configured():
 
 
 def test_listener_is_set_before_service_starts_and_only_when_needed():
+    """Avoid exposing the daemon or restarting it on unchanged runs."""
     tasks = _tasks()
     names = [task["name"] for task in tasks]
     assert names.index("Read Paseo listener") < names.index(
@@ -37,6 +39,7 @@ def test_listener_is_set_before_service_starts_and_only_when_needed():
 
 
 def test_user_service_has_local_agent_path_and_supervised_foreground_process():
+    """The boot service must find user tools without publishing credentials."""
     tasks = _tasks()
     unit = next(task for task in tasks if task["name"] == "Install Paseo user service")
     content = unit["ansible.builtin.copy"]["content"]
@@ -52,6 +55,7 @@ def test_user_service_has_local_agent_path_and_supervised_foreground_process():
 
 
 def test_live_service_operations_are_skipped_in_ci_and_enable_boot_start():
+    """CI lacks a user bus, but real hosts must enable boot startup."""
     tasks = _tasks()
     linger = next(
         task for task in tasks if task["name"] == "Enable Paseo user lingering"

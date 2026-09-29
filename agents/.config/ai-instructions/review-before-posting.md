@@ -19,6 +19,13 @@ first. Show the full text in chat and wait for an explicit yes before posting.
 - **Show the text verbatim, as it will appear.** A summary of what you plan to
   say is not reviewable, and neither is a description of the structure. Post what
   I approved rather than a re-worded version of it.
+- **Reference controlled boilerplate instead of reproducing it.** When most of
+  the proposed text comes unchanged from an existing controlled or authoritative
+  source, identify that source and show how the proposal fills in or changes it.
+  Include the title and destination, human-authored prose, completed
+  placeholders, role and quick-action assignments, checked or removed items, and
+  other deviations from the source. Provide the complete rendered text when
+  requested. Explicit approval is still required before posting.
 - **Show a batch whole before posting any of it.** When one action writes prose
   to several places, present all of it in one pass so I can see the set, not a
   drip of approvals with the earlier ones already live.

@@ -1,0 +1,76 @@
+---
+# The npm task installs the CLI into the user's prefix before this task file.
+# Keep its state under ~/.paseo, outside the public stow tree.
+- name: Read Paseo listener
+  ansible.builtin.command:
+    cmd: "{{ user_home }}/.local/bin/paseo daemon config get daemon.listen"
+  register: paseo_listener
+  changed_when: false
+  become: false
+  check_mode: false
+
+- name: Set Paseo loopback listener
+  ansible.builtin.command:
+    cmd: "{{ user_home }}/.local/bin/paseo daemon config set daemon.listen 127.0.0.1:6767 --string"
+  when: (paseo_listener.stdout | from_json).value != '127.0.0.1:6767'
+  register: paseo_listener_change
+  become: false
+
+- name: Create systemd user unit directory for Paseo
+  ansible.builtin.file:
+    path: "{{ user_home }}/.config/systemd/user"
+    state: directory
+    mode: "0755"
+  become: false
+
+# systemd user managers do not inherit an interactive shell's PATH. Include
+# the two user-local locations used by npm and pnpm so launched agents work.
+- name: Install Paseo user service
+  ansible.builtin.copy:
+    dest: "{{ user_home }}/.config/systemd/user/paseo.service"
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Paseo agent daemon
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      Environment=HOME={{ user_home }}
+      Environment=PATH={{ user_home }}/.local/bin:{{ user_home }}/.local/share/pnpm:/usr/local/bin:/usr/bin:/bin
+      EnvironmentFile=-{{ user_home }}/.config/paseo/provider.env
+      ExecStart={{ user_home }}/.local/bin/paseo daemon run
+      Restart=on-failure
+      RestartSec=5
+
+      [Install]
+      WantedBy=default.target
+  register: paseo_unit_change
+  become: false
+
+# tasks.py excludes desktop-only tags in CI, where no user bus exists. Unlike
+# desktop apps, this service runs on headless hosts outside CI via lingering.
+- name: Enable Paseo user lingering
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ ansible_facts['user_id'] }}"
+    creates: "/var/lib/systemd/linger/{{ ansible_facts['user_id'] }}"
+  become: false
+  tags:
+    - desktop-only
+
+- name: Start Paseo user service
+  ansible.builtin.systemd_service:
+    name: paseo.service
+    scope: user
+    daemon_reload: true
+    enabled: true
+    state: >-
+      {{ 'restarted' if paseo_unit_change.changed or
+         paseo_listener_change.changed | default(false) else 'started' }}
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['user_uid'] }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+  become: false
+  tags:
+    - desktop-only

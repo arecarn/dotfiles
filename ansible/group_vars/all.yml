@@ -131,3 +131,4 @@ npm_prefix_subpath: ".local"
 
 npm_global_packages:
   - "@anthropic-ai/claude-code"
+  - "@getpaseo/cli"

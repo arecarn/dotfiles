@@ -6,153 +6,87 @@ model: haiku
 
 # Walkthrough
 
-Walk through a list of items individually. For each item, give the user enough
-background to decide, then let them choose an option, write their own, or open a
-discussion. When a decision produces prose or a concrete action, refine its
-direction and full output through separate approval gates. Record approved
-decisions and act on them — usually in a batch at the end.
+Walk through a list one item at a time. Give enough context to decide, let the
+user choose or discuss, review any resulting output, and act on approved
+decisions.
 
-This is the interactive, item-at-a-time pattern generalized to any list.
+Use this when each item deserves focused attention. Skip it when one bulk action
+is clearly right or the user has already decided every item.
 
-## When to use
+## 1. Establish the list
 
-Use this whenever a list deserves per-item attention rather than one blanket
-response:
+Get the items from the conversation or the source named in `$ARGUMENTS`. If the
+scope is unclear, ask. Restate the numbered list compactly and give the total.
 
-- A response produced a list of features, actions, findings, options, or tasks
-- The user explicitly asks to go "one by one" / "one at a time" / "individually"
-- A decision on each item is non-trivial and benefits from focused context
+## 2. Suggest batching
 
-Do **not** use it for a list where a single bulk action is obviously correct, or
-where the user already told you what to do with every item.
+Scan the list for items similar enough to decide the same way, or coupled
+enough that deciding one determines the others. Propose grouping those into a
+single decision point — for example, "items 3-5 all rename the same field;
+review them together?" — and let the user accept, decline, or adjust the
+grouping before walking through anything. Leave every other item at one item
+per decision point. This is a suggestion, never automatic: don't merge items
+just to move faster, and don't merge ones that differ in anything the decision
+depends on.
 
-## Step 1 — Establish the list
+## 3. Decide when to apply
 
-Identify the items to walk through:
+Approved decisions are normally collected and applied together at the end. If
+`--apply-as-you-go` was requested, apply each approved decision before moving
+on. Ask about applying early only when an isolated, reversible action must
+happen before the next decision point makes sense.
 
-- **From conversation** — if a list was just produced (yours or the user's), use
-  it. Restate it compactly so both sides agree on scope.
-- **From a source** — if `$ARGUMENTS` names a file, ticket query, diff, or topic,
-  gather the items first (read files, grep, run commands as needed).
-- **Ambiguous** — if it's unclear what the items are, ask before starting.
+## 4. Present one item or batch
 
-Number the items and confirm the set before diving in. Note the total so the user
-knows the length (e.g. "8 items").
+Show only the current decision point:
 
-## Step 2 — Set the decision-handling mode
+- `Item N of M: <short title>` — for a batch, `Items 3-5 of M: <shared title>`,
+  where M counts decision points, not original list items
+- enough background to decide, including important tradeoffs or constraints;
+  for a batch, what the items share and anything that differs between them
+- up to three useful choices when there are natural options
 
-Decide how decisions get applied. Default is **collect-then-apply**:
+Always allow the user to choose a suggestion, provide a custom answer, or say
+**discuss**. A pure review may simply invite feedback rather than inventing
+options. Use a native question picker when available; otherwise use a numbered
+list.
 
-- **Collect-then-apply (default)** — record each decision as you go, take no
-  action until the end, then apply the whole batch. Lets the user see the full
-  picture before anything changes. Prefer this.
-- **Apply-as-you-go** — act on each decision immediately before advancing. Use
-  only when an item's action is isolated and reversible, or when acting on it
-  unblocks the *next* item's context. Passing `--apply-as-you-go` forces this
-  mode for the whole run.
+If the user says **discuss**, stay on this item, answer questions, and refine the
+choices until they decide. Record skipped or deferred items and advance.
 
-When an item clearly suits apply-as-you-go (e.g. it must run before the next item
-makes sense), surface that and ask whether to apply now or queue it. Otherwise
-stay in collect mode silently.
+## 5. Review the result
 
-## Step 3 — Present each item, one at a time
+If a decision produces no authored prose or concrete action, record it and
+advance.
 
-For the current item, show:
+Otherwise, show one complete review of the proposed output:
 
-1. **Header** — `Item N of M: <short title>`
-2. **Background** — enough to decide, sized to the item: what it is, why it
-   matters, and any tradeoffs or constraints. Keep it tight; link to
-   `file_path:line` where relevant. Don't dump the whole list's context — just
-   this item's.
-3. **Options** — suggested choices, *if you have any*. Suggestions are optional:
-   for a pure review ("does this look right?"), present the item and invite
-   feedback without inventing options.
+- authored prose verbatim; for an edit to existing text, a unified diff in a
+  `diff` block with enough surrounding lines to place each change, plus the
+  full text when the edit amounts to a rewrite rather than a targeted change
+- for an action, the affected values, file change, state transition, command
+  effect, or equivalent result
+- the impact, when it isn't obvious from the output alone: what else the
+  change touches, who or what will see it, and whether it can be undone
 
-### Presenting options
+Offer **Approve**, **Revise**, and **Discuss more**. Incorporate feedback and
+present the complete revised review until the user explicitly approves it.
 
-**Prefer using `AskUserQuestion` when available** (e.g. Claude Code's native tool).
-It renders a cleaner picker than text lists. Use it whenever you have options to
-present — the tool auto-injects "Other" for custom input.
+Record only approved output, against every item it covers when the decision was
+made as a batch. Apply it now in apply-as-you-go mode or retain it for the final
+batch, then continue with the next decision point.
 
-For `AskUserQuestion`:
-- Fill up to 3 explicit suggestion options + 1 "Discuss more" option (4 total)
-- Do **not** add a separate "write your own" option — "Other" already covers custom input
-- The tool auto-validates that one option is selected or "Other" text provided
-- Handles all three escapes: pick option, provide custom input via "Other", or discuss
+## 6. Apply and summarize
 
-For contexts without `AskUserQuestion` (e.g. opencode), fall back to **text numbered
-list**: background as prose, then suggested options numbered `1.`, `2.`, … in the body.
-After the numbered suggestions include:
+Apply collected decisions as a batch. Approval normally authorizes this step;
+confirm again only when an action is destructive or the relevant circumstances
+have changed since approval.
 
-- a custom slot — "…or describe your own", and
-- a discuss-more slot — "…or say *discuss* to talk it through".
+Finish with a concise list of decisions and their status, one row per original
+list item even when several shared a batched decision — name the batch
+alongside it. Use a table only when it improves a long or complex summary.
+Identify anything deferred or not reviewed.
 
-Every item must offer the same three escapes: pick an option, provide custom input,
-or discuss further.
-
-## Step 4 — Develop and approve the response
-
-- **Discuss more** → go back and forth on *this item only*. Bring new context,
-  answer questions, and refine options until the user chooses a direction.
-- **Skip / defer / no action** → record the disposition and advance. Don't lose a
-  deferred item — it shows up in the summary.
-- **Picked an option / gave custom input** → determine whether the decision
-  produces authored prose or a concrete action. If it does, complete both gates
-  below. Otherwise record the decision and advance.
-
-### Gate 1: Approve the direction
-
-Present a concise summary of the proposed outcome, scope, and important choices,
-not the full artifact. Offer **Approve direction**, **Revise direction**, and
-**Discuss more** (through `AskUserQuestion` when available, otherwise as a text
-list). Incorporate feedback and present a revised summary until the user
-explicitly approves the direction.
-
-### Gate 2: Approve the full output
-
-After direction approval, present the complete proposed output:
-
-- Show authored prose verbatim as it would appear.
-- For a concrete action, show the exact reviewable preview: affected fields and
-  values, file change, state transition, command effect, or equivalent result.
-
-Offer **Approve output**, **Revise output**, and **Discuss more**. Incorporate
-feedback and present the complete revised output until the user explicitly
-approves it. If feedback materially changes the approved outcome, scope, or
-important choices, return to Gate 1; after the revised direction is approved,
-produce a new full output for Gate 2.
-
-Only the fully approved output is the item's recorded decision. In
-apply-as-you-go mode, apply it now; in collect-then-apply mode, store it for the
-final batch. Then advance and show progress (`Item 4 of 8`).
-
-## Step 5 — Apply and summarize
-
-At the end:
-
-- In **collect-then-apply** mode, replay the recorded, fully approved outputs and
-  apply them as a batch now. Confirm the batch first if any action is destructive
-  or outward-facing. Use whatever tools the surrounding session allows to carry
-  out each decision (edits, commands, ticket updates, etc.) — this skill
-  orchestrates the walk-through; it doesn't restrict how decisions get executed.
-- Show a final summary table:
-
-  | # | Item | Decision | Status |
-  |---|------|----------|--------|
-  | 1 | …    | option B | applied |
-  | 2 | …    | custom: … | applied |
-  | 3 | …    | deferred | — |
-  | 4 | …    | —        | not reviewed |
-
-  Status values: `applied`, `deferred`, `not reviewed` (for items left when a run
-  is abandoned early), `—` for anything with no action.
-
-- List anything deferred or still needing attention.
-
-## Notes
-
-- Keep momentum: one item on screen at a time, minimal preamble, clear progress.
-- Match background depth to stakes — a one-liner for an obvious item, a paragraph
-  with tradeoffs for a consequential one.
-- The user can always abandon the walk-through; respect "just do them all" or
-  "stop" at any point, and mark unreviewed items accordingly in the summary.
+Keep momentum throughout: minimal preamble, context matched to the stakes, and
+one decision point on screen at a time. If the user says **stop** or **just do
+them all**, respect it and summarize what remains.

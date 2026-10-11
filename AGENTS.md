@@ -22,16 +22,9 @@ looking for. These are facts and procedures; the rules in this file take
 precedence.
 
 ## Building and Running
-The project uses `uv` for environment management. Tasks are executed via `invoke`.
-
-| Task | Command | Description |
-| :--- | :--- | :--- |
-| **Setup Environment** | `uv sync` | Install Python dependencies. |
-| **Stow Configurations**| `uv run inv stow` | Symlink dotfiles into the home directory using `dploy`. |
-| **Unstow** | `uv run inv unstow` | Remove symlinks created by `stow`. |
-| **Provision System** | `uv run inv provision` | Install system packages (Ansible on Linux, Chocolatey on Windows). |
-| **Linting** | `uv run inv lint` | Run all linters (ShellCheck, yamllint, Pylint, Ruff, stylua, luacheck, Biome, tsc). |
-| **Clean Repo** | `uv run inv clean` | Interactively clean untracked files using `git clean`. |
+The project uses `uv` for environment management and `invoke` for tasks; list
+them with `uv run inv --list`. There is no Makefile or Docker here, so the
+`inv` tasks are the interface that CI calls, and `lint` is the check CI runs.
 
 ## Development Conventions
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
@@ -39,30 +32,22 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **This repo is public:** config that is private goes in a `dotfiles_local` repo instead — employer-internal hostnames, registries, proxies, project or team names, work email addresses, VPN or corporate tooling, and equally any personal config the user would not publish. A `dotfiles_local` exists per work or personal setup, and can span several machines. Keep what lands here public-safe and portable.
 - **`uv run` rewrites `uv.lock`** to the machine's configured package index, so an unrelated `uv run inv lint` leaves ~250 changed lines pointing at an internal host. Revert it (`git checkout -- uv.lock`) before every commit and never `git add -A` here — see [docs/gotchas/uv-run-rewrites-uv-lock-to-an-internal-registry.md](docs/gotchas/uv-run-rewrites-uv-lock-to-an-internal-registry.md).
 - **Windows symlink privilege:** stowing on Windows needs an elevated shell or Developer Mode — see [docs/gotchas/windows-symlink-creation-needs-elevation.md](docs/gotchas/windows-symlink-creation-needs-elevation.md).
-- **Linting Standards:**
-    - **Python:** `ruff` and `pylint`.
-    - **Shell:** `shellcheck`.
-    - **YAML:** `yamllint`.
-    - **Lua:** `stylua` and `luacheck`.
-    - **TypeScript:** `biome` (lint and format) and `tsc --noEmit` (types), both from
-      the project's own `pnpm` install rather than a global one.
 - **The TypeScript toolchain installs itself:** `lint_typescript` has a
   `pnpm_install` pre-task that runs `pnpm install --frozen-lockfile` when
   `node_modules/` is absent, so a fresh clone can lint and push with no manual
   setup. CI relies on this too and has no install step of its own — but pnpm
   only reaches PATH via provisioning, so linting before provisioning finds none.
-- **Branch, don't PR.** The user is the sole author and user of this repo, so
-  changes go straight to `main` once CI is green. After the work is approved,
+- **Branch, merge on green.** The user is the sole author and user of this repo,
+  so changes go straight to `main` once CI is green. After the work is approved,
   carry the whole cycle without re-asking per step: branch, commit, push, watch
   CI by SHA, and on green merge `--no-ff` into `main`, push, and delete the
-  branch. A red run is different — investigate and report, never merge or push a
-  speculative fix. Don't open a pull request or hand back a "create a PR" link as
-  the deliverable.
-- **Watch CI after every push, using the `watch-ci` skill.** A green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. The skill is the procedure: it selects the run by commit SHA *and* workflow, tells a cancelled run from a failed one, and survives a dropped connection. Do not improvise a poll loop or follow a recipe written here or anywhere else in this repo instead — a repo-local variant is how those distinctions get lost. CI here takes ~7 min.
+  branch. The merged branch is the deliverable, with no change request to open. A
+  red run is different: investigate and report, and merge or push nothing
+  speculative.
+- **Watch CI after every push with the `watch-ci` skill.** A green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. The skill selects the run by commit SHA *and* workflow and tells a cancelled run from a failed one. Polling through Monitor is fine.
 - **Private instructions are read, not imported:** the generated instruction files
   point every agent at `~/.config/ai-instructions/local.md`, which a `dotfiles_local`
-  repo places there and which never enters this repo. Claude's `@` imports are no
-  longer used, so their resolution rules no longer apply here.
+  repo places there and which never enters this repo.
 - **Instruction files are generated:** global and project instruction files are
   assembled from fragments in `agents/.config/ai-instructions/` by
   `uv run inv gen-instructions`, per `manifest.yaml`. Edit the fragments, never

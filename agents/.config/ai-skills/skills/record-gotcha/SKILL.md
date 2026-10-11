@@ -44,6 +44,13 @@ the gotcha records the behaviour that forced it.
 One file per trap in `docs/gotchas/`, named for the trap and never numbered —
 entries get deleted when they stop reproducing, and numbering would go gappy.
 
+Put it wherever it can be stated fully. When the project's instructions name a
+private companion checkout for traps that cannot be public (internal hostnames,
+employer tooling, credential variable names, project or team names), a trap
+needing that detail goes there. When only part of it is sensitive, split it: the
+public half describes the mechanism and the private half supplies the specifics.
+Without such a checkout, everything goes in `docs/gotchas/`.
+
 ```markdown
 # <the symptom, as a short label>
 

@@ -13,6 +13,13 @@ instructions.
   dispatch for all Make goals, direct execution in CI, linked-worktree mounts,
   and keeping one build image pinned across Compose and CI
 
+# Writing for review
+
+* [Change request descriptions and review replies](change-requests.md) - Read
+  when writing or editing a merge request or pull request description, or
+  replying that review feedback was addressed: the final-diff rule, the
+  Verification section, preserving templates, and naming the commit SHA
+
 # Agent workspaces
 
 * [Herdr workspace and agent orchestration](herdr.md) - everyday Herdr pane and

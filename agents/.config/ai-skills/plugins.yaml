@@ -36,14 +36,12 @@
 #     args: [...]               # for stdio
 #     headers: {TOKEN: "${ENV_VAR}"}   # ${VAR} is expanded by both harnesses
 
-# Ships in the built-in official marketplace, so there is no marketplace to add
-# and no opencode equivalent to install.
+# Installed from the upstream repo's own marketplace: the official marketplace
+# pins one commit and lags upstream releases.
 mattpocock-skills:
+  repo: mattpocock/skills
+  plugin: mattpocock-skills@mattpocock
   pi_package: git:github.com/mattpocock/skills
-  install:
-    claude: claude plugin install mattpocock-skills@claude-plugins-official
-  update:
-    claude: claude plugin update mattpocock-skills@claude-plugins-official
 
 superpowers:
   repo: obra/superpowers

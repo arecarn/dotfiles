@@ -19,16 +19,9 @@ looking for. These are facts and procedures; the rules in this file take
 precedence.
 
 ## Building and Running
-The project uses `uv` for environment management. Tasks are executed via `invoke`.
-
-| Task | Command | Description |
-| :--- | :--- | :--- |
-| **Setup Environment** | `uv sync` | Install Python dependencies. |
-| **Stow Configurations**| `uv run inv stow` | Symlink dotfiles into the home directory using `dploy`. |
-| **Unstow** | `uv run inv unstow` | Remove symlinks created by `stow`. |
-| **Provision System** | `uv run inv provision` | Install system packages (Ansible on Linux, Chocolatey on Windows). |
-| **Linting** | `uv run inv lint` | Run all linters (ShellCheck, yamllint, Pylint, Ruff, stylua, luacheck, Biome, tsc). |
-| **Clean Repo** | `uv run inv clean` | Interactively clean untracked files using `git clean`. |
+The project uses `uv` for environment management and `invoke` for tasks; list
+them with `uv run inv --list`. There is no Makefile or Docker here, so the
+`inv` tasks are the interface that CI calls, and `lint` is the check CI runs.
 
 ## Development Conventions
 - **Cross-Platform Compatibility:** Logic in `tasks.py` detects the environment (Windows, Linux) to ensure tasks like `provision` and `stow` use the correct platform-specific tools.
@@ -36,30 +29,22 @@ The project uses `uv` for environment management. Tasks are executed via `invoke
 - **This repo is public:** config that is private goes in a `dotfiles_local` repo instead — employer-internal hostnames, registries, proxies, project or team names, work email addresses, VPN or corporate tooling, and equally any personal config the user would not publish. A `dotfiles_local` exists per work or personal setup, and can span several machines. Keep what lands here public-safe and portable.
 - **`uv run` rewrites `uv.lock`** to the machine's configured package index, so an unrelated `uv run inv lint` leaves ~250 changed lines pointing at an internal host. Revert it (`git checkout -- uv.lock`) before every commit and never `git add -A` here — see [docs/gotchas/uv-run-rewrites-uv-lock-to-an-internal-registry.md](docs/gotchas/uv-run-rewrites-uv-lock-to-an-internal-registry.md).
 - **Windows symlink privilege:** stowing on Windows needs an elevated shell or Developer Mode — see [docs/gotchas/windows-symlink-creation-needs-elevation.md](docs/gotchas/windows-symlink-creation-needs-elevation.md).
-- **Linting Standards:**
-    - **Python:** `ruff` and `pylint`.
-    - **Shell:** `shellcheck`.
-    - **YAML:** `yamllint`.
-    - **Lua:** `stylua` and `luacheck`.
-    - **TypeScript:** `biome` (lint and format) and `tsc --noEmit` (types), both from
-      the project's own `pnpm` install rather than a global one.
 - **The TypeScript toolchain installs itself:** `lint_typescript` has a
   `pnpm_install` pre-task that runs `pnpm install --frozen-lockfile` when
   `node_modules/` is absent, so a fresh clone can lint and push with no manual
   setup. CI relies on this too and has no install step of its own — but pnpm
   only reaches PATH via provisioning, so linting before provisioning finds none.
-- **Branch, don't PR.** The user is the sole author and user of this repo, so
-  changes go straight to `main` once CI is green. After the work is approved,
+- **Branch, merge on green.** The user is the sole author and user of this repo,
+  so changes go straight to `main` once CI is green. After the work is approved,
   carry the whole cycle without re-asking per step: branch, commit, push, watch
   CI by SHA, and on green merge `--no-ff` into `main`, push, and delete the
-  branch. A red run is different — investigate and report, never merge or push a
-  speculative fix. Don't open a pull request or hand back a "create a PR" link as
-  the deliverable.
-- **Watch CI after every push, using the `watch-ci` skill.** A green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. The skill is the procedure: it selects the run by commit SHA *and* workflow, tells a cancelled run from a failed one, and survives a dropped connection. Do not improvise a poll loop or follow a recipe written here or anywhere else in this repo instead — a repo-local variant is how those distinctions get lost. CI here takes ~7 min.
+  branch. The merged branch is the deliverable, with no change request to open. A
+  red run is different: investigate and report, and merge or push nothing
+  speculative.
+- **Watch CI after every push with the `watch-ci` skill.** A green local run is not evidence — see [docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md](docs/gotchas/lint-passing-locally-proves-nothing-about-ci.md) for why. The skill selects the run by commit SHA *and* workflow and tells a cancelled run from a failed one. Polling through Monitor is fine.
 - **Private instructions are read, not imported:** the generated instruction files
   point every agent at `~/.config/ai-instructions/local.md`, which a `dotfiles_local`
-  repo places there and which never enters this repo. Claude's `@` imports are no
-  longer used, so their resolution rules no longer apply here.
+  repo places there and which never enters this repo.
 - **Instruction files are generated:** global and project instruction files are
   assembled from fragments in `agents/.config/ai-instructions/` by
   `uv run inv gen-instructions`, per `manifest.yaml`. Edit the fragments, never
@@ -89,17 +74,10 @@ Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, both created
 
 ### Gotchas
 
-[docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. Search with `grep -ri "<term>" docs/gotchas/`. The `record-gotcha` and `review-gotchas` skills drive writing and re-verifying entries.
+[docs/gotchas/](docs/gotchas/) holds non-obvious traps confirmed the hard way, so the same debugging is not paid for twice. The `record-gotcha` and `review-gotchas` skills hold the rules for writing and re-verifying entries.
 
-**This directory is not the whole set.** A trap that cannot be described without private detail (internal hostnames, employer tooling, credential variable names, project or team names) is recorded in the `dotfiles_local` checkout instead, so searching here alone can come up empty on a trap already known. Search both:
+**This directory is not the whole set.** A trap that cannot be described without private detail is recorded in the `dotfiles_local` checkout instead, so searching here alone can come up empty on a trap already known. Search both; a missing `dotfiles_local` is normal and the grep just finds nothing:
 
 ```bash
 grep -ri "<term>" docs/gotchas/ ~/dotfiles_local/ 2>/dev/null
 ```
-
-When recording a new one, put it wherever it can be stated fully: public-safe traps here, everything else there. Split an entry across both when only part of it is sensitive — the public half describes the mechanism and the private half supplies the specifics. A missing `dotfiles_local` is normal; the grep just finds nothing.
-
-- **One trap per file, named for the trap**, leading with the symptom you would grep for mid-debug. Deliberately unnumbered, unlike ADRs: entries are deleted when they stop reproducing, which would leave numbering gappy.
-- **A gotcha is not an ADR.** Something *decided* — alternatives weighed, a call made — goes in `docs/adr/`. Something the system simply does, that nobody chose, goes here.
-- **Every entry ends with a `**Confirmed:**` line** — the date it last reproduced and what against. Without it a live trap is indistinguishable from one fixed two years ago. Never backfill a date you cannot stand behind; write `unknown, predates this convention`.
-- **Review on a trigger, not a calendar:** when a tool an entry names is upgraded, when its symptom recurs, or when you open it mid-debug and it does not help. Then update the `**Confirmed:**` line, or delete the entry if it no longer reproduces or a check now prevents it. **Deletion is the goal, not the failure case** — a trap engineered out of existence beats the best entry describing it.

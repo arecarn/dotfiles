@@ -24,7 +24,9 @@ Reviews run on a trigger, not a calendar. Take the entries the trigger touches:
   says `unknown`.
 
 Read each entry in full before judging it. `grep -ri "<term>" docs/gotchas/`
-finds the ones naming a tool.
+finds the ones naming a tool. When the project's instructions name a private
+companion checkout for traps that cannot be public, search it too and review its
+entries the same way; a missing checkout is normal and finds nothing.
 
 ## 2. Try to reproduce each one
 

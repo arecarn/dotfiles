@@ -73,11 +73,6 @@ def tolerating_windows_symlink_failure(what):
 # currently the only package directory we own config inside; add a sibling here
 # when we own config in another.
 #
-# herdr keeps its running server's state next to its config in ~/.config/herdr:
-# two unix sockets, two logs, and a session.json naming every open workspace,
-# tab, and cwd. This repo stows only config.toml there, so folding would put a
-# live server's sockets and session layout in this public repo's working tree.
-#
 # ~/.config/ai-knowledge is the agent-knowledge equivalent of ai-instructions:
 # this repo stows config.yaml there, and on a work machine a dotfiles_local repo
 # adds config_local.yaml beside it. Folding would land that private file -- work
@@ -97,7 +92,6 @@ _FOLD_BARRIERS = (
     pathlib.PurePath(".pi/agent/extensions/subagent"),
     pathlib.PurePath(".config/ai-instructions"),
     pathlib.PurePath(".config/ai-knowledge"),
-    pathlib.PurePath(".config/herdr"),
     pathlib.PurePath(".config/opencode"),
     pathlib.PurePath(".config/opencode/plugins"),
 )
@@ -107,7 +101,6 @@ _STOW_PACKAGES = [
     "claude-code",
     "ctags",
     "git",
-    "herdr",
     "neovide",
     "opencode",
     "pi",

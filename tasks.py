@@ -13,7 +13,7 @@ import sys
 from invoke import Exit, task
 from ruamel.yaml import YAML
 
-from manage import agents, maintain
+from manage import agents, maintain, repo
 from manage import provision as provision_data
 from manage.repo import EXCLUDE_DIRS, IS_WINDOWS
 from manage.stow import StowPlan, tolerating_windows_symlink_failure
@@ -403,68 +403,53 @@ def pi_update_plugins(ctx):
     _run_plugin_cmds(ctx, "pi", "update")
 
 
-def _version(command: str) -> str:
-    """First line of `<command> --version`, or "n/a" when it is not installed."""
-    try:
-        out = subprocess.run(
-            [command, "--version"], check=False, capture_output=True, text=True
-        )
-    except FileNotFoundError:
-        return "n/a"
-    return (out.stdout or out.stderr).strip().splitlines()[0] if out.stdout or out.stderr else "n/a"
+def _checked(ctx, cmd):
+    """Run `cmd`, echoing it, and raise if it exits non-zero.
 
-
-def _maintain_pull(ctx) -> bool:
-    """Pull dotfiles and dotfiles_local; return False if dotfiles was not updated.
-
-    Always the main checkouts under $HOME, never the current directory, which
-    may be a linked worktree where pulling means nothing.
+    `_run_cmd` warns instead of raising so provisioning can carry on; here a
+    silent failure would let the summary report a step that did not happen.
     """
-    ok = True
-    for name in ("dotfiles", "dotfiles_local"):
-        result = maintain.pull(pathlib.Path.home() / name)
-        suffix = f": {result.detail}" if result.detail else ""
-        print(f"pull {name}: {result.status}{suffix}")
-        if name == "dotfiles" and result.status in ("skipped", "missing"):
-            ok = False
-    return ok
+    result = ctx.run(cmd, echo=True, warn=True, pty=_USE_PTY)
+    if not result.ok:
+        raise RuntimeError(f"`{cmd}` exited {result.exited}")
 
 
-def _maintain_cli(ctx) -> None:
-    """Upgrade Claude Code and pi with user-level commands, so no sudo prompt."""
+def _maintain_cli():
     group_vars = YAML().load(pathlib.Path(ANSIBLE_DIR) / "group_vars" / "all.yml")
-    for command in maintain.cli_commands(group_vars, pathlib.Path.home()):
-        env = dict(os.environ)
-        env.update({k: v for k, v in command.env.items() if k != "PATH"})
-        if "PATH" in command.env:
-            env["PATH"] = f"{command.env['PATH']}{os.pathsep}{env['PATH']}"
-        print(f"$ {shlex.join(command.argv)}")
-        done = subprocess.run(command.argv, env=env, check=False)
-        if done.returncode != 0:
-            raise Exit(f"{shlex.join(command.argv)} failed (exit {done.returncode})")
+    commands = maintain.cli_commands(group_vars, pathlib.Path.home(), windows=IS_WINDOWS)
+    return maintain.upgrade_clis(commands, dict(os.environ))
 
 
-def _maintain_plugins(ctx) -> None:
-    claude_update_plugins(ctx)
-    pi_update_plugins(ctx)
-    _run_cmd(ctx, "pi update --models")
+def _maintain_plugins(ctx):
+    for cmd in (
+        *agents.plugins.load().commands("claude", "update"),
+        *agents.plugins.load().commands("pi", "update"),
+        "pi update --models",
+    ):
+        _checked(ctx, cmd)
 
 
-def _maintain_stow(ctx) -> None:
+def _maintain_stow():
     # Links point into the checkout that ran stow, and dangle once a linked
-    # worktree is removed.
-    if maintain.is_linked_worktree(pathlib.Path.cwd()):
-        raise Exit("refusing to stow from a linked worktree; run from the main checkout")
-    stow(ctx)
-    stow_skills(ctx)
+    # worktree is removed. Test the checkout StowPlan stows from, not the cwd.
+    if maintain.is_linked_worktree(repo.ROOT):
+        raise RuntimeError("refusing to stow from a linked worktree; run from the main checkout")
+    # Not wrapped in tolerating_windows_symlink_failure: a privilege failure
+    # must show as FAILED here rather than be reported as a skip and read as ok.
+    plan = StowPlan()
+    plan.clean()
+    plan.stow()
+    agents.skills_hub.stow_out(plan.home)
 
 
-def _maintain_local(ctx) -> None:
-    script = pathlib.Path.home() / "dotfiles_local" / "scripts" / "maintain-local"
+def _maintain_local():
+    script = pathlib.Path.home() / "dotfiles_local" / "scripts" / "maintain-local.py"
     if not script.exists():
-        print("local: no maintain-local script, nothing to do")
-        return
-    _run_cmd(ctx, shlex.quote(str(script)))
+        return maintain.Outcome("ok", "no maintain-local.py, nothing to do")
+    done = subprocess.run([sys.executable, str(script)], check=False)
+    if done.returncode != 0:
+        raise RuntimeError(f"maintain-local.py exited {done.returncode}")
+    return None
 
 
 @task(
@@ -472,7 +457,7 @@ def _maintain_local(ctx) -> None:
     help={
         "only": f"Comma-separated groups to run ({', '.join(maintain.GROUPS)})",
         "skip": "Comma-separated groups to leave out",
-    }
+    },
 )
 def maintain_agents(ctx, only="", skip=""):
     """Pull the dotfiles, upgrade Claude Code and pi, update plugins, and stow"""
@@ -481,37 +466,21 @@ def maintain_agents(ctx, only="", skip=""):
     except ValueError as err:
         raise Exit(str(err), code=2) from err
 
-    before = {"claude": _version("claude"), "pi": _version("pi")}
-    runners = {
-        "pull": _maintain_pull,
-        "cli": _maintain_cli,
-        "plugins": _maintain_plugins,
-        "stow": _maintain_stow,
-        "local": _maintain_local,
-    }
-    outcomes: dict[str, str] = {}
-    dotfiles_current = True
-    for group in groups:
-        print(f"\n== {group} ==")
-        if group == "stow" and not dotfiles_current:
-            outcomes[group] = "skipped (dotfiles was not pulled)"
-            continue
-        try:
-            result = runners[group](ctx)
-            if group == "pull" and result is False:
-                dotfiles_current = False
-            outcomes[group] = "ok"
-        except Exit as err:
-            outcomes[group] = f"FAILED: {err.message}"
-
-    after = {"claude": _version("claude"), "pi": _version("pi")}
-    print("\n== summary ==")
-    for group, outcome in outcomes.items():
-        print(f"{group:<8} {outcome}")
-    for tool in ("claude", "pi"):
-        changed = "" if before[tool] == after[tool] else f"  (was {before[tool]})"
-        print(f"{tool:<8} {after[tool]}{changed}")
-    if any(o.startswith("FAILED") for o in outcomes.values()):
+    tools = ("claude", "pi")
+    before = {tool: maintain.version(tool) for tool in tools}
+    results = maintain.run_groups(
+        groups,
+        {
+            "pull": lambda: maintain.pull_group(pathlib.Path.home()),
+            "cli": _maintain_cli,
+            "plugins": lambda: _maintain_plugins(ctx),
+            "stow": _maintain_stow,
+            "local": _maintain_local,
+        },
+    )
+    after = {tool: maintain.version(tool) for tool in tools}
+    print(maintain.format_summary(results, before, after))
+    if maintain.any_failed(results):
         raise Exit(code=1)
 
 
@@ -642,7 +611,6 @@ def lint_bundles(ctx):
     Check knowledge bundle indexes resolve and match their documents
     """
     # pylint: disable=unused-argument
-    from manage import repo  # pylint: disable=import-outside-toplevel
     from manage.knowledge import bundles  # pylint: disable=import-outside-toplevel
 
     problems = bundles.check(repo.ROOT)

@@ -16,17 +16,19 @@ cd ~/dotfiles && uv run inv maintain --skip cli
 
 Run it from the **main checkout**, not a linked worktree. The `stow` group
 refuses a worktree, because the home-directory symlinks would point into it
-and dangle once it is removed.
+and dangle once it is removed. It works on Linux and Windows. On Windows,
+stowing needs an elevated shell or Developer Mode, and without one the `stow`
+group shows `FAILED` rather than being quietly skipped.
 
 ## Groups, in run order
 
 | Group | Does |
 |---|---|
-| `pull` | `git pull --ff-only` in `~/dotfiles` and `~/dotfiles_local`. Never stashes. A dirty tree is pulled when git allows it and skipped, with git's reason, when an incoming change overlaps a local edit or history diverged. |
-| `cli` | Upgrades Claude Code (npm) and pi (pnpm) with user-level commands. Reads the package list from `ansible/group_vars/all.yml`, so it never prompts for sudo. |
+| `pull` | `git pull --ff-only` in `~/dotfiles` and `~/dotfiles_local`. Never stashes. A dirty tree is pulled when git allows it and skipped, with git's reason, when an incoming change overlaps a local edit or history diverged. Shows `partial` with the reason when a repo was skipped. |
+| `cli` | Upgrades Claude Code (npm) and pi (`pi update --self`) with user-level commands. Takes Claude's package and the npm prefix from `ansible/group_vars/all.yml`, so it never prompts for sudo. A tool that is not installed is skipped with a note. |
 | `plugins` | Claude plugin updates, pi package updates, `pi update --models`. |
-| `stow` | `inv stow` and `inv stow-skills`. Skipped when `~/dotfiles` was not pulled. |
-| `local` | Runs `~/dotfiles_local/scripts/maintain-local` if present (private checks such as the gateway model list). |
+| `stow` | Stows every package and the shared skills. Skipped when `~/dotfiles` was not pulled. |
+| `local` | Runs `~/dotfiles_local/scripts/maintain-local.py` if present: private checks that live outside this repo. |
 
 System packages are out of scope: they need sudo, so they stay with `inv provision`.
 
@@ -37,11 +39,10 @@ System packages are out of scope: they need sudo, so they stay with `inv provisi
 2. **Report** the summary the task prints: each group's outcome, and the
    before/after versions of `claude` and `pi`. Name any repo `pull` skipped and
    git's reason.
-3. **Read out anything `local` flagged.** A model-list difference is a decision
-   for the user, not an edit to make unasked: say what the gateway serves that
-   `models.json` lacks, and offer to add it.
+3. **Read out anything `local` printed.** Report what it found and leave the
+   decision to the user: do not edit config on the strength of a check unasked.
 4. **Offer to commit** uncommitted changes in `~/dotfiles_local`; push only if asked.
 5. A running Claude session keeps its old version. Say a restart is needed to use the new one.
 
-A `FAILED` group does not stop the others. Report it and its message; do not
-retry blindly.
+A `FAILED` group does not stop the others, and any `FAILED` makes the run exit
+1. Report it and its message; do not retry blindly.

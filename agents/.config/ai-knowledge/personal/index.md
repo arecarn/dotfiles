@@ -22,9 +22,6 @@ instructions.
 
 # Agent workspaces
 
-* [Herdr workspace and agent orchestration](herdr.md) - everyday Herdr pane and
-  agent operations, visible delegation and worktrees, and choosing between
-  Herdr, pi-subagents, and pi-intercom
 * [Paseo workspace and agent orchestration](paseo.md) - prefers Paseo for
   worktrees/agent orchestration; CLI syntax for running agents into worktrees,
   the --provider requirement, the branch-name-collision gotcha, and that its

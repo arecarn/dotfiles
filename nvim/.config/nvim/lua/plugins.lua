@@ -741,8 +741,8 @@ local plugins = {
             nes = { enabled = false },
             cli = {
                 mux = {
-                    backend = "herdr",
-                    enabled = vim.env.HERDR_ENV == "1",
+                    backend = "tmux",
+                    enabled = vim.env.TMUX ~= nil,
                 },
                 tools = {
                     aider = disabled_ai_tool,
@@ -814,14 +814,6 @@ local plugins = {
                 desc = "Sidekick detach CLI",
             },
         },
-    },
-    {
-        "UN-9BOT/sidekick_herdr",
-        dependencies = { "folke/sidekick.nvim" },
-        cond = vim.env.HERDR_ENV == "1",
-        config = function()
-            require("sidekick_herdr").setup()
-        end,
     },
 
     ---------------------------------------------------------------------------}}}

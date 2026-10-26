@@ -63,26 +63,6 @@ _SUPERPOWERS_TOGGLE_HOOK_EVENTS = {
 _STATUS_LINE_SCRIPT = pathlib.PurePath(".claude/statusline.py")
 _STATUS_LINE_INTERPRETER = "python" if repo.IS_WINDOWS else "python3"
 
-# The herdr work-status hook, stowed from claude-code/.claude/hooks/. It
-# publishes a running-subagent count to the pane's herdr sidebar row and is
-# inert off herdr. Four events, because the count changes at four moments:
-# a session (re)starting resets it, a subagent starting or stopping moves it,
-# and a session ending clears it. SubagentStart/Stop match every agent type;
-# SessionEnd takes no matcher. SessionStart's matcher deliberately excludes the
-# `fork` source (matching the knowledge hook's matcher): a forked session has its
-# own session_id and starts at count 0, so publishing nothing on a fork start is
-# correct.
-#
-# Interpreter-prefixed and absolute for the same reason as the status line:
-# a hook runs with no shell or PATH of ours, and this is a .py file.
-_WORK_STATUS_HOOK = pathlib.PurePath(".claude/hooks/herdr_work_status.py")
-_WORK_STATUS_HOOK_EVENTS = {
-    "SessionStart": "startup|resume|clear|compact",
-    "SubagentStart": "*",
-    "SubagentStop": "*",
-    "SessionEnd": None,  # SessionEnd entries carry no matcher
-}
-
 _PI_SETTINGS = pathlib.PurePath(".pi/agent/settings.json")
 _PI_LOCAL_SETTINGS = pathlib.PurePath(
     ".config/ai-skills/pi-settings.local.json"
@@ -124,12 +104,6 @@ def _register_knowledge_hook(settings, home):
     _register_hooks(settings, command, _KNOWLEDGE_HOOK_EVENTS)
 
 
-def _register_work_status_hooks(settings, home):
-    """Register the herdr work-status hook on every event that moves the count."""
-    command = f"{_STATUS_LINE_INTERPRETER} {home / _WORK_STATUS_HOOK}"
-    _register_hooks(settings, command, _WORK_STATUS_HOOK_EVENTS)
-
-
 def _register_superpowers_toggle_hook(settings, home):
     """Add the superpowers-toggle disregard-note hook, leaving other hooks alone."""
     command = str(home / _SUPERPOWERS_TOGGLE_HOOK_COMMAND)
@@ -166,7 +140,6 @@ def setup_claude(home=None):
         "padding": 0,
     }
     _register_knowledge_hook(settings, _home(home))
-    _register_work_status_hooks(settings, _home(home))
     _register_superpowers_toggle_hook(settings, _home(home))
 
     existed = path.exists()

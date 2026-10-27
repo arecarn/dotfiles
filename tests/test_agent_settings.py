@@ -307,5 +307,3 @@ def test_a_machine_registered_before_subagents_gains_the_new_event(tmp_path):
     for event in ("SubagentStart", "SessionStart"):
         ours = [c for c in _hook_commands(tmp_path, event) if "agent-knowledge" in c]
         assert ours == [command], event
-
-

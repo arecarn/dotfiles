@@ -9,12 +9,12 @@ or none at all.
 This measures that directly. Each probe puts a realistic task to a cold agent
 that has never seen the repo, and records which entry it opens unprompted.
 
-Run by hand, not in CI: each probe starts a real agent session in a Herdr tab and
-spends tokens. Minutes, not seconds.
+Run by hand, not in CI: each probe starts a real agent through Paseo and spends
+tokens. Minutes, not seconds.
 
 ## Running
 
-Needs a Herdr session and `jq`.
+Needs a running Paseo daemon (`paseo status`) and `jq`.
 
 ```bash
 cd tests/knowledge_routing
@@ -25,11 +25,9 @@ while IFS=$'\t' read -r slug cwd expected task; do
 done <cases.tsv
 ```
 
-Close the tabs afterwards -- each `results/<slug>.tab` holds the id:
-
-```bash
-for f in results/*.tab; do herdr tab close "$(cat "$f")"; done
-```
+Each probe deletes its agent when it finishes, so there is nothing to close. It
+runs in a throwaway Paseo workspace for the case's `cwd`; `paseo workspace ls`
+shows any left behind by a probe that was interrupted.
 
 ## Reading the result
 
@@ -46,12 +44,13 @@ The `control` case expects `NONE`. Without it a bundle that routes everything
 correctly is indistinguishable from one whose agents just open everything.
 
 A third outcome is neither: `probe.sh` exits 3 with `INCONCLUSIVE` when the agent
-started but answered nothing — a usage limit reached mid-probe, or a prompt
-pasted and never submitted. That is not a routing miss; rerun it.
+ended without answering -- a usage limit reached mid-probe, or the five-minute
+timeout. That is not a routing miss; rerun it. Exit 2 means the agent could not
+be started at all, usually because the daemon is down.
 
 ## cases.tsv
 
-Tab-separated: `slug`, `cwd`, `expected`, `task`. One row per index entry, plus
+Tab-separated: `slug`, `cwd`, `expected`, `task`. `cwd` may start with `~`. One row per index entry, plus
 the control.
 
 Task wording must not leak the answer -- no filename fragments, no "bundle", no

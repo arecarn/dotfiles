@@ -28,7 +28,7 @@ The index comes from the machine's uv configuration (`UV_INDEX_URL` /
 clean clone on the same machine reproduces it immediately.
 
 **Confirmed:** 2026-08-25, twice in one day. Hit while committing the Windows CI
-provisioning fix, and again independently while adding the herdr provisioning
+provisioning fix, and again independently while adding a provisioning
 task -- the second time without knowledge of the first, which is what moved this
 from a note in a handoff to an entry here. Both times the whole lockfile was
 rewritten to `artifactory.blueorigin.com` by an ordinary `uv run inv lint`.

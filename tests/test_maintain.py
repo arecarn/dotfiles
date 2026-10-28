@@ -283,27 +283,29 @@ def test_any_failed_group_means_a_failing_run():
 
 _GROUP_VARS = {"npm_global_packages": ["@anthropic-ai/claude-code"], "npm_prefix_subpath": ".local"}
 _HOME = pathlib.Path("/home/u")
+# Expected paths come from _HOME because pathlib renders backslashes on Windows.
+_PNPM_HOME = str(_HOME / ".local" / "share" / "pnpm")
 
 
 def test_claude_is_upgraded_with_npm_into_the_prefix_ansible_declares():
     npm = maintain.cli_commands(_GROUP_VARS, _HOME)[0]
 
     assert npm.argv == ["npm", "install", "-g", "@anthropic-ai/claude-code@latest"]
-    assert npm.env["NPM_CONFIG_PREFIX"] == "/home/u/.local"
+    assert npm.env["NPM_CONFIG_PREFIX"] == str(_HOME / ".local")
 
 
 def test_a_different_prefix_in_group_vars_is_followed():
     npm = maintain.cli_commands({**_GROUP_VARS, "npm_prefix_subpath": ".npm-global"}, _HOME)[0]
 
-    assert npm.env["NPM_CONFIG_PREFIX"] == "/home/u/.npm-global"
+    assert npm.env["NPM_CONFIG_PREFIX"] == str(_HOME / ".npm-global")
 
 
 def test_pi_is_upgraded_with_its_own_updater_and_a_pnpm_home_on_path():
     pi = maintain.cli_commands(_GROUP_VARS, _HOME)[-1]
 
     assert pi.argv == ["pi", "update", "--self"]
-    assert pi.env["PNPM_HOME"] == "/home/u/.local/share/pnpm"
-    assert pi.prepend_path == "/home/u/.local/share/pnpm"
+    assert pi.env["PNPM_HOME"] == _PNPM_HOME
+    assert pi.prepend_path == _PNPM_HOME
 
 
 def test_on_windows_the_users_own_npm_and_pnpm_setup_is_left_alone():
@@ -340,8 +342,8 @@ def test_upgrading_runs_each_command_with_its_environment():
 
     assert outcome.status == "ok"
     assert calls[0][0] == ["/bin/npm", "install", "-g", "@anthropic-ai/claude-code@latest"]
-    assert calls[0][1]["NPM_CONFIG_PREFIX"] == "/home/u/.local"
-    assert calls[1][1]["PATH"].startswith("/home/u/.local/share/pnpm")
+    assert calls[0][1]["NPM_CONFIG_PREFIX"] == str(_HOME / ".local")
+    assert calls[1][1]["PATH"].startswith(_PNPM_HOME)
 
 
 def test_a_tool_that_is_not_installed_is_skipped_with_a_note():

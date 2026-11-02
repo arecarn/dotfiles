@@ -41,6 +41,9 @@ System packages are out of scope: they need sudo, so they stay with `inv provisi
    git's reason.
 3. **Read out anything `local` printed.** Report what it found and leave the
    decision to the user: do not edit config on the strength of a check unasked.
+   When `local` reports model drift (a pin or pi's model list behind the newest
+   model the gateway serves), offer to apply each line it names and show the diff
+   first. Unattended runs only report.
 4. **Offer to commit** uncommitted changes in `~/dotfiles_local`; push only if asked.
 5. A running Claude session keeps its old version. Say a restart is needed to use the new one.
 

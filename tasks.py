@@ -251,6 +251,15 @@ def _run_inheriting_terminal(command: str) -> None:
 def claude_setup(ctx):
     """Merge this repo's Claude Code settings into ~/.claude/settings.json"""
     agents.settings.setup_claude()
+    agents.doctor.report(agents.doctor.missing_claude_commands())
+
+
+@task
+def doctor(ctx):
+    """Fail if ~/.claude/settings.json runs a file that no longer exists"""
+    # pylint: disable=unused-argument
+    if agents.doctor.report(agents.doctor.missing_claude_commands()):
+        raise Exit(code=1)
 
 
 @task

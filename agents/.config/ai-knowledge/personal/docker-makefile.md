@@ -1,8 +1,15 @@
 ---
 type: Playbook
 title: Docker and Makefile pattern
-description: Generic single-container dispatch for all Make goals, direct execution in CI, linked-worktree mounts, keeping one build image pinned across Compose and CI, and the standard target names with the self-documenting `help` pattern
+description: Read when setting up or changing a Makefile, Dockerfile, build container, or CI config: the task-runner and CI conventions, single-container Make dispatch, linked-worktree mounts, one pinned build image, standard target names, and the self-documenting `help` pattern
 ---
+## Conventions
+
+- Every project has a task runner (Make by default) and CI configuration.
+- CI calls only task-runner targets, so each pipeline step reproduces locally.
+- Docker gives a reproducible environment: targets run in the container locally
+  and directly inside CI's own container.
+
 ## What this pattern gives you
 
 Every local Make invocation enters one build container. Multiple requested goals

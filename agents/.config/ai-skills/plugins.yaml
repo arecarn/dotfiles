@@ -43,13 +43,8 @@ mattpocock-skills:
   plugin: mattpocock-skills@mattpocock
   pi_package: git:github.com/mattpocock/skills
 
-superpowers:
-  repo: obra/superpowers
-  plugin: superpowers@superpowers-dev
-  pi_package: git:github.com/obra/superpowers
-
 # Pi core ships no subagent tool and no MCP support; both are deliberate
-# omissions upstream. These fill the gaps superpowers skills expect.
+# omissions upstream. These fill the gaps agent skills expect.
 # Third-party, single-maintainer, fast-moving: pi packages run with full
 # system access, so review before bumping.
 pi-subagents:

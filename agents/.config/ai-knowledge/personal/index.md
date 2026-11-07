@@ -9,10 +9,9 @@ instructions.
 
 # Project scaffolding
 
-* [Docker and Makefile pattern](docker-makefile.md) - generic single-container
-  dispatch for all Make goals, direct execution in CI, linked-worktree mounts,
-  keeping one build image pinned across Compose and CI, and the standard target
-  names with the self-documenting `help` pattern
+* [Docker and Makefile pattern](docker-makefile.md) - Read when setting up or changing a Makefile, Dockerfile, build container, or CI config: the task-runner and CI conventions, single-container Make dispatch, linked-worktree mounts, one pinned build image, standard target names, and the self-documenting `help` pattern
+
+* [Python project tooling](python-tooling.md) - Read when starting or changing a Python project: the preferred tools for package management, linting and formatting, and type checking
 
 # Writing for review
 

@@ -27,6 +27,11 @@ The index comes from the machine's uv configuration (`UV_INDEX_URL` /
 `UV_DEFAULT_INDEX` or a `uv.toml`), not from anything in the checkout, so a
 clean clone on the same machine reproduces it immediately.
 
+`inv lint` now fails when the *committed* `uv.lock` (HEAD, not the working tree,
+which is rewritten by definition on an affected machine) names any host but
+public PyPI, so a rewritten lock no longer reaches CI unnoticed. The rewrite
+itself still happens.
+
 **Confirmed:** 2026-08-25, twice in one day. Hit while committing the Windows CI
 provisioning fix, and again independently while adding a provisioning
 task -- the second time without knowledge of the first, which is what moved this

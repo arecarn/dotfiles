@@ -12,6 +12,13 @@
 
 exit_code=0
 
+# Quiet on success: invoke.yaml echoes every command, and the linter commands
+# carry full file lists, so a clean run would otherwise print kilobytes nobody
+# reads. A failure still prints the failing command with its output, because
+# invoke reports hidden output when a command exits non-zero. Run `uv run inv
+# lint` directly for the verbose form.
+export INVOKE_RUN_ECHO=0 INVOKE_RUN_HIDE=both
+
 echo "pre-push: running linters..."
 if ! uv run invoke lint; then
     echo "pre-push: lint failed — fix issues before pushing"

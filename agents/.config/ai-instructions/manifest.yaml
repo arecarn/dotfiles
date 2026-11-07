@@ -35,10 +35,8 @@ outputs:
       - review-before-posting
       - teams
       - local-pointer
-  # This repo's own project instructions, read in place.
-  CLAUDE.md:
-    fragments:
-      - project-overview
+  # This repo's own project instructions, read in place. Claude Code reads
+  # AGENTS.md as well, so no separate CLAUDE.md is generated.
   AGENTS.md:
     fragments:
       - project-overview

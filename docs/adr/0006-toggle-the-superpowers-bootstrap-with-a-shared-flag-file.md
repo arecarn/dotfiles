@@ -1,5 +1,8 @@
 # Toggle the superpowers bootstrap with a shared flag file
 
+**Superseded:** superpowers was removed from this repo, along with the toggle
+it motivated. Kept as the record of why the toggle existed.
+
 `manage/superpowers_toggle.py` holds one on/off flag under `~/.local/state/ai-skills/`.
 A pi extension and a Claude Code hook each read it to decide whether to let
 obra/superpowers' "You have superpowers" bootstrap prompt through, and a

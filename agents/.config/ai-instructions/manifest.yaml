@@ -9,10 +9,8 @@ outputs:
   # Global instructions, symlinked into $HOME by the claude-code stow package.
   claude-code/.claude/CLAUDE.md:
     fragments:
-      - build-ci
       - comments
       - output-formatting
-      - python
       - review-before-posting
       - teams
       - local-pointer
@@ -31,11 +29,9 @@ outputs:
   # Global instructions, symlinked into $HOME by the pi stow package.
   pi/.pi/agent/AGENTS.md:
     fragments:
-      - build-ci
       - comments
       - output-formatting
       - prose-style
-      - python
       - review-before-posting
       - teams
       - local-pointer

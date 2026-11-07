@@ -13,7 +13,7 @@ import sys
 from invoke import Exit, task
 from ruamel.yaml import YAML
 
-from manage import agents, maintain, repo
+from manage import agents, lockfile, maintain, repo
 from manage import provision as provision_data
 from manage.repo import EXCLUDE_DIRS, IS_WINDOWS
 from manage.stow import StowPlan, tolerating_windows_symlink_failure
@@ -629,6 +629,26 @@ def lint_bundles(ctx):
 
 
 @task
+def lint_lockfile(ctx):
+    """
+    Fail when the committed uv.lock names a package index other than public PyPI
+    """
+    # Reads HEAD, not the working tree: `uv run` rewrites the working copy on a
+    # machine with an internal index, including for this very task, so the file
+    # on disk is wrong there by construction. What must stay public is what
+    # gets committed and pushed.
+    committed = ctx.run("git show HEAD:uv.lock", hide=True).stdout
+    hosts = lockfile.foreign_hosts(committed)
+    if hosts:
+        raise SystemExit(
+            f"The committed uv.lock names {', '.join(hosts)}, not public PyPI. A "
+            "`uv run` on a machine with an internal index rewrote it before it "
+            "was committed; restore it from main (see docs/gotchas/uv-run-"
+            "rewrites-uv-lock-to-an-internal-registry.md)."
+        )
+
+
+@task
 def test(ctx):
     """
     Run the test suites
@@ -665,6 +685,7 @@ def test_typescript(ctx):
     lint_instructions,
     lint_framing,
     lint_bundles,
+    lint_lockfile,
     default=True,
 )
 def lint(ctx):

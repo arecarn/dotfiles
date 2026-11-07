@@ -12,10 +12,11 @@ one namespace rather than a handful of loose modules:
 - `skills_hub` -- own where the shared skills hub lives and how it reaches each
   tool's skills discovery path.
 - `mcp` -- register the manifest's MCP servers with every harness.
+- `doctor` -- report configured commands whose files no longer exist.
 - `settings` -- write this repo's declarations into each harness's own settings
   file, which the harness also writes its own state into.
 """
 
-from manage.agents import instructions, mcp, plugins, settings, skills_hub
+from manage.agents import doctor, instructions, mcp, plugins, settings, skills_hub
 
-__all__ = ["instructions", "mcp", "plugins", "settings", "skills_hub"]
+__all__ = ["doctor", "instructions", "mcp", "plugins", "settings", "skills_hub"]

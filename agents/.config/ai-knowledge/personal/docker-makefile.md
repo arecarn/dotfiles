@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Docker and Makefile pattern
-description: Generic single-container dispatch for all Make goals, direct execution in CI, linked-worktree mounts, and keeping one build image pinned across Compose and CI
+description: Generic single-container dispatch for all Make goals, direct execution in CI, linked-worktree mounts, keeping one build image pinned across Compose and CI, and the standard target names with the self-documenting `help` pattern
 ---
 ## What this pattern gives you
 
@@ -152,3 +152,33 @@ package caches:
 - Container-mode aggregate targets execute every dependency directly.
 - Container-mode `shell` opens Bash without invoking Docker.
 - `GIT_COMMON_DIR` is absolute so linked-worktree Git commands work.
+
+## Standard targets
+
+Name targets the same way in every project so CI and muscle memory carry over.
+
+| Target | Purpose |
+|--------|---------|
+| `help` | Print available targets with descriptions |
+| `lint` | Run linters and fix issues |
+| `lint-check` | Run linters without fixing (for CI) |
+| `format` | Format code |
+| `format-check` | Check formatting without modifying (for CI) |
+
+## Self-documenting help
+
+Put a `## ` comment after each target name and have `help` grep for it
+([marmelab](https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html)).
+This sorted, coloured variant replaces the plain `help` above when the output is
+read by a person:
+
+```make
+.PHONY: lint
+lint: ## Run all static analysis
+lint: check spell
+
+help: ## Print this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+```
+
+Prints one line per documented target: `lint    Run all static analysis`.

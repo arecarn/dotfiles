@@ -3,88 +3,36 @@
 
 ### Build & CI Structure
 
-- Projects should have a task runner (Make by default) and CI configuration files
-- CI pipelines should only call task-runner targets (keeps CI simple and reproducible locally)
-- Projects should use Docker for reproducible environments, with targets
-  wrapped so they run in the container locally and directly inside CI's own
-  container
+- Projects have a task runner (Make by default) and CI configuration.
+- CI calls only task-runner targets, so every pipeline step reproduces locally.
+- Docker gives a reproducible environment: targets run in the container
+  locally and directly inside CI's own container.
+- Use the standard target names (`help`, `lint`, `lint-check`, `format`,
+  `format-check`).
 
-### Standard Targets
-
-| Target | Purpose |
-|--------|---------|
-| `help` | Print available targets with descriptions |
-| `lint` | Run linters and fix issues |
-| `lint-check` | Run linters without fixing (for CI) |
-| `format` | Format code |
-| `format-check` | Check formatting without modifying (for CI) |
-
-### Self-Documenting Help Pattern
-
-Use `## ` comments after target names to enable auto-generated help:
-
-```make
-.PHONY: lint
-lint: ## Run all static analysis
-lint: check spell
-
-.PHONY: clean
-clean: ## Remove build artifacts
-	rm -rf dist/
-
-help: ## Print this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-```
-
-Running `make help` outputs:
-```
-clean                          Remove build artifacts
-help                           Print this help
-lint                           Run all static analysis
-```
-
-Reference: [marmelab.com/blog/2016/02/29/auto-documented-makefile.html](https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html)
+Setting up or changing a Makefile, Dockerfile or CI file: read the personal
+knowledge entry `docker-makefile.md` first.
 
 ### Code Comments
 
-Concision governs comments too, but under-commenting is the opposite failure,
-not the safe one. A comment earns its keep by what the reader cannot get from
-the code itself.
+Under-commenting is as much a failure as over-commenting. A comment earns its
+keep by what the reader cannot get from the code itself.
 
 - **Aim above or below the code, never at it.** Above: the reasoning, or a
-  one-line summary of a block. Below: the exact meaning, the boundary case. A
-  comment pitched at the code's own level of detail is just the line again in
-  prose.
-- **Document the interface, not only the surprises.** A caller who cannot use a
-  function without reading its body has no abstraction: state what it does, what
-  it mutates, and what it requires of the caller. Brevity governs inline
-  comments; an interface comment is finished when a caller needs nothing else.
+  one-line summary of a block. Below: the exact meaning, the boundary case.
+- **Document the interface.** A caller must not need the body: state what the
+  function does, what it mutates, and what it requires of the caller.
 - **Keep the caveat that prevents a wrong edit later:** the ordering that must
   hold, the invariant a type does not state, the second place that must change
-  too. If you would have to explain it in review, comment it now, because that
-  context belongs in the file rather than only in the conversation that produced
-  it. Cut background that merely proves you did the research, and cite rather
-  than reconstruct (a ticket, a requirement ID, a spec clause).
-- **One comment, one job.** If a comment carries several unrelated facts, keep
-  the one that changes what the reader does. Treat a long comment as suspect
-  until you have checked it is not several facts competing: an algorithm's
-  rationale may genuinely need a paragraph, and a line restating a line of code
-  is too long at one line.
-- **Keep comments true.** A comment that contradicts the code is worse than
-  none, so update it in the same change as the code it describes. Do not copy a
-  value that lives elsewhere; name where it lives and why it matters, so the
-  comment survives the value changing.
+  too. Cite a ticket or spec clause rather than reconstructing it.
+- **Keep comments true.** Update them in the same change as the code. Name where
+  a value lives instead of copying it.
 
 ### Output Formatting
 
-Rules for how responses are written, so they render correctly in the terminal.
-
-- **Escape markdown metacharacters inside table cells.** A literal `|` ends the cell
-  early and shifts every column after it; `*` and `_` are read as emphasis markers and
-  mangle the row. Backticks do not reliably protect them — a cron expression like
-  `0 */12 * * *` in a cell is enough to break the table. Escape as `\|` / `\*`, or move
-  the value to a bullet beneath the table. A single bad cell is not a reason to stop
-  using tables.
+Escape `|` and `*` as `\|` and `\*` inside markdown table cells (backticks do not
+protect them), or move the value to a bullet beneath the table. One bad cell is
+not a reason to stop using tables.
 
 ### Python Projects
 
@@ -96,34 +44,18 @@ Preferred tooling:
 ### Review Authored Prose Before Posting
 
 Anything published under my name that contains prose you wrote is mine to edit
-first. Show the full text in chat and wait for an explicit yes before posting.
+first. Show the full text verbatim, as it will appear, and wait for an explicit
+yes before posting. Post what I approved, not a re-worded version.
 
-- **Covers authored prose in any external system:** Jira summaries,
-  descriptions, comments, and free-text fields; merge request titles,
-  descriptions, and review comments; wiki pages; email; task text. Editing prose
-  that already exists counts too.
-- **Show an edit to existing text as a diff.** Put a unified diff of the current
-  text against the proposed text in a `diff` code block, so the change is visible
-  at a glance rather than found by comparing two copies. Keep enough surrounding
-  lines to place it. When most of the text changes, show the full new text as
-  well. New text with nothing before it is shown in full, not as a diff.
-- **Does not cover mechanical field changes:** labels, state transitions,
-  assignees, components, versions, issue links, worklog hours. These carry no
-  wording to review, so apply them directly. Anything destructive or irreversible
-  still needs confirmation on its own account.
-- **Show the text verbatim, as it will appear.** A summary of what you plan to
-  say is not reviewable, and neither is a description of the structure. Post what
-  I approved rather than a re-worded version of it.
-- **Reference controlled boilerplate instead of reproducing it.** When most of
-  the proposed text comes unchanged from an existing controlled or authoritative
-  source, identify that source and show how the proposal fills in or changes it.
-  Include the title and destination, human-authored prose, completed
-  placeholders, role and quick-action assignments, checked or removed items, and
-  other deviations from the source. Provide the complete rendered text when
-  requested. Explicit approval is still required before posting.
-- **Show a batch whole before posting any of it.** When one action writes prose
-  to several places, present all of it in one pass so I can see the set, not a
-  drip of approvals with the earlier ones already live.
+- **Covers** Jira, merge requests, wikis, email and task text (summaries,
+  descriptions, comments, review replies), including edits to prose that already
+  exists.
+- **Does not cover mechanical field changes** (labels, state transitions,
+  assignees, components, versions, issue links, worklog hours); apply those
+  directly. Anything destructive or irreversible still needs confirmation.
+
+Before showing an edit, boilerplate-based text, or a batch of prose for several
+places: read the personal knowledge entry `posting-authored-prose.md`.
 
 ### Teams
 
@@ -132,12 +64,10 @@ triage; keep the leader's model for review, design and anything that writes code
 
 ### Local and Private Instructions
 
-Private and work-specific instructions live outside this repo, at
-`~/.config/ai-instructions/local.md`, placed there by a `dotfiles_local` repo.
+Private and work-specific instructions live in `~/.config/ai-instructions/local.md`,
+placed there by a `dotfiles_local` repo. Read it at the start of a session if it
+exists; on machines without `dotfiles_local` it is absent, so carry on.
 
-Read that file at the start of a session if it exists. It is absent on machines
-that have no `dotfiles_local`, which is not an error — carry on without it.
-
-That file is also where a pointer to a **private knowledge bundle** belongs: a
-work bundle's path and name are not publishable, and the generated instruction
-files that carry this section are. See the `set-up-agent-knowledge` skill.
+A pointer to a **private knowledge bundle** belongs in that file, because a work
+bundle's path and name are not publishable and the generated instruction files
+are. See the `set-up-agent-knowledge` skill.

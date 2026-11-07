@@ -11,9 +11,12 @@ instructions.
 
 * [Docker and Makefile pattern](docker-makefile.md) - generic single-container
   dispatch for all Make goals, direct execution in CI, linked-worktree mounts,
-  and keeping one build image pinned across Compose and CI
+  keeping one build image pinned across Compose and CI, and the standard target
+  names with the self-documenting `help` pattern
 
 # Writing for review
+
+* [Showing authored prose for review](posting-authored-prose.md) - Read before posting or editing prose under my name in Jira, merge requests, wikis, email, or tasks: how to show an edit as a diff, reference boilerplate instead of reproducing it, and present a batch whole
 
 * [Change request descriptions and review replies](change-requests.md) - Read
   when writing or editing a merge request or pull request description, or

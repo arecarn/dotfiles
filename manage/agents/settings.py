@@ -40,16 +40,8 @@ _KNOWLEDGE_HOOK_EVENTS = {
     "SubagentStart": "*",
 }
 
-# The superpowers-toggle SessionStart hook, registered here for the same reason
-# as the knowledge hook. It cannot suppress superpowers' own bootstrap block --
-# Claude Code merges hook entries rather than letting one replace another -- so
-# it only appends a disregard note when the shared flag is off. SubagentStart is
-# omitted: superpowers' own hook fires only on SessionStart, so a subagent gets
-# no bootstrap of its own to disregard. See manage/superpowers_toggle_hooks.py.
-_SUPERPOWERS_TOGGLE_HOOK_COMMAND = "bin/superpowers-toggle-session-start"
-_SUPERPOWERS_TOGGLE_HOOK_EVENTS = {
-    "SessionStart": "startup|resume|clear|compact",
-}
+# Hook command removed with superpowers; see _unregister_removed_hooks.
+_REMOVED_HOOK_COMMAND = "bin/superpowers-toggle-session-start"
 
 # The status line script, stowed from claude-code/.claude/. Configuring
 # `statusLine` replaces Claude Code's built-in line outright, so the script
@@ -104,10 +96,22 @@ def _register_knowledge_hook(settings, home):
     _register_hooks(settings, command, _KNOWLEDGE_HOOK_EVENTS)
 
 
-def _register_superpowers_toggle_hook(settings, home):
-    """Add the superpowers-toggle disregard-note hook, leaving other hooks alone."""
-    command = str(home / _SUPERPOWERS_TOGGLE_HOOK_COMMAND)
-    _register_hooks(settings, command, _SUPERPOWERS_TOGGLE_HOOK_EVENTS)
+def _unregister_removed_hooks(settings, home):
+    """Drop the superpowers-toggle hook an earlier setup wrote.
+
+    The launcher it points at no longer exists, so leaving the entry would error
+    on every session start. Delete this once every machine has re-run setup.
+    """
+    command = str(home / _REMOVED_HOOK_COMMAND)
+    for event, entries in settings.get("hooks", {}).items():
+        kept = []
+        for entry in entries:
+            ours = [h for h in entry.get("hooks", []) if h.get("command") == command]
+            if ours and len(ours) == len(entry["hooks"]):
+                continue  # the entry held only our hook
+            entry["hooks"] = [h for h in entry.get("hooks", []) if h not in ours]
+            kept.append(entry)
+        settings["hooks"][event] = kept
 
 
 def setup_claude(home=None):
@@ -140,7 +144,7 @@ def setup_claude(home=None):
         "padding": 0,
     }
     _register_knowledge_hook(settings, _home(home))
-    _register_superpowers_toggle_hook(settings, _home(home))
+    _unregister_removed_hooks(settings, _home(home))
 
     existed = path.exists()
     path.parent.mkdir(parents=True, exist_ok=True)

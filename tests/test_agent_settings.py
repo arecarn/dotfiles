@@ -121,7 +121,6 @@ def test_the_committed_manifest_declares_the_expected_packages():
     ]
     assert declared == [
         "git:github.com/mattpocock/skills",
-        "git:github.com/obra/superpowers",
         "npm:pi-subagents",
         "npm:pi-intercom",
         "npm:pi-mcp-adapter",
@@ -257,6 +256,30 @@ def test_registering_the_hook_twice_does_not_duplicate_it(tmp_path):
     for event in ("SessionStart", "SubagentStart"):
         commands = _hook_commands(tmp_path, event)
         assert len([c for c in commands if "agent-knowledge" in c]) == 1
+
+
+def test_the_removed_superpowers_toggle_hook_is_dropped(tmp_path):
+    """An earlier setup registered a hook whose launcher no longer exists."""
+    stale = str(tmp_path / "bin/superpowers-toggle-session-start")
+    _claude_settings(tmp_path).parent.mkdir(parents=True)
+    _claude_settings(tmp_path).write_text(
+        json.dumps(
+            {
+                "hooks": {
+                    "SessionStart": [
+                        {"matcher": "x", "hooks": [{"type": "command", "command": stale}]},
+                        {"matcher": "y", "hooks": [{"type": "command", "command": "keep"}]},
+                    ]
+                }
+            }
+        )
+    )
+
+    settings.setup_claude(tmp_path)
+
+    commands = _hook_commands(tmp_path, "SessionStart")
+    assert stale not in commands
+    assert "keep" in commands
 
 
 def test_the_knowledge_hook_is_registered_for_subagents(tmp_path):

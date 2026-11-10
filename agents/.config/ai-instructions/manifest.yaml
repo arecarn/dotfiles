@@ -13,6 +13,7 @@ outputs:
       - output-formatting
       - review-before-posting
       - teams
+      - ticket-references
       - local-pointer
   # Claude Code gets prose-style as an output style instead, so selecting it
   # replaces Claude's own brevity instructions rather than arguing with them
@@ -34,6 +35,7 @@ outputs:
       - prose-style
       - review-before-posting
       - teams
+      - ticket-references
       - local-pointer
   # This repo's own project instructions, read in place. Claude Code reads
   # AGENTS.md as well, so no separate CLAUDE.md is generated.

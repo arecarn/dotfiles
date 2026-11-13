@@ -1,0 +1,307 @@
+---
+name: harvest-knowledge
+description: Harvest durable facts, traps, and corrections from past agent sessions into knowledge bundles, skills, and instruction files, then review the proposals with the user. Use for the weekly scheduled run (a prompt starting `[harvest-knowledge] run`), when the user says "harvest knowledge", or when they say "review the harvest" or send `[harvest-knowledge] review`.
+argument-hint: "run | review"
+---
+
+# Harvest knowledge
+
+Past sessions hold facts that cost real work to find. This skill moves them
+into the knowledge bundles in two halves, split where a human first becomes
+necessary:
+
+- **`run`** reads the sessions added since the last run and leaves a verified
+  **proposal**. It is unattended and read-only outside its state directory.
+- **`review`** walks the user through pending proposals in rounds, each built
+  around an ID-numbered summary table, and lands only what they approve.
+
+Pick the mode from the argument or the prompt. With neither, ask.
+
+## Paths
+
+```bash
+SKILL=~/.config/ai-skills/skills/harvest-knowledge
+STATE=~/.local/state/knowledge-harvest
+```
+
+Shell state may not persist between commands, so set both in every command
+that uses them, or write the paths out.
+
+- `$STATE/ledger.json`: per-session harvest offsets. Only `harvest.py commit`
+  writes it.
+- `$STATE/runs/<date>/`: one run's digests, batches, and pending ledger.
+- `$STATE/proposals/<date>.md`: one proposal per run, in the form
+  [`proposal-format.md`](proposal-format.md) defines. Fully decided proposals
+  move to `$STATE/proposals/done/`.
+- `$STATE/dropped.md`: every item review dropped, with its reason.
+
+**Bundles** are discovered, never named. List them, with the private flag, by
+calling the script's discovery function:
+
+```bash
+python3 - <<EOF
+import sys; from pathlib import Path
+sys.path.insert(0, "$SKILL"); import harvest
+home = Path.home()
+for b in harvest.discover_bundles(home / ".config/ai-knowledge", home / "dotfiles_local"):
+    print(b.id, b.root.resolve(), "private" if b.private else "public")
+EOF
+```
+
+A bundle is **private** when its link resolves under `~/dotfiles_local`, and
+**public** otherwise. Each bundle's catalog is `<root>/index.md`.
+
+## `run` mode
+
+The prompt must start with `[harvest-knowledge] run`; that tag is what keeps
+this session out of the next harvest. Write nothing outside `$STATE`. Allowed
+beyond that: `git fetch`, reading files, and read-only queries to Jira, DNG,
+and Blueserve.
+
+### 1. Extract and batch
+
+```bash
+python3 $SKILL/harvest.py extract
+python3 $SKILL/harvest.py batch --run-dir <run_dir>
+```
+
+`extract` prints JSON `{"run_dir", "sessions", "bytes"}`: it wrote one digest
+per session with new messages to `<run_dir>/digests/<source>__<id>.md` and the
+proposed offsets to `<run_dir>/pending-ledger.json`. The run date is
+`<run_dir>`'s last path component.
+
+When `sessions` is 0, skip to step 7 and report nothing new; there is no
+proposal to write.
+
+`batch` prints JSON `{"batches", "overflow_keys"}`: it wrote
+`<run_dir>/batch0.txt` … `batch<N-1>.txt` (one absolute digest path per line)
+and `<run_dir>/overflow.txt`. Keep `overflow_keys`: those sessions are read next
+run, and step 6 needs them.
+
+### 2. Read the digests
+
+When `batches` is 1 and `bytes` is at most 300000, read every digest in
+`batch0.txt` yourself, applying the reader brief below.
+
+Otherwise dispatch one reader subagent per `batch<N>.txt`, all in parallel, on
+a model cheaper than yours (in Claude Code, the Agent tool's `model`, for
+example `sonnet` under an `opus` leader). Give each this brief, filled in:
+
+> Read every digest file listed in `<run_dir>/batch<N>.txt`. Each starts with a
+> `# session <id> source=<source> cwd=<cwd>` line, then one `USER:` or
+> `ASSISTANT:` line per message.
+>
+> Find knowledge worth keeping beyond the session: a durable fact about a
+> system or toolchain, a trap that cost real debugging, a correction of
+> something an agent believed, or a preference or rule the user stated. Skip
+> one-off task state, guesses the session never confirmed, and anything the
+> session itself later retracted.
+>
+> First read these bundle catalogs, and report only what they do not already
+> cover: `<each bundle id and its index.md path>`.
+>
+> Report each item as:
+>
+> - **Bundle:** the bundle id, or `skill`, `instructions`, or `preference`
+> - **Suggested entry:** an existing entry's path, or `NEW: <title>`
+> - **Fact:** 1–4 specific sentences
+> - **Evidence:** the session key `<source>:<id>` (from the digest filename)
+>   and how the session confirmed it (a command's output, the code, a doc)
+> - **Confidence:** `high` or `medium`
+>
+> Write nothing to any file. Return only the items.
+
+Every reader's report back, or every digest read yourself, completes the step.
+
+### 3. Consolidate
+
+Do this on your own model. Read [`routing.md`](routing.md), `$STATE/dropped.md`
+(it may not exist yet), and every bundle entry a candidate touches. Then, for
+every candidate:
+
+- merge duplicates, keeping all their evidence;
+- drop it if an entry already covers it, if it is one-off task state or an
+  unconfirmed guess, if it matches a `dropped.md` line without new evidence, or
+  if a read-only Jira query finds it already recorded in a problem report;
+- route it with `routing.md`, which also sets its ID prefix;
+- for a preference or correction, note where it already lives, if anywhere.
+
+Tally every drop by reason for the proposal's `## Dropped` section. Assign IDs
+as [`proposal-format.md`](proposal-format.md) describes. Mark for verification
+every item flagged `contradicts`, and every `medium` item.
+
+### 4. Verify
+
+Dispatch one verifier subagent, on your model, with the items marked for
+verification (do it yourself when the harness has no subagents). Its brief:
+for each item, check the claim against its source (the code on the default
+branch, the cited doc, or a read-only Jira, DNG, or Blueserve query), and check
+what the claim **means**, not only that it matches: a claim can match the code
+and still be wrong about what it implies. For a `contradicts` item, look for
+the reading under which both the item and the existing entry hold. Return, per
+ID, one of: `confirmed`, `corrected` with the corrected text, `refuted` with
+the reason, or `unchecked` with the lookup that failed.
+
+Apply the results: correct the text, drop refuted items (counted under
+`## Dropped`), and add the `unchecked` flag where a lookup failed. A failed
+lookup never stops the run.
+
+### 5. Write the proposal
+
+```bash
+python3 $SKILL/harvest.py stale
+```
+
+`stale` fetches each local checkout it resolves and prints a markdown report
+whose `## May be stale` section lists entries with commits to their cited
+files since their `verified` date. Then write `$STATE/proposals/<date>.md`
+exactly as `proposal-format.md` lays it out, with every item `pending`. If that
+file already exists from an earlier run today, write `<date>-2.md`, and so on.
+
+The proposal file existing on disk completes this step. Only then go on.
+
+### 6. Commit the ledger
+
+```bash
+python3 $SKILL/harvest.py commit --run-dir <run_dir> --deferred <key1> --deferred <key2> ...
+```
+
+Pass `--deferred` once per key in `overflow_keys`, or omit it when there are
+none. Commit runs after the proposal file exists, never before: a run that dies
+earlier leaves the ledger untouched, so the next run retries the same sessions.
+
+### 7. Notify
+
+Send one push notification (`PushNotification` in Claude Code) with the counts,
+for example: `harvest-knowledge: 14 items proposed from 23 sessions, 3 deferred,
+2 may be stale. Review with [harvest-knowledge] review.`
+
+## `review` mode
+
+Review runs in a session whose first message starts with
+`[harvest-knowledge] review`, so the next harvest skips it and does not
+re-propose what was dropped here. If this session started any other way, say so
+and ask the user to start a fresh one with that message.
+
+### Load the proposals
+
+Take the files in `$STATE/proposals/` (not `done/`) oldest first, by filename.
+Work on one proposal at a time, starting at its first `pending` item. Items
+`kept` or `changed` with no `Landed` field were approved in an earlier session
+but never landed: draft them again with this session's work.
+
+Before proposing any item from a proposal whose run date is more than four
+weeks old, re-check it against its source, because facts drift. Correct it in
+the file, or recommend `drop` with the reason.
+
+Read every bundle entry an item touches before the first round, so each
+recommendation rests on the current text.
+
+### Rounds
+
+A **round** covers about ten items, grouped by destination (one bundle, or the
+`SK`, `PR`, or `RG` set). The **ID summary table** is the center of every
+round: open with it, and come back to it after every answer.
+
+| ID | Destination | Change | Recommended |
+| --- | --- | --- | --- |
+| TT4 | team-tools / build/cache.md | Name the file that builds the cache key | keep |
+| TT5 | team-tools / NEW: Runner tags | Which runner tag the release job needs | change: drop the tag value, point at the CI file |
+| TT6–8 | team-tools / gotchas/flaky-mount.md | Three confirmations of one mount trap | keep TT6, drop TT7–8 as duplicates |
+
+(The rows are invented examples.) One row per item, `Change` copied from the
+item's `Change` field, and a range only for items so related one answer fits
+them all. Flags such as `contradicts` or `unchecked` go in the `Change` cell.
+
+Below the table, tell the user how to answer:
+
+- `keep TT4`, `drop TT5: <reason>`, `change TT6: <what to change>`, or
+  `show TT6`;
+- ranges and lists work: `keep TT6–8`, `drop TT2, TT9`;
+- `rest as recommended` accepts every remaining recommendation in the round.
+
+Then ask the round's open decisions (items where the recommendation is not
+obvious, `contradicts` items, and `RG` suggestions) through AskUserQuestion when
+the harness has it, one question per decision, recommended answer first. An
+item the user has not answered stays `pending`; never treat silence as `keep`.
+
+`show <ID>` prints that item's full `Text` and, once drafted, its diff against
+the current entry. Show a full diff or file only for an ID the user names.
+
+As each answer comes in:
+
+- write the item's `Status` into the proposal file, and regenerate the file's
+  summary table;
+- for `changed`, write the agreed wording into `Text`;
+- for `dropped`, add the `Reason` field and append the item's line to
+  `$STATE/dropped.md` (format in `proposal-format.md`); remove that line again
+  if the user reverses the drop;
+- for `RG`, `kept` means the user will act on it in that repository. Draft
+  nothing for it.
+
+Then print the updated table for the round. A round is complete when no item in
+it is `pending`.
+
+### Draft in a staging worktree
+
+For every repository an accepted change lands in (the repository holding a
+bundle's resolved root, or holding the skill or instruction file), create a
+temporary branch in a staging worktree of that repository, branched from the
+branch its main checkout has out (the **target branch**). Draft every `kept` and
+`changed` item there. Grow existing entries in place, and change an entry's
+`description` and its index line together. When the repository generates its
+instruction files from fragments, edit the fragment and regenerate. A memory
+file outside any repository has no worktree: hold its change until the final
+approval and write it then.
+
+After every round, in each staging worktree with changes, run:
+
+- the structure check on each touched bundle, `agent-knowledge check --path
+  <bundle dir>`, or, without that command, `uv run python -m
+  manage.knowledge.cli check --path <bundle dir>` run from `~/dotfiles`, with
+  `<bundle dir>` the absolute path of the bundle inside the staging worktree. It
+  prints JSON and exits non-zero when `problems` is not empty;
+- that repository's own lint and test targets (its `Makefile`, `tasks.py`, or
+  instructions name them).
+
+Fix what they report before the next round, and tell the user what changed.
+
+### Land
+
+When every item in the proposal is decided, show the proposal's
+`## May be stale` list for information (re-verifying those entries is a
+separate task the user may pick up). Then present one **final ID summary**:
+the same table, listing every `kept` and `changed` item that will land, grouped
+by repository, plus the `RG` suggestions the user kept to act on. Write nothing
+to a target branch before the user approves this table.
+
+On approval, for each repository:
+
+1. Commit on the temporary branch.
+2. If the target branch moved since the worktree was made, rebase onto it and
+   re-run the checks.
+3. Fast-forward the target branch in the main checkout to the temporary branch
+   (`git merge --ff-only`). If the main checkout is not on the target branch, or
+   has uncommitted changes to the touched files, stop and ask.
+4. Run the repository's stow task from the main checkout, so the change reaches
+   the stowed paths.
+5. Remove the staging worktree and delete the temporary branch.
+
+Never push. Write any held memory-file change, then add a `Landed` field to
+each landed item (format in `proposal-format.md`). When nothing in the proposal
+was approved to land, there is nothing to commit, and this step is only the
+move. Move the proposal to `$STATE/proposals/done/`, then go on to the next
+pending proposal, or stop if the user wants to.
+
+## Guardrails
+
+- Write to a bundle, skill, or instruction file only after the user approved
+  that exact change in the final ID summary.
+- Put internal facts only in private bundles. A public bundle, skill, or
+  instruction file gets the generic form, or nothing; check every public
+  destination's text for names of work programs, hosts, systems, and
+  repositories before the final summary.
+- Read Jira, DNG, and Blueserve only. Write nothing to Jira, GitLab, or any
+  project repository (a code repository, as opposed to the dotfiles
+  repositories that hold the bundles, skills, and instruction files): an `RG`
+  item is a suggestion the user acts on.

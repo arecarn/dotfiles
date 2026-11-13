@@ -1,0 +1,87 @@
+# Proposal file format
+
+One proposal file, `~/.local/state/knowledge-harvest/proposals/<date>.md`, is
+written per `run` and edited in place by `review`. It carries everything review
+needs, so review never has to reread the digests.
+
+## Layout
+
+The file has five parts, in this order:
+
+1. **Header**: the run date, the number of sessions digested (`sessions` from
+   `extract`), the number of overflow sessions deferred to the next run, and the
+   ID prefix of each bundle.
+2. **Summary table**: one row per item, columns `ID`, `Status`, `Destination`,
+   `Change`. Review regenerates it from the items whenever a status changes.
+   (The table review shows the user adds a `Recommended` column; the file's
+   table does not carry it.)
+3. **Items**: one block per item, grouped by prefix, in ID order.
+4. **`## May be stale`**: the `harvest.py stale` output, pasted whole.
+5. **`## Dropped`**: counts of what consolidation dropped, one line per reason,
+   for example `already covered: 41`. Counts only; no item text.
+
+## IDs
+
+An ID is an area prefix plus a number, for example `TT12`. Number each prefix
+from 1. IDs never change once written: review refers to them across rounds and
+sessions, and a dropped item keeps its ID.
+
+- A bundle's prefix is short and derived from the bundle id: the initials of
+  its hyphen-separated words (`team-tools` gives `TT`), or one or two letters of
+  a single-word id. Keep prefixes unique across bundles and distinct from the
+  three below. List the mapping in the header so it stays stable.
+- `SK` for skills and instruction files.
+- `PR` for preferences and corrections.
+- `RG` for repository-gotcha suggestions (see `routing.md`).
+
+## Item block
+
+```markdown
+### TT12
+
+- **Status:** pending
+- **Destination:** team-tools / build/cache.md (grow existing entry)
+- **Change:** Say that the cache key includes the toolchain image digest
+- **Text:**
+
+  > The build cache key includes the toolchain image digest, so a new
+  > image invalidates every cached object; the key is built in
+  > `scripts/cache_key.sh`.
+
+- **Evidence:** claude:3f2a…, confirmed against `scripts/cache_key.sh` on the default branch
+- **Confidence:** high
+- **Flags:** contradicts team-tools/build/cache.md
+```
+
+The bundle and paths in that example are invented; a real item names real ones.
+
+| Field | Content |
+| --- | --- |
+| `Status` | `pending`, `kept`, `changed`, or `dropped`. `run` writes `pending`; only review changes it. |
+| `Destination` | Bundle id and entry path, or `NEW: <title>` under the bundle; the skill or instruction file for `SK` and `PR`; the repository for `RG`. Add `(grow existing entry)` or `(new entry)`. |
+| `Change` | One line saying what changes. This is the summary table's text, so it must read alone. |
+| `Text` | The words as they would be written, pointer-style per `routing.md`. For `RG`, the trap as the suggestion would state it. |
+| `Evidence` | The session keys (`source:id`, as in the digest filename) and how the item was confirmed. |
+| `Confidence` | `high` or `medium`. Items below medium are dropped in consolidation. |
+| `Flags` | Zero or more of `contradicts <entry>`, `unchecked` (a lookup the verifier needed failed), `time-sensitive` (the fact will expire, e.g. tied to a release). `none` when empty. |
+
+Review adds two fields as it goes:
+
+- `Reason`, when it sets `dropped`: the one-line reason, also used in the line
+  appended to `dropped.md`. When it sets `changed`, it replaces `Text` with the
+  agreed wording instead.
+- `Landed`, once a `kept` or `changed` item is committed: the repository and
+  commit, for example `dotfiles_local abc1234`. A `kept` or `changed` item with
+  no `Landed` was approved but never landed, and the next review drafts it again.
+
+## `dropped.md`
+
+`~/.local/state/knowledge-harvest/dropped.md` is append-only, one line per item
+review dropped:
+
+```markdown
+- 2026-11-16 TT12 team-tools/build/cache.md: <Change> — <Reason>
+```
+
+The date is the proposal's run date. Consolidation matches new candidates
+against these lines, so the `Change` text must name the fact, not just the file.

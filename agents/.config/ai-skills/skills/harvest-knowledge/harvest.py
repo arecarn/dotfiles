@@ -334,8 +334,7 @@ def commit_ledger(state: Path, updates: dict[str, LedgerEntry], deferred: set[st
     merged = dict(existing)
     for key in deferred:
         previous = existing.get(key)
-        incoming = updates.get(key)
-        harvested = previous.harvested if previous is not None else (incoming.harvested if incoming is not None else 0)
+        harvested = previous.harvested if previous is not None else 0
         merged[key] = LedgerEntry(harvested=harvested, deferred=True)
     for key, entry in updates.items():
         if key in deferred:

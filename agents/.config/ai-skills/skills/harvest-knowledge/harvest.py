@@ -14,9 +14,11 @@ import argparse
 import datetime
 import json
 import os
+import re
+import subprocess
 import sys
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 _COMMAND_WRAPPER_PREFIXES = ("<command", "<system")
 _SKILL_BODY_MARKER = "Base directory for this skill"
@@ -26,6 +28,8 @@ _MIN_USER_MESSAGES = 2
 _DEFAULT_CLAUDE_ROOT = Path.home() / ".claude" / "projects"
 _DEFAULT_PI_ROOT = Path.home() / ".pi" / "agent" / "sessions"
 _DEFAULT_STATE_DIR = Path.home() / ".local" / "state" / "knowledge-harvest"
+_DEFAULT_KNOWLEDGE_DIR = Path.home() / ".config" / "ai-knowledge"
+_DEFAULT_PRIVATE_ROOT = Path.home() / "dotfiles_local"
 
 
 @dataclass(frozen=True)
@@ -45,6 +49,21 @@ class Session:
     path: Path
     cwd: str
     messages: tuple[Message, ...]
+
+
+@dataclass(frozen=True)
+class Bundle:
+    """A knowledge bundle discovered under a knowledge directory.
+
+    `root` is the bundle's directory as found (a symlink target is not
+    resolved); `private` is True when `root.resolve()` lies under the
+    private-knowledge root, which is how a bundle stowed from
+    `dotfiles_local` is told apart from one that ships in the public repo.
+    """
+
+    id: str
+    root: Path
+    private: bool
 
 
 def _text_from_content(content: object) -> str:
@@ -416,6 +435,294 @@ def commit(run_dir: Path, state_dir: Path, deferred_keys: set[str]) -> None:
     commit_ledger(state_dir, _ledger_from_json(data), deferred_keys)
 
 
+def discover_bundles(knowledge_dir: Path, private_root: Path) -> list[Bundle]:
+    """List every knowledge bundle directly under `knowledge_dir`.
+
+    A bundle is a directory or symlink (`config.yaml`'s own doc: a bundle
+    "is" whatever sits beside it with an `index.md`) whose `index.md` has an
+    `okf_version` key in its frontmatter. Non-bundle entries (`config.yaml`,
+    a bundle missing `okf_version`) are skipped rather than raising, since a
+    knowledge directory also holds files that are not bundles.
+    """
+    bundles = []
+    if not knowledge_dir.is_dir():
+        return bundles
+    private_resolved = private_root.resolve()
+    for entry in sorted(knowledge_dir.iterdir()):
+        index = entry / "index.md"
+        if not index.is_file():
+            continue
+        frontmatter = _read_frontmatter_lines(index)
+        if not any(line.strip().startswith("okf_version:") for line in frontmatter):
+            continue
+        private = _is_under(entry.resolve(), private_resolved)
+        bundles.append(Bundle(id=entry.name, root=entry, private=private))
+    return bundles
+
+
+def _read_frontmatter_lines(path: Path) -> list[str]:
+    """Return the lines between a markdown file's opening `---` delimiters, or `[]` if it has none."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0].strip() != "---":
+        return []
+    for index, line in enumerate(lines[1:], start=1):
+        if line.strip() == "---":
+            return lines[1:index]
+    return []
+
+
+def _unquote_scalar(value: str) -> str:
+    """Strip one layer of matching `"` or `'` quoting from a YAML scalar, or return it as-is if unquoted."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        return value[1:-1]
+    return value
+
+
+def entry_sources(md: Path) -> tuple[str | None, list[str]]:
+    """Read a knowledge entry's `verified` date and `sources` list from its frontmatter.
+
+    Handles the two YAML forms the bundles use: a scalar key (`verified:
+    "2026-10-06"`, quoted with `"` or `'`, or bare) and a block list whose
+    items are quoted strings (`  - "item"`). Returns `(None, [])` when the
+    file has no frontmatter or no `verified` key -- callers use that to
+    skip an entry with nothing to check staleness against.
+    """
+    verified: str | None = None
+    sources: list[str] = []
+    in_sources = False
+    for line in _read_frontmatter_lines(md):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if line.startswith((" ", "\t")) and stripped.startswith("-"):
+            if in_sources:
+                sources.append(_unquote_scalar(stripped[1:]))
+            continue
+        in_sources = False
+        key, _, rest = stripped.partition(":")
+        key = key.strip()
+        if key == "verified":
+            verified = _unquote_scalar(rest)
+        elif key == "sources":
+            in_sources = True
+    return verified, sources
+
+
+def _yaml_list_items(lines: list[str], list_key: str) -> list[dict[str, str]]:
+    """Parse a top-level YAML `list_key:` block of `- key: value` mapping items with the shared line parser.
+
+    Each item starts with a `-`-prefixed line (`- name: ...`) and continues
+    with more deeply indented `key: value` lines until the next `-` at the
+    same indent or a line outdented back out of the block. Only scalar
+    `key: value` pairs are kept; a nested block (for example `scopes:`'s own
+    list) is skipped, since `repositories.yaml` entries only need `name`
+    and `local` here.
+    """
+    items: list[dict[str, str]] = []
+    in_list = False
+    list_indent = 0
+    current: dict[str, str] | None = None
+    item_indent = 0
+    for line in lines:
+        if not line.strip() or line.strip().startswith("#"):
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        stripped = line.strip()
+        if not in_list:
+            if stripped == f"{list_key}:":
+                in_list = True
+                list_indent = indent
+            continue
+        if indent < list_indent:
+            break
+        if indent == list_indent and stripped.startswith("-"):
+            if current is not None:
+                items.append(current)
+            current = {}
+            item_indent = indent
+            stripped = stripped[1:].strip()
+            if not stripped:
+                continue
+        elif current is None or indent <= item_indent:
+            continue
+        key, sep, rest = stripped.partition(":")
+        if sep and current is not None:
+            current[key.strip()] = _unquote_scalar(rest)
+    if current is not None:
+        items.append(current)
+    return items
+
+
+def repo_paths(bundles: list[Bundle], workspace_roots: list[Path]) -> dict[str, Path]:
+    """Map repository names to local checkouts, from every bundle's `repositories.yaml`.
+
+    Each repository is keyed by both its `name:` value and the basename of
+    its `path:` value (source text names repositories by the GitLab path's
+    last segment, for example `Team_Product_Software`, not by `name:`). A
+    repository's `local:` path is resolved against `workspace_roots` in
+    order; the first root under which `root / local` exists and contains
+    `.git` wins, and a repository that resolves under no root is omitted.
+    """
+    paths: dict[str, Path] = {}
+    for bundle in bundles:
+        yaml_path = bundle.root / "repositories.yaml"
+        if not yaml_path.is_file():
+            continue
+        lines = yaml_path.read_text(encoding="utf-8").splitlines()
+        for item in _yaml_list_items(lines, "repositories"):
+            name = item.get("name")
+            local = item.get("local")
+            if not name or not local:
+                continue
+            for root in workspace_roots:
+                candidate = root / local
+                if (candidate / ".git").exists():
+                    paths[name] = candidate
+                    paths[PurePosixPath(item.get("path", "")).name or name] = candidate
+                    break
+    return paths
+
+
+def _ordered_repo_names(repo_paths_map: dict[str, Path]) -> list[str]:
+    """Order repository names longest-first, so a shorter name cannot match inside a longer one's token."""
+    return sorted(repo_paths_map, key=len, reverse=True)
+
+
+_TOKEN_RE = re.compile(r"[A-Za-z0-9_./-]+")
+
+
+def resolve_source(text: str, repo_paths: dict[str, Path]) -> tuple[Path, list[str]] | None:
+    """Find a known repository and the files it names in one `sources` entry's text.
+
+    Matches a repository name as a whole word (so `Repo` does not match
+    inside `RepoAB`), trying longer names first. Once a repository is
+    found, collects the path-like tokens in the text (`a/b.ext`, or a bare
+    `name.ext`) that actually exist in its checkout: a bare name is looked
+    up with `git ls-files -- '**/name.ext'` so it matches at any depth, and
+    a slash-containing token is checked as a literal path. Returns `None`
+    when the text names no known repository, or a known repository with no
+    file that resolves (for example a DNG module citation).
+    """
+    for name in _ordered_repo_names(repo_paths):
+        if re.search(rf"\b{re.escape(name)}\b", text):
+            repo_root = repo_paths[name]
+            break
+    else:
+        return None
+
+    files: list[str] = []
+    for token in _TOKEN_RE.findall(text):
+        if "." not in token.rsplit("/", 1)[-1]:
+            continue  # not a file-shaped token (e.g. a commit SHA or branch name)
+        if "/" in token:
+            if (repo_root / token).is_file():
+                files.append(token)
+            continue
+        result = subprocess.run(
+            ["git", "ls-files", "--", f"**/{token}"],
+            cwd=repo_root,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            files.append(result.stdout.strip().splitlines()[0])
+    if not files:
+        return None
+    return repo_root, files
+
+
+def _git_default_branch_commits(repo_root: Path, since: str, files: list[str], fetch: bool) -> list[str] | None:
+    """List `origin/HEAD`'s commits touching `files` since `since`, or `None` if git failed.
+
+    Runs `git fetch --quiet` first unless `fetch` is False, so a stale local
+    `origin/HEAD` doesn't under-report. A non-zero return from either
+    command means the source is unresolved rather than raising.
+    """
+    if fetch:
+        fetch_result = subprocess.run(
+            ["git", "fetch", "--quiet"], cwd=repo_root, check=False, capture_output=True, text=True
+        )
+        if fetch_result.returncode != 0:
+            return None
+    log_result = subprocess.run(
+        ["git", "log", f"--since={since}", "--oneline", "origin/HEAD", "--", *files],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if log_result.returncode != 0:
+        return None
+    return [line for line in log_result.stdout.splitlines() if line.strip()]
+
+
+def stale(knowledge_dir: Path, private_root: Path, workspace_roots: list[Path], fetch: bool) -> str:
+    """Build the markdown `stale` report for every bundle under `knowledge_dir`.
+
+    Scans every `*.md` under each bundle except `index.md`, skipping an
+    entry with no `verified` date. For each `sources` entry that resolves
+    (see `resolve_source`) to at least one commit on `origin/HEAD` since
+    `verified`, adds one line to `## May be stale`. Counts, but does not
+    list, every `sources` entry that does not resolve to a known
+    repository and files.
+    """
+    bundles = discover_bundles(knowledge_dir, private_root)
+    paths = repo_paths(bundles, workspace_roots)
+
+    stale_lines: list[str] = []
+    unresolved = 0
+    for bundle in bundles:
+        for md in sorted(bundle.root.rglob("*.md")):
+            if md.name == "index.md":
+                continue
+            verified, sources = entry_sources(md)
+            if verified is None:
+                continue
+            for source_text in sources:
+                resolved = resolve_source(source_text, paths)
+                if resolved is None:
+                    unresolved += 1
+                    continue
+                repo_root, files = resolved
+                commits = _git_default_branch_commits(repo_root, verified, files, fetch)
+                if commits is None:
+                    unresolved += 1
+                elif commits:
+                    entry_label = f"{bundle.id}/{md.relative_to(bundle.root)}"
+                    files_label = ", ".join(files)
+                    stale_lines.append(
+                        f"{entry_label} — {repo_root.name}: {len(commits)} commits to "
+                        f"{files_label} since {verified}"
+                    )
+
+    roots_label = ", ".join(str(root) for root in workspace_roots) or "(none)"
+    lines = [f"Workspace roots: {roots_label}", "", "## May be stale"]
+    lines.extend(stale_lines if stale_lines else ["(none)"])
+    lines.append(f"\nUnresolved sources: {unresolved}")
+    return "\n".join(lines)
+
+
+def _default_workspace_roots() -> list[Path]:
+    """Compute the default `--workspace-root` list: the env var, or `~/files/projects` plus its immediate subdirectories.
+
+    `HARVEST_WORKSPACE_ROOTS` is `os.pathsep`-separated, matching how other
+    PATH-like settings are read. Falling back to scanning subdirectories
+    lets a repository nested one level down (for example
+    `~/files/projects/cf/cfsw`) resolve without the caller having to name
+    every project folder.
+    """
+    env_value = os.environ.get("HARVEST_WORKSPACE_ROOTS")
+    if env_value:
+        return [Path(p) for p in env_value.split(os.pathsep) if p]
+    base = Path.home() / "files" / "projects"
+    roots = [base]
+    if base.is_dir():
+        roots.extend(sorted(p for p in base.iterdir() if p.is_dir()))
+    return roots
+
+
 def _pack_largest_first(digests: list[Path], target: int) -> list[list[Path]]:
     """Bin-pack `digests` into bins of about `target` size, largest digest first.
 
@@ -515,7 +822,7 @@ def batch(run_dir: Path, target: int = 350_000, cap: int = 8, solo: int = 300_00
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point for the `extract`, `commit`, and `batch` subcommands."""
+    """CLI entry point for the `extract`, `commit`, `batch`, and `stale` subcommands."""
     parser = argparse.ArgumentParser(prog="harvest.py")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -532,6 +839,12 @@ def main(argv: list[str] | None = None) -> int:
     batch_parser = subparsers.add_parser("batch", help="Split a run's digests into reader-sized batches")
     batch_parser.add_argument("--run-dir", type=Path, required=True)
 
+    stale_parser = subparsers.add_parser("stale", help="Report knowledge entries whose cited sources have changed")
+    stale_parser.add_argument("--knowledge-dir", type=Path, default=_DEFAULT_KNOWLEDGE_DIR)
+    stale_parser.add_argument("--private-root", type=Path, default=_DEFAULT_PRIVATE_ROOT)
+    stale_parser.add_argument("--workspace-root", action="append", dest="workspace_roots", type=Path, default=None)
+    stale_parser.add_argument("--no-fetch", action="store_true")
+
     args = parser.parse_args(argv)
 
     if args.command == "extract":
@@ -542,6 +855,9 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "batch":
         summary = batch(args.run_dir)
         print(json.dumps(summary))
+    elif args.command == "stale":
+        workspace_roots = args.workspace_roots if args.workspace_roots else _default_workspace_roots()
+        print(stale(args.knowledge_dir, args.private_root, workspace_roots, fetch=not args.no_fetch))
 
     return 0
 

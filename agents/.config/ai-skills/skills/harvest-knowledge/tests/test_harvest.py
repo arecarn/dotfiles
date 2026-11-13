@@ -10,8 +10,11 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
@@ -19,11 +22,13 @@ import harvest
 from harvest import (
     LedgerEntry,
     commit_ledger,
+    entry_sources,
     load_ledger,
     main,
     make_batches,
     plan_extract,
     read_claude,
+    resolve_source,
 )
 
 FIX = Path(__file__).parent / "fixtures"
@@ -34,6 +39,45 @@ def _write_digest(path: Path, size: int, mtime: float) -> Path:
     path.write_bytes(b"x" * size)
     os.utime(path, (mtime, mtime))
     return path
+
+
+def _run_git(args: list[str], cwd: Path) -> None:
+    subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True)
+
+
+def _git_commit(repo: Path, message: str, date: str) -> None:
+    """Commit the working tree's current state, with author and committer dates both pinned to `date`."""
+    _run_git(["add", "-A"], cwd=repo)
+    env = dict(os.environ, GIT_AUTHOR_DATE=date, GIT_COMMITTER_DATE=date)
+    subprocess.run(["git", "commit", "-q", "-m", message], cwd=repo, check=True, capture_output=True, env=env)
+
+
+@pytest.fixture
+def git_repo(tmp_path):
+    """Build a repo with two dated commits to `src/a.cpp` and clone it so `origin/HEAD` resolves.
+
+    The first commit lands 2026-01-01, the second (which re-touches
+    `src/a.cpp`) lands 2026-07-01, so a `verified` date between the two
+    shows one commit as stale and a `verified` date after both shows none.
+    Returns the clone's path -- the thing a `repositories.yaml` `local:`
+    entry would point at.
+    """
+    origin = tmp_path / "origin"
+    origin.mkdir()
+    _run_git(["init", "-q", "-b", "main"], cwd=origin)
+    _run_git(["config", "user.email", "test@example.com"], cwd=origin)
+    _run_git(["config", "user.name", "Test"], cwd=origin)
+
+    (origin / "src").mkdir()
+    (origin / "src" / "a.cpp").write_text("int a() { return 1; }\n")
+    _git_commit(origin, "initial", "2026-01-01T00:00:00")
+
+    (origin / "src" / "a.cpp").write_text("int a() { return 2; }\n")
+    _git_commit(origin, "update a.cpp", "2026-07-01T00:00:00")
+
+    clone = tmp_path / "repo"
+    _run_git(["clone", "-q", str(origin), str(clone)], cwd=tmp_path)
+    return clone
 
 
 def test_read_claude_keeps_text_and_drops_tool_output():
@@ -267,3 +311,128 @@ def test_batch_cli_handles_empty_digests_dir(tmp_path, capsys):
     assert summary == {"batches": 0, "overflow_keys": []}
     assert list(run.glob("batch*.txt")) == []
     assert (run / "overflow.txt").read_text() == ""
+
+
+def _write_bundle_index(root: Path) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "index.md").write_text('---\nokf_version: "0.2"\n---\n# A bundle\n')
+
+
+def test_discover_bundles_marks_privacy(tmp_path):
+    knowledge_dir = tmp_path / "ai-knowledge"
+    private_root = tmp_path / "private"
+    _write_bundle_index(knowledge_dir / "public-bundle")
+    _write_bundle_index(private_root / "stowed" / "private-bundle")
+    (knowledge_dir / "private-bundle").symlink_to(private_root / "stowed" / "private-bundle")
+    # A non-bundle entry (no okf_version) must be skipped.
+    (knowledge_dir / "config.yaml").write_text("version: 1\n")
+
+    bundles = {b.id: b for b in harvest.discover_bundles(knowledge_dir, private_root)}
+
+    assert set(bundles) == {"public-bundle", "private-bundle"}
+    assert bundles["public-bundle"].private is False
+    assert bundles["private-bundle"].private is True
+
+
+def test_entry_sources_reads_verified_and_list(tmp_path):
+    md = tmp_path / "entry.md"
+    md.write_text(
+        '---\n'
+        'type: Reference\n'
+        'verified: "2026-10-06"\n'
+        'sources:\n'
+        '  - "RepoA origin/develop deadbeef: a.cpp, b.cpp"\n'
+        "  - 'RepoB abc123: c.cpp'\n"
+        "---\n"
+        "# Body\n"
+    )
+
+    verified, sources = entry_sources(md)
+
+    assert verified == "2026-10-06"
+    assert sources == [
+        "RepoA origin/develop deadbeef: a.cpp, b.cpp",
+        "RepoB abc123: c.cpp",
+    ]
+
+
+def test_entry_sources_handles_missing_verified(tmp_path):
+    md = tmp_path / "entry.md"
+    md.write_text("---\ntype: Reference\nstatus: active\n---\n# Body\n")
+
+    verified, sources = entry_sources(md)
+
+    assert verified is None
+    assert sources == []
+
+
+def test_resolve_source_finds_repo_and_files(git_repo):
+    resolved = resolve_source("RepoA origin/develop deadbeef: src/a.cpp", {"RepoA": git_repo})
+
+    assert resolved is not None
+    repo_root, files = resolved
+    assert repo_root == git_repo
+    assert files == ["src/a.cpp"]
+
+
+def test_resolve_source_finds_a_bare_filename_at_any_depth(git_repo):
+    resolved = resolve_source("RepoA origin/develop deadbeef: a.cpp", {"RepoA": git_repo})
+
+    assert resolved is not None
+    _repo_root, files = resolved
+    assert files == ["src/a.cpp"]
+
+
+def test_resolve_source_returns_none_for_dng_and_unknown_repo(git_repo):
+    assert resolve_source("DNG module 357062: ASI", {"Repo": git_repo}) is None
+    assert resolve_source("OtherRepo origin/develop: x.cpp", {"Repo": git_repo}) is None
+
+
+def test_resolve_source_prefers_the_longest_matching_name(git_repo):
+    # "RepoA" must not match inside the text naming "RepoAB" -- a shorter
+    # repo name sharing a prefix should lose to the longer, correct match.
+    repo_paths = {"RepoA": git_repo, "RepoAB": git_repo}
+    resolved = resolve_source("RepoAB origin/develop: src/a.cpp", repo_paths)
+    assert resolved is not None
+
+
+def test_stale_lists_commits_after_verified(tmp_path, git_repo):
+    knowledge_dir = tmp_path / "ai-knowledge"
+    private_root = tmp_path / "private"
+    bundle = knowledge_dir / "bundle"
+    _write_bundle_index(bundle)
+    (bundle / "repositories.yaml").write_text(
+        "repositories:\n"
+        "- name: RepoA\n"
+        "  path: group/RepoA\n"
+        "  local: repo\n"
+    )
+    # verified between the two commits: only the 2026-07-01 commit is stale.
+    (bundle / "entry.md").write_text(
+        '---\n'
+        'verified: "2026-06-01"\n'
+        "sources:\n"
+        '  - "RepoA deadbeef: src/a.cpp"\n'
+        "---\n"
+        "# Body\n"
+    )
+    # verified after both commits: nothing stale for this entry.
+    (bundle / "settled.md").write_text(
+        '---\n'
+        'verified: "2026-08-01"\n'
+        "sources:\n"
+        '  - "RepoA deadbeef: src/a.cpp"\n'
+        "---\n"
+        "# Body\n"
+    )
+
+    # git_repo is already the clone at tmp_path / "repo", matching repositories.yaml's local: "repo".
+    assert git_repo == tmp_path / "repo"
+    workspace_root = tmp_path
+
+    report = harvest.stale(knowledge_dir, private_root, [workspace_root], fetch=False)
+
+    assert "entry.md" in report
+    assert "1 commits" in report
+    assert "settled.md" not in report
+    assert "Unresolved sources: 0" in report

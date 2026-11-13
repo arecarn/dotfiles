@@ -76,6 +76,34 @@ def test_discover_finds_both_layouts(tmp_path):
     }
 
 
+def test_discover_excludes_subagent_and_fork_transcripts_below_depth_one(tmp_path):
+    # Depth 0 and depth 1 files (flat root, and <root>/<project>/<file>.jsonl)
+    # are real top-level sessions and must be found. Deeper paths are the
+    # subagent/fork transcripts pi and Claude nest under a session file
+    # (pi: <dir>/<session>/<subagent-id>/run-0/session.jsonl; Claude:
+    # <project>/<session-id>/subagents/x.jsonl) -- those must be excluded,
+    # even though they parse as standalone sessions.
+    claude_root = tmp_path / "claude"
+    pi_root = tmp_path / "pi"
+
+    (claude_root / "proj").mkdir(parents=True)
+    (claude_root / "flat.jsonl").write_text("")  # depth 0
+    (claude_root / "proj" / "top.jsonl").write_text("")  # depth 1
+    (claude_root / "proj" / "sess-id" / "subagents").mkdir(parents=True)
+    (claude_root / "proj" / "sess-id" / "subagents" / "x.jsonl").write_text("")  # depth 3
+
+    (pi_root / "dir" / "sess" / "run-0").mkdir(parents=True)
+    (pi_root / "dir" / "top.jsonl").write_text("")  # depth 1
+    (pi_root / "dir" / "sess" / "run-0" / "session.jsonl").write_text("")  # depth 3
+    (pi_root / "dir" / "sess" / "forks").mkdir(parents=True)
+    (pi_root / "dir" / "sess" / "forks" / "fork.jsonl").write_text("")  # depth 3
+
+    assert {p.name for p in harvest.discover(claude_root, pi_root)} == {
+        "flat.jsonl",
+        "top.jsonl",
+    }
+
+
 def test_plan_reads_only_new_messages():
     s = read_claude(FIX / "claude" / "basic.jsonl")
     assert plan_extract([s], {f"claude:{s.id}": LedgerEntry(harvested=2)}) == [(s, 2)]

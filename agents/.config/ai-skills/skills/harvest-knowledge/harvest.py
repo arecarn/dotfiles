@@ -153,18 +153,24 @@ def read_pi(path: Path) -> Session | None:
 
 
 def discover(claude_root: Path, pi_root: Path) -> list[Path]:
-    """List every session JSONL file under the Claude and pi session roots.
+    """List every top-level session JSONL file under the Claude and pi session roots.
 
-    Globs recursively under each root, so it finds both the real layout
-    (`<root>/<project-dir>/<file>.jsonl`) and a flat root used directly in
-    tests. A root that doesn't exist is skipped rather than raising, since
-    a machine may have only one agent installed.
+    Globs depth 0 (a flat root, used directly in tests) and depth 1 (the
+    real layout, `<root>/<project-dir>/<file>.jsonl`) only -- never deeper.
+    Both tools nest subagent/fork transcripts several levels under a
+    session file (pi: `<dir>/<session>/<subagent-id>/run-0/session.jsonl`,
+    `<dir>/<session>/forks/<id>.jsonl`; Claude:
+    `<project>/<session-id>/subagents/**/*.jsonl`), and those still parse
+    as standalone sessions, so a recursive glob would harvest them as
+    top-level sessions. A root that doesn't exist is skipped rather than
+    raising, since a machine may have only one agent installed.
     """
     paths: list[Path] = []
     for root in (claude_root, pi_root):
         if not root.is_dir():
             continue
-        paths.extend(sorted(root.glob("**/*.jsonl")))
+        paths.extend(sorted(root.glob("*.jsonl")))
+        paths.extend(sorted(root.glob("*/*.jsonl")))
     return paths
 
 

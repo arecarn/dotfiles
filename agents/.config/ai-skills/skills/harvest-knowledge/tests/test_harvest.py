@@ -41,6 +41,44 @@ def _write_digest(path: Path, size: int, mtime: float) -> Path:
     return path
 
 
+def _write_jsonl(path: Path, records: list[dict]) -> Path:
+    """Write `records` as one JSON object per line to `path`, creating its directory."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+    return path
+
+
+def _claude_session(path: Path, user_texts: list[str], cwd: str = "/work/repo") -> Path:
+    """Write a Claude session alternating each of `user_texts` with a fixed assistant reply."""
+    records = []
+    for text in user_texts:
+        records.append({"type": "user", "cwd": cwd, "message": {"content": text}})
+        records.append(
+            {
+                "type": "assistant",
+                "cwd": cwd,
+                "message": {"content": [{"type": "text", "text": "Reply."}]},
+            }
+        )
+    return _write_jsonl(path, records)
+
+
+def _extract(state: Path, claude_root: Path, pi_root: Path) -> Path:
+    """Run the `extract` CLI and return the run dir it wrote."""
+    main(
+        [
+            "extract",
+            "--state-dir",
+            str(state),
+            "--claude-root",
+            str(claude_root),
+            "--pi-root",
+            str(pi_root),
+        ]
+    )
+    return next((state / "runs").iterdir())
+
+
 def _run_git(args: list[str], cwd: Path) -> None:
     subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True)
 
@@ -248,7 +286,7 @@ def test_small_runs_get_one_batch(tmp_path):
     ]
     batches, overflow = make_batches(digests)
     assert batches == [digests]
-    assert overflow == []
+    assert not overflow
 
 
 def test_batches_respect_cap_and_defer_newest(tmp_path):
@@ -270,7 +308,7 @@ def test_one_oversized_digest_gets_its_own_batch(tmp_path):
     small_b = _write_digest(tmp_path / "claude__b.md", 100_000, mtime=1_002)
     batches, overflow = make_batches([big, small_a, small_b])
     assert [big] in batches
-    assert overflow == []
+    assert not overflow
     other_batches = [batch for batch in batches if batch != [big]]
     assert {p for batch in other_batches for p in batch} == {small_a, small_b}
 
@@ -387,7 +425,7 @@ def test_resolve_source_finds_a_bare_filename_at_any_depth(git_repo):
 
 
 def test_resolve_source_returns_none_for_dng_and_unknown_repo(git_repo):
-    assert resolve_source("DNG module 357062: ASI", {"Repo": git_repo}) is None
+    assert resolve_source("DNG module 123456: Example spec", {"Repo": git_repo}) is None
     assert resolve_source("OtherRepo origin/develop: x.cpp", {"Repo": git_repo}) is None
 
 
@@ -508,3 +546,82 @@ def test_stale_fetches_each_repo_at_most_once(monkeypatch, tmp_path, git_repo):
     harvest.stale(knowledge_dir, private_root, [workspace_root], fetch=True)
 
     assert len(fetch_calls) == 1
+
+
+def test_commit_reads_overflow_file_and_rejects_unknown_deferred_keys(tmp_path, capsys):
+    state = tmp_path / "state"
+    claude_root = tmp_path / "claude"
+    _claude_session(claude_root / "proj" / "kept.jsonl", ["First ask.", "Second ask."])
+    _claude_session(claude_root / "proj" / "over.jsonl", ["Other ask.", "Follow-up."])
+    run = _extract(state, claude_root, tmp_path / "pi")
+    (run / "overflow.txt").write_text(f"{(run / 'digests' / 'claude__over.md').resolve()}\n")
+
+    # A typo'd key is refused, and nothing reaches the ledger.
+    status = main(
+        [
+            "commit",
+            "--run-dir",
+            str(run),
+            "--state-dir",
+            str(state),
+            "--deferred",
+            "claude:typo",
+        ]
+    )
+    assert status != 0
+    assert "claude:typo" in capsys.readouterr().err
+    assert not (state / "ledger.json").exists()
+
+    # With no --deferred at all, overflow.txt alone defers the overflow session.
+    assert main(["commit", "--run-dir", str(run), "--state-dir", str(state)]) == 0
+    ledger = load_ledger(state)
+    assert ledger["claude:over"] == LedgerEntry(harvested=0, deferred=True)
+    assert ledger["claude:kept"] == LedgerEntry(harvested=4, deferred=False)
+
+
+def test_commit_defer_batch_defers_every_key_in_that_batch(tmp_path):
+    state = tmp_path / "state"
+    claude_root = tmp_path / "claude"
+    for name in ("a", "b", "c"):
+        _claude_session(claude_root / "proj" / f"{name}.jsonl", [f"Ask {name}.", "More."])
+    run = _extract(state, claude_root, tmp_path / "pi")
+    digests = run / "digests"
+    (run / "batch0.txt").write_text(f"{(digests / 'claude__a.md').resolve()}\n")
+    (run / "batch1.txt").write_text(
+        f"{(digests / 'claude__b.md').resolve()}\n{(digests / 'claude__c.md').resolve()}\n"
+    )
+
+    status = main(
+        [
+            "commit",
+            "--run-dir",
+            str(run),
+            "--state-dir",
+            str(state),
+            "--defer-batch",
+            "1",
+        ]
+    )
+
+    assert status == 0
+    ledger = load_ledger(state)
+    assert ledger["claude:a"] == LedgerEntry(harvested=4, deferred=False)
+    assert ledger["claude:b"] == LedgerEntry(harvested=0, deferred=True)
+    assert ledger["claude:c"] == LedgerEntry(harvested=0, deferred=True)
+
+
+def test_commit_writes_committed_marker(tmp_path):
+    state = tmp_path / "state"
+    claude_root = tmp_path / "claude"
+    _claude_session(claude_root / "proj" / "a.jsonl", ["Ask.", "More."])
+    run = _extract(state, claude_root, tmp_path / "pi")
+    assert not (run / "committed").exists()
+
+    main(["commit", "--run-dir", str(run), "--state-dir", str(state)])
+    assert (run / "committed").is_file()
+
+    # A second extract the same day rewrites the pending ledger, so the
+    # marker no longer describes it and must go.
+    _claude_session(claude_root / "proj" / "a.jsonl", ["Ask.", "More.", "Even more."])
+    assert _extract(state, claude_root, tmp_path / "pi") == run
+    assert not (run / "committed").exists()

@@ -7,7 +7,9 @@ scratch sessions, and renders the remaining turns as a compact text digest.
 
 # A harness runs this script with a bare `python3`, not through this repo's
 # environment, so it stays clear of syntax newer than Python 3.10 has (no
-# PEP 695 generics).
+# PEP 695 generics). It ships as one file beside SKILL.md, which imports it
+# by path, so it is not split to stay under pylint's module-length limit.
+# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import argparse
@@ -409,7 +411,9 @@ def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
     Writes to `state_dir/runs/<today>/digests/` and
     `state_dir/runs/<today>/pending-ledger.json`. Reuses `<today>`'s run
     dir if one already exists (a second run the same day), overwriting the
-    digests. Returns `{"run_dir", "sessions", "bytes"}`.
+    digests and removing that dir's `committed` marker, since the marker
+    described the pending ledger this call replaces. Returns
+    `{"run_dir", "sessions", "bytes"}`.
     """
     today = datetime.date.today().isoformat()
     run_dir = state_dir / "runs" / today
@@ -422,21 +426,62 @@ def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
     written = write_digests(plan, run_dir)
     total_bytes = sum(path.stat().st_size for path in written)
     _write_json_atomic(run_dir / "pending-ledger.json", _ledger_to_json(pending_ledger(plan)))
+    # The marker described the pending ledger just replaced.
+    (run_dir / "committed").unlink(missing_ok=True)
 
     return {"run_dir": str(run_dir), "sessions": len(plan), "bytes": total_bytes}
 
 
-def commit(run_dir: Path, state_dir: Path, deferred_keys: set[str]) -> None:
-    """Apply a run's `pending-ledger.json` to `state_dir/ledger.json`.
+class CommitError(Exception):
+    """A `commit` refused to touch the ledger; the message says why."""
 
-    Requires `run_dir/pending-ledger.json` to exist (written by a prior
-    `extract`). Keys in `deferred_keys` keep their previous `harvested`
-    value and are marked `deferred=True`; see `commit_ledger`.
+
+def _keys_from_list_file(path: Path) -> set[str]:
+    """Read a `batch<N>.txt` or `overflow.txt` file into the ledger keys of the digests it lists."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return {_key_from_digest_path(Path(line.strip())) for line in lines if line.strip()}
+
+
+def commit(
+    run_dir: Path, state_dir: Path, deferred_keys: set[str], defer_batches: list[int] | None = None
+) -> None:
+    """Apply a run's `pending-ledger.json` to `state_dir/ledger.json`, then mark the run committed.
+
+    The deferred set is the union of `deferred_keys`, every key listed in
+    `run_dir/overflow.txt` (when `batch` wrote one), and every key listed in
+    `run_dir/batch<N>.txt` for each N in `defer_batches`. Deferred keys keep
+    their previous `harvested` value and are marked `deferred=True`; see
+    `commit_ledger`. On success writes `run_dir/committed` (a timestamp),
+    which tells a later run that this run's ledger already landed.
+
+    Requires `run_dir/pending-ledger.json` (written by `extract`). Raises
+    `CommitError`, before writing anything, when a deferred key is not in the
+    pending ledger (a mistyped key would otherwise add a junk entry) or a
+    named batch file does not exist.
     """
     pending_path = run_dir / "pending-ledger.json"
     with pending_path.open(encoding="utf-8") as fh:
-        data = json.load(fh)
-    commit_ledger(state_dir, _ledger_from_json(data), deferred_keys)
+        pending = _ledger_from_json(json.load(fh))
+
+    deferred = set(deferred_keys)
+    overflow_path = run_dir / "overflow.txt"
+    if overflow_path.is_file():
+        deferred |= _keys_from_list_file(overflow_path)
+    for number in defer_batches or []:
+        batch_path = run_dir / f"batch{number}.txt"
+        if not batch_path.is_file():
+            raise CommitError(f"no such batch file: {batch_path}")
+        deferred |= _keys_from_list_file(batch_path)
+
+    unknown = sorted(deferred - set(pending))
+    if unknown:
+        raise CommitError(
+            f"deferred keys not in {pending_path}: {', '.join(unknown)}; ledger left unchanged"
+        )
+
+    commit_ledger(state_dir, pending, deferred)
+    stamp = datetime.datetime.now().isoformat(timespec="seconds")
+    (run_dir / "committed").write_text(stamp + "\n", encoding="utf-8")
 
 
 def discover_bundles(knowledge_dir: Path, private_root: Path) -> list[Bundle]:
@@ -849,8 +894,8 @@ def batch(run_dir: Path, target: int = 350_000, cap: int = 8, solo: int = 300_00
     (one absolute path per line, empty when there's no overflow). Removes
     any stale `batch*.txt` left from an earlier same-day run first, since a
     smaller batch count here would otherwise leave old files behind. Returns
-    `{"batches", "overflow_keys"}`; the keys are ready to pass to
-    `commit --deferred`.
+    `{"batches", "overflow_keys"}`; `commit` reads `overflow.txt` itself,
+    so the keys are for reporting only.
     """
     digests = sorted((run_dir / "digests").glob("*.md"))
     for stale_batch in run_dir.glob("batch*.txt"):
@@ -880,7 +925,22 @@ def main(argv: list[str] | None = None) -> int:
     commit_parser = subparsers.add_parser("commit", help="Apply a run's pending ledger")
     commit_parser.add_argument("--run-dir", type=Path, required=True)
     commit_parser.add_argument("--state-dir", type=Path, default=_DEFAULT_STATE_DIR)
-    commit_parser.add_argument("--deferred", action="append", default=[], metavar="KEY")
+    commit_parser.add_argument(
+        "--deferred",
+        action="append",
+        default=[],
+        metavar="KEY",
+        help="defer this <source>:<id> key too (overflow.txt is always read)",
+    )
+    commit_parser.add_argument(
+        "--defer-batch",
+        action="append",
+        type=int,
+        default=[],
+        metavar="N",
+        dest="defer_batches",
+        help="defer every session listed in batch<N>.txt",
+    )
 
     batch_parser = subparsers.add_parser(
         "batch", help="Split a run's digests into reader-sized batches"
@@ -903,7 +963,11 @@ def main(argv: list[str] | None = None) -> int:
         summary = extract(args.state_dir, args.claude_root, args.pi_root)
         print(json.dumps(summary))
     elif args.command == "commit":
-        commit(args.run_dir, args.state_dir, set(args.deferred))
+        try:
+            commit(args.run_dir, args.state_dir, set(args.deferred), args.defer_batches)
+        except CommitError as error:
+            print(f"harvest.py commit: {error}", file=sys.stderr)
+            return 1
     elif args.command == "batch":
         summary = batch(args.run_dir)
         print(json.dumps(summary))

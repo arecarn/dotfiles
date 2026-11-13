@@ -1,0 +1,2 @@
+{"type":"user","cwd":"/work/repo","message":{"content":"Just a single quick question."}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"Just a single quick answer."}]}}

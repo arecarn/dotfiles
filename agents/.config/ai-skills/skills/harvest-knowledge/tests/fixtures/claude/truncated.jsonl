@@ -1,0 +1,3 @@
+{"type":"user","cwd":"/work/repo","message":{"content":"First message before the file got cut off."}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"Second message, a reply."}]}}
+{"type":"user","cwd":"/work/repo","message":{"content":"This line got truncated mid-wri

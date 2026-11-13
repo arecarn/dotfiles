@@ -1,0 +1,4 @@
+{"type":"user","cwd":"/work/repo","message":{"content":"[harvest-knowledge] digest review for an earlier session"}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"Acknowledged, reviewing the earlier digest."}]}}
+{"type":"user","cwd":"/work/repo","message":{"content":"Looks good, thanks."}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"Glad it helped."}]}}

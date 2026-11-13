@@ -1,0 +1,4 @@
+{"type":"user","cwd":"/work/repo","message":{"content":"Let's start the task."}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"Okay, I'll use a tool."},{"type":"tool_use","id":"1","name":"Bash","input":{"command":"ls"}}]}}
+{"type":"user","cwd":"/work/repo","message":{"content":[{"type":"tool_result","tool_use_id":"1","content":"TOOL_RESULT_SENTINEL some tool output"},{"type":"text","text":"Great, continue with the next step please."}]}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"Done, here's the summary of the changes I made just now for you."}]}}

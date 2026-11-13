@@ -1,0 +1,4 @@
+{"type":"user","cwd":"/tmp/scratch-work","message":{"content":"Quick throwaway question."}}
+{"type":"assistant","cwd":"/tmp/scratch-work","message":{"content":[{"type":"text","text":"Quick throwaway answer."}]}}
+{"type":"user","cwd":"/tmp/scratch-work","message":{"content":"One more throwaway question."}}
+{"type":"assistant","cwd":"/tmp/scratch-work","message":{"content":[{"type":"text","text":"One more throwaway answer."}]}}

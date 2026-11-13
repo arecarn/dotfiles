@@ -1,0 +1,7 @@
+{"type":"user","cwd":"/work/repo","message":{"content":"<command-message>deploy</command-message>\n<command-name>/deploy</command-name>"}}
+{"type":"user","cwd":"/work/repo","isMeta":true,"message":{"content":[{"type":"text","text":"Base directory for this skill: /some/skill/path\n\nSkill body text here."}]}}
+{"type":"user","cwd":"/work/repo","isSidechain":true,"message":{"content":[{"type":"text","text":"SIDECHAIN_SENTINEL this is a subagent exchange"}]}}
+{"type":"assistant","cwd":"/work/repo","isSidechain":true,"message":{"content":[{"type":"text","text":"SIDECHAIN_SENTINEL subagent reply"}]}}
+{"type":"user","cwd":"/work/repo","message":{"content":"<system-reminder>Some reminder text.</system-reminder>"}}
+{"type":"user","cwd":"/work/repo","message":{"content":"This is a real human message about the task."}}
+{"type":"assistant","cwd":"/work/repo","message":{"content":[{"type":"text","text":"This is a real assistant reply."}]}}

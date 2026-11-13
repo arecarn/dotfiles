@@ -768,3 +768,24 @@ def test_pi_skill_invocation_counts_as_self_tagged(tmp_path):
     assert not harvest.is_harvestable(by_command)
     assert not harvest.is_harvestable(by_body)
     assert harvest.is_harvestable(other_skill)
+
+
+def test_batch_uses_plan_order_from_extract(tmp_path):
+    state = tmp_path / "state"
+    claude_root = tmp_path / "claude"
+    old = _claude_session(claude_root / "proj" / "old.jsonl", ["Old ask.", "More."])
+    new = _claude_session(claude_root / "proj" / "new.jsonl", ["New ask.", "More."])
+    os.utime(old, (1_000, 1_000))
+    os.utime(new, (2_000, 2_000))
+    # A deferred session is read first, even though its transcript is newest.
+    commit_ledger(state, {}, deferred={"claude:new"})
+    run = _extract(state, claude_root, tmp_path / "pi")
+    # Pin digest mtimes to transcript age, so mtime order alone would batch "old" first.
+    os.utime(run / "digests" / "claude__new.md", (2_000, 2_000))
+    os.utime(run / "digests" / "claude__old.md", (1_000, 1_000))
+
+    # Each digest exceeds `target`, so each needs its own batch, and `cap=1` keeps one.
+    summary = harvest.batch(run, target=1, cap=1, solo=0)
+
+    assert summary["overflow_keys"] == ["claude:old"]
+    assert (run / "batch0.txt").read_text().strip().endswith("claude__new.md")

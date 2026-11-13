@@ -481,7 +481,9 @@ def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
     on disk before any ledger write, a crash between `extract` and
     `commit` is safe to retry without double-counting or losing anything.
 
-    Writes to `state_dir/runs/<today>/digests/` and
+    Writes to `state_dir/runs/<today>/digests/`,
+    `state_dir/runs/<today>/order.txt` (digest filenames in `plan_extract`
+    order, deferred sessions first, for `batch`) and
     `state_dir/runs/<today>/pending-ledger.json`. Reuses `<today>`'s run
     dir if one already exists (a second run the same day), overwriting the
     digests and removing that dir's `committed` marker, since the marker
@@ -498,6 +500,8 @@ def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
 
     written = write_digests(plan, run_dir)
     total_bytes = sum(path.stat().st_size for path in written)
+    order_text = "".join(f"{path.name}\n" for path in written)
+    (run_dir / "order.txt").write_text(order_text, encoding="utf-8")
     _write_json_atomic(run_dir / "pending-ledger.json", _ledger_to_json(pending_ledger(plan)))
     # The marker described the pending ledger just replaced.
     (run_dir / "committed").unlink(missing_ok=True)
@@ -916,19 +920,26 @@ def _pack_largest_first(digests: list[Path], target: int) -> list[list[Path]]:
 
 
 def make_batches(
-    digests: list[Path], target: int = 350_000, cap: int = 8, solo: int = 300_000
+    digests: list[Path],
+    target: int = 350_000,
+    cap: int = 8,
+    solo: int = 300_000,
+    order: list[Path] | None = None,
 ) -> tuple[list[list[Path]], list[Path]]:
     """Group digest files into batches a reader subagent can consume, with overflow for the rest.
 
     Returns `(batches, overflow)`. When the digests' total size is at most
     `solo`, everything goes in a single batch and overflow is empty.
-    Otherwise, taking digests oldest-mtime-first, grows the included set one
+    Otherwise, taking digests first-to-read first, grows the included set one
     digest at a time, packing it largest-first (see `_pack_largest_first`)
     into bins of about `target` size, and stops at the first digest that
     would push the bin count past `cap`; a digest larger than `target` always
     takes a whole bin on its own. Every digest not included is overflow,
-    ordered newest-mtime-first, so that the oldest unread digests are the
-    ones batched now.
+    last-to-read first, so that the digests due first are the ones batched now.
+
+    First-to-read order is `order` when given (`extract`'s plan order, which
+    puts deferred sessions first); a digest missing from `order` follows it,
+    oldest mtime first. Without `order`, it is oldest mtime first.
     """
     if not digests:
         return [], []
@@ -936,7 +947,8 @@ def make_batches(
     if total <= solo:
         return [list(digests)], []
 
-    by_age = sorted(digests, key=lambda d: d.stat().st_mtime)
+    position = {path: index for index, path in enumerate(order or [])}
+    by_age = sorted(digests, key=lambda d: (position.get(d, len(position)), d.stat().st_mtime))
     included: list[Path] = []
     for digest in by_age:
         candidate = included + [digest]
@@ -945,7 +957,7 @@ def make_batches(
         else:
             break
 
-    overflow = sorted(set(by_age) - set(included), key=lambda d: d.stat().st_mtime, reverse=True)
+    overflow = list(reversed(by_age[len(included) :]))
     batches = _pack_largest_first(included, target)
     return batches, overflow
 
@@ -962,6 +974,9 @@ def _key_from_digest_path(path: Path) -> str:
 def batch(run_dir: Path, target: int = 350_000, cap: int = 8, solo: int = 300_000) -> dict:
     """Split `run_dir/digests/` into reader-sized batches and write them under `run_dir`.
 
+    Reads `run_dir/order.txt`, when `extract` wrote one, as the order to
+    read digests in (see `make_batches`).
+
     Writes `run_dir/batch<N>.txt` (N from 0, one absolute digest path per
     line) for each batch from `make_batches`, and `run_dir/overflow.txt`
     (one absolute path per line, empty when there's no overflow). Removes
@@ -971,10 +986,15 @@ def batch(run_dir: Path, target: int = 350_000, cap: int = 8, solo: int = 300_00
     so the keys are for reporting only.
     """
     digests = sorted((run_dir / "digests").glob("*.md"))
+    order_path = run_dir / "order.txt"
+    order = None
+    if order_path.is_file():
+        names = order_path.read_text(encoding="utf-8").split()
+        order = [run_dir / "digests" / name for name in names]
     for stale_batch in run_dir.glob("batch*.txt"):
         stale_batch.unlink()
 
-    batches, overflow = make_batches(digests, target=target, cap=cap, solo=solo)
+    batches, overflow = make_batches(digests, target=target, cap=cap, solo=solo, order=order)
 
     for index, group in enumerate(batches):
         text = "".join(f"{path.resolve()}\n" for path in group)

@@ -789,3 +789,17 @@ def test_batch_uses_plan_order_from_extract(tmp_path):
 
     assert summary["overflow_keys"] == ["claude:old"]
     assert (run / "batch0.txt").read_text().strip().endswith("claude__new.md")
+
+
+def test_extract_removes_batch_files_left_by_an_earlier_same_day_run(tmp_path):
+    state = tmp_path / "state"
+    claude_root = tmp_path / "claude"
+    _claude_session(claude_root / "proj" / "a.jsonl", ["Ask.", "More."])
+    run = _extract(state, claude_root, tmp_path / "pi")
+    (run / "batch0.txt").write_text(f"{(run / 'digests' / 'claude__a.md').resolve()}\n")
+    (run / "overflow.txt").write_text(f"{(run / 'digests' / 'claude__a.md').resolve()}\n")
+
+    # Stale batch files would make commit defer sessions this extract never batched.
+    assert _extract(state, claude_root, tmp_path / "pi") == run
+    assert not list(run.glob("batch*.txt"))
+    assert not (run / "overflow.txt").exists()

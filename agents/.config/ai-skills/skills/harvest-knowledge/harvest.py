@@ -486,8 +486,8 @@ def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
     order, deferred sessions first, for `batch`) and
     `state_dir/runs/<today>/pending-ledger.json`. Reuses `<today>`'s run
     dir if one already exists (a second run the same day), overwriting the
-    digests and removing that dir's `committed` marker, since the marker
-    described the pending ledger this call replaces. Returns
+    digests and removing that dir's `committed` marker, `overflow.txt` and
+    `batch*.txt`, since they described the digests this call replaces. Returns
     `{"run_dir", "sessions", "bytes"}`.
     """
     today = datetime.date.today().isoformat()
@@ -503,8 +503,13 @@ def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
     order_text = "".join(f"{path.name}\n" for path in written)
     (run_dir / "order.txt").write_text(order_text, encoding="utf-8")
     _write_json_atomic(run_dir / "pending-ledger.json", _ledger_to_json(pending_ledger(plan)))
-    # The marker described the pending ledger just replaced.
+    # The marker and any batch lists described the digests just replaced;
+    # commit reads overflow.txt and batch<N>.txt, so stale ones would defer
+    # the wrong sessions.
     (run_dir / "committed").unlink(missing_ok=True)
+    (run_dir / "overflow.txt").unlink(missing_ok=True)
+    for stale_batch in run_dir.glob("batch*.txt"):
+        stale_batch.unlink()
 
     return {"run_dir": str(run_dir), "sessions": len(plan), "bytes": total_bytes}
 

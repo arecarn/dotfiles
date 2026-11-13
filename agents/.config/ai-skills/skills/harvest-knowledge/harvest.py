@@ -10,7 +10,11 @@ scratch sessions, and renders the remaining turns as a compact text digest.
 # PEP 695 generics).
 from __future__ import annotations
 
+import argparse
+import datetime
 import json
+import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +22,10 @@ _COMMAND_WRAPPER_PREFIXES = ("<command", "<system")
 _SKILL_BODY_MARKER = "Base directory for this skill"
 _SELF_TAG = "[harvest-knowledge]"
 _MIN_USER_MESSAGES = 2
+
+_DEFAULT_CLAUDE_ROOT = Path.home() / ".claude" / "projects"
+_DEFAULT_PI_ROOT = Path.home() / ".pi" / "agent" / "sessions"
+_DEFAULT_STATE_DIR = Path.home() / ".local" / "state" / "knowledge-harvest"
 
 
 @dataclass(frozen=True)
@@ -147,16 +155,16 @@ def read_pi(path: Path) -> Session | None:
 def discover(claude_root: Path, pi_root: Path) -> list[Path]:
     """List every session JSONL file under the Claude and pi session roots.
 
-    Both roots lay sessions out as `<root>/<project-dir>/<file>.jsonl`, so
-    this globs one level deep under each. A root that doesn't exist is
-    skipped rather than raising, since a machine may have only one agent
-    installed.
+    Globs recursively under each root, so it finds both the real layout
+    (`<root>/<project-dir>/<file>.jsonl`) and a flat root used directly in
+    tests. A root that doesn't exist is skipped rather than raising, since
+    a machine may have only one agent installed.
     """
     paths: list[Path] = []
     for root in (claude_root, pi_root):
         if not root.is_dir():
             continue
-        paths.extend(sorted(root.glob("*/*.jsonl")))
+        paths.extend(sorted(root.glob("**/*.jsonl")))
     return paths
 
 
@@ -191,3 +199,243 @@ def render_digest(session: Session, start: int, cap: int = 1100) -> str:
         flat = message.text.replace("\n", " ").replace("\r", " ")
         lines.append(label + flat[:cap])
     return "\n".join(lines)
+
+
+@dataclass
+class LedgerEntry:
+    """How much of one session has already been harvested.
+
+    `harvested` is a count of `session.messages` already turned into a
+    digest; `deferred` marks a session a prior commit explicitly held back
+    (see `commit_ledger`), which `plan_extract` reads to prioritize it.
+    """
+
+    harvested: int
+    deferred: bool = False
+
+
+def _ledger_key(source: str, session_id: str) -> str:
+    return f"{source}:{session_id}"
+
+
+def _ledger_to_json(ledger: dict[str, LedgerEntry]) -> dict:
+    return {key: {"harvested": entry.harvested, "deferred": entry.deferred} for key, entry in ledger.items()}
+
+
+def _ledger_from_json(data: dict) -> dict[str, LedgerEntry]:
+    return {
+        key: LedgerEntry(harvested=value["harvested"], deferred=value.get("deferred", False))
+        for key, value in data.items()
+    }
+
+
+def _write_json_atomic(path: Path, data: dict) -> None:
+    """Write `data` as JSON to `path`, replacing it atomically.
+
+    Writes to a sibling `.tmp` file first and `os.replace`s it over the
+    target, so a reader never observes a partially-written file and a
+    crash mid-write leaves the previous contents intact.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_name(path.name + ".tmp")
+    with tmp_path.open("w", encoding="utf-8") as fh:
+        json.dump(data, fh, indent=2, sort_keys=True)
+    os.replace(tmp_path, path)
+
+
+def load_ledger(state: Path) -> dict[str, LedgerEntry]:
+    """Load `state/ledger.json` into `{key: LedgerEntry}`.
+
+    The key is `f"{session.source}:{session.id}"`. Returns `{}` when the
+    file is missing (first run, or a state dir not yet initialized).
+    """
+    path = state / "ledger.json"
+    if not path.is_file():
+        return {}
+    with path.open(encoding="utf-8") as fh:
+        data = json.load(fh)
+    return _ledger_from_json(data)
+
+
+def plan_extract(
+    sessions: list[Session], ledger: dict[str, LedgerEntry]
+) -> list[tuple[Session, int]]:
+    """Decide, per session, where a digest should resume and in what order.
+
+    For each session, compares `ledger[f"{source}:{id}"].harvested` (0 if
+    absent) against `len(session.messages)`: a session with nothing new
+    past that offset is omitted, and a session whose message count is now
+    below its recorded offset (history was replaced, not just appended) is
+    restarted from 0 rather than skipped. The result orders deferred
+    sessions first, then the rest oldest-by-mtime first within each group,
+    using `session.path.stat().st_mtime`.
+    """
+    candidates = []
+    for session in sessions:
+        entry = ledger.get(_ledger_key(session.source, session.id))
+        harvested = entry.harvested if entry is not None else 0
+        deferred = entry.deferred if entry is not None else False
+        start = 0 if harvested > len(session.messages) else harvested
+        if start >= len(session.messages):
+            continue
+        candidates.append((session, start, deferred))
+    candidates.sort(key=lambda item: (not item[2], item[0].path.stat().st_mtime))
+    return [(session, start) for session, start, _deferred in candidates]
+
+
+def write_digests(plan: list[tuple[Session, int]], run_dir: Path) -> list[Path]:
+    """Render each planned session's digest into `run_dir/digests/`.
+
+    Each file is named `<source>__<id>.md` (double underscore), so the
+    ledger key `source:id` is recoverable from the filename alone (used by
+    Task 3). Clears and recreates `run_dir/digests/` first, so re-running
+    `extract` for the same run dir overwrites rather than accumulating
+    stale files from a prior attempt. Returns the written paths.
+    """
+    digests_dir = run_dir / "digests"
+    if digests_dir.exists():
+        for existing in digests_dir.iterdir():
+            existing.unlink()
+    else:
+        digests_dir.mkdir(parents=True)
+    written = []
+    for session, start in plan:
+        text = render_digest(session, start)
+        path = digests_dir / f"{session.source}__{session.id}.md"
+        path.write_text(text, encoding="utf-8")
+        written.append(path)
+    return written
+
+
+def pending_ledger(plan: list[tuple[Session, int]]) -> dict[str, LedgerEntry]:
+    """Compute the ledger entries a plan would produce, without writing them.
+
+    Each planned session's new `harvested` value is `len(session.messages)`
+    (the whole session is covered by the digest just rendered for it).
+    `deferred` is always False here; `commit_ledger` is what applies any
+    `--deferred` override.
+    """
+    return {
+        _ledger_key(session.source, session.id): LedgerEntry(harvested=len(session.messages))
+        for session, _start in plan
+    }
+
+
+def commit_ledger(state: Path, updates: dict[str, LedgerEntry], deferred: set[str]) -> None:
+    """Merge `updates` into `state/ledger.json` and write it atomically.
+
+    For a key in `deferred`, the update is not applied: the entry keeps
+    whatever `harvested` value it already had in the ledger (0 if it had
+    none) and is marked `deferred=True`, so a deferred session's digest is
+    re-offered, in full, on the next `extract`. Every other key in
+    `updates` is written as given, with `deferred=False`.
+    """
+    existing = load_ledger(state)
+    merged = dict(existing)
+    for key in deferred:
+        previous = existing.get(key)
+        incoming = updates.get(key)
+        harvested = previous.harvested if previous is not None else (incoming.harvested if incoming is not None else 0)
+        merged[key] = LedgerEntry(harvested=harvested, deferred=True)
+    for key, entry in updates.items():
+        if key in deferred:
+            continue
+        merged[key] = LedgerEntry(harvested=entry.harvested, deferred=False)
+    _write_json_atomic(state / "ledger.json", _ledger_to_json(merged))
+
+
+def _is_under(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
+def _collect_sessions(claude_root: Path, pi_root: Path) -> list[Session]:
+    """Read every discovered session file with the reader matching its root, keeping only harvestable ones."""
+    sessions = []
+    for path in discover(claude_root, pi_root):
+        if _is_under(path, claude_root):
+            session = read_claude(path)
+        elif _is_under(path, pi_root):
+            session = read_pi(path)
+        else:
+            continue
+        if session is None or not is_harvestable(session):
+            continue
+        sessions.append(session)
+    return sessions
+
+
+def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:
+    """Plan and write one day's digests under `state_dir`.
+
+    Reads `state_dir/ledger.json` (via `load_ledger`) to decide which
+    messages are new, but this function never writes `ledger.json` itself
+    -- it writes the run's digests and a `pending-ledger.json` proposal
+    only. A `commit` run applies that proposal; since the proposal exists
+    on disk before any ledger write, a crash between `extract` and
+    `commit` is safe to retry without double-counting or losing anything.
+
+    Writes to `state_dir/runs/<today>/digests/` and
+    `state_dir/runs/<today>/pending-ledger.json`. Reuses `<today>`'s run
+    dir if one already exists (a second run the same day), overwriting the
+    digests. Returns `{"run_dir", "sessions", "bytes"}`.
+    """
+    today = datetime.date.today().isoformat()
+    run_dir = state_dir / "runs" / today
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    ledger = load_ledger(state_dir)
+    sessions = _collect_sessions(claude_root, pi_root)
+    plan = plan_extract(sessions, ledger)
+
+    written = write_digests(plan, run_dir)
+    total_bytes = sum(path.stat().st_size for path in written)
+    _write_json_atomic(run_dir / "pending-ledger.json", _ledger_to_json(pending_ledger(plan)))
+
+    return {"run_dir": str(run_dir), "sessions": len(plan), "bytes": total_bytes}
+
+
+def commit(run_dir: Path, state_dir: Path, deferred_keys: set[str]) -> None:
+    """Apply a run's `pending-ledger.json` to `state_dir/ledger.json`.
+
+    Requires `run_dir/pending-ledger.json` to exist (written by a prior
+    `extract`). Keys in `deferred_keys` keep their previous `harvested`
+    value and are marked `deferred=True`; see `commit_ledger`.
+    """
+    pending_path = run_dir / "pending-ledger.json"
+    with pending_path.open(encoding="utf-8") as fh:
+        data = json.load(fh)
+    commit_ledger(state_dir, _ledger_from_json(data), deferred_keys)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entry point for the `extract` and `commit` subcommands."""
+    parser = argparse.ArgumentParser(prog="harvest.py")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    extract_parser = subparsers.add_parser("extract", help="Render new session turns into digests")
+    extract_parser.add_argument("--state-dir", type=Path, default=_DEFAULT_STATE_DIR)
+    extract_parser.add_argument("--claude-root", type=Path, default=_DEFAULT_CLAUDE_ROOT)
+    extract_parser.add_argument("--pi-root", type=Path, default=_DEFAULT_PI_ROOT)
+
+    commit_parser = subparsers.add_parser("commit", help="Apply a run's pending ledger")
+    commit_parser.add_argument("--run-dir", type=Path, required=True)
+    commit_parser.add_argument("--state-dir", type=Path, default=_DEFAULT_STATE_DIR)
+    commit_parser.add_argument("--deferred", action="append", default=[], metavar="KEY")
+
+    args = parser.parse_args(argv)
+
+    if args.command == "extract":
+        summary = extract(args.state_dir, args.claude_root, args.pi_root)
+        print(json.dumps(summary))
+    elif args.command == "commit":
+        commit(args.run_dir, args.state_dir, set(args.deferred))
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,4 @@
+{"type":"user","cwd":"/work/other","message":{"content":"First question about the other session."}}
+{"type":"assistant","cwd":"/work/other","message":{"content":[{"type":"text","text":"First answer."}]}}
+{"type":"user","cwd":"/work/other","message":{"content":"Second question, following up."}}
+{"type":"assistant","cwd":"/work/other","message":{"content":[{"type":"text","text":"Second answer, wrapping up."}]}}

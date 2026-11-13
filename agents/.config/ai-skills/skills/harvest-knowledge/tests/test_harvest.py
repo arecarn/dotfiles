@@ -46,14 +46,16 @@ def _run_git(args: list[str], cwd: Path) -> None:
 
 
 def _git_commit(repo: Path, message: str, date: str) -> None:
-    """Commit the working tree's current state, with author and committer dates both pinned to `date`."""
+    """Commit the working tree's current state, with author and committer dates set to `date`."""
     _run_git(["add", "-A"], cwd=repo)
     env = dict(os.environ, GIT_AUTHOR_DATE=date, GIT_COMMITTER_DATE=date)
-    subprocess.run(["git", "commit", "-q", "-m", message], cwd=repo, check=True, capture_output=True, env=env)
+    subprocess.run(
+        ["git", "commit", "-q", "-m", message], cwd=repo, check=True, capture_output=True, env=env
+    )
 
 
-@pytest.fixture
-def git_repo(tmp_path):
+@pytest.fixture(name="git_repo")
+def _git_repo(tmp_path):
     """Build a repo with two dated commits to `src/a.cpp` and clone it so `origin/HEAD` resolves.
 
     The first commit lands 2026-01-01, the second (which re-touches
@@ -170,7 +172,8 @@ def test_plan_restarts_a_session_that_shrank():
 
 
 def test_plan_puts_deferred_sessions_first():
-    old, new = read_claude(FIX / "claude" / "basic.jsonl"), read_claude(FIX / "claude" / "noise.jsonl")
+    old = read_claude(FIX / "claude" / "basic.jsonl")
+    new = read_claude(FIX / "claude" / "noise.jsonl")
     ledger = {f"claude:{new.id}": LedgerEntry(harvested=0, deferred=True)}
     assert [s.id for s, _ in plan_extract([old, new], ledger)][0] == new.id
 
@@ -309,7 +312,7 @@ def test_batch_cli_handles_empty_digests_dir(tmp_path, capsys):
 
     summary = json.loads(capsys.readouterr().out)
     assert summary == {"batches": 0, "overflow_keys": []}
-    assert list(run.glob("batch*.txt")) == []
+    assert not list(run.glob("batch*.txt"))
     assert (run / "overflow.txt").read_text() == ""
 
 
@@ -363,7 +366,7 @@ def test_entry_sources_handles_missing_verified(tmp_path):
     verified, sources = entry_sources(md)
 
     assert verified is None
-    assert sources == []
+    assert not sources
 
 
 def test_resolve_source_finds_repo_and_files(git_repo):
@@ -426,7 +429,7 @@ def test_stale_lists_commits_after_verified(tmp_path, git_repo):
         "# Body\n"
     )
 
-    # git_repo is already the clone at tmp_path / "repo", matching repositories.yaml's local: "repo".
+    # git_repo is already the clone at tmp_path/"repo", matching repositories.yaml's "local: repo".
     assert git_repo == tmp_path / "repo"
     workspace_root = tmp_path
 
@@ -478,14 +481,17 @@ def test_stale_fetches_each_repo_at_most_once(monkeypatch, tmp_path, git_repo):
     def counting_run(args, **kwargs):
         if args[:2] == ["git", "fetch"]:
             fetch_calls.append(args)
-        return real_run(args, **kwargs)
+        check = kwargs.pop("check", False)
+        return real_run(args, check=check, **kwargs)
 
     monkeypatch.setattr(harvest.subprocess, "run", counting_run)
 
     knowledge_dir = tmp_path / "ai-knowledge"
     private_root = tmp_path / "private"
     repositories_yaml = "repositories:\n- name: RepoA\n  path: group/RepoA\n  local: repo\n"
-    source_entry = '---\nverified: "2026-01-01"\nsources:\n  - "RepoA deadbeef: a.cpp"\n---\n# Body\n'
+    source_entry = (
+        '---\nverified: "2026-01-01"\nsources:\n  - "RepoA deadbeef: a.cpp"\n---\n# Body\n'
+    )
 
     first = knowledge_dir / "first"
     _write_bundle_index(first)

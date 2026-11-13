@@ -86,7 +86,7 @@ def _text_from_content(content: object) -> str:
 
 
 def _is_noise_user_text(text: str) -> bool:
-    """True for a user message that is a harness-injected wrapper rather than something a human typed.
+    """True for a user message that is a harness-injected wrapper, not something a human typed.
 
     Matches the filters from the earlier one-off harvest: slash-command and
     system-reminder wrappers, and the skill-body banner a skill invocation
@@ -244,7 +244,10 @@ def _ledger_key(source: str, session_id: str) -> str:
 
 
 def _ledger_to_json(ledger: dict[str, LedgerEntry]) -> dict:
-    return {key: {"harvested": entry.harvested, "deferred": entry.deferred} for key, entry in ledger.items()}
+    return {
+        key: {"harvested": entry.harvested, "deferred": entry.deferred}
+        for key, entry in ledger.items()
+    }
 
 
 def _ledger_from_json(data: dict) -> dict[str, LedgerEntry]:
@@ -377,7 +380,8 @@ def _is_under(path: Path, root: Path) -> bool:
 
 
 def _collect_sessions(claude_root: Path, pi_root: Path) -> list[Session]:
-    """Read every discovered session file with the reader matching its root, keeping only harvestable ones."""
+    """Read every discovered file with the reader matching its root, keeping only harvestable
+    sessions."""
     sessions = []
     for path in discover(claude_root, pi_root):
         if _is_under(path, claude_root):
@@ -461,7 +465,7 @@ def discover_bundles(knowledge_dir: Path, private_root: Path) -> list[Bundle]:
 
 
 def _read_frontmatter_lines(path: Path) -> list[str]:
-    """Return the lines between a markdown file's opening `---` delimiters, or `[]` if it has none."""
+    """Return the lines between a markdown file's `---` delimiters, or `[]` if it has none."""
     lines = path.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0].strip() != "---":
         return []
@@ -472,7 +476,10 @@ def _read_frontmatter_lines(path: Path) -> list[str]:
 
 
 def _unquote_scalar(value: str) -> str:
-    """Strip one layer of matching `"` or `'` quoting from a YAML scalar, or return it as-is if unquoted."""
+    """Strip one layer of matching `"`/`'` quoting from a YAML scalar.
+
+    Returns `value` unchanged when it is not quoted.
+    """
     value = value.strip()
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
         return value[1:-1]
@@ -510,7 +517,7 @@ def entry_sources(md: Path) -> tuple[str | None, list[str]]:
 
 
 def _yaml_list_items(lines: list[str], list_key: str) -> list[dict[str, str]]:
-    """Parse a top-level YAML `list_key:` block of `- key: value` mapping items with the shared line parser.
+    """Parse a top-level YAML `list_key:` block of `- key: value` mapping items.
 
     Each item starts with a `-`-prefixed line (`- name: ...`) and continues
     with more deeply indented `key: value` lines until the next `-` at the
@@ -585,14 +592,14 @@ def repo_paths(bundles: list[Bundle], workspace_roots: list[Path]) -> dict[str, 
 
 
 def _ordered_repo_names(repo_paths_map: dict[str, Path]) -> list[str]:
-    """Order repository names longest-first, so a shorter name cannot match inside a longer one's token."""
+    """Order repository names longest-first, so a short name can't match inside a longer one."""
     return sorted(repo_paths_map, key=len, reverse=True)
 
 
 _TOKEN_RE = re.compile(r"[A-Za-z0-9_./-]+")
 
 
-def resolve_source(text: str, repo_paths: dict[str, Path]) -> tuple[Path, list[str]] | None:
+def resolve_source(text: str, repo_paths_map: dict[str, Path]) -> tuple[Path, list[str]] | None:
     """Find a known repository and the files it names in one `sources` entry's text.
 
     Matches a repository name as a whole word (so `Repo` does not match
@@ -604,9 +611,9 @@ def resolve_source(text: str, repo_paths: dict[str, Path]) -> tuple[Path, list[s
     when the text names no known repository, or a known repository with no
     file that resolves (for example a DNG module citation).
     """
-    for name in _ordered_repo_names(repo_paths):
+    for name in _ordered_repo_names(repo_paths_map):
         if re.search(rf"\b{re.escape(name)}\b", text):
-            repo_root = repo_paths[name]
+            repo_root = repo_paths_map[name]
             break
     else:
         return None
@@ -650,7 +657,11 @@ def _git_default_branch_commits(
     if fetch:
         if repo_root not in fetched:
             fetch_result = subprocess.run(
-                ["git", "fetch", "--quiet"], cwd=repo_root, check=False, capture_output=True, text=True
+                ["git", "fetch", "--quiet"],
+                cwd=repo_root,
+                check=False,
+                capture_output=True,
+                text=True,
             )
             fetched[repo_root] = fetch_result.returncode == 0
         if not fetched[repo_root]:
@@ -665,6 +676,39 @@ def _git_default_branch_commits(
     if log_result.returncode != 0:
         return None
     return [line for line in log_result.stdout.splitlines() if line.strip()]
+
+
+def _stale_lines_for_entry(
+    bundle: Bundle, md: Path, paths: dict[str, Path], fetch: bool, fetched: dict[Path, bool]
+) -> tuple[list[str], int]:
+    """Check one knowledge entry's `sources` list, returning its stale lines and unresolved count.
+
+    Skipped entirely (both empty) when `md` has no `verified` date. Shares
+    `fetched` with every other entry in the same `stale()` run, so a
+    repository already fetched is not fetched again.
+    """
+    verified, sources = entry_sources(md)
+    if verified is None:
+        return [], 0
+
+    lines: list[str] = []
+    unresolved = 0
+    for source_text in sources:
+        resolved = resolve_source(source_text, paths)
+        if resolved is None:
+            unresolved += 1
+            continue
+        repo_root, files = resolved
+        commits = _git_default_branch_commits(repo_root, verified, files, fetch, fetched)
+        if commits is None:
+            unresolved += 1
+        elif commits:
+            entry_label = f"{bundle.id}/{md.relative_to(bundle.root)}"
+            lines.append(
+                f"{entry_label} — {repo_root.name}: {len(commits)} commits to "
+                f"{', '.join(files)} since {verified}"
+            )
+    return lines, unresolved
 
 
 def stale(knowledge_dir: Path, private_root: Path, workspace_roots: list[Path], fetch: bool) -> str:
@@ -687,25 +731,11 @@ def stale(knowledge_dir: Path, private_root: Path, workspace_roots: list[Path], 
         for md in sorted(bundle.root.rglob("*.md")):
             if md.name == "index.md":
                 continue
-            verified, sources = entry_sources(md)
-            if verified is None:
-                continue
-            for source_text in sources:
-                resolved = resolve_source(source_text, paths)
-                if resolved is None:
-                    unresolved += 1
-                    continue
-                repo_root, files = resolved
-                commits = _git_default_branch_commits(repo_root, verified, files, fetch, fetched)
-                if commits is None:
-                    unresolved += 1
-                elif commits:
-                    entry_label = f"{bundle.id}/{md.relative_to(bundle.root)}"
-                    files_label = ", ".join(files)
-                    stale_lines.append(
-                        f"{entry_label} — {repo_root.name}: {len(commits)} commits to "
-                        f"{files_label} since {verified}"
-                    )
+            entry_lines, entry_unresolved = _stale_lines_for_entry(
+                bundle, md, paths, fetch, fetched
+            )
+            stale_lines.extend(entry_lines)
+            unresolved += entry_unresolved
 
     roots_label = ", ".join(str(root) for root in workspace_roots) or "(none)"
     lines = [f"Workspace roots: {roots_label}", "", "## May be stale"]
@@ -715,7 +745,9 @@ def stale(knowledge_dir: Path, private_root: Path, workspace_roots: list[Path], 
 
 
 def _default_workspace_roots() -> list[Path]:
-    """Compute the default `--workspace-root` list: the env var, or `~/files/projects` plus its immediate subdirectories.
+    """Compute the default `--workspace-root` list.
+
+    Either the env var, or `~/files/projects` plus its immediate subdirectories.
 
     `HARVEST_WORKSPACE_ROOTS` is `os.pathsep`-separated, matching how other
     PATH-like settings are read. Falling back to scanning subdirectories
@@ -744,7 +776,11 @@ def _pack_largest_first(digests: list[Path], target: int) -> list[list[Path]]:
     stop as soon as the cap is exceeded.
     """
     oversized = [d for d in digests if d.stat().st_size > target]
-    normal = sorted((d for d in digests if d.stat().st_size <= target), key=lambda d: d.stat().st_size, reverse=True)
+    normal = sorted(
+        (d for d in digests if d.stat().st_size <= target),
+        key=lambda d: d.stat().st_size,
+        reverse=True,
+    )
 
     bins = [[d] for d in oversized]
     remaining_capacity: list[int] = []
@@ -817,8 +853,8 @@ def batch(run_dir: Path, target: int = 350_000, cap: int = 8, solo: int = 300_00
     `commit --deferred`.
     """
     digests = sorted((run_dir / "digests").glob("*.md"))
-    for stale in run_dir.glob("batch*.txt"):
-        stale.unlink()
+    for stale_batch in run_dir.glob("batch*.txt"):
+        stale_batch.unlink()
 
     batches, overflow = make_batches(digests, target=target, cap=cap, solo=solo)
 
@@ -846,13 +882,19 @@ def main(argv: list[str] | None = None) -> int:
     commit_parser.add_argument("--state-dir", type=Path, default=_DEFAULT_STATE_DIR)
     commit_parser.add_argument("--deferred", action="append", default=[], metavar="KEY")
 
-    batch_parser = subparsers.add_parser("batch", help="Split a run's digests into reader-sized batches")
+    batch_parser = subparsers.add_parser(
+        "batch", help="Split a run's digests into reader-sized batches"
+    )
     batch_parser.add_argument("--run-dir", type=Path, required=True)
 
-    stale_parser = subparsers.add_parser("stale", help="Report knowledge entries whose cited sources have changed")
+    stale_parser = subparsers.add_parser(
+        "stale", help="Report knowledge entries whose cited sources have changed"
+    )
     stale_parser.add_argument("--knowledge-dir", type=Path, default=_DEFAULT_KNOWLEDGE_DIR)
     stale_parser.add_argument("--private-root", type=Path, default=_DEFAULT_PRIVATE_ROOT)
-    stale_parser.add_argument("--workspace-root", action="append", dest="workspace_roots", type=Path, default=None)
+    stale_parser.add_argument(
+        "--workspace-root", action="append", dest="workspace_roots", type=Path, default=None
+    )
     stale_parser.add_argument("--no-fetch", action="store_true")
 
     args = parser.parse_args(argv)
@@ -866,8 +908,10 @@ def main(argv: list[str] | None = None) -> int:
         summary = batch(args.run_dir)
         print(json.dumps(summary))
     elif args.command == "stale":
-        workspace_roots = args.workspace_roots if args.workspace_roots else _default_workspace_roots()
-        print(stale(args.knowledge_dir, args.private_root, workspace_roots, fetch=not args.no_fetch))
+        workspace_roots = args.workspace_roots or _default_workspace_roots()
+        print(
+            stale(args.knowledge_dir, args.private_root, workspace_roots, fetch=not args.no_fetch)
+        )
 
     return 0
 

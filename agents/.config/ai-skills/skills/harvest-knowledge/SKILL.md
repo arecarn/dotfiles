@@ -31,9 +31,12 @@ that uses them, or write the paths out.
   writes it.
 - `$STATE/runs/<date>/`: one run's digests, batches, and pending ledger.
 - `$STATE/proposals/<date>.md`: one proposal per run, in the form
-  [`proposal-format.md`](proposal-format.md) defines. Fully decided proposals
-  move to `$STATE/proposals/done/`.
+  [`proposal-format.md`](proposal-format.md) defines. A second run on the same
+  day writes `<date>-2.md`, then `-3`, and so on. Fully decided proposals move
+  to `$STATE/proposals/done/`.
 - `$STATE/dropped.md`: every item review dropped, with its reason.
+- `$STATE/runs/<date>/worktrees/`: review's staging worktrees for the proposal
+  with that run date.
 
 **Bundles** are discovered, never named. List them, with the private flag, by
 calling the script's discovery function:
@@ -98,7 +101,9 @@ example `sonnet` under an `opus` leader). Give each this brief, filled in:
 > session itself later retracted.
 >
 > First read these bundle catalogs, and report only what they do not already
-> cover: `<each bundle id and its index.md path>`.
+> cover: `<each bundle id and its index.md path>`. A claim that differs from
+> what an existing entry says is not covered: report it, and name that entry
+> in **Suggested entry**.
 >
 > Report each item as:
 >
@@ -124,11 +129,16 @@ every candidate:
   unconfirmed guess, if it matches a `dropped.md` line without new evidence, or
   if a read-only Jira query finds it already recorded in a problem report;
 - route it with `routing.md`, which also sets its ID prefix;
+- flag it `contradicts <entry>` when it differs from an existing entry, and
+  `time-sensitive` when it will stop being true on a known event or date (a
+  release, a migration, a deadline, a temporary workaround);
 - for a preference or correction, note where it already lives, if anywhere.
 
 Tally every drop by reason for the proposal's `## Dropped` section. Assign IDs
 as [`proposal-format.md`](proposal-format.md) describes. Mark for verification
-every item flagged `contradicts`, and every `medium` item.
+every item flagged `contradicts`, and every `medium` item. Medium items are
+where wrong facts land, so verifying them is a deliberate cost, not an
+oversight.
 
 ### 4. Verify
 
@@ -152,11 +162,12 @@ lookup never stops the run.
 python3 $SKILL/harvest.py stale
 ```
 
-`stale` fetches each local checkout it resolves and prints a markdown report
-whose `## May be stale` section lists entries with commits to their cited
-files since their `verified` date. Then write `$STATE/proposals/<date>.md`
-exactly as `proposal-format.md` lays it out, with every item `pending`. If that
-file already exists from an earlier run today, write `<date>-2.md`, and so on.
+`stale` fetches each local checkout it resolves and prints a markdown report:
+a `Workspace roots:` line, its own `## May be stale` heading over the entries
+with commits to their cited files since their `verified` date, and an
+`Unresolved sources:` count. Then write `$STATE/proposals/<date>.md` exactly as
+`proposal-format.md` lays it out, with every item `pending`. If that file
+already exists from an earlier run today, write `<date>-2.md`, and so on.
 
 The proposal file existing on disk completes this step. Only then go on.
 
@@ -174,7 +185,8 @@ earlier leaves the ledger untouched, so the next run retries the same sessions.
 
 Send one push notification (`PushNotification` in Claude Code) with the counts,
 for example: `harvest-knowledge: 14 items proposed from 23 sessions, 3 deferred,
-2 may be stale. Review with [harvest-knowledge] review.`
+2 may be stale. Review with [harvest-knowledge] review.` Where the harness has
+no push notification, print that line as the run's final message.
 
 ## `review` mode
 
@@ -185,10 +197,16 @@ and ask the user to start a fresh one with that message.
 
 ### Load the proposals
 
-Take the files in `$STATE/proposals/` (not `done/`) oldest first, by filename.
-Work on one proposal at a time, starting at its first `pending` item. Items
-`kept` or `changed` with no `Landed` field were approved in an earlier session
-but never landed: draft them again with this session's work.
+Take the files in `$STATE/proposals/` (not `done/`) oldest first: by run date,
+then by numeric suffix, with an unsuffixed file first (`2026-11-16.md`, then
+`2026-11-16-2.md`). Plain filename order gets same-day files wrong. Work on one
+proposal at a time, starting at its first `pending` item. Items `kept` or
+`changed` with no `Landed` field were approved in an earlier session but never
+landed: draft them again with this session's work.
+
+If the header's mapping leaves `G` (the general work bundle) unresolved, ask
+the user once which bundle it is, and record the answer in the mapping before
+the first round.
 
 Before proposing any item from a proposal whose run date is more than four
 weeks old, re-check it against its source, because facts drift. Correct it in
@@ -226,7 +244,8 @@ the harness has it, one question per decision, recommended answer first. An
 item the user has not answered stays `pending`; never treat silence as `keep`.
 
 `show <ID>` prints that item's full `Text` and, once drafted, its diff against
-the current entry. Show a full diff or file only for an ID the user names.
+the current entry. Show a full diff or file only for an ID the user names. The
+user can `show` any ID at any time, including during the final summary.
 
 As each answer comes in:
 
@@ -244,27 +263,38 @@ it is `pending`.
 
 ### Draft in a staging worktree
 
-For every repository an accepted change lands in (the repository holding a
-bundle's resolved root, or holding the skill or instruction file), create a
-temporary branch in a staging worktree of that repository, branched from the
-branch its main checkout has out (the **target branch**). Draft every `kept` and
+For every repository an accepted change lands in, find its main checkout with
+`git -C <path> rev-parse --show-toplevel`, where `<path>` is the bundle's
+resolved root, or the skill or instruction file's resolved directory. The
+branch that checkout has out is the **target branch**. Create a staging
+worktree outside the repository, at
+`$STATE/runs/<date>/worktrees/<repository dir name>` for the proposal's run
+date, on a new temporary branch from the target branch. Draft every `kept` and
 `changed` item there. Grow existing entries in place, and change an entry's
 `description` and its index line together. When the repository generates its
 instruction files from fragments, edit the fragment and regenerate. A memory
 file outside any repository has no worktree: hold its change until the final
 approval and write it then.
 
+On resume, `git -C <main checkout> worktree list` shows a worktree left by an
+interrupted review. Reuse it when its path is this proposal's and its branch
+holds only this proposal's drafts; otherwise remove it (`git worktree remove`,
+then delete its branch) and draft afresh.
+
 After every round, in each staging worktree with changes, run:
 
 - the structure check on each touched bundle, `agent-knowledge check --path
-  <bundle dir>`, or, without that command, `uv run python -m
+  <bundle dir>`. When `agent-knowledge` is not on `PATH`, try
+  `~/bin/agent-knowledge`, and failing that `uv run python -m
   manage.knowledge.cli check --path <bundle dir>` run from `~/dotfiles`, with
   `<bundle dir>` the absolute path of the bundle inside the staging worktree. It
   prints JSON and exits non-zero when `problems` is not empty;
 - that repository's own lint and test targets (its `Makefile`, `tasks.py`, or
   instructions name them).
 
-Fix what they report before the next round, and tell the user what changed.
+Fix what they report before the next round. When a fix changes the wording of
+an item the user already answered, re-show that item's `Text` and diff and get
+its answer again before the final summary.
 
 ### Land
 
@@ -272,19 +302,24 @@ When every item in the proposal is decided, show the proposal's
 `## May be stale` list for information (re-verifying those entries is a
 separate task the user may pick up). Then present one **final ID summary**:
 the same table, listing every `kept` and `changed` item that will land, grouped
-by repository, plus the `RG` suggestions the user kept to act on. Write nothing
-to a target branch before the user approves this table.
+by repository, plus the `RG` suggestions the user kept to act on. Approving an
+ID here approves that item's current `Text` and its drafted diff, both of which
+`show <ID>` displays; say so above the table. Write nothing to a target branch
+before the user approves this table.
 
 On approval, for each repository:
 
-1. Commit on the temporary branch.
+1. Commit on the temporary branch, with the message
+   `knowledge: <summary of what landed> (<landed IDs>)`, for example
+   `knowledge: build cache key and mount trap (TT4, TT6)`.
 2. If the target branch moved since the worktree was made, rebase onto it and
    re-run the checks.
 3. Fast-forward the target branch in the main checkout to the temporary branch
    (`git merge --ff-only`). If the main checkout is not on the target branch, or
    has uncommitted changes to the touched files, stop and ask.
-4. Run the repository's stow task from the main checkout, so the change reaches
-   the stowed paths.
+4. Run the repository's own stow task from its task runner (its `Makefile` or
+   `tasks.py`), in the main checkout, so the change reaches the stowed paths.
+   For `~/dotfiles` that is `uv run inv stow`.
 5. Remove the staging worktree and delete the temporary branch.
 
 Never push. Write any held memory-file change, then add a `Landed` field to
@@ -296,7 +331,8 @@ pending proposal, or stop if the user wants to.
 ## Guardrails
 
 - Write to a bundle, skill, or instruction file only after the user approved
-  that exact change in the final ID summary.
+  that exact change: its ID in the final ID summary, which covers the item's
+  current `Text` and drafted diff.
 - Put internal facts only in private bundles. A public bundle, skill, or
   instruction file gets the generic form, or nothing; check every public
   destination's text for names of work programs, hosts, systems, and

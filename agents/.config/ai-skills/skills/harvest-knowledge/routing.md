@@ -10,14 +10,18 @@ item. An item routed by none of them is dropped as "no destination".
 | --- | --- | --- |
 | A durable fact about a program, system, or toolchain | an entry in the bundle that covers it | the bundle's prefix |
 | A trap that belongs to one program | that program bundle's gotchas | the bundle's prefix |
-| A trap in a toolchain shared across programs | the general work bundle's gotchas | that bundle's prefix |
+| A trap in a toolchain shared across programs | the general work bundle's gotchas | `G` |
 | A trap tied to one repository that has its own `docs/gotchas/` | a suggestion for that repository, not drafted | `RG` |
 | A rule, workflow, or skill gap | a proposed edit to a skill or instruction file | `SK` |
 | A preference or correction the user stated | a proposed edit to an instruction file, skill, or memory | `PR` |
 
 Bundles come from discovery (see `SKILL.md`). A bundle is private when its
-link resolves under `~/dotfiles_local`; the general work bundle is the private
-bundle whose index says it covers work shared across programs.
+link resolves under `~/dotfiles_local`. The general work bundle is the private
+bundle whose index says it covers work shared across programs; it is the only
+one whose prefix is fixed, `G`. When no index claims that, or more than one
+does, still route such items to `G`, record `G` as `unresolved` (or the
+candidates) in the proposal header's mapping, and leave the choice to review,
+which asks the user once.
 
 ## Rules
 

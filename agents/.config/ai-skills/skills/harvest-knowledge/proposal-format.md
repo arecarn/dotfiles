@@ -9,9 +9,13 @@ never has to reread the digests.
 
 The file has five parts, in this order:
 
-1. **Header**: the run date, the number of sessions digested (`sessions` from
-   `extract`), the number of overflow sessions deferred to the next run, and the
-   ID-prefix mapping (see IDs).
+1. **Header**: the run date; a `Run dir:` line with the run directory's
+   absolute path; the number of sessions digested (`sessions` from `extract`);
+   the number of sessions deferred to the next run (overflow plus failed
+   batches); a `Deferred batches:` line listing the batch numbers whose reader
+   failed, or `none`; and the ID-prefix mapping (see IDs). The next run's step 1
+   reads the `Run dir:` and `Deferred batches:` lines to finish a run that died
+   before committing its ledger, so write them exactly so.
 2. **Summary table**: one row per item, columns `ID`, `Status`, `Destination`,
    `Change`. Review regenerates it from the items whenever a status changes.
    (The table review shows the user adds a `Recommended` column; the file's

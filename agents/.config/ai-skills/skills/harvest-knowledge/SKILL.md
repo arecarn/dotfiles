@@ -29,14 +29,16 @@ that uses them, or write the paths out.
 
 - `$STATE/ledger.json`: per-session harvest offsets. Only `harvest.py commit`
   writes it.
-- `$STATE/runs/<date>/`: one run's digests, batches, and pending ledger.
+- `$STATE/runs/<date>/`: one run's digests, batches, pending ledger, and,
+  once `commit` has applied that ledger, a `committed` marker.
 - `$STATE/proposals/<date>.md`: one proposal per run, in the form
   [`proposal-format.md`](proposal-format.md) defines. A second run on the same
   day writes `<date>-2.md`, then `-3`, and so on. Fully decided proposals move
   to `$STATE/proposals/done/`.
 - `$STATE/dropped.md`: every item review dropped, with its reason.
-- `$STATE/runs/<date>/worktrees/`: review's staging worktrees for the proposal
-  with that run date.
+- `$STATE/worktrees/<proposal stem>/`: review's staging worktrees for one
+  proposal, keyed on its file stem (`2026-11-16-2` for `2026-11-16-2.md`), so
+  two proposals from the same day never share one.
 
 **Bundles** are discovered, never named. List them, with the private flag, by
 calling the script's discovery function:
@@ -61,7 +63,27 @@ this session out of the next harvest. Write nothing outside `$STATE`. Allowed
 beyond that: `git fetch`, reading files, and read-only queries to Jira, DNG,
 and Blueserve.
 
-### 1. Extract and batch
+### 1. Finish an interrupted run, then extract and batch
+
+First look for a run that wrote its proposal but died before committing its
+ledger: a `$STATE/runs/<date>/` holding `pending-ledger.json` but no
+`committed` file, whose path a proposal in `$STATE/proposals/` or
+`$STATE/proposals/done/` names on its `Run dir:` header line, where that
+proposal file is newer than the `pending-ledger.json` (a same-day rerun reuses
+the run dir, so an older proposal can name a newer pending ledger it never
+read; skip that pairing). For each match, commit it now, passing
+`--defer-batch N` for every N on that proposal's `Deferred batches:` line,
+before anything else:
+
+```bash
+python3 $SKILL/harvest.py commit --run-dir <that run dir> --defer-batch <N> ...
+```
+
+Without this, its sessions would be digested and proposed again. A run dir
+with no `committed` file and no proposal naming it died before its proposal;
+leave it, since the next `extract` reads those sessions again anyway.
+
+Then:
 
 ```bash
 python3 $SKILL/harvest.py extract
@@ -78,8 +100,11 @@ proposal to write.
 
 `batch` prints JSON `{"batches", "overflow_keys"}`: it wrote
 `<run_dir>/batch0.txt` … `batch<N-1>.txt` (one absolute digest path per line)
-and `<run_dir>/overflow.txt`. Keep `overflow_keys`: those sessions are read next
-run, and step 6 needs them.
+and `<run_dir>/overflow.txt`. The overflow sessions are deferred to the next
+run: `commit` reads `overflow.txt` itself, so `overflow_keys` is only for the
+counts in the proposal header and the notification. Batches are filled in
+read-first order (sessions deferred by an earlier run first, then oldest
+first), so the overflow is always the newest sessions.
 
 ### 2. Read the digests
 
@@ -116,18 +141,27 @@ example `sonnet` under an `opus` leader). Give each this brief, filled in:
 >
 > Write nothing to any file. Return only the items.
 
-Every reader's report back, or every digest read yourself, completes the step.
+If a reader errors or returns nothing, dispatch it once more with the same
+brief. If the retry fails too, note its batch number N: step 6 defers that
+batch with `--defer-batch N`, so its sessions are read next run rather than
+lost, and the proposal header lists it under `Deferred batches`.
+
+Every reader's report back (or its batch noted as deferred), or every digest
+read yourself, completes the step.
 
 ### 3. Consolidate
 
 Do this on your own model. Read [`routing.md`](routing.md), `$STATE/dropped.md`
-(it may not exist yet), and every bundle entry a candidate touches. Then, for
-every candidate:
+(it may not exist yet), every pending proposal in `$STATE/proposals/` (not
+`done/`), and every bundle entry a candidate touches. Then, for every
+candidate:
 
 - merge duplicates, keeping all their evidence;
 - drop it if an entry already covers it, if it is one-off task state or an
-  unconfirmed guess, if it matches a `dropped.md` line without new evidence, or
-  if a read-only Jira query finds it already recorded in a problem report;
+  unconfirmed guess, if it matches a `dropped.md` line without new evidence, if
+  an item in a pending proposal already proposes it (whatever that item's
+  status, since review has not finished with it), or if a read-only Jira query
+  finds it already recorded in a problem report;
 - route it with `routing.md`, which also sets its ID prefix;
 - flag it `contradicts <entry>` when it differs from an existing entry, and
   `time-sensitive` when it will stop being true on a known event or date (a
@@ -162,7 +196,15 @@ lookup never stops the run.
 python3 $SKILL/harvest.py stale
 ```
 
-`stale` fetches each local checkout it resolves and prints a markdown report:
+`stale` finds local checkouts under its workspace roots: each
+`--workspace-root <dir>` given (repeat the flag for several), else the
+`HARVEST_WORKSPACE_ROOTS` environment variable (directories separated by `:`,
+`;` on Windows), else `~/files/projects` and its immediate subdirectories. When
+the report's `Workspace roots:` line misses where this machine keeps its
+checkouts, run it again with `--workspace-root`. Pass `--no-fetch` only when
+the network is down.
+
+It fetches each local checkout it resolves and prints a markdown report:
 a `Workspace roots:` line, its own `## May be stale` heading over the entries
 with commits to their cited files since their `verified` date, and an
 `Unresolved sources:` count. Then write `$STATE/proposals/<date>.md` exactly as
@@ -174,12 +216,20 @@ The proposal file existing on disk completes this step. Only then go on.
 ### 6. Commit the ledger
 
 ```bash
-python3 $SKILL/harvest.py commit --run-dir <run_dir> --deferred <key1> --deferred <key2> ...
+python3 $SKILL/harvest.py commit --run-dir <run_dir> --defer-batch <N> ...
 ```
 
-Pass `--deferred` once per key in `overflow_keys`, or omit it when there are
-none. Commit runs after the proposal file exists, never before: a run that dies
-earlier leaves the ledger untouched, so the next run retries the same sessions.
+`commit` defers every session in `<run_dir>/overflow.txt` on its own; never
+copy overflow keys onto the command line. Pass `--defer-batch N` once per
+batch whose reader failed in step 2, or omit it when none did. (`--deferred
+<source>:<id>` defers one more session by key; the run never needs it.) A key
+that is not in the run's pending ledger makes `commit` exit non-zero and change
+nothing: report the error rather than guessing a fix. On success it writes
+`<run_dir>/committed`.
+
+Commit runs after the proposal file exists, never before: a run that dies
+earlier leaves the ledger untouched, so the next run retries the same sessions,
+and one that dies between the two is finished by step 1 of the next run.
 
 ### 7. Notify
 
@@ -268,18 +318,18 @@ For every repository an accepted change lands in, find its main checkout with
 resolved root, or the skill or instruction file's resolved directory. The
 branch that checkout has out is the **target branch**. Create a staging
 worktree outside the repository, at
-`$STATE/runs/<date>/worktrees/<repository dir name>` for the proposal's run
-date, on a new temporary branch from the target branch. Draft every `kept` and
-`changed` item there. Grow existing entries in place, and change an entry's
-`description` and its index line together. When the repository generates its
+`$STATE/worktrees/<proposal stem>/<repository dir name>`, on a new temporary
+branch from the target branch. Draft every `kept` and `changed` item there.
+Grow existing entries in place, and change an entry's `description` and its
+index line together. When the repository generates its
 instruction files from fragments, edit the fragment and regenerate. A memory
 file outside any repository has no worktree: hold its change until the final
 approval and write it then.
 
 On resume, `git -C <main checkout> worktree list` shows a worktree left by an
-interrupted review. Reuse it when its path is this proposal's and its branch
-holds only this proposal's drafts; otherwise remove it (`git worktree remove`,
-then delete its branch) and draft afresh.
+interrupted review. Reuse it when its path is under this proposal's stem and
+its branch holds only this proposal's drafts; otherwise remove it (`git
+worktree remove`, then delete its branch) and draft afresh.
 
 After every round, in each staging worktree with changes, run:
 

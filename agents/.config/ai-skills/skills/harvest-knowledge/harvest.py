@@ -416,8 +416,106 @@ def commit(run_dir: Path, state_dir: Path, deferred_keys: set[str]) -> None:
     commit_ledger(state_dir, _ledger_from_json(data), deferred_keys)
 
 
+def _pack_largest_first(digests: list[Path], target: int) -> list[list[Path]]:
+    """Bin-pack `digests` into bins of about `target` size, largest digest first.
+
+    A digest larger than `target` is never combined with another and gets a
+    bin to itself. The rest are sorted largest-first and first-fit into the
+    first bin with enough remaining capacity, opening a new bin otherwise.
+    Bin count is monotonic non-decreasing as digests are added, which is what
+    lets `make_batches` grow its included set one oldest digest at a time and
+    stop as soon as the cap is exceeded.
+    """
+    oversized = [d for d in digests if d.stat().st_size > target]
+    normal = sorted((d for d in digests if d.stat().st_size <= target), key=lambda d: d.stat().st_size, reverse=True)
+
+    bins = [[d] for d in oversized]
+    remaining_capacity: list[int] = []
+    for digest in normal:
+        size = digest.stat().st_size
+        for index, capacity in enumerate(remaining_capacity):
+            if capacity >= size:
+                bins[len(oversized) + index].append(digest)
+                remaining_capacity[index] -= size
+                break
+        else:
+            bins.append([digest])
+            remaining_capacity.append(target - size)
+    return bins
+
+
+def make_batches(
+    digests: list[Path], target: int = 350_000, cap: int = 8, solo: int = 300_000
+) -> tuple[list[list[Path]], list[Path]]:
+    """Group digest files into batches a reader subagent can consume, with overflow for the rest.
+
+    Returns `(batches, overflow)`. When the digests' total size is at most
+    `solo`, everything goes in a single batch and overflow is empty.
+    Otherwise, taking digests oldest-mtime-first, grows the included set one
+    digest at a time, packing it largest-first (see `_pack_largest_first`)
+    into bins of about `target` size, and stops at the first digest that
+    would push the bin count past `cap`; a digest larger than `target` always
+    takes a whole bin on its own. Every digest not included is overflow,
+    ordered newest-mtime-first, so that the oldest unread digests are the
+    ones batched now.
+    """
+    if not digests:
+        return [], []
+    total = sum(d.stat().st_size for d in digests)
+    if total <= solo:
+        return [list(digests)], []
+
+    by_age = sorted(digests, key=lambda d: d.stat().st_mtime)
+    included: list[Path] = []
+    for digest in by_age:
+        candidate = included + [digest]
+        if len(_pack_largest_first(candidate, target)) <= cap:
+            included = candidate
+        else:
+            break
+
+    overflow = sorted(set(by_age) - set(included), key=lambda d: d.stat().st_mtime, reverse=True)
+    batches = _pack_largest_first(included, target)
+    return batches, overflow
+
+
+def _key_from_digest_path(path: Path) -> str:
+    """Recover a digest's ledger key (`source:id`) from its `<source>__<id>.md` filename.
+
+    Splits on the first `__` only, since an id may itself contain underscores.
+    """
+    source, _, rest = path.stem.partition("__")
+    return f"{source}:{rest}"
+
+
+def batch(run_dir: Path, target: int = 350_000, cap: int = 8, solo: int = 300_000) -> dict:
+    """Split `run_dir/digests/` into reader-sized batches and write them under `run_dir`.
+
+    Writes `run_dir/batch<N>.txt` (N from 0, one absolute digest path per
+    line) for each batch from `make_batches`, and `run_dir/overflow.txt`
+    (one absolute path per line, empty when there's no overflow). Removes
+    any stale `batch*.txt` left from an earlier same-day run first, since a
+    smaller batch count here would otherwise leave old files behind. Returns
+    `{"batches", "overflow_keys"}`; the keys are ready to pass to
+    `commit --deferred`.
+    """
+    digests = sorted((run_dir / "digests").glob("*.md"))
+    for stale in run_dir.glob("batch*.txt"):
+        stale.unlink()
+
+    batches, overflow = make_batches(digests, target=target, cap=cap, solo=solo)
+
+    for index, group in enumerate(batches):
+        text = "".join(f"{path.resolve()}\n" for path in group)
+        (run_dir / f"batch{index}.txt").write_text(text, encoding="utf-8")
+    overflow_text = "".join(f"{path.resolve()}\n" for path in overflow)
+    (run_dir / "overflow.txt").write_text(overflow_text, encoding="utf-8")
+
+    return {"batches": len(batches), "overflow_keys": [_key_from_digest_path(p) for p in overflow]}
+
+
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point for the `extract` and `commit` subcommands."""
+    """CLI entry point for the `extract`, `commit`, and `batch` subcommands."""
     parser = argparse.ArgumentParser(prog="harvest.py")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -431,6 +529,9 @@ def main(argv: list[str] | None = None) -> int:
     commit_parser.add_argument("--state-dir", type=Path, default=_DEFAULT_STATE_DIR)
     commit_parser.add_argument("--deferred", action="append", default=[], metavar="KEY")
 
+    batch_parser = subparsers.add_parser("batch", help="Split a run's digests into reader-sized batches")
+    batch_parser.add_argument("--run-dir", type=Path, required=True)
+
     args = parser.parse_args(argv)
 
     if args.command == "extract":
@@ -438,6 +539,9 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(summary))
     elif args.command == "commit":
         commit(args.run_dir, args.state_dir, set(args.deferred))
+    elif args.command == "batch":
+        summary = batch(args.run_dir)
+        print(json.dumps(summary))
 
     return 0
 

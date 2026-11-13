@@ -8,6 +8,7 @@ the import needs the path insert above it.
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -19,11 +20,19 @@ from harvest import (
     commit_ledger,
     load_ledger,
     main,
+    make_batches,
     plan_extract,
     read_claude,
 )
 
 FIX = Path(__file__).parent / "fixtures"
+
+
+def _write_digest(path: Path, size: int, mtime: float) -> Path:
+    """Create a digest-sized fixture file at `path` with its mtime pinned to `mtime`."""
+    path.write_bytes(b"x" * size)
+    os.utime(path, (mtime, mtime))
+    return path
 
 
 def test_read_claude_keeps_text_and_drops_tool_output():
@@ -181,3 +190,38 @@ def test_commit_with_deferred_keeps_old_offset(tmp_path):
     assert ledger[key].deferred is True
     assert ledger[other_key].harvested == len(other.messages)
     assert ledger[other_key].deferred is False
+
+
+def test_small_runs_get_one_batch(tmp_path):
+    # total 200 KB -> 1 batch, no overflow
+    digests = [
+        _write_digest(tmp_path / f"claude__s{i}.md", 100_000, mtime=1_000 + i)
+        for i in range(2)
+    ]
+    batches, overflow = make_batches(digests)
+    assert batches == [digests]
+    assert overflow == []
+
+
+def test_batches_respect_cap_and_defer_newest(tmp_path):
+    # 12 x 300 KB -> 8 batches; the 4 newest overflow
+    digests = [
+        _write_digest(tmp_path / f"claude__s{i}.md", 300_000, mtime=1_000 + i)
+        for i in range(12)
+    ]
+    batches, overflow = make_batches(digests)
+    assert len(batches) == 8
+    assert {p for batch in batches for p in batch} == set(digests[:8])
+    assert overflow == list(reversed(digests[8:]))
+
+
+def test_one_oversized_digest_gets_its_own_batch(tmp_path):
+    # one 900 KB plus two 100 KB -> the 900 KB file is alone
+    big = _write_digest(tmp_path / "claude__big.md", 900_000, mtime=1_000)
+    small_a = _write_digest(tmp_path / "claude__a.md", 100_000, mtime=1_001)
+    small_b = _write_digest(tmp_path / "claude__b.md", 100_000, mtime=1_002)
+    batches, overflow = make_batches([big, small_a, small_b])
+    assert [big] in batches
+    assert overflow == []
+    other_batches = [batch for batch in batches if batch != [big]]
+    assert {p for batch in other_batches for p in batch} == {small_a, small_b}

@@ -8,6 +8,7 @@ the import needs the path insert above it.
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -225,3 +226,44 @@ def test_one_oversized_digest_gets_its_own_batch(tmp_path):
     assert overflow == []
     other_batches = [batch for batch in batches if batch != [big]]
     assert {p for batch in other_batches for p in batch} == {small_a, small_b}
+
+
+def test_batch_cli_writes_files_and_overflow_keys(tmp_path, capsys):
+    # 12 x 300 KB digests, one with "__" inside its id, forces the same
+    # 8-batches/4-overflow split as test_batches_respect_cap_and_defer_newest.
+    run = tmp_path
+    digests_dir = run / "digests"
+    digests_dir.mkdir()
+    names = [f"claude__s{i}.md" for i in range(11)] + ["claude__sess__with__dunder.md"]
+    for i, name in enumerate(names):
+        _write_digest(digests_dir / name, 300_000, mtime=1_000 + i)
+    (run / "batch9.txt").write_text("stale\n")  # leftover from an earlier same-day run
+
+    main(["batch", "--run-dir", str(run)])
+
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["batches"] == 8
+    assert summary["overflow_keys"] == [
+        "claude:sess__with__dunder",
+        "claude:s10",
+        "claude:s9",
+        "claude:s8",
+    ]
+
+    assert not (run / "batch9.txt").exists()
+    batch0_paths = (run / "batch0.txt").read_text().splitlines()
+    assert batch0_paths and all(Path(p).is_absolute() for p in batch0_paths)
+    overflow_paths = (run / "overflow.txt").read_text().splitlines()
+    assert len(overflow_paths) == 4 and all(Path(p).is_absolute() for p in overflow_paths)
+
+
+def test_batch_cli_handles_empty_digests_dir(tmp_path, capsys):
+    run = tmp_path
+    (run / "digests").mkdir()
+
+    main(["batch", "--run-dir", str(run)])
+
+    summary = json.loads(capsys.readouterr().out)
+    assert summary == {"batches": 0, "overflow_keys": []}
+    assert list(run.glob("batch*.txt")) == []
+    assert (run / "overflow.txt").read_text() == ""

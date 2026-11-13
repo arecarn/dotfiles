@@ -436,3 +436,69 @@ def test_stale_lists_commits_after_verified(tmp_path, git_repo):
     assert "1 commits" in report
     assert "settled.md" not in report
     assert "Unresolved sources: 0" in report
+
+
+def test_stale_counts_a_repo_with_no_origin_head_as_unresolved(tmp_path):
+    # A repo with no remote has no origin/HEAD, so `git log ... origin/HEAD`
+    # fails: the source must be counted unresolved, not crash and not show
+    # up as "0 commits".
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _run_git(["init", "-q", "-b", "main"], cwd=repo)
+    _run_git(["config", "user.email", "test@example.com"], cwd=repo)
+    _run_git(["config", "user.name", "Test"], cwd=repo)
+    (repo / "a.cpp").write_text("int a() { return 1; }\n")
+    _git_commit(repo, "initial", "2026-01-01T00:00:00")
+
+    knowledge_dir = tmp_path / "ai-knowledge"
+    private_root = tmp_path / "private"
+    bundle = knowledge_dir / "bundle"
+    _write_bundle_index(bundle)
+    (bundle / "repositories.yaml").write_text(
+        "repositories:\n- name: RepoA\n  path: group/RepoA\n  local: repo\n"
+    )
+    (bundle / "entry.md").write_text(
+        '---\nverified: "2026-01-01"\nsources:\n  - "RepoA deadbeef: a.cpp"\n---\n# Body\n'
+    )
+
+    report = harvest.stale(knowledge_dir, private_root, [tmp_path], fetch=False)
+
+    assert "May be stale" in report
+    assert "0 commits" not in report
+    assert "entry.md" not in report
+    assert "Unresolved sources: 1" in report
+
+
+def test_stale_fetches_each_repo_at_most_once(monkeypatch, tmp_path, git_repo):
+    # Two entries in two different bundles cite the same repo; fetch must
+    # run once per `stale()` call, not once per resolved sources entry.
+    fetch_calls = []
+    real_run = harvest.subprocess.run
+
+    def counting_run(args, **kwargs):
+        if args[:2] == ["git", "fetch"]:
+            fetch_calls.append(args)
+        return real_run(args, **kwargs)
+
+    monkeypatch.setattr(harvest.subprocess, "run", counting_run)
+
+    knowledge_dir = tmp_path / "ai-knowledge"
+    private_root = tmp_path / "private"
+    repositories_yaml = "repositories:\n- name: RepoA\n  path: group/RepoA\n  local: repo\n"
+    source_entry = '---\nverified: "2026-01-01"\nsources:\n  - "RepoA deadbeef: a.cpp"\n---\n# Body\n'
+
+    first = knowledge_dir / "first"
+    _write_bundle_index(first)
+    (first / "repositories.yaml").write_text(repositories_yaml)
+    (first / "entry.md").write_text(source_entry)
+
+    second = knowledge_dir / "second"
+    _write_bundle_index(second)
+    (second / "entry.md").write_text(source_entry)
+
+    workspace_root = tmp_path  # git_repo fixture clones to tmp_path / "repo"
+    assert git_repo == tmp_path / "repo"
+
+    harvest.stale(knowledge_dir, private_root, [workspace_root], fetch=True)
+
+    assert len(fetch_calls) == 1

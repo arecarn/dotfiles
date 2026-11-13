@@ -559,7 +559,7 @@ def repo_paths(bundles: list[Bundle], workspace_roots: list[Path]) -> dict[str, 
 
     Each repository is keyed by both its `name:` value and the basename of
     its `path:` value (source text names repositories by the GitLab path's
-    last segment, for example `Team_Product_Software`, not by `name:`). A
+    last segment, for example `group/RepoA`'s `RepoA`, not by `name:`). A
     repository's `local:` path is resolved against `workspace_roots` in
     order; the first root under which `root / local` exists and contains
     `.git` wins, and a repository that resolves under no root is omitted.
@@ -633,18 +633,27 @@ def resolve_source(text: str, repo_paths: dict[str, Path]) -> tuple[Path, list[s
     return repo_root, files
 
 
-def _git_default_branch_commits(repo_root: Path, since: str, files: list[str], fetch: bool) -> list[str] | None:
+def _git_default_branch_commits(
+    repo_root: Path, since: str, files: list[str], fetch: bool, fetched: dict[Path, bool]
+) -> list[str] | None:
     """List `origin/HEAD`'s commits touching `files` since `since`, or `None` if git failed.
 
     Runs `git fetch --quiet` first unless `fetch` is False, so a stale local
-    `origin/HEAD` doesn't under-report. A non-zero return from either
-    command means the source is unresolved rather than raising.
+    `origin/HEAD` doesn't under-report. `fetched` is a cache the caller owns
+    across one `stale()` run, keyed by `repo_root`: a repository already
+    fetched (successfully or not) in this run is not fetched again, so a
+    repository cited by many `sources` entries is fetched at most once. A
+    non-zero return from either command means the source is unresolved
+    rather than raising -- including a repo with no `origin/HEAD` (for
+    example one with no remote), which makes `git log` fail the same way.
     """
     if fetch:
-        fetch_result = subprocess.run(
-            ["git", "fetch", "--quiet"], cwd=repo_root, check=False, capture_output=True, text=True
-        )
-        if fetch_result.returncode != 0:
+        if repo_root not in fetched:
+            fetch_result = subprocess.run(
+                ["git", "fetch", "--quiet"], cwd=repo_root, check=False, capture_output=True, text=True
+            )
+            fetched[repo_root] = fetch_result.returncode == 0
+        if not fetched[repo_root]:
             return None
     log_result = subprocess.run(
         ["git", "log", f"--since={since}", "--oneline", "origin/HEAD", "--", *files],
@@ -673,6 +682,7 @@ def stale(knowledge_dir: Path, private_root: Path, workspace_roots: list[Path], 
 
     stale_lines: list[str] = []
     unresolved = 0
+    fetched: dict[Path, bool] = {}
     for bundle in bundles:
         for md in sorted(bundle.root.rglob("*.md")):
             if md.name == "index.md":
@@ -686,7 +696,7 @@ def stale(knowledge_dir: Path, private_root: Path, workspace_roots: list[Path], 
                     unresolved += 1
                     continue
                 repo_root, files = resolved
-                commits = _git_default_branch_commits(repo_root, verified, files, fetch)
+                commits = _git_default_branch_commits(repo_root, verified, files, fetch, fetched)
                 if commits is None:
                     unresolved += 1
                 elif commits:
@@ -710,8 +720,8 @@ def _default_workspace_roots() -> list[Path]:
     `HARVEST_WORKSPACE_ROOTS` is `os.pathsep`-separated, matching how other
     PATH-like settings are read. Falling back to scanning subdirectories
     lets a repository nested one level down (for example
-    `~/files/projects/cf/cfsw`) resolve without the caller having to name
-    every project folder.
+    `~/files/projects/team/project`) resolve without the caller having to
+    name every project folder.
     """
     env_value = os.environ.get("HARVEST_WORKSPACE_ROOTS")
     if env_value:

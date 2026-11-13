@@ -63,6 +63,23 @@ def _claude_session(path: Path, user_texts: list[str], cwd: str = "/work/repo") 
     return _write_jsonl(path, records)
 
 
+def _pi_session(path: Path, session_id: str, user_texts: list[str]) -> Path:
+    """Write a pi session alternating each of `user_texts` with a fixed assistant reply."""
+    records: list[dict] = [{"type": "session", "id": session_id, "cwd": "/work/pi"}]
+    for text in user_texts:
+        for role, body in (("user", text), ("assistant", "Reply.")):
+            records.append(
+                {
+                    "type": "message",
+                    "message": {
+                        "role": role,
+                        "content": [{"type": "text", "text": body}],
+                    },
+                }
+            )
+    return _write_jsonl(path, records)
+
+
 def _extract(state: Path, claude_root: Path, pi_root: Path) -> Path:
     """Run the `extract` CLI and return the run dir it wrote."""
     main(
@@ -625,3 +642,129 @@ def test_commit_writes_committed_marker(tmp_path):
     _claude_session(claude_root / "proj" / "a.jsonl", ["Ask.", "More.", "Even more."])
     assert _extract(state, claude_root, tmp_path / "pi") == run
     assert not (run / "committed").exists()
+
+
+def test_extract_skips_repeated_scheduled_prompts(tmp_path):
+    state = tmp_path / "state"
+    claude_root = tmp_path / "claude"
+    # Four sessions open with the same prompt (whitespace differs): each
+    # matches three others, so all four are skipped.
+    for index in range(4):
+        _claude_session(
+            claude_root / "proj" / f"sched{index}.jsonl",
+            [
+                "Run   the weekly\nreport." if index % 2 else "Run the weekly report.",
+                "Go on.",
+            ],
+        )
+    # Three sessions share a prompt: each matches only two others, so all are kept.
+    for index in range(3):
+        _claude_session(claude_root / "proj" / f"few{index}.jsonl", ["Fix the build.", "Thanks."])
+    _claude_session(claude_root / "proj" / "unique.jsonl", ["Something new.", "Thanks."])
+
+    run = _extract(state, claude_root, tmp_path / "pi")
+
+    names = {p.stem for p in (run / "digests").iterdir()}
+    assert names == {"claude__few0", "claude__few1", "claude__few2", "claude__unique"}
+
+
+def test_adapters_drop_empty_tool_only_turns(tmp_path):
+    tool_result = {"type": "tool_result", "tool_use_id": "1", "content": "output"}
+    tool_use = {"type": "tool_use", "id": "1", "name": "Bash", "input": {}}
+    claude_path = _write_jsonl(
+        tmp_path / "c.jsonl",
+        [
+            {"type": "user", "cwd": "/w", "message": {"content": "Only real ask."}},
+            {"type": "assistant", "cwd": "/w", "message": {"content": [tool_use]}},
+            {"type": "user", "cwd": "/w", "message": {"content": [tool_result]}},
+            {"type": "assistant", "cwd": "/w", "message": {"content": [tool_use]}},
+            {"type": "user", "cwd": "/w", "message": {"content": [tool_result]}},
+            {
+                "type": "assistant",
+                "cwd": "/w",
+                "message": {"content": [{"type": "text", "text": "Done."}]},
+            },
+        ],
+    )
+    pi_path = _write_jsonl(
+        tmp_path / "p.jsonl",
+        [
+            {"type": "session", "id": "p1", "cwd": "/w"},
+            {
+                "type": "message",
+                "message": {
+                    "role": "user",
+                    "content": [{"type": "text", "text": "Ask."}],
+                },
+            },
+            {
+                "type": "message",
+                "message": {"role": "assistant", "content": [{"type": "toolCall"}]},
+            },
+            {
+                "type": "message",
+                "message": {"role": "user", "content": [{"type": "image"}]},
+            },
+        ],
+    )
+
+    claude = harvest.read_claude(claude_path)
+    pi = harvest.read_pi(pi_path)
+
+    assert [m.role for m in claude.messages] == ["user", "assistant"]
+    assert [m.role for m in pi.messages] == ["user"]
+    # One real user turn is not two exchanges, however many tool turns padded it.
+    assert not harvest.is_harvestable(claude)
+    digest = harvest.render_digest(claude, start=0)
+    assert all(line not in ("USER: ", "ASSISTANT: ") for line in digest.splitlines())
+
+
+def test_wrapper_and_pi_skill_bodies_are_filtered(tmp_path):
+    wrappers = [
+        "<local-command-stdout>ok</local-command-stdout>",
+        "<local-command-stderr>err</local-command-stderr>",
+        "<paseo-system>\nAgent finished.</paseo-system>",
+        '<skill name="walkthrough" location="/x/SKILL.md">\nbody\n</skill>\n\nthese',
+        "<command-name>/x</command-name>",
+    ]
+    claude = harvest.read_claude(
+        _claude_session(tmp_path / "c.jsonl", ["Real ask.", *wrappers, "Real follow-up."])
+    )
+    pi = harvest.read_pi(_pi_session(tmp_path / "p.jsonl", "p1", ["Real ask.", *wrappers]))
+
+    assert [m.text for m in claude.messages if m.role == "user"] == [
+        "Real ask.",
+        "Real follow-up.",
+    ]
+    assert [m.text for m in pi.messages if m.role == "user"] == ["Real ask."]
+
+
+def test_pi_skill_invocation_counts_as_self_tagged(tmp_path):
+    later = ["Then this.", "And this."]
+    by_command = harvest.read_pi(
+        _pi_session(tmp_path / "a.jsonl", "a", ["/skill:harvest-knowledge run", *later])
+    )
+    by_body = harvest.read_pi(
+        _pi_session(
+            tmp_path / "b.jsonl",
+            "b",
+            [
+                '<skill name="harvest-knowledge" location="/x/SKILL.md">\nbody\n</skill>',
+                *later,
+            ],
+        )
+    )
+    other_skill = harvest.read_pi(
+        _pi_session(
+            tmp_path / "c.jsonl",
+            "c",
+            [
+                '<skill name="walkthrough" location="/x/SKILL.md">\nbody\n</skill>',
+                *later,
+            ],
+        )
+    )
+
+    assert not harvest.is_harvestable(by_command)
+    assert not harvest.is_harvestable(by_body)
+    assert harvest.is_harvestable(other_skill)

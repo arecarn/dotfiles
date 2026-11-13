@@ -22,10 +22,30 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
-_COMMAND_WRAPPER_PREFIXES = ("<command", "<system")
+# User text starting with one of these is a harness-injected wrapper: a
+# slash-command or its local output, a system reminder, a Paseo notice, or a
+# pi skill body (`<skill name=...>`, the trailing space keeps `<skills>` out).
+_COMMAND_WRAPPER_PREFIXES = (
+    "<command",
+    "<system",
+    "<local-command-stdout",
+    "<local-command-stderr",
+    "<paseo-system",
+    "<skill ",
+)
 _SKILL_BODY_MARKER = "Base directory for this skill"
-_SELF_TAG = "[harvest-knowledge]"
+# A first user message starting with one of these marks this skill's own
+# session: the tag both modes' prompts carry, or a pi invocation of the skill
+# (typed, or as the skill body pi injects in its place).
+_SELF_TAGS = (
+    "[harvest-knowledge]",
+    "/skill:harvest-knowledge",
+    '<skill name="harvest-knowledge"',
+)
 _MIN_USER_MESSAGES = 2
+# A session whose first user message matches the first user message of this
+# many other sessions in one extract is a scheduled or fan-out prompt.
+_REPEATED_PROMPT_THRESHOLD = 3
 
 _DEFAULT_CLAUDE_ROOT = Path.home() / ".claude" / "projects"
 _DEFAULT_PI_ROOT = Path.home() / ".pi" / "agent" / "sessions"
@@ -98,11 +118,23 @@ def _is_noise_user_text(text: str) -> bool:
     return head.startswith(_COMMAND_WRAPPER_PREFIXES) or _SKILL_BODY_MARKER in head
 
 
+def _is_first_self_tag(kept: list[Message], text: str) -> bool:
+    """True when `text` would be the session's first user turn and carries a self tag.
+
+    pi injects a skill's body as a `<skill name=...>` user turn, which the
+    noise filter drops; for `harvest-knowledge` that turn is the only sign
+    the session is this skill's own, so it is kept for `is_harvestable`.
+    """
+    no_user_yet = all(m.role != "user" for m in kept)
+    return no_user_yet and text.strip().startswith(_SELF_TAGS)
+
+
 def read_claude(path: Path) -> Session | None:
     """Parse a Claude Code session JSONL file into a Session.
 
-    Drops records with `isMeta` or `isSidechain` true, and drops user
-    messages that are harness wrappers rather than human-typed text (see
+    Drops records with `isMeta` or `isSidechain` true, messages whose text
+    is empty once tool_use/tool_result parts are removed, and user messages
+    that are harness wrappers rather than human-typed text (see
     `_is_noise_user_text`). Tolerates a truncated last line by skipping any
     line that fails to parse. Returns None if no line carries a `cwd`, which
     means there was nothing usable to build a session from.
@@ -127,7 +159,7 @@ def read_claude(path: Path) -> Session | None:
                 cwd = record["cwd"]
             message = record.get("message") or {}
             text = _text_from_content(message.get("content"))
-            if role == "user" and _is_noise_user_text(text):
+            if not text.strip() or (role == "user" and _is_noise_user_text(text)):
                 continue
             messages.append(Message(role=role, text=text))
     if cwd is None:
@@ -141,7 +173,9 @@ def read_pi(path: Path) -> Session | None:
     The first line is a `{"type": "session", "id": ..., "cwd": ...}` header;
     later lines are `{"type": "message", ...}` records, kept only when the
     message role is "user" or "assistant" (drops "toolResult" and "system").
-    Returns None if the header line is missing.
+    Drops messages with no text and harness-wrapper user messages, as
+    `read_claude` does, except a first user turn carrying a self tag (see
+    `_is_first_self_tag`). Returns None if the header line is missing.
     """
     session_id: str | None = None
     cwd: str | None = None
@@ -167,6 +201,14 @@ def read_pi(path: Path) -> Session | None:
             if role not in ("user", "assistant"):
                 continue
             text = _text_from_content(message.get("content"))
+            if not text.strip():
+                continue
+            if (
+                role == "user"
+                and _is_noise_user_text(text)
+                and not _is_first_self_tag(messages, text)
+            ):
+                continue
             messages.append(Message(role=role, text=text))
     if session_id is None or cwd is None:
         return None
@@ -200,16 +242,47 @@ def is_harvestable(session: Session) -> bool:
 
     False for a scratch session (cwd under `/tmp/`), a session with fewer
     than two human turns, or a session already tagged as this tool's own
-    output (first user message starts with `[harvest-knowledge]`).
+    (first user message starts with one of `_SELF_TAGS`). Repeated
+    scheduled prompts need every session at once; see
+    `drop_repeated_prompts`.
     """
     if session.cwd.startswith("/tmp/"):
         return False
     user_messages = [m for m in session.messages if m.role == "user"]
     if len(user_messages) < _MIN_USER_MESSAGES:
         return False
-    if user_messages[0].text.strip().startswith(_SELF_TAG):
+    if user_messages[0].text.strip().startswith(_SELF_TAGS):
         return False
     return True
+
+
+def _normalised_first_prompt(session: Session) -> str | None:
+    """The session's first user message with whitespace runs collapsed, or None if it has none."""
+    for message in session.messages:
+        if message.role == "user":
+            return " ".join(message.text.split())
+    return None
+
+
+def drop_repeated_prompts(sessions: list[Session]) -> list[Session]:
+    """Remove sessions that open with a scheduled or fan-out prompt.
+
+    A session is removed when its first user message, whitespace-normalised,
+    equals the first user message of at least `_REPEATED_PROMPT_THRESHOLD`
+    other sessions in `sessions`. Compares only within the list given, so
+    callers pass every session one extract run sees. Returns the rest in
+    their original order; mutates nothing.
+    """
+    counts: dict[str, int] = {}
+    for session in sessions:
+        prompt = _normalised_first_prompt(session)
+        if prompt is not None:
+            counts[prompt] = counts.get(prompt, 0) + 1
+    return [
+        session
+        for session in sessions
+        if counts.get(_normalised_first_prompt(session) or "", 0) - 1 < _REPEATED_PROMPT_THRESHOLD
+    ]
 
 
 def render_digest(session: Session, start: int, cap: int = 1100) -> str:
@@ -383,7 +456,7 @@ def _is_under(path: Path, root: Path) -> bool:
 
 def _collect_sessions(claude_root: Path, pi_root: Path) -> list[Session]:
     """Read every discovered file with the reader matching its root, keeping only harvestable
-    sessions."""
+    sessions that do not open with a repeated scheduled prompt."""
     sessions = []
     for path in discover(claude_root, pi_root):
         if _is_under(path, claude_root):
@@ -395,7 +468,7 @@ def _collect_sessions(claude_root: Path, pi_root: Path) -> list[Session]:
         if session is None or not is_harvestable(session):
             continue
         sessions.append(session)
-    return sessions
+    return drop_repeated_prompts(sessions)
 
 
 def extract(state_dir: Path, claude_root: Path, pi_root: Path) -> dict:

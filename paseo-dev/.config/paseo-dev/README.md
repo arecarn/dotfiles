@@ -60,9 +60,15 @@ Start it from an interactive shell or `direnv exec`, not as a piped one-shot
 emulator exits. See
 [the gotcha](../../../docs/gotchas/nix-develop-c-holds-a-pipe-open-while-a-background-process-lives.md).
 Before the first Android Gradle build in a checkout, run
-`npm rebuild react-native-enriched-markdown` (see
-[the gotcha](../../../docs/gotchas/gradle-fails-on-enriched-markdown-after-install-with-scripts-disabled.md)).
-The SDK carries platform 36 and an NDK because Paseo's Gradle build needs them
+`npm rebuild react-native-enriched-markdown @shopify/react-native-skia` (see
+[the enriched-markdown gotcha](../../../docs/gotchas/gradle-fails-on-enriched-markdown-after-install-with-scripts-disabled.md)
+and [the Skia and `/tmp` gotcha](../../../docs/gotchas/gradle-fails-on-skia-and-tmpfs-quota-in-android-debug-build.md);
+keep the checkout off a tmpfs `/tmp`). A debug APK is
+`npx cross-env APP_VARIANT=development expo prebuild --platform android --clean --non-interactive`
+then `./gradlew assembleDebug -PreactNativeArchitectures=x86_64` in
+`packages/app/android`; `adb install` it and start `sh.paseo.debug`. On first
+launch see [the ANR gotcha](../../../docs/gotchas/first-launch-on-the-headless-emulator-shows-a-system-ui-anr.md).
+The SDK carries platform 36, build-tools 35, CMake and an NDK because Paseo's Gradle build needs them
 (see [the gotcha](../../../docs/gotchas/gradle-android-build-needs-more-than-the-documented-sdk.md)).
 `adb` keeps its keys in `~/.android`; only the AVD, emulator state, pid and log
 move to XDG.

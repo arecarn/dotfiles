@@ -21,6 +21,7 @@
         };
 
       paseo-install = helper "paseo-install" [ ];
+      paseo-playwright-install = helper "paseo-playwright-install" [ ];
       paseo-dev-smoke = helper "paseo-dev-smoke" [ ];
     in
     {
@@ -32,6 +33,7 @@
           pkgs.gnumake
           pkgs.pkg-config
           paseo-install
+          paseo-playwright-install
           paseo-dev-smoke
         ];
       };

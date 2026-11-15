@@ -10,7 +10,9 @@ exclude="$(git rev-parse --path-format=absolute --git-common-dir)/info/exclude"
 # Nix refuses a flake path that is a symlink, and stow links the whole directory,
 # so point at the resolved location.
 flake=$(readlink -f "$HOME/.config/paseo-dev")
-printf 'use flake "path:%s"\n' "$flake" >"$root/.envrc"
+# PASEO_HOME from the host shell would point the dev stack at the real daemon's
+# state; unsetting it makes the dev stack use the checkout-local .dev/paseo-home.
+printf 'unset PASEO_HOME\nuse flake "path:%s"\n' "$flake" >"$root/.envrc"
 
 mkdir -p "$(dirname "$exclude")"
 touch "$exclude"

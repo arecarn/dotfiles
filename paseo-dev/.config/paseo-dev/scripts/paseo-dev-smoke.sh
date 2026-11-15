@@ -12,8 +12,10 @@ check() {
   fi
 }
 
+# Expected majors come from the flake's one definition, exported by the shell.
+want_node=${PASEO_DEV_NODE_MAJOR:-unset}
 node_major=$(node -p 'process.versions.node.split(".")[0]')
-check "node major is 22 (got $node_major)" test "$node_major" = 22
+check "node major is $want_node (got $node_major)" test "$node_major" = "$want_node"
 check "python3 resolves" python3 --version
 check "gcc resolves" gcc --version
 check "g++ resolves" g++ --version
@@ -28,7 +30,8 @@ if [ "${1:-}" = android ]; then
   check "ANDROID_HOME is set" test -n "${ANDROID_HOME:-}"
   check "JAVA_HOME is set" test -n "${JAVA_HOME:-}"
   java_major=$(java -version 2>&1 | sed -n '1s/.*version "\([0-9]*\).*/\1/p')
-  check "java major is 21 (got $java_major)" test "$java_major" = 21
+  want_java=${PASEO_DEV_JAVA_MAJOR:-unset}
+  check "java major is $want_java (got $java_major)" test "$java_major" = "$want_java"
   check "gradle resolves" gradle --version
   check "adb resolves" adb --version
   check "emulator resolves" emulator -version

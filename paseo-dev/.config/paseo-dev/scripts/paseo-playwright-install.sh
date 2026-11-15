@@ -1,7 +1,12 @@
 # shellcheck shell=bash
 # Install the Chromium that the checkout's own pinned Playwright expects. Run
-# from the checkout root (or packages/app). Nix does not provide the browser, so
-# it can never go stale against package-lock.json.
+# from the checkout root, after paseo-install. Nix does not provide the browser,
+# so it can never go stale against package-lock.json.
+#
+# Requires ./node_modules/.bin/playwright (exits 1 with a message if absent) and
+# network access. Writes only Playwright's browser cache (~/.cache/ms-playwright
+# unless PLAYWRIGHT_BROWSERS_PATH says otherwise). Safe to repeat. Prints the
+# installed Playwright version on success; exits non-zero on any install failure.
 #
 # Playwright refuses to install on a distro release it does not know yet (1.58
 # on Ubuntu 26.04: "does not support chromium on ubuntu26.04-x64"). The Ubuntu

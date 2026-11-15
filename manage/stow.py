@@ -103,6 +103,7 @@ _STOW_PACKAGES = [
     "git",
     "neovide",
     "opencode",
+    "paseo-dev",
     "pi",
     "readline",
     "scripts",

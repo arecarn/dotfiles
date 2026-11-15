@@ -23,6 +23,7 @@ check "make resolves" make --version
 check "xvfb-run resolves" command -v xvfb-run
 check "Xvfb resolves" command -v Xvfb
 check "paseo-desktop-capture resolves" command -v paseo-desktop-capture
+check "paseo-desktop-shot resolves" command -v paseo-desktop-shot
 
 # The Android variant (`nix develop .#android`) is checked only when asked for:
 # `paseo-dev-smoke android`. The default shell must not carry any of it.

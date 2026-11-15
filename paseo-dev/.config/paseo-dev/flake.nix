@@ -87,6 +87,11 @@
       paseo-playwright-install = helper "paseo-playwright-install" [ ];
       paseo-dev-smoke = helper "paseo-dev-smoke" [ ];
       paseo-desktop-capture = helper "paseo-desktop-capture" [ ];
+      # xwd and ImageMagick turn the virtual display into a PNG and read its mean.
+      paseo-desktop-shot = helper "paseo-desktop-shot" [
+        pkgs.xwd
+        pkgs.imagemagick
+      ];
 
       # jq reads the Playwright version from the checkout's lock file. Node
       # comes from the shell's PATH, so the check reports the shell's Node.
@@ -106,6 +111,7 @@
         paseo-dev-smoke
         paseo-dev-check
         paseo-desktop-capture
+        paseo-desktop-shot
       ];
     in
     {

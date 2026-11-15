@@ -22,6 +22,9 @@
 
       paseo-install = helper "paseo-install" [ ];
       paseo-dev-smoke = helper "paseo-dev-smoke" [ ];
+      # jq reads the Playwright version from the checkout's lock file. Node
+      # comes from the shell's PATH, so the check reports the shell's Node.
+      paseo-dev-check = helper "paseo-dev-check" [ pkgs.jq ];
     in
     {
       devShells.${system}.default = pkgs.mkShell {
@@ -33,6 +36,7 @@
           pkgs.pkg-config
           paseo-install
           paseo-dev-smoke
+          paseo-dev-check
         ];
       };
     };

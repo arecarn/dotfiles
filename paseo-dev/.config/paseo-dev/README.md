@@ -39,8 +39,33 @@ direnv exec . paseo-desktop-capture
 ## Android
 
 `nix develop path:$HOME/.config/paseo-dev#android` adds the SDK, JDK, Gradle and
-the emulator. It is only evaluated when asked for. There is no emulator boot
-helper yet (open gap).
+the emulator. It is only evaluated when asked for.
+
+`paseo-emulator start` creates the AVD if missing (x86_64 `google_apis` image
+at the pinned platform), boots it headless with software rendering and returns
+once Android reports the boot finished. `paseo-emulator stop` ends it;
+`status` says whether it runs. It needs access to `/dev/kvm` (the `kvm`
+group). The AVD and adb keys live under `$XDG_DATA_HOME/paseo-dev/android`, the
+pid and log under `$XDG_STATE_HOME/paseo-dev`, never in a checkout.
+
+```sh
+nix develop path:$HOME/.config/paseo-dev#android
+paseo-emulator start
+adb devices
+paseo-emulator stop
+```
+
+Start it from an interactive shell or `direnv exec`, not as a piped one-shot
+`nix develop -c paseo-emulator start | ...`: that pipe stays open until the
+emulator exits. See
+[the gotcha](../../../docs/gotchas/nix-develop-c-holds-a-pipe-open-while-a-background-process-lives.md).
+Before the first Android Gradle build in a checkout, run
+`npm rebuild react-native-enriched-markdown` (see
+[the gotcha](../../../docs/gotchas/gradle-fails-on-enriched-markdown-after-install-with-scripts-disabled.md)).
+The SDK carries platform 36 and an NDK because Paseo's Gradle build needs them
+(see [the gotcha](../../../docs/gotchas/gradle-android-build-needs-more-than-the-documented-sdk.md)).
+`adb` keeps its keys in `~/.android`; only the AVD, emulator state, pid and log
+move to XDG.
 
 ## Updating the pins
 

@@ -36,15 +36,22 @@ if [ "${1:-}" = android ]; then
   check "adb resolves" adb --version
   check "emulator resolves" emulator -version
   check "sdkmanager resolves" command -v sdkmanager
+  check "avdmanager resolves" command -v avdmanager
+  check "paseo-emulator resolves" command -v paseo-emulator
+  check "paseo-emulator rejects an unknown subcommand" test "$(paseo-emulator bogus >/dev/null 2>&1; echo $?)" = 2
+  check "ANDROID_ABI is set" test -n "${ANDROID_ABI:-}"
+  check "ANDROID_SYSTEM_IMAGE_TYPE is set" test -n "${ANDROID_SYSTEM_IMAGE_TYPE:-}"
   # ANDROID_PLATFORM / ANDROID_BUILD_TOOLS come from the flake's one definition.
   sdk=${ANDROID_HOME:-/nonexistent}
   check "platform-tools in SDK" test -x "$sdk/platform-tools/adb"
   check "emulator in SDK" test -x "$sdk/emulator/emulator"
   check "platform ${ANDROID_PLATFORM:-?} in SDK" test -d "$sdk/platforms/android-${ANDROID_PLATFORM:-?}"
   check "build-tools ${ANDROID_BUILD_TOOLS:-?} in SDK" test -d "$sdk/build-tools/${ANDROID_BUILD_TOOLS:-?}"
+  check "NDK ${ANDROID_NDK_VERSION:-?} in SDK" test -d "$sdk/ndk/${ANDROID_NDK_VERSION:-?}"
   check "x86_64 google_apis image in SDK" test -d "$sdk/system-images/android-${ANDROID_PLATFORM:-?}/google_apis/x86_64"
 else
   check "default shell has no ANDROID_HOME" test -z "${ANDROID_HOME:-}"
+  check "default shell has no paseo-emulator" test -z "$(command -v paseo-emulator)"
 fi
 
 exit "$fail"

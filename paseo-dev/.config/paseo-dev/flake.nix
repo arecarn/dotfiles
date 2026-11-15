@@ -1,6 +1,6 @@
 # Personal dev environment for working on Paseo. Independent of Paseo's own
 # flake: nothing here imports it, so a checkout's path never enters the inputs.
-# Design: docs/superpowers/specs/2026-11-14-paseo-nix-flake-dev-environment-design.md
+# See README.md in this directory for the first-time sequence and pin updates.
 {
   description = "Personal dev environment for Paseo";
 
@@ -20,8 +20,15 @@
           text = builtins.readFile ./scripts/${name}.sh;
         };
 
+      # The one place the Node and Java majors are defined. Each shell exports
+      # them (PASEO_DEV_NODE_MAJOR, PASEO_DEV_JAVA_MAJOR) so the smoke script
+      # asserts the same values. Keep them in step with Paseo's .tool-versions;
+      # paseo-dev-check reports Node drift against it.
+      nodeMajor = "22";
+      javaMajor = "21";
+
       # The one place the Android versions are defined. Platform, build-tools and
-      # system image all derive from these; matches Paseo's docs/android.md.
+      # system image all derive from these; they follow Paseo's docs/android.md.
       android = rec {
         platform = "35";
         buildTools = "${android.platform}.0.0";
@@ -49,7 +56,7 @@
             abiVersions = [ android.abi ];
           };
           sdk = composition.androidsdk;
-          jdk = apkgs.jdk21;
+          jdk = apkgs."jdk${javaMajor}";
         in
         pkgs.mkShell {
           packages = base ++ [
@@ -57,6 +64,8 @@
             (apkgs.gradle.override { java = jdk; })
             sdk
           ];
+          PASEO_DEV_NODE_MAJOR = nodeMajor;
+          PASEO_DEV_JAVA_MAJOR = javaMajor;
           JAVA_HOME = "${jdk}";
           ANDROID_HOME = "${sdk}/libexec/android-sdk";
           ANDROID_SDK_ROOT = "${sdk}/libexec/android-sdk";
@@ -74,12 +83,13 @@
       paseo-dev-check = helper "paseo-dev-check" [ pkgs.jq ];
 
       base = [
-        pkgs.nodejs_22
+        pkgs."nodejs_${nodeMajor}"
         pkgs.python3
         pkgs.gcc
         pkgs.gnumake
         pkgs.pkg-config
         pkgs.xvfb-run
+        # xvfb-run alone works, but it keeps Xvfb off PATH; the smoke asserts it.
         pkgs.xorg-server
         paseo-install
         paseo-playwright-install
@@ -90,7 +100,10 @@
     in
     {
       devShells.${system} = {
-        default = pkgs.mkShell { packages = base; };
+        default = pkgs.mkShell {
+          packages = base;
+          PASEO_DEV_NODE_MAJOR = nodeMajor;
+        };
         android = androidShell;
       };
     };

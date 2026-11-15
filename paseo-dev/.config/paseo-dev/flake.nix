@@ -66,6 +66,7 @@
 
       paseo-install = helper "paseo-install" [ ];
       paseo-dev-smoke = helper "paseo-dev-smoke" [ ];
+      paseo-desktop-capture = helper "paseo-desktop-capture" [ ];
 
       # jq reads the Playwright version from the checkout's lock file. Node
       # comes from the shell's PATH, so the check reports the shell's Node.
@@ -77,9 +78,12 @@
         pkgs.gcc
         pkgs.gnumake
         pkgs.pkg-config
+        pkgs.xvfb-run
+        pkgs.xorg-server
         paseo-install
         paseo-dev-smoke
         paseo-dev-check
+        paseo-desktop-capture
       ];
     in
     {

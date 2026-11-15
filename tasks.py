@@ -654,7 +654,21 @@ def test(ctx):
     Run the test suites
     """
     ctx.run("pytest -q")
+    test_shell(ctx)
     test_typescript(ctx)
+
+
+@task
+def test_shell(ctx):
+    """
+    Run the behavior tests for shell helpers (*.test.sh)
+    """
+    # Linux only, like lint_shell. paseo-dev-check reads package-lock.json with jq.
+    if IS_WINDOWS:
+        print("shell scripts are not a Windows target, skipping...")
+        return
+    for test_file in _find_files("*.test.sh"):
+        _run_linter(ctx, "jq", f"bash {test_file}")
 
 
 @task

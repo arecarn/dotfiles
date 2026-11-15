@@ -65,6 +65,7 @@
         };
 
       paseo-install = helper "paseo-install" [ ];
+      paseo-playwright-install = helper "paseo-playwright-install" [ ];
       paseo-dev-smoke = helper "paseo-dev-smoke" [ ];
       paseo-desktop-capture = helper "paseo-desktop-capture" [ ];
 
@@ -81,6 +82,7 @@
         pkgs.xvfb-run
         pkgs.xorg-server
         paseo-install
+        paseo-playwright-install
         paseo-dev-smoke
         paseo-dev-check
         paseo-desktop-capture

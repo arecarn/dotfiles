@@ -18,5 +18,8 @@ check "python3 resolves" python3 --version
 check "gcc resolves" gcc --version
 check "g++ resolves" g++ --version
 check "make resolves" make --version
+check "xvfb-run resolves" command -v xvfb-run
+check "Xvfb resolves" command -v Xvfb
+check "paseo-desktop-capture resolves" command -v paseo-desktop-capture
 
 exit "$fail"

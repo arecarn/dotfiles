@@ -22,6 +22,7 @@
 
       paseo-install = helper "paseo-install" [ ];
       paseo-dev-smoke = helper "paseo-dev-smoke" [ ];
+      paseo-desktop-capture = helper "paseo-desktop-capture" [ ];
     in
     {
       devShells.${system}.default = pkgs.mkShell {
@@ -31,8 +32,12 @@
           pkgs.gcc
           pkgs.gnumake
           pkgs.pkg-config
+          pkgs.xvfb-run
+          pkgs.imagemagick
+          pkgs.xorg-server
           paseo-install
           paseo-dev-smoke
+          paseo-desktop-capture
         ];
       };
     };

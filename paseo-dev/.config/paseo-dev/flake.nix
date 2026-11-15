@@ -30,10 +30,14 @@
       # The one place the Android versions are defined. Platform, build-tools and
       # system image all derive from these; they follow Paseo's docs/android.md.
       android = rec {
-        platform = "35";
+        platform = "36";
         buildTools = "${android.platform}.0.0";
         systemImageType = "google_apis";
         abi = "x86_64";
+        # Not in docs/android.md: React Native's Gradle plugin asks for this
+        # NDK (react-native's libs.versions.toml ndkVersion) and cannot install
+        # it into the read-only SDK. Bump it when React Native does.
+        ndk = "27.1.12297006";
       };
 
       # Evaluated only when the android shell is requested: it needs unfree
@@ -54,12 +58,15 @@
             includeSystemImages = true;
             systemImageTypes = [ android.systemImageType ];
             abiVersions = [ android.abi ];
+            includeNDK = true;
+            ndkVersions = [ android.ndk ];
           };
           sdk = composition.androidsdk;
           jdk = apkgs."jdk${javaMajor}";
         in
         pkgs.mkShell {
           packages = base ++ [
+            (helper "paseo-emulator" [ ])
             jdk
             (apkgs.gradle.override { java = jdk; })
             sdk
@@ -71,6 +78,9 @@
           ANDROID_SDK_ROOT = "${sdk}/libexec/android-sdk";
           ANDROID_PLATFORM = android.platform;
           ANDROID_BUILD_TOOLS = android.buildTools;
+          ANDROID_SYSTEM_IMAGE_TYPE = android.systemImageType;
+          ANDROID_ABI = android.abi;
+          ANDROID_NDK_VERSION = android.ndk;
         };
 
       paseo-install = helper "paseo-install" [ ];

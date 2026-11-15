@@ -38,6 +38,11 @@
         # NDK (react-native's libs.versions.toml ndkVersion) and cannot install
         # it into the read-only SDK. Bump it when React Native does.
         ndk = "27.1.12297006";
+        # Also not in docs/android.md: the Expo module Gradle plugin builds
+        # with these build-tools whatever Paseo's compileSdk is.
+        expoBuildTools = "35.0.0";
+        # The native modules (react-native-nitro-modules) ask AGP for this CMake.
+        cmake = "3.22.1";
       };
 
       # Evaluated only when the android shell is requested: it needs unfree
@@ -53,13 +58,15 @@
           };
           composition = apkgs.androidenv.composeAndroidPackages {
             platformVersions = [ android.platform ];
-            buildToolsVersions = [ android.buildTools ];
+            buildToolsVersions = [ android.buildTools android.expoBuildTools ];
             includeEmulator = true;
             includeSystemImages = true;
             systemImageTypes = [ android.systemImageType ];
             abiVersions = [ android.abi ];
             includeNDK = true;
             ndkVersions = [ android.ndk ];
+            includeCmake = true;
+            cmakeVersions = [ android.cmake ];
           };
           sdk = composition.androidsdk;
           jdk = apkgs."jdk${javaMajor}";

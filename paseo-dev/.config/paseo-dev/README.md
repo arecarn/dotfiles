@@ -36,6 +36,23 @@ direnv exec . node node_modules/electron/install.js
 direnv exec . paseo-desktop-capture
 ```
 
+## Screenshot of the real desktop app
+
+`paseo-desktop-capture` drives Paseo's capture harness. To see the full app
+(`npm run dev:desktop`: Metro plus Electron) on a virtual display, run from
+the checkout root:
+
+```sh
+direnv exec . paseo-desktop-shot
+```
+
+It writes `/tmp/paseo-desktop-shot.png` (`PASEO_DESKTOP_SHOT_OUT` changes it),
+prints the mean pixel value (0 is black) and stops the stack afterwards. The
+first run in a checkout waits for Metro's first web bundle, which takes
+minutes; later runs take about two. Set `EXPO_PORT` and `PASEO_LISTEN` to run
+beside another dev stack. Why it must unset `XDG_SESSION_TYPE`: see
+[the gotcha](../../../docs/gotchas/electron-desktop-stays-black-under-xvfb-on-a-wayland-session.md).
+
 ## Android
 
 `nix develop path:$HOME/.config/paseo-dev#android` adds the SDK, JDK, Gradle and

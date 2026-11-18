@@ -28,7 +28,7 @@ later. The tool that does that differs per harness:
 
 | Harness | Binding |
 |---|---|
-| Claude Code | The `Monitor` tool. Arm it on the script; it streams the final line back. |
+| Claude Code | `Bash` with `run_in_background: true` and `timeout: 7200000`, the 2-hour maximum (the default is 30 minutes). It reports once, when the script exits. Not `Monitor`: it stops after 30 minutes at most and 5 by default, so a long pipeline outlives it. If the 2 hours run out, re-arm with `--sha` set to the commit first watched, since HEAD may have moved. |
 | pi | The `monitor` tool. Arm it on the script with `maxEvents: 1`; a one-shot monitor wakes the session by default, so `wake` need not be passed, and it disarms itself once the line arrives. |
 | anything else | Whatever runs a command detached and reports back later. |
 

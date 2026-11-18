@@ -596,3 +596,80 @@ def test_github_normalizes_all_feedback_types_and_review_comment_replies() -> No
     ]
     assert events[2].reply_to_user
     assert all(command[:2] == ["gh", "api"] for command in calls)
+
+
+def test_since_reports_baseline_feedback_created_at_or_after_it() -> None:
+    # A restarted watcher passes the old watcher's start time, so feedback
+    # posted while it was down is reported instead of joining the baseline.
+    snapshots = iter(
+        [
+            [event("note-1"), event("note-5"), event("note-7")],
+            [event("note-1"), event("note-5"), event("note-7")],
+        ]
+    )
+    output = io.StringIO()
+
+    watch_review.watch_snapshots(
+        lambda: next(snapshots),
+        current_user="author",
+        review_author="author",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        max_polls=1,
+        since=watch_review.parse_since("2026-08-27T00:00:05Z"),
+    )
+
+    rendered = output.getvalue()
+    # One batch at startup; the unchanged poll after it adds nothing.
+    assert rendered.count("Review feedback (2)") == 1
+    assert "comments/note-5" in rendered
+    assert "comments/note-7" in rendered
+    assert "comments/note-1" not in rendered
+
+
+def test_since_never_reports_the_baseline_head_commit() -> None:
+    # A head event's timestamp is its fetch time, so it is always after
+    # --since; reporting it would announce an unchanged head on each restart.
+    output = io.StringIO()
+
+    watch_review.watch_snapshots(
+        lambda: [watch_review.head_event("aaaaaaaaaaaa1111")],
+        current_user="rcarney",
+        review_author="igaron",
+        interval=0,
+        output=output,
+        sleep=lambda _seconds: None,
+        max_polls=0,
+        as_reviewer=True,
+        since=watch_review.parse_since("2000-01-01T00:00:00Z"),
+    )
+
+    assert output.getvalue() == ""
+
+
+def test_since_treats_an_unparseable_timestamp_as_old() -> None:
+    blank = watch_review.Event(
+        id="note-x", author="reviewer", body="hi", url="", created_at=""
+    )
+
+    assert not watch_review.created_since(
+        blank, watch_review.parse_since("2000-01-01T00:00:00Z")
+    )
+
+
+@pytest.mark.parametrize(
+    "value", ["2026-08-27T00:00:05Z", "2026-08-27T00:00:05", "2026-08-27T00:00:05+00:00"]
+)
+def test_parse_since_reads_a_missing_offset_as_utc(value: str) -> None:
+    parsed = watch_review.parse_since(value)
+
+    assert parsed.utcoffset() == timedelta(0)
+    assert parsed.isoformat() == "2026-08-27T00:00:05+00:00"
+
+
+def test_main_rejects_an_invalid_since() -> None:
+    with pytest.raises(SystemExit):
+        watch_review.main(
+            ["https://github.com/owner/repo/pull/17", "--since", "yesterday"]
+        )

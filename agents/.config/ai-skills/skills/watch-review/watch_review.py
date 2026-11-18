@@ -351,6 +351,9 @@ def is_relevant(
     return event.reply_to_user or bool(mention.search(event.body))
 
 
+HEAD_EVENT_PREFIX = "head:"
+
+
 def head_event(sha: str, *, created_at: str | None = None) -> Event:
     """The current head commit as an Event, so a push reports like feedback.
 
@@ -360,7 +363,7 @@ def head_event(sha: str, *, created_at: str | None = None) -> Event:
     """
     timestamp = created_at or datetime.now(timezone.utc).isoformat()
     return Event(
-        id=f"head:{sha}",
+        id=f"{HEAD_EVENT_PREFIX}{sha}",
         author="(new commit)",
         body=f"head is now {sha[:12]}",
         url="",
@@ -414,6 +417,32 @@ def format_jsonl_batch(events: list[Event]) -> str:
 # The injected output, sleep, and max_polls are what make one poll testable
 # without a clock or a real stream; bundling them into a config object would be
 # more machinery than the seam is worth.
+def parse_since(value: str) -> datetime:
+    """Parse a ``--since`` value: ISO 8601, with ``Z`` or an offset for UTC.
+
+    A value without an offset is read as UTC, not local time, so the same
+    string means the same instant on every machine.
+    """
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def created_since(item: Event, since: datetime) -> bool:
+    """Whether a pre-existing event is backlog to report, given ``--since``.
+
+    A head event never is: its timestamp is when it was fetched, not when the
+    commit was pushed, so it would report an unchanged head on every restart.
+    An event whose timestamp cannot be parsed is also treated as old, because
+    re-reporting history is the failure ``--since`` must not introduce.
+    """
+    if item.id.startswith(HEAD_EVENT_PREFIX):
+        return False
+    try:
+        return parse_since(item.created_at) >= since
+    except ValueError:
+        return False
+
+
 def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
     fetch: Callable[[], list[Event]],
     *,
@@ -427,8 +456,15 @@ def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
     fetch_state: Callable[[], str] | None = None,
     review_url: str = "",
     output_format: str = "text",
+    since: datetime | None = None,
 ) -> None:
-    """Print new feedback until the review is merged or closed."""
+    """Print new feedback until the review is merged or closed.
+
+    Feedback already on the review at startup is the baseline and stays
+    silent, unless ``since`` is given: then baseline events created at or
+    after it are reported in the first batch, so a restarted watcher does not
+    drop feedback that arrived while it was down.
+    """
 
     def report_terminal(state: str) -> bool:
         labels = {
@@ -451,17 +487,7 @@ def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
         output.flush()
         return True
 
-    if fetch_state is not None and report_terminal(fetch_state()):
-        return
-    seen = {item.id for item in fetch()}
-    polls = 0
-    while max_polls is None or polls < max_polls:
-        sleep(interval)
-        if fetch_state is not None and report_terminal(fetch_state()):
-            return
-        snapshot = fetch()
-        new_events = [item for item in snapshot if item.id not in seen]
-        seen.update(item.id for item in snapshot)
+    def report_new(new_events: list[Event]) -> None:
         relevant = [
             item
             for item in new_events
@@ -476,6 +502,21 @@ def watch_snapshots(  # pylint: disable=too-many-arguments,too-many-locals
             formatter = format_jsonl_batch if output_format == "jsonl" else format_batch
             output.write(formatter(relevant))
             output.flush()
+
+    if fetch_state is not None and report_terminal(fetch_state()):
+        return
+    baseline = fetch()
+    seen = {item.id for item in baseline}
+    if since is not None:
+        report_new([item for item in baseline if created_since(item, since)])
+    polls = 0
+    while max_polls is None or polls < max_polls:
+        sleep(interval)
+        if fetch_state is not None and report_terminal(fetch_state()):
+            return
+        snapshot = fetch()
+        report_new([item for item in snapshot if item.id not in seen])
+        seen.update(item.id for item in snapshot)
         polls += 1
 
 
@@ -505,9 +546,23 @@ def main(argv: list[str] | None = None) -> int:
             "a principal reviewer who owns threads they did not post in"
         ),
     )
+    parser.add_argument(
+        "--since",
+        help=(
+            "ISO 8601 time (UTC unless an offset is given); also report "
+            "feedback already on the review that was created at or after it, "
+            "so a restarted watcher resumes instead of re-baselining"
+        ),
+    )
     args = parser.parse_args(argv)
     if args.interval <= 0:
         parser.error("--interval must be greater than zero")
+    since = None
+    if args.since is not None:
+        try:
+            since = parse_since(args.since)
+        except ValueError:
+            parser.error(f"--since is not an ISO 8601 time: {args.since}")
 
     try:
         provider = provider_for(parse_review_url(args.review_url))
@@ -542,6 +597,7 @@ def main(argv: list[str] | None = None) -> int:
         fetch_state=retrying(provider.review_state, interval=args.interval),
         review_url=args.review_url,
         output_format=args.output_format,
+        since=since,
     )
     return 0
 

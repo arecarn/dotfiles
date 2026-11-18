@@ -30,13 +30,21 @@ Take the review URL from the argument, or infer it from the current branch's MR
 or PR. `--interval` is seconds, default 120.
 
 ```bash
-python3 ~/.config/ai-skills/skills/watch-review/watch_review.py <review-url> [--interval 120] [--as-reviewer] [--output-format text|jsonl]
+python3 ~/.config/ai-skills/skills/watch-review/watch_review.py <review-url> [--interval 120] [--as-reviewer] [--output-format text|jsonl] [--since <ISO time>]
 ```
+
+A watcher treats feedback already on the review at startup as seen. `--since`
+narrows that: feedback created at or after the given time is reported in the
+first batch. Use it when restarting a watcher, so the gap between the old
+watcher's last poll and the new one's start loses nothing. Pass the start time
+of the watcher being replaced, in UTC (`date -u +%Y-%m-%dT%H:%M:%SZ` when
+arming). Anything since then that was already surfaced is reported again;
+that duplicate is the price of losing nothing.
 
 | Harness | Binding |
 |---|---|
 | pi | The `monitor` tool, armed with no `maxEvents` and `wake: true`. Run the command with `--output-format jsonl`, which gives the line-oriented monitor one event per logical notification. Unlimited because feedback arrives more than once; `wake: true` starts a turn as soon as a feedback batch arrives so it can be surfaced immediately. |
-| Claude Code | Its `Monitor` background capability on the default text command. |
+| Claude Code | The `Monitor` tool on the default text command, with `timeout_ms: 1800000`, the 30-minute maximum (the default is 5). Note the UTC time at each arming. A monitor always expires on an open review, so when the expiry notice arrives, re-arm at once with the same arguments plus `--since` set to the expired monitor's arming time. Do not re-arm after a terminal event or after the user asked to stop. |
 | anything else | Whatever runs a command detached and reports its output later. |
 
 Authentication comes from `glab` and `gh`, so neither a token nor a host needs

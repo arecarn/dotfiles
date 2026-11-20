@@ -27,7 +27,10 @@ import subprocess
 
 from manage.knowledge import config, okf
 
-PROJECT_DIR_NAME = "agents-knowledge"
+# Where a project bundle may live, relative to the worktree root, in the order
+# tried; the first that is an OKF bundle wins. Mirrored by PROJECT_DIRS in
+# pi/.pi/agent/extensions/agent-knowledge/fallback.ts.
+PROJECT_DIR_NAMES = ("agents-knowledge", "docs/agents")
 
 
 def _canonical(path):
@@ -155,22 +158,26 @@ def project_bundle(cwd):
 
     Returns None -- silently, as the normal case -- when the worktree holds no
     bundle, or when the bundle is not usable. A repo-controlled symlink is
-    refused: `agents-knowledge` and its index must be real entries inside the
-    worktree, or a repository could redirect discovery at any readable path.
+    refused: every directory from the worktree root down to the index, and the
+    index itself, must be a real entry, or a repository could redirect
+    discovery at any readable path. A refused candidate is skipped, so a
+    symlinked `agents-knowledge` falls through to `docs/agents`.
     """
     root = project_root(cwd)
-    bundle_dir = root / PROJECT_DIR_NAME
-    index = bundle_dir / okf.INDEX_NAME
-    if bundle_dir.is_symlink() or index.is_symlink():
-        return None
-    if not okf.is_bundle(bundle_dir):
-        return None
-
-    return config.Bundle(
-        id=config.PROJECT_ID,
-        name="Project knowledge",
-        description="References for the current project",
-        path=bundle_dir,
-        always=False,
-        roots=[],
-    )
+    for name in PROJECT_DIR_NAMES:
+        bundle_dir = root / name
+        index = bundle_dir / okf.INDEX_NAME
+        rel = index.relative_to(root).parts
+        if any(root.joinpath(*rel[:n]).is_symlink() for n in range(1, len(rel) + 1)):
+            continue
+        if not okf.is_bundle(bundle_dir):
+            continue
+        return config.Bundle(
+            id=config.PROJECT_ID,
+            name="Project knowledge",
+            description="References for the current project",
+            path=bundle_dir,
+            always=False,
+            roots=[],
+        )
+    return None

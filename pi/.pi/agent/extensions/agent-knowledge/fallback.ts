@@ -11,7 +11,7 @@
  * this repo -- clone, enable the extension, and a project's own knowledge shows
  * up. `resolver.ts` prefers the CLI whenever it answers.
  *
- * Deliberately narrow. It reads exactly one file at exactly one path, and refuses
+ * Deliberately narrow. It reads exactly one file from a fixed list of paths, and refuses
  * anything it cannot verify, because every check the CLI performs would otherwise
  * have to be reimplemented here in a second language.
  */
@@ -24,7 +24,8 @@ import { BEGIN_MARKER, END_MARKER, newFence, PREAMBLE } from "./framing.ts";
 
 const run = promisify(execFile);
 
-const PROJECT_DIR = "agents-knowledge";
+// Mirrors activation.PROJECT_DIR_NAMES: tried in order, first usable index wins.
+const PROJECT_DIRS = ["agents-knowledge", join("docs", "agents")];
 const INDEX = "index.md";
 const SUPPORTED_VERSION = "0.2";
 
@@ -75,16 +76,22 @@ function hasSymlink(root: string, path: string): boolean {
  * Undefined covers every "nothing usable here" case, because callers treat them
  * identically: no bundle, no marker, an unreadable or oversized file, or a
  * symlink. A repository-controlled symlink is refused rather than followed --
- * `agents-knowledge` is content the repo can author, so it must not be able to
- * redirect a read outside the worktree.
+ * the bundle is content the repo can author, so it must not be able to redirect
+ * a read outside the worktree. A refused candidate falls through to the next.
  */
 export async function readProjectIndex(
 	cwd: string,
 ): Promise<string | undefined> {
 	const root = await projectRoot(cwd);
-	const bundle = join(root, PROJECT_DIR);
-	const index = join(bundle, INDEX);
+	for (const dir of PROJECT_DIRS) {
+		const text = readIndexAt(root, join(root, dir, INDEX));
+		if (text !== undefined) return text;
+	}
+	return undefined;
+}
 
+/** The index text at `index`, or undefined unless it is a usable OKF index. */
+function readIndexAt(root: string, index: string): string | undefined {
 	try {
 		if (hasSymlink(root, index)) return undefined;
 		const stat = lstatSync(index, { throwIfNoEntry: false });

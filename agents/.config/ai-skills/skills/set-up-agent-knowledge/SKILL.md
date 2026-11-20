@@ -20,7 +20,7 @@ Ask if it is not obvious from the request.
 
 | Scope | Bundle lives | Pointer goes in |
 |-------|--------------|-----------------|
-| **Project** — facts about one repo | `agents-knowledge/` at its root | that repo's `AGENTS.md` |
+| **Project** — facts about one repo | `agents-knowledge/` or `docs/agents/` at its root | that repo's `AGENTS.md` |
 | **Personal** — habits and tools across all work | `~/knowledge/personal/` or similar | the user-level instruction file |
 | **Work** — one employer or client | outside any repo, often beside other private config | the user-level instruction file, and never a public one |
 
@@ -124,7 +124,9 @@ The bad one forces the agent to open the file to learn whether it needed to.
 ## 4. Create the bundle
 
 For a project, a directory named `agents-knowledge/` at the repository root, so it
-sits beside `AGENTS.md` and is visible to anyone browsing the repo. For a personal
+sits beside `AGENTS.md` and is visible to anyone browsing the repo. Use
+`docs/agents/` instead when the repository keeps its agent docs there; discovery
+tries `agents-knowledge/` first. For a personal
 or work bundle, any stable path the user chooses — the name carries no meaning
 once the pointer gives an absolute path.
 

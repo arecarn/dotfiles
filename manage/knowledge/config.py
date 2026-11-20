@@ -232,8 +232,8 @@ def _merge(data, path, config_dir, acc):
             # discovery, and silence would look like the setting still applied.
             raise ConfigError(
                 f"{path}: project_roots is no longer configured -- a project's "
-                "agents-knowledge/ is discovered wherever the repository "
-                "commits one, so remove the key"
+                "bundle (agents-knowledge/ or docs/agents/) is discovered "
+                "wherever the repository commits one, so remove the key"
             )
         raise ConfigError(f"{path}: unknown key {key!r}")
     if data and data.get("version") != SCHEMA_VERSION:

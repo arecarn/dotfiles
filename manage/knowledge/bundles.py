@@ -14,7 +14,7 @@ This checks structure only. Whether a document is *true* is not checkable here
 import pathlib
 import re
 
-from manage.knowledge import okf
+from manage.knowledge import activation, okf
 
 # A bundle entry is a Markdown bullet holding one link and a description after a
 # dash, wrapped across as many lines as it needs:
@@ -71,13 +71,14 @@ def _normalize(text):
 def repo_bundles(repo_root):
     """Every OKF bundle this repo owns, root index first.
 
-    Both places a bundle can live here: the project's own `agents-knowledge/`,
-    and the personal bundles stowed from `agents/.config/ai-knowledge/`. A work
+    Both places a bundle can live here: the project's own bundle (any of
+    `activation.PROJECT_DIR_NAMES`), and the personal bundles stowed from
+    `agents/.config/ai-knowledge/`. A work
     bundle is deliberately not reachable -- it lives in a `dotfiles_local`
     checkout and is not ours to check.
     """
     repo_root = pathlib.Path(repo_root)
-    candidates = [repo_root / "agents-knowledge"]
+    candidates = [repo_root / name for name in activation.PROJECT_DIR_NAMES]
     stowed = repo_root / "agents" / ".config" / "ai-knowledge"
     if stowed.is_dir():
         candidates.extend(sorted(p for p in stowed.iterdir() if p.is_dir()))

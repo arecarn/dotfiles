@@ -40,10 +40,20 @@ System packages are out of scope: they need sudo, so they stay with `inv provisi
 2. **Report** the summary the task prints: each group's outcome, and the
    before/after versions of `claude` and `pi`. Name any repo `pull` skipped and
    git's reason.
-3. **Read out anything `local` printed.** Report what it found and leave the
+3. **Summarize what changed in `claude` and `pi`**, for each tool whose
+   version moved. Fetch its changelog for exactly the before-to-after range:
+   Claude Code from `anthropics/claude-code` `CHANGELOG.md`, pi from
+   `earendil-works/pi` `packages/coding-agent/CHANGELOG.md`. Give new features
+   and visible behavior changes only, not the fix list. Then add a **Needs
+   action on your end** line, or say none. Decide that by checking the
+   user's own config and extensions against the breaking or behavior-changing
+   entries (for pi, the extensions under `pi/.pi/agent/extensions/`, grepping
+   for the API a change names), not by paraphrasing the changelog. An
+   unattended run reports this too and changes nothing.
+4. **Read out anything `local` printed.** Report what it found and leave the
    decision to the user: do not edit config on the strength of a check unasked.
-4. **Offer to commit** uncommitted changes in `~/dotfiles_local`; push only if asked.
-5. A running Claude session keeps its old version. Say a restart is needed to use the new one.
+5. **Offer to commit** uncommitted changes in `~/dotfiles_local`; push only if asked.
+6. A running Claude session keeps its old version. Say a restart is needed to use the new one.
 
 A `FAILED` group does not stop the others, and any `FAILED` makes the run exit
 1. Report it and its message; do not retry blindly.

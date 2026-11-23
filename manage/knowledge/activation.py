@@ -161,7 +161,7 @@ def project_bundle(cwd):
     refused: every directory from the worktree root down to the index, and the
     index itself, must be a real entry, or a repository could redirect
     discovery at any readable path. A refused candidate is skipped, so a
-    symlinked `agents-knowledge` falls through to `docs/agents`.
+    symlinked `docs/agents` falls through to `agents-knowledge`.
     """
     root = project_root(cwd)
     for name in PROJECT_DIR_NAMES:

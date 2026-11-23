@@ -12,7 +12,9 @@
 - name: Set Paseo loopback listener
   ansible.builtin.command:
     cmd: "{{ user_home }}/.local/bin/paseo daemon config set daemon.listen 127.0.0.1:6767 --string"
-  when: (paseo_listener.stdout | from_json).value != '127.0.0.1:6767'
+  # An unset key comes back as {"set": false} with no "value" at all (fresh
+  # install, as on CI), so default it rather than dereferencing it.
+  when: (paseo_listener.stdout | from_json).value | default('') != '127.0.0.1:6767'
   register: paseo_listener_change
   become: false
 

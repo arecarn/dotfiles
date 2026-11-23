@@ -46,7 +46,7 @@ stack=$!
 # The app also starts a detached, desktop-managed daemon and a terminal worker
 # in the checkout-local home. They outlive the process group, so stop them by
 # the pid file and the checkout-local home path, so a real daemon is never hit.
-# shellcheck disable=SC2329  # invoked through the EXIT trap
+# shellcheck disable=SC2317,SC2329  # invoked through the EXIT trap; shellcheck < 0.11 calls it SC2317
 stop_stack() {
   # Every step may fail (already gone); errexit must not end the cleanup.
   kill -TERM -- "-$stack" 2>/dev/null || true

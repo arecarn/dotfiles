@@ -345,6 +345,39 @@ test("the fallback refuses a symlinked project bundle", async () => {
 	assert.equal(await pi.resolve(linked, { trusted: true }), undefined);
 });
 
+test("the fallback reads a project index under docs/agents", async () => {
+	const { config, root } = fixture();
+	const project = join(root, "projects", "docs-agents");
+	mkdirSync(join(project, "docs", "agents"), { recursive: true });
+	writeFileSync(join(project, "docs", "agents", "index.md"), PROJECT_INDEX);
+	execFileSync("git", ["init", "-q", "."], { cwd: project });
+
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const pi = await adapter(PI, empty, config);
+
+	const result = await pi.resolve(project, { trusted: true });
+	assert.match(result?.catalog ?? "", /shipping/);
+});
+
+test("the fallback refuses a symlinked docs directory", async () => {
+	const { config, root } = fixture();
+	const elsewhere = join(root, "outside-docs");
+	mkdirSync(join(elsewhere, "agents"), { recursive: true });
+	writeFileSync(join(elsewhere, "agents", "index.md"), PROJECT_INDEX);
+
+	const linked = join(root, "projects", "sneaky-docs");
+	mkdirSync(linked, { recursive: true });
+	execFileSync("git", ["init", "-q", "."], { cwd: linked });
+	symlinkSync(elsewhere, join(linked, "docs"));
+
+	const empty = mkdtempSync(join(tmpdir(), "agent-knowledge-nocli-"));
+	roots.push(empty);
+	const pi = await adapter(PI, empty, config);
+
+	assert.equal(await pi.resolve(linked, { trusted: true }), undefined);
+});
+
 test("the fallback ignores a directory without the version marker", async () => {
 	const { config, root } = fixture();
 	const plain = join(root, "projects", "plain");

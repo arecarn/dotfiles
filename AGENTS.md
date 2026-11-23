@@ -56,8 +56,7 @@ them with `uv run inv --list`. There is no Makefile or Docker here, so the
   none, so every harness gets the same flat content.
 - **Agent knowledge is reference material, not instructions.** Bundles are
   *discovered*, never declared: a directory under `~/.config/ai-knowledge/` is a
-  bundle, and a project opts in by committing `agents-knowledge/index.md` at its
-  worktree root. Reference detail belongs in a bundle; a rule that always applies
+  bundle, and a project opts in by committing `docs/agents/index.md` at its worktree root. Reference detail belongs in a bundle; a rule that always applies
   belongs in these fragments. Run `agent-knowledge status` to see what applies
   where.
 

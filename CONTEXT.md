@@ -104,7 +104,7 @@ exists to avoid.
 _Avoid_: index, table of contents, manifest
 
 **Project bundle**:
-The `agents-knowledge/` bundle committed at a worktree root. Branch-local by
+The bundle committed at a worktree root as `docs/agents/`. Branch-local by
 construction, so a feature worktree does not read the primary checkout's
 knowledge. A repository opts in by committing the index; nothing on the machine
 enables it.
@@ -117,7 +117,7 @@ _Avoid_: selection, matching, enabling
 
 **Discovery**:
 Finding bundles rather than being told about them: a directory beside
-`config.yaml` is one, and `agents-knowledge/` at a worktree root is that
+`config.yaml` is one, and `docs/agents/` at a worktree root is that
 repository's. Nothing declares a bundle into existence, so a work bundle's name
 and path never have to be written down.
 _Avoid_: registration, declaration, scanning

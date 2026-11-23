@@ -251,6 +251,41 @@ def test_a_symlinked_project_index_is_refused(tmp_path):
     assert activation.project_bundle(repo) is None
 
 
+
+def test_a_project_bundle_is_discovered_at_docs_agents(tmp_path):
+    repo = _repo(tmp_path / "repo")
+    _okf_bundle(repo / "docs" / "agents")
+
+    assert activation.project_bundle(repo).path == repo / "docs" / "agents"
+
+
+def test_agents_knowledge_wins_over_docs_agents(tmp_path):
+    repo = _repo(tmp_path / "repo")
+    _okf_bundle(repo / "agents-knowledge")
+    _okf_bundle(repo / "docs" / "agents")
+
+    assert activation.project_bundle(repo).path == repo / "agents-knowledge"
+
+
+def test_docs_agents_is_used_when_agents_knowledge_is_not_a_bundle(tmp_path):
+    repo = _repo(tmp_path / "repo")
+    (repo / "agents-knowledge").mkdir()
+    (repo / "agents-knowledge" / "index.md").write_text("# just docs\n")
+    _okf_bundle(repo / "docs" / "agents")
+
+    assert activation.project_bundle(repo).path == repo / "docs" / "agents"
+
+
+def test_a_symlinked_parent_of_the_project_bundle_is_refused(tmp_path):
+    """`docs` is repo-controlled too, so a link there must not redirect reads."""
+    repo = _repo(tmp_path / "repo")
+    outside = tmp_path / "outside"
+    _okf_bundle(outside / "agents")
+    (repo / "docs").symlink_to(outside)
+
+    assert activation.project_bundle(repo) is None
+
+
 # --- discovered bundles ------------------------------------------------------
 
 

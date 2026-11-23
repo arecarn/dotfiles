@@ -17,8 +17,8 @@
 #
 # That is what keeps work knowledge out of a public repo: a dotfiles_local
 # stows the directory, and nothing here names it. A repository's own bundle
-# works the same way, as `agents-knowledge/` at its worktree root, so a project
-# opts in by committing an index and needs nothing on this machine.
+# works the same way, as `docs/agents/` at its worktree root, so a project opts
+# in by committing an index and needs nothing on this machine.
 #
 # This file is only for the cases the defaults do not cover. It is public;
 # `config_local.yaml` beside it is the private sibling a dotfiles_local repo

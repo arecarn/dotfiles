@@ -25,7 +25,7 @@ import { BEGIN_MARKER, END_MARKER, newFence, PREAMBLE } from "./framing.ts";
 const run = promisify(execFile);
 
 // Mirrors activation.PROJECT_DIR_NAMES: tried in order, first usable index wins.
-const PROJECT_DIRS = ["agents-knowledge", join("docs", "agents")];
+const PROJECT_DIRS = [join("docs", "agents"), "agents-knowledge"];
 const INDEX = "index.md";
 const SUPPORTED_VERSION = "0.2";
 

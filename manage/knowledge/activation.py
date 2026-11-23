@@ -30,7 +30,7 @@ from manage.knowledge import config, okf
 # Where a project bundle may live, relative to the worktree root, in the order
 # tried; the first that is an OKF bundle wins. Mirrored by PROJECT_DIRS in
 # pi/.pi/agent/extensions/agent-knowledge/fallback.ts.
-PROJECT_DIR_NAMES = ("agents-knowledge", "docs/agents")
+PROJECT_DIR_NAMES = ("docs/agents", "agents-knowledge")
 
 
 def _canonical(path):

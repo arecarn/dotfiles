@@ -461,10 +461,15 @@ def _maintain_local():
     return None
 
 
+def _maintain_deps():
+    return maintain.check_dependencies(repo.ROOT)
+
+
 @task(
     name="maintain",
     help={
-        "only": f"Comma-separated groups to run ({', '.join(maintain.GROUPS)})",
+        "only": f"Comma-separated groups to run ({', '.join(maintain.GROUPS)}); "
+        f"{', '.join(sorted(maintain.OPT_IN))} runs only when named",
         "skip": "Comma-separated groups to leave out",
     },
 )
@@ -485,6 +490,7 @@ def maintain_agents(ctx, only="", skip=""):
             "plugins": lambda: _maintain_plugins(ctx),
             "stow": _maintain_stow,
             "local": _maintain_local,
+            "deps": _maintain_deps,
         },
     )
     after = {tool: maintain.version(tool) for tool in tools}

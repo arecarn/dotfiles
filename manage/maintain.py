@@ -7,13 +7,18 @@ invoking the playbook.
 """
 
 import dataclasses
+import json
 import os
 import pathlib
 import shutil
 import subprocess
 
 # Run order. `--only`/`--skip` select from these and never reorder them.
-GROUPS = ["pull", "cli", "plugins", "stow", "local"]
+GROUPS = ["pull", "cli", "plugins", "stow", "local", "deps"]
+
+# Groups that run only when named in `--only`, so the unattended weekly run
+# never does them by default.
+OPT_IN = {"deps"}
 
 # The pnpm home ansible/tasks/javascript-packages.yml uses (`pnpm_bin_dir`).
 # Unlike the npm prefix, no group_vars key holds it, so it is the one value
@@ -108,7 +113,8 @@ def pull_group(home):
 def select_groups(only="", skip=""):
     """Return the groups to run, in run order, from comma-separated `only`/`skip`.
 
-    An empty `only` means all groups. A name outside GROUPS is an error rather
+    An empty `only` means every group except OPT_IN ones, which must be named.
+    A name outside GROUPS is an error rather
     than silently ignored, so a typo cannot skip a step unnoticed.
     """
     wanted = [g.strip() for g in only.split(",") if g.strip()]
@@ -116,7 +122,7 @@ def select_groups(only="", skip=""):
     unknown = sorted(set(wanted + dropped) - set(GROUPS))
     if unknown:
         raise ValueError(f"unknown group(s): {', '.join(unknown)}; choose from {', '.join(GROUPS)}")
-    keep = set(wanted) if wanted else set(GROUPS)
+    keep = set(wanted) if wanted else set(GROUPS) - OPT_IN
     return [g for g in GROUPS if g in keep and g not in dropped]
 
 
@@ -179,6 +185,50 @@ def upgrade_clis(commands, environ, run=subprocess.run, which=shutil.which, emit
     if missing:
         return Outcome("partial", "not installed, skipped: " + ", ".join(missing))
     return Outcome("ok")
+
+
+def check_dependencies(root, run=subprocess.run, which=shutil.which, emit=print):
+    """Report, without changing anything, which dependencies have newer releases.
+
+    Runs `uv lock --upgrade --dry-run` and `pnpm outdated` in `root`. It never
+    writes a lockfile: applying the bumps is a separate, reviewed change, and a
+    real `uv lock` here would rewrite the lock to the machine's internal index.
+    A tool that is not installed is skipped with a note; a failing one raises.
+    """
+    parts = []
+    missing = []
+
+    if which("uv") is None:
+        missing.append("uv")
+    else:
+        done = run(
+            ["uv", "lock", "--upgrade", "--dry-run"],
+            cwd=root, check=False, capture_output=True, text=True,
+        )
+        if done.returncode != 0:
+            raise RuntimeError(f"uv lock --dry-run exited {done.returncode}: {done.stderr.strip()}")
+        text = done.stdout + done.stderr
+        emit(text.strip())
+        updates = sum(1 for line in text.splitlines() if line.startswith("Update "))
+        parts.append(f"python: {updates} to update")
+
+    if which("pnpm") is None:
+        missing.append("pnpm")
+    else:
+        done = run(
+            ["pnpm", "outdated", "--format", "json"],
+            cwd=root, check=False, capture_output=True, text=True,
+        )
+        # pnpm exits 1 when anything is outdated, which is a result, not a failure.
+        if done.returncode not in (0, 1):
+            raise RuntimeError(f"pnpm outdated exited {done.returncode}: {done.stderr.strip()}")
+        emit(done.stdout.strip())
+        parts.append(f"npm: {len(json.loads(done.stdout or '{}'))} outdated")
+
+    detail = "; ".join(parts)
+    if missing:
+        return Outcome("partial", f"{detail}; not installed, skipped: {', '.join(missing)}")
+    return Outcome("ok", f"{detail}; apply with `uv lock --upgrade` and `pnpm update --latest`")
 
 
 def run_groups(groups, runners, emit=print):

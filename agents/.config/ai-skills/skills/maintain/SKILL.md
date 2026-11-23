@@ -29,6 +29,7 @@ group shows `FAILED` rather than being quietly skipped.
 | `plugins` | Claude plugin updates, pi package updates, `pi update --models`. |
 | `stow` | Stows every package and the shared skills. Skipped when `~/dotfiles` was not pulled. |
 | `local` | Runs `~/dotfiles_local/scripts/maintain-local.py` if present: private checks that live outside this repo. |
+| `deps` | **Opt-in**: runs only with `--only deps`, never by default. Reports, without changing anything, what `uv lock --upgrade --dry-run` and `pnpm outdated` say could be bumped. Applying the bumps is a separate reviewed change on a branch, resolved against public PyPI (`UV_INDEX_URL=https://pypi.org/simple`) so the lock gets no internal URLs. |
 
 System packages are out of scope: they need sudo, so they stay with `inv provision`.
 

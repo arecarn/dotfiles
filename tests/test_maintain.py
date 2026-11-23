@@ -109,8 +109,13 @@ def test_pull_reports_missing_for_a_path_that_is_not_a_repo(tmp_path):
 # --- group selection ---------------------------------------------------------
 
 
-def test_every_group_runs_in_order_by_default():
+def test_every_group_runs_in_order_by_default_except_opt_in_ones():
     assert maintain.select_groups() == ["pull", "cli", "plugins", "stow", "local"]
+
+
+def test_an_opt_in_group_runs_only_when_named():
+    assert maintain.select_groups(only="deps") == ["deps"]
+    assert "deps" not in maintain.select_groups(skip="cli")
 
 
 def test_only_keeps_the_named_groups_in_run_order():
@@ -374,6 +379,63 @@ def test_a_failing_upgrade_raises_after_trying_the_rest():
         )
 
     assert calls == ["/bin/npm", "/bin/pi"]
+
+
+# --- dependency check --------------------------------------------------------
+
+
+def _deps(uv_out="", pnpm_out="{}", pnpm_code=1, installed=("uv", "pnpm"), uv_code=0):
+    calls = []
+
+    def fake_run(argv, **_):
+        calls.append(argv)
+        if argv[0] == "uv":
+            return types.SimpleNamespace(returncode=uv_code, stdout=uv_out, stderr="")
+        return types.SimpleNamespace(returncode=pnpm_code, stdout=pnpm_out, stderr="")
+
+    outcome = maintain.check_dependencies(
+        ".",
+        run=fake_run,
+        which=lambda n: n if n in installed else None,
+        emit=lambda _: None,
+    )
+    return outcome, calls
+
+
+def test_the_dependency_check_counts_python_updates_and_outdated_npm_packages():
+    outcome, calls = _deps(
+        "Update ruff v1 -> v2\nAdd tomli v1\nUpdate pytest v1 -> v2",
+        '{"a": {}, "b": {}}',
+    )
+
+    assert outcome.status == "ok"
+    assert "python: 2 to update" in outcome.detail
+    assert "npm: 2 outdated" in outcome.detail
+    assert ["uv", "lock", "--upgrade", "--dry-run"] in calls
+
+
+def test_pnpm_exiting_one_for_outdated_is_a_result_not_a_failure():
+    outcome, _ = _deps(pnpm_code=1)
+
+    assert outcome.status == "ok"
+
+
+def test_an_unexpected_pnpm_exit_is_a_failure():
+    with pytest.raises(RuntimeError, match="pnpm"):
+        _deps(pnpm_code=2)
+
+
+def test_a_failing_uv_dry_run_raises():
+    with pytest.raises(RuntimeError, match="uv"):
+        _deps(uv_code=2)
+
+
+def test_a_missing_tool_is_skipped_with_a_note():
+    outcome, calls = _deps(installed=("uv",))
+
+    assert outcome.status == "partial"
+    assert "pnpm" in outcome.detail
+    assert all(c[0] == "uv" for c in calls)
 
 
 # --- versions ----------------------------------------------------------------

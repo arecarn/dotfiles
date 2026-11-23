@@ -198,6 +198,9 @@ export default function (pi: ExtensionAPI) {
 						details: { ...monitor },
 					};
 				}
+				default:
+					// typebox 1.4 types the enum as unknown, so tsc cannot prove the cases above exhaustive.
+					throw new Error(`Unknown monitor action: ${String(params.action)}`);
 			}
 		},
 	});
